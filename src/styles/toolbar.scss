@@ -1,0 +1,22 @@
+$nav-color: darkgrey;
+
+nav {
+  background-color: $nav-color;
+  display: flex;
+  flex-direction: row;
+
+  div {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    border: 2px;
+    border-style: solid;
+    border-radius: 5px;
+    border-color: $nav-color;
+  }
+
+  div:hover {
+    border-color: black;
+    border-style: solid;
+    cursor: pointer;
+  }
+}

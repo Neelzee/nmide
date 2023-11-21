@@ -1,0 +1,16 @@
+html {
+  background-color: gray;
+}
+
+// Ensures that the main-element takes 100% of the page space
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  height: 100%;
+}
