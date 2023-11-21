@@ -3,7 +3,8 @@
     "beforeBuildCommand": "yarn build",
     "beforeDevCommand": "yarn start",
     "devPath": "http://localhost:3000",
-    "distDir": "../build"
+    "distDir": "../build",
+    "withGlobalTauri": true
   },
   "package": {
     "productName": "nmide",
