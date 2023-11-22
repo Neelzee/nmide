@@ -6,8 +6,8 @@ import "./styles/main.scss";
 function App() {
   return (
     <>
+      <MenuBar />
       <main>
-        <MenuBar />
         <Explorer />
         <EditorWindow />
       </main>

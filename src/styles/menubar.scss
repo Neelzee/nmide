@@ -1,11 +1,13 @@
 $nav-color: darkgrey;
+$border-color: black;
 
 nav {
   background-color: $nav-color;
   display: flex;
   flex-direction: row;
 
-  div {
+  .btn,
+  .logo {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
     border: 2px;
@@ -14,9 +16,12 @@ nav {
     border-color: $nav-color;
   }
 
-  div:hover {
-    border-color: black;
+  .btn:hover {
+    border-color: $border-color;
     border-style: solid;
     cursor: pointer;
+  }
+  .logo:hover {
+    cursor: default;
   }
 }

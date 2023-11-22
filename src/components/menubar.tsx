@@ -6,11 +6,12 @@ export class MenuBar extends React.Component {
     return (
       <>
         <nav>
-          <div>File</div>
-          <div>Edit</div>
-          <div>View</div>
-          <div>Settings</div>
-          <div>Help</div>
+          <div className="logo">NM</div>
+          <div className="btn">File</div>
+          <div className="btn">Edit</div>
+          <div className="btn">View</div>
+          <div className="btn">Settings</div>
+          <div className="btn">Help</div>
         </nav>
       </>
     );

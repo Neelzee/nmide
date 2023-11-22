@@ -1,12 +1,12 @@
 export type File = {
-  name: String;
-  path: String;
+  name: string;
+  path: string;
 };
 
 export type Folder = {
-  name: String;
-  path: String;
-  contents: [];
+  name: string;
+  path: string;
+  contents: FolderOrFile[];
 };
 
 export type FolderOrFile = Folder | File;
