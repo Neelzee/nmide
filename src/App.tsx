@@ -1,11 +1,13 @@
-import { ToolBar } from "./components/toolbar";
+import { EditorWindow } from "./components/editor_window";
+import { MenuBar } from "./components/menubar";
 import "./styles/main.scss";
 
 function App() {
   return (
     <>
       <main>
-        <ToolBar />
+        <MenuBar />
+        <EditorWindow />
       </main>
     </>
   );

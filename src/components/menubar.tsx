@@ -1,7 +1,7 @@
 import React from "react";
-import "../styles/toolbar.scss";
+import "../styles/menubar.scss";
 
-export class ToolBar extends React.Component {
+export class MenuBar extends React.Component {
   render() {
     return (
       <>
