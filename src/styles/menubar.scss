@@ -1,10 +1,13 @@
 $nav-color: darkgrey;
 $border-color: black;
+$menu-bar-zindex: 1;
 
 nav {
   background-color: $nav-color;
   display: flex;
   flex-direction: row;
+  max-height: 1.5rem;
+  min-height: 1.5rem;
 
   .btn,
   .logo {
@@ -14,6 +17,7 @@ nav {
     border-style: solid;
     border-radius: 5px;
     border-color: $nav-color;
+    overflow: inherit;
   }
 
   .btn:hover {
@@ -23,5 +27,20 @@ nav {
   }
   .logo:hover {
     cursor: default;
+  }
+}
+
+.filemenu {
+  background-color: red;
+  position: absolute;
+  z-index: menu-bar-zindex;
+  p {
+    margin: 0;
+    padding: 0;
+  }
+
+  p:hover {
+    background-color: blue;
+    cursor: pointer;
   }
 }

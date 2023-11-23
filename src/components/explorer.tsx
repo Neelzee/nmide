@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api";
 import { File, Folder, FolderOrFile } from "../types/types";
 import "../styles/explorer.scss";
+import { get_content_from_folder } from "./backend_api";
 
 export class Explorer extends React.Component {
   //@ts-ignore
@@ -11,21 +12,21 @@ export class Explorer extends React.Component {
   }
 
   componentDidMount(): void {
-    invoke("get_content_in_folder", {
-      root: "C:\\Users\\nilsi\\Documents\\nario\\src",
-    })
+    let root = "C:\\Users\\nilsi\\Documents\\nmide";
+
+    get_content_from_folder(root)
       .then((res) => {
-        //@ts-ignore
         this.setState({ files: res, isLoading: false });
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        this.setState({ files: null, isLoading: true });
+        console.error(err);
+      });
   }
 
   render() {
     //@ts-ignore
     const { isLoading, files } = this.state;
-
-    console.log(files);
 
     //@ts-ignore
     if (isLoading) {
@@ -64,9 +65,9 @@ const FileSystemRenderer: React.FC<Props> = ({ data }) => {
   };
 
   const renderFolderOrFile = (item: FolderOrFile, depth: number = 0) => {
-    if ("Folder" in item) {
+    if ("contents" in item) {
       //@ts-ignore
-      let folder: Folder = item.Folder;
+      let folder: Folder = item;
       return (
         <div
           key={folder.path}
@@ -86,9 +87,9 @@ const FileSystemRenderer: React.FC<Props> = ({ data }) => {
             )}
         </div>
       );
-    } else if ("File" in item) {
+    } else {
       //@ts-ignore
-      let file: File = item.File;
+      let file: File = item;
       return (
         <div key={file.path} className={`file ${file.name}`}>
           <span className="file-name">{`📄${file.name}`}</span>
