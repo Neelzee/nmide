@@ -51,7 +51,7 @@ pub async fn get_content_in_folder(root: String) -> FolderOrFile {
     Err(_) => FolderOrFile::Folder { name: root.clone(), path: root, contents: Vec::new() },
     }
 }
-fn build_structure(path: &Path) -> Result<FolderOrFile, Box<dyn std::error::Error>> {
+fn build_structure(path: &Path, depth: i32) -> Result<FolderOrFile, Box<dyn std::error::Error>> {
     let name = path.file_name().ok_or("No filename")?.to_string_lossy().into_owned();
     let path_str = path.to_string_lossy().into_owned();
 
@@ -62,7 +62,11 @@ fn build_structure(path: &Path) -> Result<FolderOrFile, Box<dyn std::error::Erro
             if entry_path == path {
                 continue; // Skip the root of the current iteration
             }
-            contents.push(build_structure(entry_path)?);
+
+            if depth == 0 {
+                return Ok(FolderOrFile::Folder { name, path: path_str, contents });
+            }
+            contents.push(build_structure(entry_path, depth - 1)?);
         }
         Ok(FolderOrFile::Folder { name, path: path_str, contents })
     } else {
@@ -72,5 +76,5 @@ fn build_structure(path: &Path) -> Result<FolderOrFile, Box<dyn std::error::Erro
 
 pub fn get_all_files_and_folders(root: &str) -> Result<FolderOrFile, Box<dyn std::error::Error>> {
     let root_path = PathBuf::from(root);
-    build_structure(&root_path)
+    build_structure(&root_path, 1)
 }

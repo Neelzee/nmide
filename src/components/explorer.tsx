@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api";
 import { File, Folder, FolderOrFile } from "../types/types";
 import "../styles/explorer.scss";
 import { get_content_from_folder } from "./backend_api";
+import { execSync } from "child_process";
 
 export class Explorer extends React.Component {
   //@ts-ignore
@@ -16,6 +17,7 @@ export class Explorer extends React.Component {
 
     get_content_from_folder(root)
       .then((res) => {
+        //@ts-ignore
         this.setState({ files: res, isLoading: false });
       })
       .catch((err) => {
@@ -32,71 +34,112 @@ export class Explorer extends React.Component {
     if (isLoading) {
       return <div>Loading...</div>;
     }
-
     //@ts-ignore
     return (
       <section className="explorer">
         {/* @ts-ignore */}
-        <FileSystemRenderer data={files} />
+        <FolderComponent
+          name={files.name}
+          path={files.path}
+          icon={"📂"}
+          contents={files.contents}
+          className={"top"}
+        />
       </section>
     );
   }
 }
 
-type Props = {
-  data: Folder;
+type FileProps = {
+  name: string;
+  path: string;
+  icon: "📄";
 };
 
-const FileSystemRenderer: React.FC<Props> = ({ data }) => {
-  const [collapsedFolders, setCollapsedFolders] = useState<Set<string>>(
-    new Set()
-  );
+class FileComponent extends React.Component<FileProps> {
+  render() {
+    const { name, path, icon } = this.props;
+    return (
+      <div key={path} className={`file ${name}`}>
+        <span className="file-name">{`${icon}${name}`}</span>
+      </div>
+    );
+  }
+}
 
-  const toggleFolder = (folderPath: string) => {
-    setCollapsedFolders((prevState) => {
-      const newState = new Set(prevState);
-      if (prevState.has(folderPath)) {
-        newState.delete(folderPath);
-      } else {
-        newState.add(folderPath);
+type FolderProps = {
+  name: string;
+  path: string;
+  icon: "📂";
+  contents: FolderOrFile[];
+  className: string;
+};
+
+type FolderState = {
+  contents: FolderOrFile[];
+  collapsed: boolean;
+};
+
+class FolderComponent extends React.Component<FolderProps, FolderState> {
+  constructor(props: FolderProps) {
+    super(props);
+    this.state = { contents: props.contents, collapsed: true };
+  }
+
+  render() {
+    const { name, path, icon, className } = this.props;
+    const { contents, collapsed } = this.state;
+
+    //@ts-ignore
+    const toggleFolder = (e, p) => {
+      this.setState((prevState) => {
+        return { ...prevState, collapsed: !this.state.collapsed };
+      });
+
+      if (contents.length === 0) {
+        get_content_from_folder(path)
+          .then((res: Folder) => {
+            //@ts-ignore
+            this.setState((prevState) => {
+              return { ...prevState, contents: res.contents };
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+          });
       }
-      return newState;
-    });
-  };
+    };
 
-  const renderFolderOrFile = (item: FolderOrFile, depth: number = 0) => {
-    if ("contents" in item) {
-      //@ts-ignore
-      let folder: Folder = item;
-      return (
-        <div
-          key={folder.path}
-          className={`folder ${folder.name} ${
-            collapsedFolders.has(folder.path) ? "collapsed" : ""
-          }${depth === 0 ? "top" : ""}`}
-        >
-          <span
-            onClick={() => toggleFolder(folder.path)}
-            className="folder-name"
-          >
-            {`📂${folder.name}`}
-          </span>
-          {!collapsedFolders.has(folder.path) &&
-            folder.contents.map((subItem) =>
-              renderFolderOrFile(subItem, depth + 1)
-            )}
-        </div>
-      );
-    } else {
-      //@ts-ignore
-      let file: File = item;
-      return (
-        <div key={file.path} className={`file ${file.name}`}>
-          <span className="file-name">{`📄${file.name}`}</span>
-        </div>
-      );
-    }
-  };
-
-  return <div>{renderFolderOrFile(data)}</div>;
-};
+    return (
+      <div
+        key={path}
+        className={`folder ${name} ${className} ${
+          collapsed ? "collapsed" : ""
+        }`}
+      >
+        <span onClick={(e) => toggleFolder(e, path)} className="folder-name">
+          {`${icon}${name}`}
+        </span>
+        {collapsed
+          ? ""
+          : contents.map((c) => {
+              if ("contents" in c) {
+                return (
+                  <FolderComponent
+                    name={c.name}
+                    path={c.path}
+                    icon={"📂"}
+                    contents={c.contents}
+                    className=""
+                  />
+                );
+              } else {
+                return (
+                  <FileComponent name={c.name} path={c.path} icon={"📄"} />
+                );
+              }
+            })}
+      </div>
+    );
+  }
+}
