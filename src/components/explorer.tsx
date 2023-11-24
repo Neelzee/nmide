@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api";
 import { File, Folder, FolderOrFile } from "../types/types";
 import "../styles/explorer.scss";
-import { get_content_from_folder } from "./backend_api";
+import { get_content_from_folder, open_file } from "./backend_api";
 import { execSync } from "child_process";
 
 export class Explorer extends React.Component {
@@ -59,9 +59,16 @@ type FileProps = {
 class FileComponent extends React.Component<FileProps> {
   render() {
     const { name, path, icon } = this.props;
+    //@ts-ignore
+    const openFile = () => {
+      open_file(`${path}\\${name}`)
+        .then((res) => console.log(res))
+        .catch((err) => console.error(err));
+    };
+
     return (
       <div key={path} className={`file ${name}`}>
-        <span className="file-name">{`${icon}${name}`}</span>
+        <span className="file-name" onClick={openFile}>{`${icon}${name}`}</span>
       </div>
     );
   }

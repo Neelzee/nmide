@@ -1,7 +1,9 @@
 import { File, Folder, FolderOrFile } from "../types/types";
 import { invoke } from "@tauri-apps/api";
 
-export function foo() {}
+export function open_file(path: string): Promise<string> {
+  return invoke("open_file", { path: path });
+}
 
 export function get_content_from_folder(path: string): Promise<Folder> {
   return invoke("get_content_in_folder", { root: path }).then((res) => {
