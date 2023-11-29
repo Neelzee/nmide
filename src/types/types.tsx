@@ -10,3 +10,9 @@ export type Folder = {
 };
 
 export type FolderOrFile = Folder | File;
+
+export type Workspace = {
+  root: string;
+  open_files: File[];
+  contents: FolderOrFile[];
+};

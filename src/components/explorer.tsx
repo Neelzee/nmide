@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import { invoke } from "@tauri-apps/api";
 import { File, Folder, FolderOrFile } from "../types/types";
 import "../styles/explorer.scss";
 import { get_content_from_folder, open_file } from "./backend_api";
-import { execSync } from "child_process";
 
 export class Explorer extends React.Component {
   //@ts-ignore
   constructor(props) {
     super(props);
-    this.state = { files: null, isLoading: true };
+    this.state = { files: null, isLoading: true, open_files: [] };
   }
 
   componentDidMount(): void {
@@ -18,10 +16,10 @@ export class Explorer extends React.Component {
     get_content_from_folder(root)
       .then((res) => {
         //@ts-ignore
-        this.setState({ files: res, isLoading: false });
+        this.setState({ files: res, isLoading: false, open_file: [] });
       })
       .catch((err) => {
-        this.setState({ files: null, isLoading: true });
+        this.setState({ files: null, isLoading: true, open_file: [] });
         console.error(err);
       });
   }
@@ -29,6 +27,10 @@ export class Explorer extends React.Component {
   render() {
     //@ts-ignore
     const { isLoading, files } = this.state;
+
+    const handleOpenFile = (fn: string): string => {
+      return "";
+    };
 
     //@ts-ignore
     if (isLoading) {
@@ -44,6 +46,7 @@ export class Explorer extends React.Component {
           icon={"📂"}
           contents={files.contents}
           className={"top"}
+          onFileOpenEvent={handleOpenFile}
         />
       </section>
     );
@@ -54,21 +57,19 @@ type FileProps = {
   name: string;
   path: string;
   icon: "📄";
+  onOpenFileEvent: (fn: string) => string;
 };
 
 class FileComponent extends React.Component<FileProps> {
   render() {
     const { name, path, icon } = this.props;
-    //@ts-ignore
-    const openFile = () => {
-      open_file(`${path}\\${name}`)
-        .then((res) => console.log(res))
-        .catch((err) => console.error(err));
-    };
 
     return (
       <div key={path} className={`file ${name}`}>
-        <span className="file-name" onClick={openFile}>{`${icon}${name}`}</span>
+        <span
+          className="file-name"
+          onClick={() => this.props.onOpenFileEvent(path)}
+        >{`${icon}${name}`}</span>
       </div>
     );
   }
@@ -80,6 +81,7 @@ type FolderProps = {
   icon: "📂";
   contents: FolderOrFile[];
   className: string;
+  onFileOpenEvent: (fn: string) => string;
 };
 
 type FolderState = {
@@ -138,11 +140,17 @@ class FolderComponent extends React.Component<FolderProps, FolderState> {
                     icon={"📂"}
                     contents={c.contents}
                     className=""
+                    onFileOpenEvent={this.props.onFileOpenEvent}
                   />
                 );
               } else {
                 return (
-                  <FileComponent name={c.name} path={c.path} icon={"📄"} />
+                  <FileComponent
+                    name={c.name}
+                    path={c.path}
+                    icon={"📄"}
+                    onOpenFileEvent={this.props.onFileOpenEvent}
+                  />
                 );
               }
             })}

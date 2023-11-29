@@ -39,7 +39,7 @@ pub fn open_file(path: String) -> Option<String> {
             return None;
         }
 
-        fs::File::open(path.clone())
+        return fs::File::open(path.clone())
             .and_then(|mut file| {
                 let mut contents = String::new();
                 file.read_to_string(&mut contents)?;
