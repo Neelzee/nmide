@@ -1,25 +1,26 @@
 {
-  "name": "nmide",
-  "version": "0.0.0",
-  "description": "ide",
-  "type": "module",
-  "scripts": {
-    "start": "vite",
-    "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview",
-    "tauri": "tauri"
-  },
-  "license": "MIT",
-  "dependencies": {
-    "@tauri-apps/api": "^1.5.2",
-    "sass": "^1.70.0",
-    "solid-js": "^1.7.8"
-  },
-  "devDependencies": {
-    "@tauri-apps/cli": "^1.5.8",
-    "typescript": "^5.0.2",
-    "vite": "^5.0.0",
-    "vite-plugin-solid": "^2.8.0"
-  }
+	"name": "nmide",
+	"version": "0.0.0",
+	"description": "ide",
+	"type": "module",
+	"scripts": {
+		"start": "vite",
+		"dev": "vite",
+		"build": "vite build",
+		"serve": "vite preview",
+		"pretauri": "./preBuild.sh",
+		"tauri": "tauri"
+	},
+	"license": "MIT",
+	"dependencies": {
+		"@tauri-apps/api": "^1.5.2",
+		"sass": "^1.70.0",
+		"solid-js": "^1.7.8"
+	},
+	"devDependencies": {
+		"@tauri-apps/cli": "^1.5.8",
+		"typescript": "^5.0.2",
+		"vite": "^5.0.0",
+		"vite-plugin-solid": "^2.8.0"
+	}
 }

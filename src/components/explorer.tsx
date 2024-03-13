@@ -1,8 +1,7 @@
-import { createSignal } from "solid-js/types/server/reactive.js";
+import { createSignal } from "solid-js";
 
 export function Explorer(props: { files: string[] }) {
-	const [files, setFiles] = createSignal<string[]>([]);
-
+	const [files, setFiles] = createSignal<string[]>(props.files);
 	return (
 		<section class="explorer">
 			{files().map((f) => {
