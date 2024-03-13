@@ -3,6 +3,7 @@
 
 mod osops;
 mod types;
+mod utils;
 mod workspace;
 
 #[tauri::command]
