@@ -1,6 +1,8 @@
 use std::{fs::File, io::Read, path::Path};
 
-use eyre::Result;
+use eyre::{eyre, Context, Result};
+
+use crate::errors::NmideError;
 
 #[derive(Debug)]
 pub struct WSFile {
@@ -13,27 +15,37 @@ pub struct WSFile {
 }
 
 impl WSFile {
-    pub fn new(path: &Path) -> Option<Self> {
-        if let Some(p) = path.to_str() {
-            let path = Path::new(p);
-            let file = File::open(path).ok()?;
-            Some(WSFile {
-                path: path.into(),
-                name: path
-                    .file_name()
-                    .and_then(|e| e.to_str().and_then(|c| Some(c.to_string())))
-                    .unwrap_or(p.to_string()),
-                ext: path
-                    .extension()
-                    .and_then(|e| e.to_str().and_then(|c| Some(c.to_string())))
-                    .unwrap_or("".to_string()),
-                is_opened: false,
-                content: None,
-                file: Box::new(file),
-            })
-        } else {
-            None
-        }
+    pub fn new(path: &Path) -> Result<Self> {
+        Ok(WSFile {
+            path: path.into(),
+            name: path
+                .file_name()
+                .ok_or(eyre!(NmideError::OptionToResult("OsStr".to_string())))
+                .wrap_err(format!("Failed getting file name from path: `{:?}`", path))?
+                .to_str()
+                .ok_or(eyre!(NmideError::OptionToResult("OsStr".to_string())))
+                .wrap_err(format!(
+                    "Failed getting converting to String from path: `{:?}`",
+                    path
+                ))?
+                .to_string(),
+            ext: path
+                .extension()
+                .ok_or(eyre!(NmideError::OptionToResult("OsStr".to_string())))
+                .wrap_err(format!("Failed getting exstension from path: {:?}", path))?
+                .to_str()
+                .ok_or(eyre!(NmideError::OptionToResult("OsStr".to_string())))
+                .wrap_err(format!(
+                    "Failed getting converting to String from path: `{:?}`",
+                    path
+                ))?
+                .to_string(),
+            is_opened: false,
+            content: None,
+            file: Box::new(
+                File::open(path).wrap_err(format!("Failed opening file at path: {:?}", path))?,
+            ),
+        })
     }
 
     pub fn open(&mut self) -> Result<()> {
