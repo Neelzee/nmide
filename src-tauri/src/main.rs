@@ -3,6 +3,8 @@
 
 mod errors;
 mod osops;
+#[cfg(test)]
+mod test;
 mod types;
 mod utils;
 mod workspace;

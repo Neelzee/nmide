@@ -38,7 +38,7 @@ impl WSFile<'_> {
     }
 
     pub fn open(&mut self) -> Result<()> {
-        let mut file = File::open(self.path.clone())?;
+        let mut file = File::open(self.path)?;
         let mut buf = String::new();
         file.read_to_string(&mut buf)?;
 
