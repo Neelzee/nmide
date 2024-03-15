@@ -5,6 +5,12 @@ use std::{collections::HashMap, path::Path};
 
 #[derive(Debug)]
 pub struct Workspace<'a> {
-    root: String,
+    root: &'a Path,
     files: HashMap<&'a Path, WSFile<'a>>,
+}
+
+impl Workspace<'static> {
+    pub fn new<'a>(root: &'a Path, files: HashMap<&'a Path, WSFile<'a>>) -> Workspace<'a> {
+        Workspace { root, files }
+    }
 }
