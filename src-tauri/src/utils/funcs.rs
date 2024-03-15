@@ -1,13 +1,11 @@
 use std::ffi::OsStr;
 
-use eyre::{Context, Result};
+use eyre::{eyre, Context, Result};
+
+use crate::errors::NmideError;
 
 pub fn os_to_str(s: &OsStr) -> Result<String> {
     Ok(s.to_str()
-        .ok_or(std::io::Error::new(
-            std::io::ErrorKind::Other,
-            "Failed converting from OsStr to String",
-        ))
-        .wrap_err("failed")?
+        .ok_or(eyre!(NmideError::OptionToResult(format!("`{:?}`", s))))?
         .to_string())
 }

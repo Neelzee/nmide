@@ -1,50 +1,39 @@
-use std::{fs::File, io::Read, path::Path};
+use std::{
+    fs::File,
+    io::{BufWriter, Read, Write},
+    path::Path,
+};
 
 use eyre::{eyre, Context, Result};
 
-use crate::errors::NmideError;
+use crate::{errors::NmideError, utils::funcs::os_to_str};
 
 #[derive(Debug)]
-pub struct WSFile {
-    path: Box<Path>,
+pub struct WSFile<'a> {
+    path: &'a Path,
     name: String,
     ext: String,
     is_opened: bool,
     content: Option<String>,
-    file: Box<File>,
+    file: &'a File,
 }
 
-impl WSFile {
-    pub fn new(path: &Path) -> Result<Self> {
+impl WSFile<'_> {
+    pub fn new<'a>(path: &'a Path, file: &'a File) -> Result<WSFile<'a>> {
         Ok(WSFile {
-            path: path.into(),
+            path: path,
             name: path
                 .file_name()
-                .ok_or(eyre!(NmideError::OptionToResult("OsStr".to_string())))
-                .wrap_err(format!("Failed getting file name from path: `{:?}`", path))?
-                .to_str()
-                .ok_or(eyre!(NmideError::OptionToResult("OsStr".to_string())))
-                .wrap_err(format!(
-                    "Failed getting converting to String from path: `{:?}`",
-                    path
-                ))?
+                .and_then(|op| os_to_str(op).ok())
+                .ok_or(eyre!(NmideError::OptionToResult("OsStr".to_string())))?
                 .to_string(),
             ext: path
                 .extension()
-                .ok_or(eyre!(NmideError::OptionToResult("OsStr".to_string())))
-                .wrap_err(format!("Failed getting exstension from path: {:?}", path))?
-                .to_str()
-                .ok_or(eyre!(NmideError::OptionToResult("OsStr".to_string())))
-                .wrap_err(format!(
-                    "Failed getting converting to String from path: `{:?}`",
-                    path
-                ))?
-                .to_string(),
+                .and_then(|op| os_to_str(op).ok())
+                .ok_or(eyre!(NmideError::OptionToResult("OsStr".to_string())))?,
             is_opened: false,
             content: None,
-            file: Box::new(
-                File::open(path).wrap_err(format!("Failed opening file at path: {:?}", path))?,
-            ),
+            file: file,
         })
     }
 
@@ -55,6 +44,17 @@ impl WSFile {
 
         self.content = Some(buf);
 
+        Ok(())
+    }
+
+    pub fn save(&mut self) -> Result<()> {
+        let mut writer = BufWriter::new((*self.file).try_clone().wrap_err("Failed")?);
+        self.content.clone().and_then(|c| {
+            writer
+                .write_all(c.as_bytes())
+                .wrap_err("Failed saving file")
+                .ok()
+        });
         Ok(())
     }
 

@@ -6,5 +6,5 @@ use std::{collections::HashMap, path::Path};
 #[derive(Debug)]
 pub struct Workspace<'a> {
     root: String,
-    files: HashMap<&'a Path, WSFile>,
+    files: HashMap<&'a Path, WSFile<'a>>,
 }
