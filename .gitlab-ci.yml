@@ -2,10 +2,12 @@ test:
   stage: test
   image: rust
   script:
+    - cd src-tauri
     - cargo test
 
 build:
   stage: build
   image: rust
   script:
+    - cd src-tauri
     - cargo build --release
