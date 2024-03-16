@@ -2,7 +2,7 @@ setup:
   stage: .pre
   image: rust
   script:
-    - apt install libssl-dev librsvg2-dev
+    - apt-get -y install librust-gdk4-x11-sys-dev
 
 test:
   stage: test
