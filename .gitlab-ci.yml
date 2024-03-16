@@ -8,4 +8,4 @@ build:
   stage: build
   image: rust
   script:
-    - cargo build --relase
+    - cargo build --release
