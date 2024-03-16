@@ -2,8 +2,7 @@ setup:
   stage: .pre
   image: rust
   script:
-    - apt-get update -qy
-    - apt-get install gdk-3.0
+    - apt-get install -qy gdk-3.0
 
 test:
   stage: test
