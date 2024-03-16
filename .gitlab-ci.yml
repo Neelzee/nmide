@@ -2,7 +2,7 @@ setup:
   stage: .pre
   image: rust
   script:
-    - apt install build-essential libssl-dev librsvg2-dev
+    - apt install libssl-dev librsvg2-dev
 
 test:
   stage: test
