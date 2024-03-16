@@ -1,17 +1,11 @@
-build:amd64:
-  stage: build
+test:
+  stage: test
   image: rust
   script:
-    - cargo build --release
-  artifacts:
-    paths:
-      - target/release/nmide
+    - cargo test
 
-rustdoc:
+build:
   stage: build
   image: rust
   script:
-    - cargo doc
-  artifacts:
-    paths:
-      - target/doc
+    - cargo build --relase
