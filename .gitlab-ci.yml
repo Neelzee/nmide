@@ -3,6 +3,6 @@ stages:
 
 build:
   stage: build
-  image: ivangabriele/tauri
+  image: tauri:debian-bookworm-18
   script:
     - yarn tauri run
