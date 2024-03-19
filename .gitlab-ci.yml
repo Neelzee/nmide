@@ -3,6 +3,6 @@ stages:
 
 build:
   stage: build
-  image: tauri:debian-bookworm-18
+  image: neelzee/tauri_img
   script:
     - yarn tauri run
