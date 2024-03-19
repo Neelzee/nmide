@@ -1,19 +1,5 @@
-setup:
-  stage: .pre
-  image: rust
-  script:
-    - apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
-
-test:
-  stage: test
-  image: rust
-  script:
-    - cd src-tauri
-    - cargo test
-
 build:
   stage: build
-  image: rust
+  image: ivangabriele/tauri
   script:
-    - cd src-tauri
-    - cargo build --release
+    - yarn tauri dev
