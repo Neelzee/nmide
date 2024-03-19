@@ -25,6 +25,7 @@ windows-build:
   image: neelzee/tauri_img
   dependencies:
     - "pts"
+  when: manual
   script:
     - yarn install
     - cargo install cargo-xwin
@@ -35,6 +36,7 @@ debian-build:
   image: neelzee/tauri_img
   dependencies:
     - "pts"
+  when: manual
   script:
     - yarn install
     - yarn tauri build
@@ -44,5 +46,6 @@ mac-build:
   image: neelzee/tauri_img
   dependencies:
     - "pts"
+  when: manual
   script:
     - echo "TODO"
