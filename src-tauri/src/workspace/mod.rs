@@ -6,11 +6,11 @@ use std::{collections::HashMap, path::Path};
 #[derive(Debug)]
 pub struct Workspace<'a> {
     root: &'a Path,
-    files: HashMap<&'a Path, WSFile<'a>>,
+    files: HashMap<String, WSFile>,
 }
 
 impl Workspace<'static> {
-    pub fn new<'a>(root: &'a Path, files: HashMap<&'a Path, WSFile<'a>>) -> Workspace<'a> {
+    pub fn new<'a>(root: &'a Path, files: HashMap<String, WSFile>) -> Workspace<'a> {
         Workspace { root, files }
     }
 }

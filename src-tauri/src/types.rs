@@ -16,10 +16,10 @@ pub enum Fof {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct File {
-    name: String,
-    extension: String,
-    path: String,
-    content: String,
+    pub name: String,
+    pub extension: String,
+    pub path: String,
+    pub content: String,
 }
 
 impl File {

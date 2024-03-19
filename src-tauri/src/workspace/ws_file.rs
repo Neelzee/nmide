@@ -1,7 +1,7 @@
 use std::{
     fs::File,
     io::{BufWriter, Read, Write},
-    path::Path,
+    path::{Path, PathBuf},
 };
 
 use eyre::{eyre, Context, Result};
@@ -9,20 +9,20 @@ use eyre::{eyre, Context, Result};
 use crate::{errors::NmideError, utils::funcs::os_to_str};
 
 #[derive(Debug)]
-pub struct WSFile<'a> {
-    path: &'a Path,
+pub struct WSFile {
+    path: PathBuf,
     name: String,
     ext: String,
     is_opened: bool,
     content: Option<String>,
-    file: &'a File,
+    file: Box<File>,
 }
 
-impl WSFile<'_> {
-    pub fn new<'a>(path: &'a Path, file: &'a File) -> Result<WSFile<'a>> {
+impl WSFile {
+    pub fn new(path: PathBuf, file: Box<File>) -> Result<WSFile> {
         Ok(WSFile {
-            path: path,
-            name: path
+            path: path.clone(),
+            name: (*path)
                 .file_name()
                 .and_then(|op| os_to_str(op).ok())
                 .ok_or(eyre!(NmideError::OptionToResult("OsStr".to_string())))?
@@ -38,7 +38,7 @@ impl WSFile<'_> {
     }
 
     pub fn open(&mut self) -> Result<()> {
-        let mut file = File::open(self.path)?;
+        let mut file = File::open(&(*self.path))?;
         let mut buf = String::new();
         file.read_to_string(&mut buf)?;
 

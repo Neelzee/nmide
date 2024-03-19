@@ -6,10 +6,10 @@ use crate::workspace::ws_file::WSFile;
 
 #[test]
 fn test_wsfile_creation() -> Result<()> {
-    let path = Path::new("src/main.rs");
-    let file = File::open(path)?;
+    let path = Path::new("src/main.rs").to_owned();
+    let file = File::open(path.clone())?;
 
-    let wsfile = WSFile::new(path, &file);
+    let wsfile = WSFile::new(path, Box::new(file));
 
     assert!(wsfile.is_ok());
 
