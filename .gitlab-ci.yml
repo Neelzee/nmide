@@ -18,7 +18,7 @@ pts:
   dependencies:
     - "test"
   script:
-    - echo "TODO"
+    - ./pushToSvn.sh
 
 windows-build:
   stage: build
