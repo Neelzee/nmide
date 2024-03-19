@@ -1,6 +1,12 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod errors;
+mod osops;
+#[cfg(test)]
+mod test;
+mod types;
+mod utils;
 mod workspace;
 
 #[tauri::command]
