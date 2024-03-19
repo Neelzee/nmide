@@ -15,7 +15,6 @@ pub enum Fof {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-#[serde(rename = "file")]
 pub struct File {
     name: String,
     extension: String,
@@ -75,7 +74,6 @@ impl File {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-#[serde(rename = "folder")]
 pub struct Folder {
     name: String,
     path: String,
