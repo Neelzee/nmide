@@ -8,7 +8,6 @@ linting:
   stage: linting
   image: neelzee/tauri_img
   script:
-    - cargo install clippy
     - cargo clippy -- -D clippy::pedantic
 
 test:
