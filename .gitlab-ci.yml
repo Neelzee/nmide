@@ -6,4 +6,6 @@ build:
   image: neelzee/tauri_img
   script:
     - yarn install
-    - yarn tauri dev
+    - yarn test
+    - cd src-tauri
+    - cargo test
