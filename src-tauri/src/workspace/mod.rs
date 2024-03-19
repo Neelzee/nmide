@@ -10,7 +10,7 @@ pub struct Workspace<'a> {
 }
 
 impl Workspace<'static> {
-    pub fn new<'a>(root: &'a Path, files: HashMap<String, WSFile>) -> Workspace<'a> {
+    pub fn new(root: &Path, files: HashMap<String, WSFile>) -> Workspace {
         Workspace { root, files }
     }
 }

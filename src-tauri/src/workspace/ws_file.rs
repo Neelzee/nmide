@@ -19,7 +19,7 @@ pub struct WSFile {
 }
 
 impl WSFile {
-    pub fn new(path: PathBuf, file: Box<File>) -> Result<WSFile> {
+    pub fn new(path: &PathBuf, file: Box<File>) -> Result<WSFile> {
         Ok(WSFile {
             path: path.clone(),
             name: (*path)
@@ -33,7 +33,7 @@ impl WSFile {
                 .ok_or(eyre!(NmideError::OptionToResult("OsStr".to_string())))?,
             is_opened: false,
             content: None,
-            file: file,
+            file,
         })
     }
 

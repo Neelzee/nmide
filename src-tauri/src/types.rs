@@ -117,7 +117,7 @@ impl Folder {
             .wrap_err("failed")?
             .to_string();
 
-        let content = vec![get_files(path_str.clone())?];
+        let content = vec![get_files(&path_str.clone())?];
 
         Ok(Folder {
             name,

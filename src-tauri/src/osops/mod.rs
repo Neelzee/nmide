@@ -5,11 +5,11 @@ use std::{
     path::Path,
 };
 
-pub fn get_files(path: String) -> Result<Fof> {
+pub fn get_files(path: &str) -> Result<Fof> {
     Ok(Fof::Folder(crate::types::Folder::new(Path::new(&path))?))
 }
 
-pub fn save_file(path: &Path, content: String) -> Result<()> {
+pub fn save_file(path: &Path, content: &str) -> Result<()> {
     let file = std::fs::File::open(path)?;
     let mut writer = BufWriter::new(file);
 
