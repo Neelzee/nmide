@@ -1,5 +1,8 @@
+stages:
+  - build
+
 build:
   stage: build
   image: ivangabriele/tauri
   script:
-    - yarn tauri dev
+    - yarn tauri run
