@@ -1,7 +1,15 @@
 stages:
+  - linting
   - test
   - push to svn
   - build
+
+linting:
+  stage: linting
+  image: neelzee/tauri_img
+  script:
+    - cargo install clippy
+    - cargo clippy -- -D clippy::pedantic
 
 test:
   stage: test
@@ -15,6 +23,9 @@ test:
 pts:
   stage: push to svn
   image: neelzee/tauri_img
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      when: always
   dependencies:
     - "test"
   script:
