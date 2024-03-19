@@ -1,7 +1,7 @@
 [package]
 name = "nmide"
-version = "0.0.0"
-description = "An IDE"
+version = "0.1.0"
+description = "A simple IDE"
 authors = ["Nils Michael Fitjar"]
 license = ""
 repository = "https://git.app.uib.no/Nils.Fitjar/nmide"

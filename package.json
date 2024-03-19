@@ -1,6 +1,6 @@
 {
 	"name": "nmide",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "ide",
 	"type": "module",
 	"scripts": {
@@ -19,8 +19,10 @@
 	},
 	"devDependencies": {
 		"@tauri-apps/cli": "^1.5.8",
+		"jsdom": "^24.0.0",
 		"typescript": "^5.0.2",
 		"vite": "^5.0.0",
-		"vite-plugin-solid": "^2.8.0"
+		"vite-plugin-solid": "^2.8.0",
+		"vitest": "^1.4.0"
 	}
 }
