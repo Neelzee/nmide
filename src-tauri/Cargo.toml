@@ -1,10 +1,10 @@
 [package]
 name = "nmide"
-version = "0.0.0"
-description = "A Tauri App"
-authors = ["you"]
+version = "0.1.0"
+description = "A simple IDE"
+authors = ["Nils Michael Fitjar"]
 license = ""
-repository = ""
+repository = "https://git.app.uib.no/Nils.Fitjar/nmide"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
