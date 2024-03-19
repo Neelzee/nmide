@@ -6,6 +6,7 @@
 	"scripts": {
 		"start": "vite",
 		"dev": "vite",
+		"test": "vitest",
 		"build": "vite build",
 		"serve": "vite preview",
 		"pretauri": "./preBuild.sh",

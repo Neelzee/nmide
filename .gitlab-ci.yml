@@ -15,12 +15,16 @@ test:
 pts:
   stage: push to svn
   image: neelzee/tauri_img
+  dependencies:
+    - "test"
   script:
     - echo "TODO"
 
 windows-build:
   stage: build
   image: neelzee/tauri_img
+  dependencies:
+    - "pts"
   script:
     - yarn install
     - cargo install cargo-xwin
@@ -29,6 +33,8 @@ windows-build:
 debian-build:
   stage: build
   image: neelzee/tauri_img
+  dependencies:
+    - "pts"
   script:
     - yarn install
     - yarn tauri build
@@ -36,5 +42,7 @@ debian-build:
 mac-build:
   stage: build
   image: neelzee/tauri_img
+  dependencies:
+    - "pts"
   script:
     - echo "TODO"
