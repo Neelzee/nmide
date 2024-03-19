@@ -9,6 +9,7 @@ linting:
   image: neelzee/tauri_img
   script:
     - rustup component add clippy
+    - cd src-tauri
     - cargo clippy -- -D clippy::pedantic
 
 test:
