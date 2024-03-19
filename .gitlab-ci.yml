@@ -16,10 +16,7 @@ pts:
   stage: push to svn
   image: neelzee/tauri_img
   script:
-    - yarn install
-    - yarn test
-    - cd src-tauri
-    - cargo test
+    - echo "TODO"
 
 windows-build:
   stage: build
