@@ -41,6 +41,10 @@ windows-build:
   script:
     - yarn install
     - cargo install cargo-xwin
+    - rustup component add clippy
+    - cd src-tauri
+    - cargo clippy --fix --bin "nmide"
+    - cd ..
     - yarn tauri build --runner cargo-xwin --target x86_64-pc-windows-msvc
 
 debian-build:
