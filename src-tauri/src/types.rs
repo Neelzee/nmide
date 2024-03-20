@@ -6,7 +6,7 @@ use std::{
 use eyre::{Context, Error, Result};
 use serde::{Deserialize, Serialize};
 
-use crate::{osops::get_files, utils::funcs::os_to_str};
+use crate::utils::funcs::os_to_str;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum Fof {
@@ -117,7 +117,7 @@ impl Folder {
             .wrap_err("failed")?
             .to_string();
 
-        let content = vec![get_files(&path_str.clone())?];
+        let content = vec![];
 
         Ok(Folder {
             name,
