@@ -24,12 +24,6 @@ pub fn write_to_file(file: &File, content: String) -> Result<()> {
     Ok(())
 }
 
-fn visit_dirs(dir: &Path, depth: usize) -> Result<Vec<PathBuf>, std::io::Error> {
-    let mut paths = Vec::new();
-    visit_dirs_recursive(dir, depth, &mut paths)?;
-    Ok(paths)
-}
-
 fn visit_dirs_recursive(
     dir: &Path,
     depth: usize,
