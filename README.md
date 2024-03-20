@@ -1,7 +1,22 @@
-# Tauri + Solid + Typescript
+# Nmide
 
-This template should help get you started developing with Tauri, Solid and Typescript in Vite.
 
-## Recommended IDE Setup
+## Solidjs _Frontend_
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+- TODO: Add info about frontend
+
+
+## Rust Backend
+
+### Structure
+
+#### osops
+
+Os-operations. Managing folder and files.
+
+
+#### workspace
+
+Abstraction of file-management, communication between the frontend and backend happen at this level.
+
+No function call from the frontend should be directly to an os-operation.
