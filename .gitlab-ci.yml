@@ -12,6 +12,13 @@ linting:
     - cd src-tauri
     - cargo clippy -- -D clippy::pedantic
 
+fixing:
+  stage: linting
+  image: neelzee/tauri_img
+  script:
+    - cd src-tauri
+    - cargo fix
+
 test:
   stage: test
   image: neelzee/tauri_img
