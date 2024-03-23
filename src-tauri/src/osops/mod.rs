@@ -49,6 +49,9 @@ fn visit_dirs_recursive(
     Ok(())
 }
 
+/// Returns a list of all the paths in the given directory
+///
+/// Recursively checks for until level = 0
 pub fn get_paths(path: &Path, level: usize) -> Result<Vec<PathBuf>> {
     let mut paths = Vec::new();
     visit_dirs_recursive(path, level, &mut paths)?;
