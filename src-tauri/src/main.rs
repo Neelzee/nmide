@@ -20,10 +20,17 @@ mod workspace;
 
 pub static WORKSPACE: Lazy<Mutex<Workspace>> = Lazy::new(|| {
     info!("Initializing new workspace");
+    // TODO: should use empty
+    #[cfg(windows)]
+    return Mutex::new(
+        Workspace::init(Path::new("C:\\Users\\nilsi\\Documents\\nmide"))
+            .expect("Failed opening root"),
+    );
 
-    Mutex::new(
-        Workspace::init(Path::new("/home/nmf/Documents/nmide/")).expect("Failed opening root"),
-    )
+    #[cfg(not(windows))]
+    return Mutex::new(
+        Workspace::init(Path::new("/home/nmf/Documents/nmide")).expect("Failed opening root"),
+    );
 });
 
 #[tauri::command]

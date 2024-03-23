@@ -74,21 +74,23 @@ impl WSFile {
             extension: self.ext.clone(),
             path: os_to_str(self.path.clone().as_os_str())?,
             content: {
-                match &self.content {
-                    Some(f) => Ok::<_, eyre::ErrReport>(f.clone()),
-                    None => {
-                        let mut buffer = String::new();
-                        let mut reader = BufReader::new(File::open(self.path.clone()).wrap_err(
+                Some(
+                    match &self.content {
+                        Some(f) => Ok::<_, eyre::ErrReport>(f.clone()),
+                        None => {
+                            let mut buffer = String::new();
+                            let mut reader = BufReader::new(File::open(self.path.clone()).wrap_err(
                             "Failed opening file for reading, when converting from WSFile to File",
                         )?);
-                        reader.read_to_string(&mut buffer).wrap_err(
+                            reader.read_to_string(&mut buffer).wrap_err(
                             "Failed reading content from file, when converting from WSFile to File",
                         )?;
 
-                        Ok(buffer)
+                            Ok(buffer)
+                        }
                     }
-                }
-                .wrap_err("Failed reading content from file")?
+                    .wrap_err("Failed reading content from file")?,
+                )
             },
         })
     }

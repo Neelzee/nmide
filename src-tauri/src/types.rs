@@ -3,10 +3,10 @@ use std::{
     path::Path,
 };
 
+use crate::utils::funcs::os_to_str;
+use either::Either;
 use eyre::{Context, Error, Result};
 use serde::{Deserialize, Serialize};
-
-use crate::utils::funcs::os_to_str;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum FolderOrFile {
@@ -14,12 +14,30 @@ pub enum FolderOrFile {
     Folder(Folder),
 }
 
+impl Into<Either<File, Folder>> for FolderOrFile {
+    fn into(self) -> Either<File, Folder> {
+        match self {
+            FolderOrFile::File(f) => Either::Left(f),
+            FolderOrFile::Folder(f) => Either::Right(f),
+        }
+    }
+}
+
+impl Into<FolderOrFile> for Either<File, Folder> {
+    fn into(self) -> FolderOrFile {
+        match self {
+            Either::Left(l) => FolderOrFile::File(l),
+            Either::Right(r) => FolderOrFile::Folder(r),
+        }
+    }
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct File {
     pub name: String,
     pub extension: String,
     pub path: String,
-    pub content: String,
+    pub content: Option<String>,
 }
 
 impl File {
@@ -68,7 +86,7 @@ impl File {
             name,
             extension,
             path: path_str,
-            content,
+            content: Some(content),
         })
     }
 }

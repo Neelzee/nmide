@@ -23,6 +23,13 @@ pub struct Workspace {
 }
 
 impl Workspace {
+    pub fn empty() -> Self {
+        Self {
+            root: PathBuf::new(),
+            files: HashMap::new(),
+        }
+    }
+
     pub fn new(root: &Path, files: HashMap<String, Either<WSFile, WSFolder>>) -> Workspace {
         Workspace {
             root: root.to_owned(),
