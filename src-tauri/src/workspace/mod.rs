@@ -1,10 +1,11 @@
-pub mod ws;
+pub mod ws_file;
+pub mod ws_folder;
 
 use crate::{
     osops::get_paths,
     types,
     utils::funcs::os_to_str,
-    workspace::ws::{ws_file::WSFile, ws_folder::WSFolder},
+    workspace::{ws_file::WSFile, ws_folder::WSFolder},
 };
 use either::Either;
 use eyre::{Context, OptionExt, Result};
@@ -45,14 +46,15 @@ impl Workspace {
             let r = p
                 .to_str()
                 .ok_or_eyre("Failed converting into valid UTF-8 String: `{p:?}`");
-            let key: String;
-            if r.is_err() {
+            let key = if r.is_err() {
                 warn!("Error: `{r:?}`");
-                key = format!("{p:?}")
+                format!("{p:?}")
             } else {
-                key = r.unwrap().to_string()
-            }
-            if !p.is_dir() {
+                r.unwrap().to_string()
+            };
+            if p.is_dir() {
+                dirs.insert(key, Either::Right(WSFolder::new(p.as_path(), 0)?));
+            } else {
                 dirs.insert(
                     key,
                     Either::Left(WSFile::new(
@@ -62,8 +64,6 @@ impl Workspace {
                         ),
                     )?),
                 );
-            } else {
-                dirs.insert(key, Either::Right(WSFolder::new(p.as_path(), 0)?));
             }
         }
 

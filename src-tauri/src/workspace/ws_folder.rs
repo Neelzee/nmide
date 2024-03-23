@@ -3,7 +3,7 @@ use crate::{
     osops::{get_fof, get_paths},
     types,
     utils::funcs::os_to_str,
-    workspace::ws::ws_file::WSFile,
+    workspace::ws_file::WSFile,
 };
 use either::Either;
 use eyre::{eyre, Context, OptionExt, Result};

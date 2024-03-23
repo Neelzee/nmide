@@ -35,7 +35,7 @@ impl WSFile {
             ext: path
                 .extension()
                 .and_then(|op| os_to_str(op).ok())
-                .unwrap_or("".to_string()),
+                .unwrap_or(String::new()),
             is_opened: false,
             content: None,
             file,
