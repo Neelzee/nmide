@@ -39,36 +39,37 @@ impl Workspace {
 
     pub fn init(path: &Path) -> Result<Self> {
         info!("Initializing workspace on `{path:?}`");
-        let mut dirs: HashMap<String, WSFile> = HashMap::new();
+        let mut dirs: HashMap<String, Either<WSFile, WSFolder>> = HashMap::new();
         for p in get_paths(path, 1)? {
             debug!("Path: `{p:?}`");
+            let r = p
+                .to_str()
+                .ok_or_eyre("Failed converting into valid UTF-8 String: `{p:?}`");
+            let key: String;
+            if r.is_err() {
+                warn!("Error: `{r:?}`");
+                key = format!("{p:?}")
+            } else {
+                key = r.unwrap().to_string()
+            }
             if !p.is_dir() {
                 dirs.insert(
-                    {
-                        let r = p
-                            .to_str()
-                            .ok_or_eyre("Failed converting into valid UTF-8 String: `{p:?}`");
-
-                        if r.is_err() {
-                            warn!("Error: `{r:?}`");
-                            format!("{p:?}")
-                        } else {
-                            r.unwrap().to_string()
-                        }
-                    },
-                    WSFile::new(
+                    key,
+                    Either::Left(WSFile::new(
                         &p,
                         Box::new(
                             File::open(&p).wrap_err("Failed opening file for WSFile creation")?,
                         ),
-                    )?,
+                    )?),
                 );
+            } else {
+                dirs.insert(key, Either::Right(WSFolder::new(p.as_path(), 0)?));
             }
         }
 
         Ok(Self {
             root: path.to_owned(),
-            files: todo!(),
+            files: dirs,
         })
     }
 

@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use crate::workspace::Workspace;
+use crate::{cmds::get_workspace, workspace::Workspace};
 use eyre::{Context, Result};
 #[warn(unused_imports)]
 use log::{info, warn};
@@ -47,7 +47,7 @@ async fn main() -> Result<()> {
     println!("{g:?}");
 
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![greet, get_workspace])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
     Ok(())
