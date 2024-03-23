@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::utils::funcs::os_to_str;
 
 #[derive(Debug, Deserialize, Serialize)]
-pub enum Fof {
+pub enum FolderOrFile {
     File(File),
     Folder(Folder),
 }
@@ -35,7 +35,7 @@ impl File {
             path.file_name()
                 .ok_or(std::io::Error::new(
                     std::io::ErrorKind::Other,
-                    "Faild getting filename",
+                    "Failed getting filename",
                 ))
                 .wrap_err("failed")?,
         )?;
@@ -75,9 +75,9 @@ impl File {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Folder {
-    name: String,
-    path: String,
-    content: Vec<Fof>,
+    pub name: String,
+    pub path: String,
+    pub content: Vec<FolderOrFile>,
 }
 
 impl Folder {
@@ -94,7 +94,7 @@ impl Folder {
             path.file_name()
                 .ok_or(std::io::Error::new(
                     std::io::ErrorKind::Other,
-                    "Faild getting filename",
+                    "Failed getting filename",
                 ))
                 .wrap_err("failed")?,
         )?;
