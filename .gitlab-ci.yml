@@ -1,0 +1,74 @@
+stages:
+  - linting
+  - test
+  - push to svn
+  - build
+
+linting:
+  stage: linting
+  image: neelzee/tauri_img
+  script:
+    - rustup component add clippy
+    - cd src-tauri
+    - cargo clippy -- -D clippy::pedantic
+
+fixing:
+  stage: linting
+  image: neelzee/tauri_img
+  script:
+    - cd src-tauri
+    - cargo fix
+
+test:
+  stage: test
+  image: neelzee/tauri_img
+  script:
+    - yarn install
+    - yarn test
+    - cd src-tauri
+    - cargo test
+
+pts:
+  stage: push to svn
+  image: neelzee/tauri_img
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      when: always
+  dependencies:
+    - "test"
+  script:
+    - ./pushToSvn.sh
+
+windows-build:
+  stage: build
+  image: neelzee/tauri_img
+  dependencies:
+    - "pts"
+  when: manual
+  script:
+    - yarn install
+    - cargo install cargo-xwin
+    - rustup component add clippy
+    - cd src-tauri
+    - cargo clippy --fix --bin "nmide"
+    - cd ..
+    - yarn tauri build --runner cargo-xwin --target x86_64-pc-windows-msvc
+
+debian-build:
+  stage: build
+  image: neelzee/tauri_img
+  dependencies:
+    - "pts"
+  when: manual
+  script:
+    - yarn install
+    - yarn tauri build
+
+mac-build:
+  stage: build
+  image: neelzee/tauri_img
+  dependencies:
+    - "pts"
+  when: manual
+  script:
+    - echo "TODO"
