@@ -1,8 +1,10 @@
-use crate::types::Fof;
+use crate::types::FolderOrFile;
 use eyre::{Context, Result};
 
 /// Gets workspace
-pub fn get_workspace(path: String) -> Result<Fof> {
+///
+/// Should only be called once, as it also initializes a workspace
+pub fn get_workspace(path: String) -> Result<FolderOrFile> {
     todo!()
 }
 
