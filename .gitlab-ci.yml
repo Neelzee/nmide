@@ -10,8 +10,8 @@ linting:
   script:
     - rustup component add clippy
     - cd src-tauri
-    - cargo fix
-    - cargo clippy --fix
+    - cargo fix --allow-dirty
+    - cargo clippy --fix --allow-dirty
     - git add .
     - git commit -m "Automated fixes by clippy, and cargo fix"
     - git push origin $CI_COMMIT_REF_NAME
