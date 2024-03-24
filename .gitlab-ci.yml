@@ -1,7 +1,7 @@
 stages:
   - linting
   - test
-  - push to svn
+  - push-to-svn
   - build
 
 linting:
@@ -32,7 +32,7 @@ test:
     - cargo test
 
 pts:
-  stage: push to svn
+  stage: push-to-svn
   image: neelzee/tauri_img
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
