@@ -14,20 +14,20 @@ pub enum FolderOrFile {
     Folder(Folder),
 }
 
-impl Into<Either<File, Folder>> for FolderOrFile {
-    fn into(self) -> Either<File, Folder> {
-        match self {
-            FolderOrFile::File(f) => Either::Left(f),
-            FolderOrFile::Folder(f) => Either::Right(f),
+impl From<Either<File, Folder>> for FolderOrFile {
+    fn from(value: Either<File, Folder>) -> Self {
+        match value {
+            Either::Left(f) => FolderOrFile::File(f),
+            Either::Right(f) => FolderOrFile::Folder(f),
         }
     }
 }
 
-impl Into<FolderOrFile> for Either<File, Folder> {
-    fn into(self) -> FolderOrFile {
-        match self {
-            Either::Left(l) => FolderOrFile::File(l),
-            Either::Right(r) => FolderOrFile::Folder(r),
+impl From<FolderOrFile> for Either<File, Folder> {
+    fn from(value: FolderOrFile) -> Self {
+        match value {
+            FolderOrFile::File(f) => Either::Left(f),
+            FolderOrFile::Folder(f) => Either::Right(f),
         }
     }
 }
