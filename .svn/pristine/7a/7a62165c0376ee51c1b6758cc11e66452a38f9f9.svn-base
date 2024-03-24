@@ -1,7 +1,7 @@
 {
 	"name": "nmide",
 	"version": "0.1.0",
-	"description": "IDE",
+	"description": "ide",
 	"type": "module",
 	"scripts": {
 		"start": "vite",

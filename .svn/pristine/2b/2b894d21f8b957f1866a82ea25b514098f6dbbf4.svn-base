@@ -1,0 +1,26 @@
+@import "_const.scss";
+
+#toolbar {
+  background-color: $dark_background;
+  display: flex;
+  flex-direction: row;
+
+  .toolbar-elem {
+    text-align: center;
+    padding-left: .25rem;
+    padding-right: .25rem;
+    margin-top: .25rem;
+    margin-bottom: .25rem;
+    border-radius: .25rem;
+  }
+
+  .toolbar-elem:hover {
+    cursor: pointer;
+    background-color: $selection;
+  }
+
+  .logo:hover {
+    background-color: $dark_background;
+  }
+
+}
