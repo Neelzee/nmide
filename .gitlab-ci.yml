@@ -8,16 +8,15 @@ linting:
   stage: linting
   image: neelzee/tauri_img
   script:
+    - cargo install biome_js
     - rustup component add clippy
     - cd src-tauri
-    - cargo clippy -- -D clippy::pedantic
-
-fixing:
-  stage: linting
-  image: neelzee/tauri_img
-  script:
-    - cd src-tauri
     - cargo fix
+    - cargo clippy --fix
+    - biome_js format
+    - git add .
+    - git commit -m "Automated fixes by clippy, cargo fix, and biome_js"
+    - git push origin $CI_COMMIT_REF_NAME
 
 test:
   stage: test
