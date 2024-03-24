@@ -1,0 +1,22 @@
+[package]
+name = "nmide"
+version = "0.1.0"
+description = "A simple IDE"
+authors = ["Nils Michael Fitjar"]
+license = ""
+repository = "https://git.app.uib.no/Nils.Fitjar/nmide"
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "1.5", features = [] }
+
+[dependencies]
+tauri = { version = "1.5", features = ["shell-open"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+eyre = "0.6.12"
+
+[features]
+# this feature is used for production builds or when `devPath` points to the filesystem
+# DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]

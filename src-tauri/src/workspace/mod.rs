@@ -2,8 +2,8 @@ pub mod ws_file;
 pub mod ws_folder;
 
 use crate::{
-    osops::get_paths,
-    types,
+    osops::{get_fof, get_paths},
+    types::{self, FolderOrFile},
     utils::funcs::os_to_str,
     workspace::{ws_file::WSFile, ws_folder::WSFolder},
 };
@@ -94,7 +94,13 @@ impl Workspace {
                     self.root
                 ))?
                 .to_string(),
-            content: todo!(),
+            content: get_fof(self.root.as_path(), 1)?.into_iter().fold(
+                Vec::new(),
+                |mut acc, fof| -> Vec<FolderOrFile> {
+                    acc.push(fof.into());
+                    acc
+                },
+            ),
         })
     }
 }
