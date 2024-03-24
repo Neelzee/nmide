@@ -1,44 +1,49 @@
+use crate::{errors::NmideError, types, utils::funcs::os_to_str};
+use either::Either;
+use eyre::{eyre, Context, OptionExt, Result};
 use std::{
     fs::File,
-    io::{BufWriter, Read, Write},
-    path::Path,
+    io::{BufReader, BufWriter, Read, Write},
+    path::{Path, PathBuf},
 };
 
-use eyre::{eyre, Context, Result};
-
-use crate::{errors::NmideError, utils::funcs::os_to_str};
-
 #[derive(Debug)]
-pub struct WSFile<'a> {
-    path: &'a Path,
+pub struct WSFile {
+    path: PathBuf,
     name: String,
     ext: String,
     is_opened: bool,
     content: Option<String>,
-    file: &'a File,
+    file: Box<File>,
 }
 
-impl WSFile<'_> {
-    pub fn new<'a>(path: &'a Path, file: &'a File) -> Result<WSFile<'a>> {
+#[derive(Debug)]
+pub struct WSFolder {
+    path: PathBuf,
+    name: String,
+    content: Vec<Either<WSFile, WSFolder>>,
+}
+
+impl WSFile {
+    pub fn new(path: &PathBuf, file: Box<File>) -> Result<WSFile> {
         Ok(WSFile {
-            path: path,
-            name: path
+            path: path.clone(),
+            name: (*path)
                 .file_name()
-                .and_then(|op| os_to_str(op).ok())
-                .ok_or(eyre!(NmideError::OptionToResult("OsStr".to_string())))?
-                .to_string(),
+                .and_then(|op| Some(os_to_str(op)))
+                .unwrap()?,
             ext: path
                 .extension()
                 .and_then(|op| os_to_str(op).ok())
-                .ok_or(eyre!(NmideError::OptionToResult("OsStr".to_string())))?,
+                .unwrap_or(String::new()),
             is_opened: false,
             content: None,
-            file: file,
+            file,
         })
     }
 
     pub fn open(&mut self) -> Result<()> {
-        let mut file = File::open(self.path)?;
+        let mut file = File::open(&(*self.path))?;
         let mut buf = String::new();
         file.read_to_string(&mut buf)?;
 
@@ -61,5 +66,32 @@ impl WSFile<'_> {
     pub fn close(&mut self) {
         self.content = None;
         self.is_opened = false;
+    }
+
+    pub fn to_file(&self) -> Result<types::File> {
+        Ok(types::File {
+            name: self.name.clone(),
+            extension: self.ext.clone(),
+            path: os_to_str(self.path.clone().as_os_str())?,
+            content: {
+                Some(
+                    match &self.content {
+                        Some(f) => Ok::<_, eyre::ErrReport>(f.clone()),
+                        None => {
+                            let mut buffer = String::new();
+                            let mut reader = BufReader::new(File::open(self.path.clone()).wrap_err(
+                            "Failed opening file for reading, when converting from WSFile to File",
+                        )?);
+                            reader.read_to_string(&mut buffer).wrap_err(
+                            "Failed reading content from file, when converting from WSFile to File",
+                        )?;
+
+                            Ok(buffer)
+                        }
+                    }
+                    .wrap_err("Failed reading content from file")?,
+                )
+            },
+        })
     }
 }

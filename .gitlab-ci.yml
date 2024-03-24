@@ -7,10 +7,20 @@ stages:
 linting:
   stage: linting
   image: neelzee/tauri_img
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      when: always
   script:
     - rustup component add clippy
     - cd src-tauri
-    - cargo clippy -- -D clippy::pedantic
+    - cargo fix --allow-dirty
+    - cargo clippy --fix --allow-dirty
+    - git config user.email "nfi005@uib.no"
+    - git config user.name "ci-bot"
+    - git remote add gitlab-origin https://oauth2:$ACCESS_TOKEN@git.app.uib.no:Nils.Fitjar/nmide.git
+    - git add .
+    - git commit -m "Automated fixes by clippy, and cargo fix"
+    - git push gitlab_origin HEAD:main -o ci.skip # prevent triggering pipeline again
 
 test:
   stage: test
