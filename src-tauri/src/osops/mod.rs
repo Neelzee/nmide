@@ -20,7 +20,7 @@ pub fn read_file(file: &File) -> Result<String> {
 }
 
 // Writes content onto file
-pub fn write_to_file(file: &File, content: String) -> Result<()> {
+pub fn write_to_file(file: &File, content: &str) -> Result<()> {
     let mut writer = BufWriter::new(file);
     writer
         .write_all(content.as_bytes())
@@ -85,7 +85,7 @@ fn _visit_dirs_recursive(
                 .to_string(),
             content: _visit_dirs_recursive(dir, depth - 1)?
                 .into_iter()
-                .map(|f| f.into())
+                .map(std::convert::Into::into)
                 .collect::<Vec<FolderOrFile>>(),
         }));
     } else {
@@ -97,14 +97,14 @@ fn _visit_dirs_recursive(
             extension: dir
                 .extension()
                 .and_then(|os| os_to_str(os).ok())
-                .or_else(|| Some("".to_string()))
+                .or_else(|| Some(String::new()))
                 .unwrap(),
             path: dir
                 .to_str()
                 .ok_or_eyre(format!("Failed reading path as UTF-8 String: `{dir:?}`"))?
                 .to_string(),
             content: None::<String>,
-        }))
+        }));
     }
 
     Ok(paths)
