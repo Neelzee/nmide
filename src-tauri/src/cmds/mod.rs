@@ -1,27 +1,29 @@
-use crate::{types::FolderOrFile, workspace::Workspace, WORKSPACE};
+use eyre::Context;
+
+use crate::{
+    errors::{set_lvl, ErrorLevel, NmideError},
+    types::FolderOrFile,
+    workspace::Workspace,
+    WORKSPACE,
+};
 use std::path::Path;
 
 /// Gets workspace
 ///
 /// Should only be called once, as it also initializes a workspace
 #[tauri::command]
-#[allow(clippy::used_underscore_binding)]
-pub async fn get_workspace(path: &str) -> Result<FolderOrFile, String> {
-    if let Ok(mut ws) = WORKSPACE.try_lock() {
-        if let Ok(newws) = Workspace::init(Path::new(&path)) {
-            *ws = newws;
-        } else {
-            return Err(format!("Failed init. workspace with path: `{path:?}`"));
-        }
+pub async fn get_workspace(path: &str) -> Result<FolderOrFile, NmideError> {
+    let mut ws = WORKSPACE
+        .try_lock()
+        .wrap_err("Failed locking workspace")
+        .map_err(|err| set_lvl(err, ErrorLevel::High))?;
 
-        if let Ok(fof) = ws.to_folder() {
-            return Ok(FolderOrFile::Folder(fof));
-        }
-        return Err(format!(
-            "Failed converting workspace to fof with path: `{path:?}`"
-        ));
-    }
-    Err(format!("Failed locking ws with path: `{path:?}`"))
+    *ws = Workspace::init(Path::new(path)).map_err(|err| set_lvl(err, ErrorLevel::High))?;
+
+    Ok(FolderOrFile::Folder(
+        ws.to_folder()
+            .map_err(|err| set_lvl(err, ErrorLevel::High))?,
+    ))
 }
 
 /// Saves the given content to the given file
