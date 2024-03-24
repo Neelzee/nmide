@@ -12,9 +12,12 @@ linting:
     - cd src-tauri
     - cargo fix --allow-dirty
     - cargo clippy --fix --allow-dirty
+    - git config user.email "nfi005@uib.no"
+    - git config user.name "ci-bot"
+    - git remote add gitlab_origin https://oauth2:$ACCESS_TOKEN@gitlab.com/path-to-project.git
     - git add .
     - git commit -m "Automated fixes by clippy, and cargo fix"
-    - git push origin $CI_COMMIT_REF_NAME
+    - git push gitlab_origin HEAD:main -o ci.skip # prevent triggering pipeline again
 
 test:
   stage: test
