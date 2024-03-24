@@ -3,7 +3,7 @@ pub mod ws_folder;
 
 use crate::{
     osops::{get_fof, get_paths},
-    types::{self, FolderOrFile},
+    types::{self, Folder, FolderOrFile},
     utils::funcs::os_to_str,
     workspace::{ws_file::WSFile, ws_folder::WSFolder},
 };
@@ -13,6 +13,7 @@ use eyre::{Context, OptionExt, Result};
 use log::{debug, info, warn};
 use std::{
     collections::HashMap,
+    fmt::write,
     fs::File,
     path::{Path, PathBuf},
 };
@@ -24,6 +25,18 @@ pub struct Workspace {
 }
 
 impl Workspace {
+    fn copy_files(&self) -> Result<Vec<FolderOrFile>> {
+        let mut vec = Vec::new();
+        for (_, v) in &self.files {
+            match v {
+                Either::Left(f) => vec.push(FolderOrFile::File(f.to_file()?)),
+                Either::Right(f) => vec.push(FolderOrFile::Folder(f.to_folder()?)),
+            }
+        }
+
+        Ok(vec)
+    }
+
     pub fn empty() -> Self {
         Self {
             root: PathBuf::new(),
@@ -40,8 +53,10 @@ impl Workspace {
 
     pub fn init(path: &Path) -> Result<Self> {
         info!("Initializing workspace on `{path:?}`");
+        let i = 2;
+        info!("Walking `{i}` deep");
         let mut dirs: HashMap<String, Either<WSFile, WSFolder>> = HashMap::new();
-        for p in get_paths(path, 1)? {
+        for p in get_paths(path, i)? {
             debug!("Path: `{p:?}`");
             let r = p
                 .to_str()
@@ -53,7 +68,7 @@ impl Workspace {
                 r.unwrap().to_string()
             };
             if p.is_dir() {
-                dirs.insert(key, Either::Right(WSFolder::new(p.as_path(), 0)?));
+                dirs.insert(key, Either::Right(WSFolder::new(p.as_path(), i - 1)?));
             } else {
                 dirs.insert(
                     key,
@@ -73,13 +88,6 @@ impl Workspace {
         })
     }
 
-    pub fn cheap_files_clone(&self) -> HashMap<String, types::FolderOrFile> {
-        for (k, v) in &self.files {
-            todo!()
-        }
-        todo!()
-    }
-
     pub fn to_folder(&self) -> Result<types::Folder> {
         Ok(types::Folder {
             name: os_to_str(self.root.as_path().file_name().ok_or_eyre(format!(
@@ -94,13 +102,7 @@ impl Workspace {
                     self.root
                 ))?
                 .to_string(),
-            content: get_fof(self.root.as_path(), 1)?.into_iter().fold(
-                Vec::new(),
-                |mut acc, fof| -> Vec<FolderOrFile> {
-                    acc.push(fof.into());
-                    acc
-                },
-            ),
+            content: self.copy_files()?,
         })
     }
 }

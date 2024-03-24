@@ -5,6 +5,7 @@ use crate::{cmds::get_workspace, workspace::Workspace};
 use eyre::{Context, Result};
 use once_cell::sync::Lazy;
 use std::path::Path;
+use tauri_plugin_log::LogTarget;
 use tokio::sync::Mutex;
 
 mod cmds;
@@ -30,6 +31,11 @@ async fn main() -> Result<()> {
     drop(g);
 
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_log::Builder::default()
+                .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
+                .build(),
+        )
         .invoke_handler(tauri::generate_handler![greet, get_workspace])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

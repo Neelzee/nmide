@@ -1,7 +1,7 @@
 use crate::{
     errors::NmideError,
     osops::{get_fof, get_paths},
-    types,
+    types::{self, FolderOrFile},
     utils::funcs::os_to_str,
     workspace::ws_file::WSFile,
 };
@@ -62,6 +62,29 @@ impl WSFolder {
                         acc
                     }
                 }),
+        })
+    }
+
+    pub fn get_content(&self) -> Result<Vec<FolderOrFile>> {
+        let mut vec = Vec::new();
+        for v in &self.content {
+            match v {
+                Either::Left(f) => vec.push(FolderOrFile::File(f.to_file()?)),
+                Either::Right(f) => vec.push(FolderOrFile::Folder(f.to_folder()?)),
+            }
+        }
+
+        Ok(vec)
+    }
+    pub fn to_folder(&self) -> Result<types::Folder> {
+        Ok(types::Folder {
+            name: self.name.clone(),
+            path: self
+                .path
+                .to_str()
+                .ok_or_eyre(format!("Failed getting path from `{:?}`", self))?
+                .to_string(),
+            content: self.get_content()?,
         })
     }
 }

@@ -4,7 +4,7 @@ use crate::{
     workspace::Workspace,
     WORKSPACE,
 };
-use log::info;
+use log::{debug, info};
 use std::path::Path;
 
 /// Gets workspace
@@ -18,10 +18,14 @@ pub async fn get_workspace(path: &str) -> Result<FolderOrFile, NmideError> {
     info!("Init-ing on path: `{path:?}`");
     *ws = Workspace::init(Path::new(path)).map_err(|err| set_lvl(err, ErrorLevel::High))?;
 
-    Ok(FolderOrFile::Folder(
+    let res = FolderOrFile::Folder(
         ws.to_folder()
             .map_err(|err| set_lvl(err, ErrorLevel::High))?,
-    ))
+    );
+
+    debug!("Response: `{res:?}`");
+
+    Ok(res)
 }
 
 /// Saves the given content to the given file

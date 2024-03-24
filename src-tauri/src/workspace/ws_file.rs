@@ -80,16 +80,16 @@ impl WSFile {
                         None => {
                             let mut buffer = String::new();
                             let mut reader = BufReader::new(File::open(self.path.clone()).wrap_err(
-                            "Failed opening file for reading, when converting from WSFile to File",
+                            format!("Failed opening file for reading, when converting from WSFile to File: `{:?}`", self),
                         )?);
                             reader.read_to_string(&mut buffer).wrap_err(
-                            "Failed reading content from file, when converting from WSFile to File",
+                            format!("Failed reading content from file, when converting from WSFile to File: `{:?}`", self),
                         )?;
 
                             Ok(buffer)
                         }
                     }
-                    .wrap_err("Failed reading content from file")?,
+                    .wrap_err(format!("Failed reading content from file: `{:?}`", self))?,
                 )
             },
         })
