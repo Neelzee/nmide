@@ -22,14 +22,20 @@ linting:
     - git commit -m "Automated fixes by clippy, and cargo fix"
     - git push gitlab_origin HEAD:main -o ci.skip # prevent triggering pipeline again
 
-test:
+rust_test:
+  stage: test
+  image: neelzee/tauri_img
+  script:
+    - cd src-tauri
+    - cargo test
+
+js_test:
   stage: test
   image: neelzee/tauri_img
   script:
     - yarn install
     - yarn test
-    - cd src-tauri
-    - cargo test
+
 
 pts:
   stage: push-to-svn

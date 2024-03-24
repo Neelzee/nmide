@@ -1,11 +1,10 @@
-use eyre::Context;
-
 use crate::{
     errors::{set_lvl, ErrorLevel, NmideError},
     types::FolderOrFile,
     workspace::Workspace,
     WORKSPACE,
 };
+use log::info;
 use std::path::Path;
 
 /// Gets workspace
@@ -13,11 +12,10 @@ use std::path::Path;
 /// Should only be called once, as it also initializes a workspace
 #[tauri::command]
 pub async fn get_workspace(path: &str) -> Result<FolderOrFile, NmideError> {
-    let mut ws = WORKSPACE
-        .try_lock()
-        .wrap_err("Failed locking workspace")
-        .map_err(|err| set_lvl(err, ErrorLevel::High))?;
+    info!("Locking workspace");
+    let mut ws = WORKSPACE.lock().await;
 
+    info!("Init-ing on path: `{path:?}`");
     *ws = Workspace::init(Path::new(path)).map_err(|err| set_lvl(err, ErrorLevel::High))?;
 
     Ok(FolderOrFile::Folder(
