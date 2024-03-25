@@ -7,6 +7,8 @@ pub struct NmideError {
     pub msg: String,
     pub lvl: ErrorLevel,
     pub tag: Vec<ErrorTag>,
+    pub stack: Vec<NmideError>,
+    pub origin: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -40,6 +42,24 @@ impl From<ErrReport> for NmideError {
             msg: value.to_string(),
             lvl: ErrorLevel::Unknown,
             tag: Vec::new(),
+            stack: value
+                .chain()
+                .into_iter()
+                .map(|e| NmideError {
+                    msg: e.to_string(),
+                    lvl: ErrorLevel::Unknown,
+                    tag: Vec::new(),
+                    stack: Vec::new(),
+                    origin: e
+                        .source()
+                        .and_then(|err| Some(err.to_string()))
+                        .unwrap_or_default(),
+                })
+                .collect(),
+            origin: value
+                .source()
+                .and_then(|err| Some(err.to_string()))
+                .unwrap_or_default(),
         }
     }
 }
