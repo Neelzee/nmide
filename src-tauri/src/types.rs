@@ -3,24 +3,41 @@ use std::{
     path::Path,
 };
 
+use crate::utils::funcs::os_to_str;
+use either::Either;
 use eyre::{Context, Error, Result};
 use serde::{Deserialize, Serialize};
 
-use crate::{osops::get_files, utils::funcs::os_to_str};
-
 #[derive(Debug, Deserialize, Serialize)]
-pub enum Fof {
+pub enum FolderOrFile {
     File(File),
     Folder(Folder),
 }
 
+impl Into<Either<File, Folder>> for FolderOrFile {
+    fn into(self) -> Either<File, Folder> {
+        match self {
+            FolderOrFile::File(f) => Either::Left(f),
+            FolderOrFile::Folder(f) => Either::Right(f),
+        }
+    }
+}
+
+impl Into<FolderOrFile> for Either<File, Folder> {
+    fn into(self) -> FolderOrFile {
+        match self {
+            Either::Left(l) => FolderOrFile::File(l),
+            Either::Right(r) => FolderOrFile::Folder(r),
+        }
+    }
+}
+
 #[derive(Debug, Deserialize, Serialize)]
-#[serde(rename = "file")]
 pub struct File {
-    name: String,
-    extension: String,
-    path: String,
-    content: String,
+    pub name: String,
+    pub extension: String,
+    pub path: String,
+    pub content: Option<String>,
 }
 
 impl File {
@@ -36,7 +53,7 @@ impl File {
             path.file_name()
                 .ok_or(std::io::Error::new(
                     std::io::ErrorKind::Other,
-                    "Faild getting filename",
+                    "Failed getting filename",
                 ))
                 .wrap_err("failed")?,
         )?;
@@ -69,17 +86,16 @@ impl File {
             name,
             extension,
             path: path_str,
-            content,
+            content: Some(content),
         })
     }
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-#[serde(rename = "folder")]
 pub struct Folder {
-    name: String,
-    path: String,
-    content: Vec<Fof>,
+    pub name: String,
+    pub path: String,
+    pub content: Vec<FolderOrFile>,
 }
 
 impl Folder {
@@ -96,7 +112,7 @@ impl Folder {
             path.file_name()
                 .ok_or(std::io::Error::new(
                     std::io::ErrorKind::Other,
-                    "Faild getting filename",
+                    "Failed getting filename",
                 ))
                 .wrap_err("failed")?,
         )?;
@@ -119,7 +135,7 @@ impl Folder {
             .wrap_err("failed")?
             .to_string();
 
-        let content = vec![get_files(path_str.clone())?];
+        let content = vec![];
 
         Ok(Folder {
             name,
