@@ -64,6 +64,22 @@ impl<T> NmideError<T> {
         self
     }
 
+    pub fn from_err<E>(val: T, err: E) -> Self
+    where
+        E: std::error::Error,
+    {
+        NmideError {
+            val,
+            rep: Some(NmideReport {
+                msg: format!("{err:?}"),
+                lvl: ErrorLevel::Unknown,
+                tag: Vec::new(),
+                stack: Vec::new(),
+                origin: format!("{:?}", err.source()),
+            }),
+        }
+    }
+
     /// Applies F to the val, pushing the NmideReport to the stack if it fails.
     pub fn or_else<F, U>(&self, f: F) -> NmideError<U>
     where

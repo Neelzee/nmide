@@ -3,6 +3,7 @@ pub mod ws_folder;
 
 use crate::{
     either::Either,
+    errors::{NmideError, NmideReport},
     osops::{get_folder_or_file, get_paths},
     types::{self, Folder, FolderOrFile},
     utils::funcs::os_to_str,
@@ -25,7 +26,7 @@ pub struct Workspace {
 }
 
 impl Workspace {
-    fn copy_files(&self) -> Result<Vec<FolderOrFile>> {
+    fn copy_files(&self) -> NmideError<Vec<FolderOrFile>> {
         let mut vec = Vec::new();
         for (_, v) in &self.files {
             match v {
@@ -70,15 +71,7 @@ impl Workspace {
             if p.is_dir() {
                 dirs.insert(key, Either::Right(WSFolder::new(p.as_path(), i - 1)?));
             } else {
-                dirs.insert(
-                    key,
-                    Either::Left(WSFile::new(
-                        &p,
-                        Box::new(
-                            File::open(&p).wrap_err("Failed opening file for WSFile creation")?,
-                        ),
-                    )?),
-                );
+                dirs.insert(key, Either::Left(WSFile::new(&p)?));
             }
         }
 
@@ -88,7 +81,7 @@ impl Workspace {
         })
     }
 
-    pub fn to_folder(&self) -> Result<types::Folder> {
+    pub fn to_folder(&self) -> NmideError<types::Folder> {
         Ok(types::Folder {
             name: os_to_str(self.root.as_path().file_name().ok_or_eyre(format!(
                 "Failed getting file name from: `{:?}` to UTF-8 String",
