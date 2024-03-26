@@ -21,6 +21,8 @@ pub async fn get_workspace(path: &str) -> Result<NmideError<FolderOrFile>, ()> {
 
     *ws = new_ws;
 
+    debug!("{:?}", ws.get_files());
+
     let mut res = ws.to_folder();
 
     if let Some(r) = rep {

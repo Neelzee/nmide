@@ -27,6 +27,10 @@ pub struct Workspace {
 }
 
 impl Workspace {
+    pub fn get_files(&self) -> Vec<&Either<WSFile, WSFolder>> {
+        self.files.values().collect()
+    }
+
     fn copy_files(&self) -> NmideError<Vec<FolderOrFile>> {
         (&self.files)
             .into_iter()
@@ -66,7 +70,7 @@ impl Workspace {
 
     pub fn init(path: &Path) -> NmideError<Self> {
         info!("Initializing workspace on `{path:?}`");
-        let i = 2;
+        let i = 3;
         info!("Walking `{i}` deep");
 
         let (paths, path_rep) = get_paths(path, i).unwrap_with_err();
