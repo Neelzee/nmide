@@ -1,11 +1,10 @@
 use crate::{either::Either, nmrep};
-use either::Either;
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct NmideError<T> {
-    pub val: Option<T>,
+    pub val: T,
     pub rep: Option<NmideReport>,
 }
 
@@ -55,12 +54,6 @@ impl Display for ErrorLevel {
 }
 
 impl<T> NmideError<T> {
-    pub fn empty() -> Self {
-        Self {
-            val: None,
-            rep: None,
-        }
-    }
     pub fn push_nmide(mut self, other: NmideReport) -> Self {
         if self.rep.is_none() {
             self.rep = Some(other);
@@ -71,70 +64,48 @@ impl<T> NmideError<T> {
         self
     }
 
-    pub fn and(self, v: Option<T>) -> NmideError<T> {
-        let val = self.val.and(v);
-
-        Self { val, rep: self.rep }
-    }
-
-    pub fn or<U>(self, err: NmideError<U>) -> NmideError<U> {
-        NmideError {
-            val: err.val,
-            rep: nmrep!(self.rep, err.rep),
-        }
-    }
-
-    pub fn and_then<F, U>(self, f: F) -> NmideError<U>
-    where
-        F: FnOnce(T) -> Option<U>,
-    {
-        let val = self.val.and_then(f);
-        NmideError { val, rep: self.rep }
-    }
-
     /// Applies F to the val, pushing the NmideReport to the stack if it fails.
-    ///
-    /// Returns None if val is None
-    pub fn or_else<F, U>(&self, f: F) -> Option<NmideError<U>>
+    pub fn or_else<F, U>(&self, f: F) -> NmideError<U>
     where
         F: FnOnce(T) -> NmideError<U>,
     {
-        match self.val {
-            Some(v) => {
-                let (val, rep) = f(v).unwrap_with_err();
-                return Some(NmideError {
-                    val,
-                    rep: nmrep!(self.rep, rep),
-                });
-            }
-            None => None,
+        let (val, rep) = f(self.val).unwrap_with_err();
+        NmideError {
+            val,
+            rep: nmrep!(self.rep, rep),
         }
     }
 
-    pub fn is_some(&self) -> bool {
-        self.val.is_some()
+    /// Attempts to unwrap NmideError
+    ///
+    /// If there are any NmideReport's, returns them, else val
+    pub fn unwrap_or_err(self) -> Result<T, NmideReport> {
+        match self.rep {
+            Some(err) => Err(err),
+            None => Ok(self.val),
+        }
     }
 
-    pub fn is_none(&self) -> bool {
-        self.val.is_none()
+    /// Ignores errors
+    pub fn ignore_err(self) -> T {
+        self.val
     }
 
-    pub fn unwrap(self) -> T {
-        self.val.unwrap()
-    }
-
-    pub fn unwrap_or(self, val: T) -> T {
-        self.val.unwrap_or(val)
-    }
-
-    pub fn unwrap_with_err(self) -> (Option<T>, Option<NmideReport>) {
+    pub fn unwrap_with_err(self) -> (T, Option<NmideReport>) {
         (self.val, self.rep)
     }
-}
 
-impl<T: Default> NmideError<T> {
-    pub fn unwrap_or_default(self) -> T {
-        self.val.unwrap_or_default()
+    /// Applies the function to self, carrying with the reports
+    pub fn map<F, U>(self, f: F) -> NmideError<U>
+    where
+        F: FnOnce(Self) -> NmideError<U>,
+    {
+        let res = f(self);
+
+        NmideError {
+            val: res.val,
+            rep: nmrep!(res.rep, self.rep),
+        }
     }
 }
 
@@ -146,6 +117,69 @@ impl<T> Display for NmideError<T> {
             self.rep.and_then(|r| Some(r.msg)),
             self.rep.and_then(|r| Some(r.lvl))
         )
+    }
+}
+
+impl<T> NmideError<Option<T>> {
+    pub fn transpose(self) -> Option<NmideError<T>> {
+        if self.val.is_none() {
+            return None;
+        } else {
+            return Some(NmideError {
+                val: self.val.unwrap(),
+                rep: self.rep,
+            });
+        }
+    }
+}
+
+impl<T, E: std::error::Error> NmideError<Result<T, E>> {
+    pub fn transpose(self) -> Result<T, NmideReport> {
+        match self.val {
+            Ok(v) => Ok(v),
+            Err(err) => {
+                self.push_nmide(NmideReport {
+                    msg: format!(
+                        "Cause: `{:?}`, Description: ´{:?}´",
+                        err.source(),
+                        err.to_string()
+                    ),
+                    lvl: ErrorLevel::Unknown,
+                    tag: Vec::new(),
+                    stack: Vec::new(),
+                    origin: format!("{:?}", err.source()),
+                });
+
+                Err(self.rep.unwrap())
+            }
+        }
+    }
+
+    pub fn transform(self) -> NmideError<Option<T>> {
+        match self.val {
+            Ok(v) => NmideError {
+                val: Some(v),
+                rep: self.rep,
+            },
+            Err(err) => {
+                self.push_nmide(NmideReport {
+                    msg: format!(
+                        "Cause: `{:?}`, Description: ´{:?}´",
+                        err.source(),
+                        err.to_string()
+                    ),
+                    lvl: ErrorLevel::Unknown,
+                    tag: Vec::new(),
+                    stack: Vec::new(),
+                    origin: format!("{:?}", err.source()),
+                });
+
+                NmideError {
+                    val: None,
+                    rep: self.rep,
+                }
+            }
+        }
     }
 }
 

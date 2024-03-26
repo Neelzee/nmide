@@ -42,21 +42,30 @@ pub struct File {
 }
 
 impl File {
+    pub fn empty() -> Self {
+        Self {
+            name: String::new(),
+            extension: String::new(),
+            path: String::new(),
+            content: None,
+        }
+    }
+
     /// Creates a File instance
     ///
     /// Will not read the contents of the File
     pub fn new(path: &Path) -> NmideError<File> {
-        let mut err = NmideError::empty();
-
         if !path.is_file() {
-            err.rep = Some(NmideReport {
-                msg: format!("Path: `{path:?}` is not a file"),
-                lvl: ErrorLevel::Low,
-                origin: "File::new".to_string(),
-                tag: Vec::new(),
-                stack: Vec::new(),
-            });
-            return err;
+            return NmideError {
+                val: File::empty(),
+                rep: Some(NmideReport {
+                    msg: format!("Path: `{path:?}` is not a file"),
+                    lvl: ErrorLevel::Low,
+                    origin: "File::new".to_string(),
+                    tag: Vec::new(),
+                    stack: Vec::new(),
+                }),
+            };
         }
         let (name, name_rep) = os_to_str(path.file_name().unwrap_or_default()).unwrap_with_err();
 
@@ -75,37 +84,19 @@ impl File {
         }
         .unwrap_with_err();
 
-        err.rep = nmrep!(name_rep, extension_rep, path_str_rep);
-
-        err.val = Some(File {
-            name: name.unwrap_or_default(),
-            extension: extension.unwrap_or_default(),
-            path: path_str.unwrap_or_default(),
-            content: Some(String::new()),
-        });
-
-        err
+        NmideError {
+            val: File {
+                name,
+                extension,
+                path: path_str.unwrap_or_default(),
+                content: Some(String::new()),
+            },
+            rep: nmrep!(name_rep, extension_rep, path_str_rep),
+        }
     }
 
     pub fn to_wsfile(&self) -> NmideError<WSFile> {
-        let file = NmideError {
-            val: fs::File::open(self.path).ok(),
-            rep: Some(NmideReport {
-                msg: format!("Failed creating File from path: `{:?}`", self.path),
-                lvl: ErrorLevel::Medium,
-                tag: Vec::new(),
-                stack: Vec::new(),
-                origin: "types::File::to_wsfile".to_string(),
-            }),
-        };
-
-        if let Some(err) = file.or_else(|f| WSFile::new(&PathBuf::from(&self.path), Box::new(f))) {
-            return err;
-        } else {
-            let mut err = NmideError::empty();
-            err.rep = file.rep;
-            return err;
-        }
+        WSFile::new(&PathBuf::from(self.path))
     }
 }
 
@@ -117,24 +108,29 @@ pub struct Folder {
 }
 
 impl Folder {
+    pub fn empty() -> Folder {
+        Folder {
+            name: String::new(),
+            path: String::new(),
+            content: Vec::new(),
+        }
+    }
+
     /// Creates a Folder instance
     ///
     /// Will not go any level deeper, ie. content will always be empty
     pub fn new(path: &Path) -> NmideError<Folder> {
-        let mut err = NmideError {
-            val: None,
-            rep: None,
-        };
-
         if !path.is_dir() {
-            err.rep = Some(NmideReport {
-                msg: format!("The given path: `{path:?}` is not a directory"),
-                lvl: ErrorLevel::High,
-                tag: Vec::new(),
-                stack: Vec::new(),
-                origin: "Folder::new".to_string(),
-            });
-            return err;
+            return NmideError {
+                val: Folder::empty(),
+                rep: Some(NmideReport {
+                    msg: format!("The given path: `{path:?}` is not a directory"),
+                    lvl: ErrorLevel::High,
+                    tag: Vec::new(),
+                    stack: Vec::new(),
+                    origin: "Folder::new".to_string(),
+                }),
+            };
         }
 
         let (name, name_rep) = os_to_str(path.file_name().unwrap_or_default()).unwrap_with_err();
@@ -154,35 +150,49 @@ impl Folder {
         }
         .unwrap_with_err();
 
-        err.val = Some(Folder {
-            name: name.unwrap_or_default(),
-            path: path_str.unwrap_or_default(),
-            content: Vec::new(),
-        });
+        let mut err = NmideError {
+            val: Folder {
+                name,
+                path: path_str.unwrap_or_default(),
+                content: Vec::new(),
+            },
+            rep: nmrep!(name_rep, extension_rep, path_str_rep),
+        };
 
         err
     }
     /// Creates a WSFolder, with path 1
     pub fn to_wsfolder(self) -> NmideError<WSFolder> {
-        let mut err = NmideError::empty();
+        WSFolder::new(&Path::new(&self.path), 0).or_else(|mut w| {
+            let r = self
+                .content
+                .into_iter()
+                .map(|f| -> Either<NmideError<WSFile>, NmideError<WSFolder>> {
+                    match f {
+                        FolderOrFile::File(f) => Either::Left(f.to_wsfile()),
+                        FolderOrFile::Folder(f) => Either::Right(f.to_wsfolder()),
+                    }
+                })
+                .map(|e| e.transpose())
+                .fold(
+                    NmideError {
+                        val: Vec::new(),
+                        rep: None,
+                    },
+                    |mut err, e| {
+                        err.val.push(e.val);
 
-        let ws = WSFolder::new(&Path::new(&self.path), 0)
-            .val
-            .and_then(|mut w| {
-                w.push_content(
-                    self.content
-                        .into_iter()
-                        .map(|f| -> Either<NmideError<WSFile>, NmideError<WSFolder>> {
-                            match f {
-                                FolderOrFile::File(f) => Either::Left(f.to_wsfile()),
-                                FolderOrFile::Folder(f) => Either::Right(f.to_wsfolder()),
-                            }
-                        })
-                        .collect(),
+                        if let Some(r) = e.rep {
+                            err.push_nmide(r);
+                        }
+
+                        err
+                    },
                 );
-                Some(w)
-            });
 
-        err
+            w.push_content(r.val);
+
+            NmideError { val: w, rep: r.rep }
+        })
     }
 }

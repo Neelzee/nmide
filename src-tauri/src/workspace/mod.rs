@@ -2,12 +2,12 @@ pub mod ws_file;
 pub mod ws_folder;
 
 use crate::{
-    osops::{get_fof, get_paths},
+    either::Either,
+    osops::{get_folder_or_file, get_paths},
     types::{self, Folder, FolderOrFile},
     utils::funcs::os_to_str,
     workspace::{ws_file::WSFile, ws_folder::WSFolder},
 };
-use either::Either;
 use eyre::{Context, OptionExt, Result};
 #[warn(unused_imports)]
 use log::{debug, info, warn};
