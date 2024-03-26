@@ -4,6 +4,7 @@ pub mod ws_folder;
 use crate::{
     either::Either,
     errors::{collect, NmideError, NmideReport},
+    nmrep,
     osops::{get_folder_or_file, get_paths},
     types::{self, Folder, FolderOrFile},
     utils::funcs::os_to_str,
@@ -104,20 +105,18 @@ impl Workspace {
     }
 
     pub fn to_folder(&self) -> NmideError<types::Folder> {
-        Ok(types::Folder {
-            name: os_to_str(self.root.as_path().file_name().ok_or_eyre(format!(
-                "Failed getting file name from: `{:?}` to UTF-8 String",
-                self.root
-            ))?)?,
-            path: self
-                .root
-                .to_str()
-                .ok_or_eyre(format!(
-                    "Failed converting root: `{:?}` to UTF-8 String",
-                    self.root
-                ))?
-                .to_string(),
-            content: self.copy_files()?,
-        })
+        let (name, name_rep) =
+            os_to_str(self.root.file_name().unwrap_or_default()).unwrap_with_err();
+
+        let (content, content_rep) = self.copy_files().unwrap_with_err();
+
+        NmideError {
+            val: types::Folder {
+                name,
+                path: self.root.to_str().unwrap_or_default().to_string(),
+                content,
+            },
+            rep: nmrep!(name_rep, content_rep),
+        }
     }
 }
