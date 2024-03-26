@@ -64,13 +64,33 @@ impl WSFolder {
     }
 
     pub fn get_content(&self) -> NmideError<Vec<FolderOrFile>> {
-        let mut vec = Vec::new();
-        for v in &self.content {
-            match v {
-                Either::Left(f) => vec.push(FolderOrFile::File(f.to_file())),
-                Either::Right(f) => vec.push(FolderOrFile::Folder(f.to_folder())),
-            }
-        }
+        (&self.content)
+            .into_iter()
+            .map(|v| match v {
+                Either::Left(f) => f.to_file().map(|e| NmideError {
+                    val: FolderOrFile::File(e.val),
+                    rep: e.rep,
+                }),
+                Either::Right(f) => f.to_folder().map(|e| NmideError {
+                    val: FolderOrFile::Folder(e.val),
+                    rep: e.rep,
+                }),
+            })
+            .fold(
+                NmideError {
+                    val: Vec::new(),
+                    rep: None,
+                },
+                |mut err, e| {
+                    err.val.push(e.val);
+
+                    if let Some(rep) = e.rep {
+                        err.push_nmide(rep);
+                    }
+
+                    err
+                },
+            )
     }
 
     pub fn to_folder(&self) -> NmideError<types::Folder> {
