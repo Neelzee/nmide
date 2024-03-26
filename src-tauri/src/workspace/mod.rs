@@ -43,7 +43,7 @@ impl Workspace {
                 |mut err, e| {
                     err.val.push(e.val);
                     if let Some(rep) = e.rep {
-                        err.push_nmide(rep);
+                        err = err.push_nmide(rep);
                     }
                     err
                 },
@@ -68,39 +68,42 @@ impl Workspace {
         info!("Initializing workspace on `{path:?}`");
         let i = 2;
         info!("Walking `{i}` deep");
-        let mut dirs: HashMap<String, Either<NmideError<WSFile>, NmideError<WSFolder>>> =
-            HashMap::new();
 
         let (paths, path_rep) = get_paths(path, i).unwrap_with_err();
 
-        for p in paths {
-            debug!("Path: `{p:?}`");
-            let key = p.to_str().unwrap_or_default().to_string();
-
-            if dirs.contains_key(&key) {
-                warn!("{key:?} is in dir, with value: `{:?}`", dirs.get(&key));
-            }
-
-            if p.is_dir() {
-                dirs.insert(key, Either::Right(WSFolder::new(p.as_path(), i - 1)));
-            } else {
-                dirs.insert(key, Either::Left(WSFile::new(&p)));
-            }
-        }
-
-        let content = dirs
+        let (files, files_rep) = paths
             .into_iter()
-            .map(|(k, v)| (k, v.transpose().val))
-            .collect::<HashMap<_, _>>();
+            .map(|p| -> (String, Either<_, _>) {
+                let key = p.to_str().unwrap_or_default().to_string();
 
-        let content_rep = collect(dirs.into_iter().map(|(_, v)| v.transpose()).collect()).1;
+                if p.is_dir() {
+                    (key, Either::Right(WSFolder::new(p.as_path(), i - 1)))
+                } else {
+                    (key, Either::Left(WSFile::new(&p)))
+                }
+            })
+            .map(|(a, b)| -> (String, NmideError<Either<_, _>>) { (a, b.transpose()) })
+            .fold(
+                NmideError {
+                    val: HashMap::new(),
+                    rep: None,
+                },
+                |mut acc, (k, e)| {
+                    acc.val.insert(k, e.val);
+                    if let Some(rep) = e.rep {
+                        acc = acc.push_nmide(rep);
+                    }
+                    acc
+                },
+            )
+            .unwrap_with_err();
 
         NmideError {
             val: Workspace {
                 root: path.to_owned(),
-                files: content,
+                files,
             },
-            rep: content_rep,
+            rep: nmrep!(path_rep, files_rep),
         }
     }
 

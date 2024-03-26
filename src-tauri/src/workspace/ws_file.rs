@@ -43,12 +43,12 @@ impl WSFile {
     }
 
     pub fn to_file(&self) -> NmideError<types::File> {
-        os_to_str(self.path.clone().as_os_str()).map(|mut err| NmideError {
+        os_to_str(self.path.clone().as_os_str()).map(|err| NmideError {
             val: types::File {
                 name: self.name.clone(),
                 extension: self.ext.clone(),
                 path: err.val,
-                content: self.content,
+                content: self.content.clone(),
             },
             rep: err.rep,
         })

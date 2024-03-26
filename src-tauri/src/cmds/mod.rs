@@ -1,5 +1,6 @@
 use crate::{
     errors::{ErrorLevel, NmideError},
+    nmrep,
     types::FolderOrFile,
     workspace::Workspace,
     WORKSPACE,
@@ -11,21 +12,24 @@ use std::path::Path;
 ///
 /// Should only be called once, as it also initializes a workspace
 #[tauri::command]
-pub async fn get_workspace(path: &str) -> Result<FolderOrFile, NmideError<FolderOrFile>> {
+pub async fn get_workspace(path: &str) -> Result<NmideError<FolderOrFile>, ()> {
     info!("Locking workspace");
     let mut ws = WORKSPACE.lock().await;
 
     info!("Init-ing on path: `{path:?}`");
-    *ws = Workspace::init(Path::new(path))?;
+    let (new_ws, rep) = Workspace::init(Path::new(path)).unwrap_with_err();
 
-    let res = FolderOrFile::Folder(
-        ws.to_folder()
-            .map_err(|err| set_lvl(err, ErrorLevel::High))?,
-    );
+    *ws = new_ws;
+
+    let mut res = ws.to_folder();
+
+    if let Some(r) = rep {
+        res = res.push_nmide(r);
+    }
 
     debug!("Response: `{res:?}`");
 
-    Ok(res)
+    Ok(res.vmap(|f| FolderOrFile::Folder(f)))
 }
 
 /// Saves the given content to the given file

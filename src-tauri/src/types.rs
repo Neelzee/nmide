@@ -95,7 +95,7 @@ impl File {
     }
 
     pub fn to_wsfile(&self) -> NmideError<WSFile> {
-        WSFile::new(&PathBuf::from(self.path))
+        WSFile::new(&PathBuf::from(self.path.clone()))
     }
 }
 
@@ -182,7 +182,7 @@ impl Folder {
                         err.val.push(e.val);
 
                         if let Some(r) = e.rep {
-                            err.push_nmide(r);
+                            err = err.push_nmide(r);
                         }
 
                         err

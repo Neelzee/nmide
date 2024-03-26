@@ -56,19 +56,14 @@ fn visit_dirs_recursive(
     dir: &Path,
     depth: usize,
 ) -> NmideError<Vec<Either<types::File, types::Folder>>> {
-    let mut paths = Vec::new();
-
-    if depth == 0 {
-        return NmideError {
-            val: Some(paths),
-            rep: None,
-        };
-    }
-
-    let mut err = NmideError {
-        val: None,
+    let mut res = NmideError {
+        val: Vec::new(),
         rep: None,
     };
+
+    if depth == 0 {
+        return res;
+    }
 
     if dir.is_dir() {
         let name = os_to_str(dir.file_name().unwrap_or_default());
@@ -84,25 +79,23 @@ fn visit_dirs_recursive(
             }),
         };
 
-        let content = visit_dirs_recursive(dir, depth - 1).and_then(|mut e| {
-            Some(
-                e.into_iter()
-                    .map(std::convert::Into::into)
-                    .collect::<Vec<FolderOrFile>>(),
-            )
-        });
-
+        let (content, content_rep) = visit_dirs_recursive(dir, depth - 1)
+            .vmap(|vc| {
+                vc.into_iter()
+                    .map(|e| e.into())
+                    .collect::<Vec<FolderOrFile>>()
+            })
+            .unwrap_with_err();
         let (name, name_rep) = name.unwrap_with_err();
         let (path_str, path_str_rep) = path_str.unwrap_with_err();
-        let (content, content_rep) = content.unwrap_with_err();
 
-        err.rep = nmrep!(name_rep, path_str_rep, content_rep);
-
-        paths.push(Either::Right(types::Folder {
-            name: name.unwrap_or_default(),
+        res.val.push(Either::Right(types::Folder {
+            name,
             path: path_str.unwrap_or_default(),
-            content: content.unwrap_or_default(),
+            content,
         }));
+
+        res.rep = nmrep!(res.rep, name_rep, path_str_rep, content_rep);
     } else {
         let (name, name_rep) = os_to_str(dir.file_name().unwrap_or_default()).unwrap_with_err();
 
@@ -121,17 +114,15 @@ fn visit_dirs_recursive(
         let (extension, extension_rep) =
             os_to_str(dir.extension().unwrap_or_default()).unwrap_with_err();
 
-        err.rep = nmrep!(name_rep, path_str_rep, extension_rep);
+        res.rep = nmrep!(name_rep, path_str_rep, extension_rep);
 
-        paths.push(Either::Left(types::File {
-            name: name.unwrap_or_default(),
+        res.val.push(Either::Left(types::File {
+            name,
             path: path_str.unwrap_or_default(),
-            extension: extension.unwrap_or_default(),
+            extension,
             content: None::<String>,
         }));
     }
 
-    err.val = Some(paths);
-
-    err
+    res
 }

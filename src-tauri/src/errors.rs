@@ -8,7 +8,7 @@ pub struct NmideError<T> {
     pub rep: Option<NmideReport>,
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct NmideReport {
     pub msg: String,
     pub lvl: ErrorLevel,
@@ -27,7 +27,7 @@ impl NmideReport {
     }
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub enum ErrorLevel {
     #[default]
     Unknown,
@@ -36,7 +36,7 @@ pub enum ErrorLevel {
     High,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ErrorTag {
     WSError,
     NonSpecified,
@@ -54,14 +54,19 @@ impl Display for ErrorLevel {
 }
 
 impl<T> NmideError<T> {
-    pub fn push_nmide(mut self, other: NmideReport) -> Self {
-        if self.rep.is_none() {
-            self.rep = Some(other);
+    pub fn push_nmide(self, other: NmideReport) -> Self {
+        let (val, rep) = self.unwrap_with_err();
+        if let Some(r) = rep {
+            NmideError {
+                val,
+                rep: Some(r.push_stack(Some(other))),
+            }
         } else {
-            self.rep.and_then(|mut r| Some(r.stack.push(other)));
+            NmideError {
+                val,
+                rep: Some(other),
+            }
         }
-
-        self
     }
 
     pub fn from_err<E>(val: T, err: E) -> Self
@@ -81,14 +86,15 @@ impl<T> NmideError<T> {
     }
 
     /// Applies F to the val, pushing the NmideReport to the stack if it fails.
-    pub fn or_else<F, U>(&self, f: F) -> NmideError<U>
+    pub fn or_else<F, U>(self, f: F) -> NmideError<U>
     where
         F: FnOnce(T) -> NmideError<U>,
     {
-        let (val, rep) = f(self.val).unwrap_with_err();
+        let (v, r) = self.unwrap_with_err();
+        let (val, rep) = f(v).unwrap_with_err();
         NmideError {
             val,
-            rep: nmrep!(self.rep, rep),
+            rep: nmrep!(r, rep),
         }
     }
 
@@ -116,11 +122,12 @@ impl<T> NmideError<T> {
     where
         F: FnOnce(Self) -> NmideError<U>,
     {
+        let r = self.rep.clone();
         let res = f(self);
 
         NmideError {
             val: res.val,
-            rep: nmrep!(res.rep, self.rep),
+            rep: nmrep!(res.rep, r),
         }
     }
 
@@ -141,8 +148,8 @@ impl<T> Display for NmideError<T> {
         write!(
             f,
             "WSError: `{:?}`, level: `{:?}`",
-            self.rep.and_then(|r| Some(r.msg)),
-            self.rep.and_then(|r| Some(r.lvl))
+            self.rep.clone().and_then(|r| Some(r.msg)),
+            self.rep.clone().and_then(|r| Some(r.lvl))
         )
     }
 }
@@ -162,10 +169,11 @@ impl<T> NmideError<Option<T>> {
 
 impl<T, E: std::error::Error> NmideError<Result<T, E>> {
     pub fn transpose(self) -> Result<T, NmideReport> {
-        match self.val {
+        let (val, rep) = self.unwrap_with_err();
+        match val {
             Ok(v) => Ok(v),
             Err(err) => {
-                self.push_nmide(NmideReport {
+                let nm = NmideReport {
                     msg: format!(
                         "Cause: `{:?}`, Description: ´{:?}´",
                         err.source(),
@@ -175,50 +183,50 @@ impl<T, E: std::error::Error> NmideError<Result<T, E>> {
                     tag: Vec::new(),
                     stack: Vec::new(),
                     origin: format!("{:?}", err.source()),
-                });
-
-                Err(self.rep.unwrap())
+                };
+                if let Some(r) = rep {
+                    return Err(r.push_stack(Some(nm)));
+                } else {
+                    return Err(nm);
+                }
             }
         }
     }
 
     pub fn transform(self) -> NmideError<Option<T>> {
+        let mut rep = self.rep;
         match self.val {
-            Ok(v) => NmideError {
-                val: Some(v),
-                rep: self.rep,
-            },
+            Ok(v) => NmideError { val: Some(v), rep },
             Err(err) => {
-                self.push_nmide(NmideReport {
-                    msg: format!(
-                        "Cause: `{:?}`, Description: ´{:?}´",
-                        err.source(),
-                        err.to_string()
-                    ),
-                    lvl: ErrorLevel::Unknown,
-                    tag: Vec::new(),
-                    stack: Vec::new(),
-                    origin: format!("{:?}", err.source()),
-                });
-
-                NmideError {
-                    val: None,
-                    rep: self.rep,
+                if let Some(r) = rep {
+                    rep = Some(r.push_stack(Some(NmideReport {
+                        msg: format!(
+                            "Cause: `{:?}`, Description: ´{:?}´",
+                            err.source(),
+                            err.to_string()
+                        ),
+                        lvl: ErrorLevel::Unknown,
+                        tag: Vec::new(),
+                        stack: Vec::new(),
+                        origin: format!("{:?}", err.source()),
+                    })));
                 }
+                NmideError { val: None, rep }
             }
         }
     }
 }
 
 pub fn collect<T>(vec: Vec<NmideError<T>>) -> (Vec<T>, Option<NmideReport>) {
-    (
-        vec.into_iter().map(|nm| nm.val).collect(),
-        vec.into_iter()
-            .filter_map(|e| e.rep)
-            .fold(None, |mut acc, e| match acc {
-                None => Some(e),
-                Some(arep) => Some(arep.push_stack(Some(e))),
-            }),
+    vec.into_iter().map(|e| e.unwrap_with_err()).fold(
+        (Vec::new(), None::<NmideReport>),
+        |(mut vals, err), (v, e)| {
+            vals.push(v);
+            match (err, e) {
+                (Some(a), b) => (vals, Some(a.push_stack(b))),
+                (_, b) => (vals, b),
+            }
+        },
     )
 }
 

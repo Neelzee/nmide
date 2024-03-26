@@ -43,7 +43,7 @@ impl WSFolder {
                     err.val.push(e.val);
 
                     if let Some(rep) = e.rep {
-                        err.push_nmide(rep);
+                        err = err.push_nmide(rep);
                     }
 
                     err
@@ -85,7 +85,7 @@ impl WSFolder {
                     err.val.push(e.val);
 
                     if let Some(rep) = e.rep {
-                        err.push_nmide(rep);
+                        err = err.push_nmide(rep);
                     }
 
                     err
@@ -96,7 +96,7 @@ impl WSFolder {
     pub fn to_folder(&self) -> NmideError<types::Folder> {
         self.get_content().map(|err| NmideError {
             val: types::Folder {
-                name: self.name,
+                name: self.name.clone(),
                 path: self.path.to_str().unwrap_or_default().to_string(),
                 content: err.val,
             },
