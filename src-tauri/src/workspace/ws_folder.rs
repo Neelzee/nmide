@@ -1,6 +1,6 @@
 use crate::{
     errors::NmideError,
-    osops::{get_fof, get_paths},
+    osops::{get_folder_or_file, get_paths},
     types::{self, FolderOrFile},
     utils::funcs::os_to_str,
     workspace::ws_file::WSFile,
@@ -22,47 +22,52 @@ pub struct WSFolder {
 }
 
 impl WSFolder {
-    pub fn new(path: &Path, level: usize) -> Result<Self> {
-        Ok(Self {
-            path: path.to_owned(),
-            name: os_to_str(
-                path.file_name()
-                    .ok_or_eyre(format!("No filename from path: `{path:?}`"))?,
-            )?,
-            content: get_fof(path, level)?
-                .into_iter()
-                .map(|fof| -> Result<Either<WSFile, WSFolder>> {
-                    match fof {
-                        Either::Left(file) => {
-                            let path = Path::new(&file.path);
-                            Ok(Either::Left(WSFile::new(
-                                &path.to_owned(),
-                                Box::new(
-                                    std::fs::File::open(path)
-                                        .wrap_err(format!("Failed opening file: `{path:?}`"))?,
-                                ),
-                            )?))
-                        }
-                        Either::Right(folder) => {
-                            let path = Path::new(&folder.path);
-                            Ok(Either::Right(
-                                WSFolder::new(path, level - 1)
-                                    .wrap_err(format!("Failed opening file: `{path:?}`"))?,
-                            ))
-                        }
-                    }
-                })
-                .fold(Vec::new(), |mut acc, fof| match fof {
-                    Ok(f) => {
-                        acc.push(f);
-                        acc
-                    }
-                    Err(err) => {
-                        debug!("Got error: `{err:?}`");
-                        acc
-                    }
-                }),
-        })
+    pub fn new(path: &Path, level: usize) -> NmideError<Self> {
+        let mut err = NmideError::empty();
+        let name = os_to_str(path.file_name().unwrap_or_default());
+        let content = get_folder_or_file(path, level).and_then(|mut vc| {
+            Some(vc.into_iter().map(|f| match f {
+                Either::Left(_) => todo!(),
+                Either::Right(_) => todo!(),
+            }))
+        });
+
+        /*
+        let content = get_fof(path, level)
+           .into_iter()
+           .map(|fof| -> Result<Either<WSFile, WSFolder>> {
+               match fof {
+                   Either::Left(file) => {
+                       let path = Path::new(&file.path);
+                       Ok(Either::Left(WSFile::new(
+                           &path.to_owned(),
+                           Box::new(
+                               std::fs::File::open(path)
+                                   .wrap_err(format!("Failed opening file: `{path:?}`"))?,
+                           ),
+                       )?))
+                   }
+                   Either::Right(folder) => {
+                       let path = Path::new(&folder.path);
+                       Ok(Either::Right(
+                           WSFolder::new(path, level - 1)
+                               .wrap_err(format!("Failed opening file: `{path:?}`"))?,
+                       ))
+                   }
+               }
+           })
+           .fold(Vec::new(), |mut acc, fof| match fof {
+               Ok(f) => {
+                   acc.push(f);
+                   acc
+               }
+               Err(err) => {
+                   debug!("Got error: `{err:?}`");
+                   acc
+               }
+           });
+
+          */
     }
 
     pub fn get_content(&self) -> Result<Vec<FolderOrFile>> {
@@ -86,5 +91,9 @@ impl WSFolder {
                 .to_string(),
             content: self.get_content()?,
         })
+    }
+
+    pub fn push_content(&mut self, mut content: Vec<Either<WSFile, WSFolder>>) {
+        self.content.append(&mut content);
     }
 }

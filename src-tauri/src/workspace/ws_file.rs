@@ -1,6 +1,6 @@
-use crate::{errors::NmideError, types, utils::funcs::os_to_str};
+use crate::{errors::NmideError, nmrep, types, utils::funcs::os_to_str};
 use either::Either;
-use eyre::{eyre, Context, OptionExt, Result};
+use eyre::{Context, Result};
 use std::{
     fs::File,
     io::{BufReader, BufWriter, Read, Write},
@@ -17,29 +17,25 @@ pub struct WSFile {
     file: Box<File>,
 }
 
-#[derive(Debug)]
-pub struct WSFolder {
-    path: PathBuf,
-    name: String,
-    content: Vec<Either<WSFile, WSFolder>>,
-}
-
 impl WSFile {
-    pub fn new(path: &PathBuf, file: Box<File>) -> Result<WSFile> {
-        Ok(WSFile {
+    pub fn new(path: &PathBuf, file: Box<File>) -> NmideError<WSFile> {
+        let mut err = NmideError::empty();
+
+        let (name, name_rep) = os_to_str((*path).file_name().unwrap_or_default()).unwrap_with_err();
+        let (ext, ext_rep) = os_to_str(path.extension().unwrap_or_default()).unwrap_with_err();
+
+        err.rep = nmrep!(name_rep, ext_rep);
+
+        err.val = Some(WSFile {
             path: path.clone(),
-            name: (*path)
-                .file_name()
-                .and_then(|op| Some(os_to_str(op)))
-                .unwrap()?,
-            ext: path
-                .extension()
-                .and_then(|op| os_to_str(op).ok())
-                .unwrap_or(String::new()),
+            name: name.unwrap_or_default(),
+            ext: ext.unwrap_or_default(),
             is_opened: false,
             content: None,
             file,
-        })
+        });
+
+        err
     }
 
     pub fn open(&mut self) -> Result<()> {
@@ -68,30 +64,20 @@ impl WSFile {
         self.is_opened = false;
     }
 
-    pub fn to_file(&self) -> Result<types::File> {
-        Ok(types::File {
+    pub fn to_file(&self) -> NmideError<types::File> {
+        let mut err = NmideError::empty();
+
+        let (path, path_rep) = os_to_str(self.path.clone().as_os_str()).unwrap_with_err();
+
+        err.rep = path_rep;
+
+        err.val = Some(types::File {
             name: self.name.clone(),
             extension: self.ext.clone(),
-            path: os_to_str(self.path.clone().as_os_str())?,
-            content: {
-                Some(
-                    match &self.content {
-                        Some(f) => Ok::<_, eyre::ErrReport>(f.clone()),
-                        None => {
-                            let mut buffer = String::new();
-                            let mut reader = BufReader::new(File::open(self.path.clone()).wrap_err(
-                            format!("Failed opening file for reading, when converting from WSFile to File: `{:?}`", self),
-                        )?);
-                            reader.read_to_string(&mut buffer).wrap_err(
-                            format!("Failed reading content from file, when converting from WSFile to File: `{:?}`", self),
-                        )?;
+            path: path.unwrap_or_default(),
+            content: self.content,
+        });
 
-                            Ok(buffer)
-                        }
-                    }
-                    .wrap_err(format!("Failed reading content from file: `{:?}`", self))?,
-                )
-            },
-        })
+        err
     }
 }
