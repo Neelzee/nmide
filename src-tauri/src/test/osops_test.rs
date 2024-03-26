@@ -7,9 +7,10 @@ use std::path::Path;
 fn test_path_getter() -> Result<()> {
     let path = Path::new("./src/test");
 
-    let dirs = get_paths(path, 1).wrap_err("Failed getting paths for testing")?;
+    let (dirs, dirs_rep) = get_paths(path, 1).unwrap_with_err();
 
     debug!("{dirs:?}");
+    debug!("\n{dirs_rep:?}");
 
     assert!(dirs.len() != 0);
 

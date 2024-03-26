@@ -1,15 +1,19 @@
 use std::ffi::OsStr;
 
-use eyre::{eyre, Context, Result};
+use crate::errors::{ErrorLevel, NmideError, NmideReport};
 
-use crate::errors::NmideError;
-
-pub fn os_to_str(s: &OsStr) -> Result<String> {
-    Ok(s.to_str()
-        .ok_or(eyre!(NmideError {
+pub fn os_to_str(s: &OsStr) -> NmideError<String> {
+    NmideError {
+        val: s
+            .to_str()
+            .and_then(|s| Some(s.to_string()))
+            .unwrap_or(format!("{s:?}")),
+        rep: Some(NmideReport {
             msg: format!("Failed converting String: `{s:?}`"),
-            lvl: crate::errors::ErrorLevel::Low,
-            tag: Vec::new()
-        }))?
-        .to_string())
+            lvl: ErrorLevel::Low,
+            tag: Vec::new(),
+            stack: Vec::new(),
+            origin: "os_to_str".to_string(),
+        }),
+    }
 }

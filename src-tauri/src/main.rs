@@ -9,6 +9,7 @@ use tauri_plugin_log::LogTarget;
 use tokio::sync::Mutex;
 
 mod cmds;
+mod either;
 mod errors;
 mod osops;
 #[cfg(test)]

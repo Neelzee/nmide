@@ -1,13 +1,16 @@
-use either::Either;
 use eyre::{Context, OptionExt, Result};
-use std::fs;
 use std::fs::File;
 use std::io::Read;
 use std::io::{BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
 
-use crate::types::{self, FolderOrFile};
-use crate::utils::funcs::os_to_str;
+use crate::{
+    either::Either,
+    errors::{ErrorLevel, NmideError, NmideReport},
+    nmrep,
+    types::{self, FolderOrFile},
+    utils::funcs::os_to_str,
+};
 
 /// Reads from the file into a buffer
 pub fn read_file(file: &File) -> Result<String> {
@@ -28,84 +31,98 @@ pub fn write_to_file(file: &File, content: &str) -> Result<()> {
     Ok(())
 }
 
-fn visit_dirs_recursive(dir: &Path, depth: usize, paths: &mut Vec<PathBuf>) -> Result<()> {
-    paths.push(dir.to_owned());
-    if depth == 0 {
-        return Ok(());
-    }
-
-    if dir.is_dir() {
-        for entry in fs::read_dir(dir)? {
-            let entry = entry?;
-            let path = entry.path();
-
-            paths.push(path.clone());
-
-            if path.is_dir() {
-                visit_dirs_recursive(&path, depth - 1, paths)?;
-            }
-        }
-    }
-
-    Ok(())
-}
-
 /// Returns a list of all the paths in the given directory
 ///
 /// Recursively checks for until level = 0
-pub fn get_paths(path: &Path, level: usize) -> Result<Vec<PathBuf>> {
-    let mut paths = Vec::new();
-    visit_dirs_recursive(path, level, &mut paths)?;
-    Ok(paths)
+pub fn get_paths(path: &Path, level: usize) -> NmideError<Vec<PathBuf>> {
+    visit_dirs_recursive(path, level).vmap(|v| {
+        v.into_iter()
+            .map(|e| match e {
+                Either::Left(f) => PathBuf::from(f.path),
+                Either::Right(f) => PathBuf::from(f.path),
+            })
+            .collect()
+    })
 }
 
-pub fn get_fof(path: &Path, level: usize) -> Result<Vec<Either<types::File, types::Folder>>> {
-    _visit_dirs_recursive(path, level)
+pub fn get_folder_or_file(
+    path: &Path,
+    level: usize,
+) -> NmideError<Vec<Either<types::File, types::Folder>>> {
+    visit_dirs_recursive(path, level)
 }
 
-fn _visit_dirs_recursive(
+fn visit_dirs_recursive(
     dir: &Path,
     depth: usize,
-) -> Result<Vec<Either<types::File, types::Folder>>> {
-    let mut paths = Vec::new();
+) -> NmideError<Vec<Either<types::File, types::Folder>>> {
+    let mut res = NmideError {
+        val: Vec::new(),
+        rep: None,
+    };
 
     if depth == 0 {
-        return Ok(paths);
+        return res;
     }
 
     if dir.is_dir() {
-        paths.push(Either::Right(types::Folder {
-            name: os_to_str(
-                dir.file_name()
-                    .ok_or_eyre(format!("Failed getting filename from: `{dir:?}`"))?,
-            )?,
-            path: dir
-                .to_str()
-                .ok_or_eyre(format!("Failed reading path as UTF-8 String: `{dir:?}`"))?
-                .to_string(),
-            content: _visit_dirs_recursive(dir, depth - 1)?
-                .into_iter()
-                .map(std::convert::Into::into)
-                .collect::<Vec<FolderOrFile>>(),
+        let name = os_to_str(dir.file_name().unwrap_or_default());
+
+        let path_str = NmideError {
+            val: dir.to_str().and_then(|p| Some(p.to_string())),
+            rep: Some(NmideReport {
+                msg: format!("Failed converting Path to String: `{dir:?}`"),
+                lvl: ErrorLevel::Low,
+                tag: Vec::new(),
+                stack: Vec::new(),
+                origin: "visit_dirs_recursive".to_string(),
+            }),
+        };
+
+        let (content, content_rep) = visit_dirs_recursive(dir, depth - 1)
+            .vmap(|vc| {
+                vc.into_iter()
+                    .map(|e| e.into())
+                    .collect::<Vec<FolderOrFile>>()
+            })
+            .unwrap_with_err();
+        let (name, name_rep) = name.unwrap_with_err();
+        let (path_str, path_str_rep) = path_str.unwrap_with_err();
+
+        res.val.push(Either::Right(types::Folder {
+            name,
+            path: path_str.unwrap_or_default(),
+            content,
         }));
+
+        res.rep = nmrep!(res.rep, name_rep, path_str_rep, content_rep);
     } else {
-        paths.push(Either::Left(types::File {
-            name: os_to_str(
-                dir.file_name()
-                    .ok_or_eyre(format!("Failed getting filename from: `{dir:?}`"))?,
-            )?,
-            extension: dir
-                .extension()
-                .and_then(|os| os_to_str(os).ok())
-                .or_else(|| Some(String::new()))
-                .unwrap(),
-            path: dir
-                .to_str()
-                .ok_or_eyre(format!("Failed reading path as UTF-8 String: `{dir:?}`"))?
-                .to_string(),
+        let (name, name_rep) = os_to_str(dir.file_name().unwrap_or_default()).unwrap_with_err();
+
+        let (path_str, path_str_rep) = NmideError {
+            val: dir.to_str().and_then(|p| Some(p.to_string())),
+            rep: Some(NmideReport {
+                msg: format!("Failed converting Path to String: `{dir:?}`"),
+                lvl: ErrorLevel::Low,
+                tag: Vec::new(),
+                stack: Vec::new(),
+                origin: "_visit_dirs_recursive".to_string(),
+            }),
+        }
+        .unwrap_with_err();
+
+        let (extension, extension_rep) =
+            os_to_str(dir.extension().unwrap_or_default()).unwrap_with_err();
+
+        res.rep = nmrep!(name_rep, path_str_rep, extension_rep);
+
+        res.val.push(Either::Left(types::File {
+            name,
+            path: path_str.unwrap_or_default(),
+            extension,
             content: None::<String>,
         }));
     }
 
-    Ok(paths)
+    res
 }
