@@ -123,6 +123,17 @@ impl<T> NmideError<T> {
             rep: nmrep!(res.rep, self.rep),
         }
     }
+
+    /// Applies a function on the value
+    pub fn vmap<F, U>(self, f: F) -> NmideError<U>
+    where
+        F: FnOnce(T) -> U,
+    {
+        NmideError {
+            val: f(self.val),
+            rep: self.rep,
+        }
+    }
 }
 
 impl<T> Display for NmideError<T> {
@@ -197,6 +208,18 @@ impl<T, E: std::error::Error> NmideError<Result<T, E>> {
             }
         }
     }
+}
+
+pub fn collect<T>(vec: Vec<NmideError<T>>) -> (Vec<T>, Option<NmideReport>) {
+    (
+        vec.into_iter().map(|nm| nm.val).collect(),
+        vec.into_iter()
+            .filter_map(|e| e.rep)
+            .fold(None, |mut acc, e| match acc {
+                None => Some(e),
+                Some(arep) => Some(arep.push_stack(Some(e))),
+            }),
+    )
 }
 
 #[macro_export]

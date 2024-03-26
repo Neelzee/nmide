@@ -3,7 +3,7 @@ pub mod ws_folder;
 
 use crate::{
     either::Either,
-    errors::{NmideError, NmideReport},
+    errors::{collect, NmideError, NmideReport},
     osops::{get_folder_or_file, get_paths},
     types::{self, Folder, FolderOrFile},
     utils::funcs::os_to_str,
@@ -27,15 +27,26 @@ pub struct Workspace {
 
 impl Workspace {
     fn copy_files(&self) -> NmideError<Vec<FolderOrFile>> {
-        let mut vec = Vec::new();
-        for (_, v) in &self.files {
-            match v {
-                Either::Left(f) => vec.push(FolderOrFile::File(f.to_file()?)),
-                Either::Right(f) => vec.push(FolderOrFile::Folder(f.to_folder()?)),
-            }
-        }
-
-        Ok(vec)
+        (&self.files)
+            .into_iter()
+            .map(|(_, v)| match v {
+                Either::Left(ws) => Either::Left(ws.to_file()),
+                Either::Right(ws) => Either::Right(ws.to_folder()),
+            })
+            .map(|e| e.transpose().vmap(|e| -> FolderOrFile { e.into() }))
+            .fold(
+                NmideError {
+                    val: Vec::new(),
+                    rep: None,
+                },
+                |mut err, e| {
+                    err.val.push(e.val);
+                    if let Some(rep) = e.rep {
+                        err.push_nmide(rep);
+                    }
+                    err
+                },
+            )
     }
 
     pub fn empty() -> Self {
@@ -52,33 +63,44 @@ impl Workspace {
         }
     }
 
-    pub fn init(path: &Path) -> Result<Self> {
+    pub fn init(path: &Path) -> NmideError<Self> {
         info!("Initializing workspace on `{path:?}`");
         let i = 2;
         info!("Walking `{i}` deep");
-        let mut dirs: HashMap<String, Either<WSFile, WSFolder>> = HashMap::new();
-        for p in get_paths(path, i)? {
+        let mut dirs: HashMap<String, Either<NmideError<WSFile>, NmideError<WSFolder>>> =
+            HashMap::new();
+
+        let (paths, path_rep) = get_paths(path, i).unwrap_with_err();
+
+        for p in paths {
             debug!("Path: `{p:?}`");
-            let r = p
-                .to_str()
-                .ok_or_eyre("Failed converting into valid UTF-8 String: `{p:?}`");
-            let key = if r.is_err() {
-                warn!("Error: `{r:?}`");
-                format!("{p:?}")
-            } else {
-                r.unwrap().to_string()
-            };
+            let key = p.to_str().unwrap_or_default().to_string();
+
+            if dirs.contains_key(&key) {
+                warn!("{key:?} is in dir, with value: `{:?}`", dirs.get(&key));
+            }
+
             if p.is_dir() {
-                dirs.insert(key, Either::Right(WSFolder::new(p.as_path(), i - 1)?));
+                dirs.insert(key, Either::Right(WSFolder::new(p.as_path(), i - 1)));
             } else {
-                dirs.insert(key, Either::Left(WSFile::new(&p)?));
+                dirs.insert(key, Either::Left(WSFile::new(&p)));
             }
         }
 
-        Ok(Self {
-            root: path.to_owned(),
-            files: dirs,
-        })
+        let content = dirs
+            .into_iter()
+            .map(|(k, v)| (k, v.transpose().val))
+            .collect::<HashMap<_, _>>();
+
+        let content_rep = collect(dirs.into_iter().map(|(_, v)| v.transpose()).collect()).1;
+
+        NmideError {
+            val: Workspace {
+                root: path.to_owned(),
+                files: content,
+            },
+            rep: content_rep,
+        }
     }
 
     pub fn to_folder(&self) -> NmideError<types::Folder> {

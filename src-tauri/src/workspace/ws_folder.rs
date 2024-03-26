@@ -94,14 +94,13 @@ impl WSFolder {
     }
 
     pub fn to_folder(&self) -> NmideError<types::Folder> {
-        Ok(types::Folder {
-            name: self.name.clone(),
-            path: self
-                .path
-                .to_str()
-                .ok_or_eyre(format!("Failed getting path from `{:?}`", self))?
-                .to_string(),
-            content: self.get_content()?,
+        self.get_content().map(|err| NmideError {
+            val: types::Folder {
+                name: self.name,
+                path: self.path.to_str().unwrap_or_default().to_string(),
+                content: err.val,
+            },
+            rep: err.rep,
         })
     }
 

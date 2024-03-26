@@ -6,7 +6,6 @@ use crate::{
     workspace::{ws_file::WSFile, ws_folder::WSFolder},
 };
 use serde::{Deserialize, Serialize};
-use std::fs;
 use std::path::{Path, PathBuf};
 
 #[derive(Debug, Deserialize, Serialize)]

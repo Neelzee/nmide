@@ -1,5 +1,4 @@
 use eyre::{Context, OptionExt, Result};
-use std::fs;
 use std::fs::File;
 use std::io::Read;
 use std::io::{BufReader, BufWriter, Write};
@@ -32,45 +31,28 @@ pub fn write_to_file(file: &File, content: &str) -> Result<()> {
     Ok(())
 }
 
-fn visit_dirs_recursive(dir: &Path, depth: usize, paths: &mut Vec<PathBuf>) -> Result<()> {
-    paths.push(dir.to_owned());
-    if depth == 0 {
-        return Ok(());
-    }
-
-    if dir.is_dir() {
-        for entry in fs::read_dir(dir)? {
-            let entry = entry?;
-            let path = entry.path();
-
-            paths.push(path.clone());
-
-            if path.is_dir() {
-                visit_dirs_recursive(&path, depth - 1, paths)?;
-            }
-        }
-    }
-
-    Ok(())
-}
-
 /// Returns a list of all the paths in the given directory
 ///
 /// Recursively checks for until level = 0
-pub fn get_paths(path: &Path, level: usize) -> Result<Vec<PathBuf>> {
-    let mut paths = Vec::new();
-    visit_dirs_recursive(path, level, &mut paths)?;
-    Ok(paths)
+pub fn get_paths(path: &Path, level: usize) -> NmideError<Vec<PathBuf>> {
+    visit_dirs_recursive(path, level).vmap(|v| {
+        v.into_iter()
+            .map(|e| match e {
+                Either::Left(f) => PathBuf::from(f.path),
+                Either::Right(f) => PathBuf::from(f.path),
+            })
+            .collect()
+    })
 }
 
 pub fn get_folder_or_file(
     path: &Path,
     level: usize,
 ) -> NmideError<Vec<Either<types::File, types::Folder>>> {
-    _visit_dirs_recursive(path, level)
+    visit_dirs_recursive(path, level)
 }
 
-fn _visit_dirs_recursive(
+fn visit_dirs_recursive(
     dir: &Path,
     depth: usize,
 ) -> NmideError<Vec<Either<types::File, types::Folder>>> {
@@ -98,11 +80,11 @@ fn _visit_dirs_recursive(
                 lvl: ErrorLevel::Low,
                 tag: Vec::new(),
                 stack: Vec::new(),
-                origin: "_visit_dirs_recursive".to_string(),
+                origin: "visit_dirs_recursive".to_string(),
             }),
         };
 
-        let content = _visit_dirs_recursive(dir, depth - 1).and_then(|mut e| {
+        let content = visit_dirs_recursive(dir, depth - 1).and_then(|mut e| {
             Some(
                 e.into_iter()
                     .map(std::convert::Into::into)
