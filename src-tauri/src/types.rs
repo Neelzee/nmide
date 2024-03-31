@@ -14,6 +14,15 @@ pub enum FolderOrFile {
     Folder(Folder),
 }
 
+impl FolderOrFile {
+    pub fn len(&self) -> usize {
+        match self {
+            FolderOrFile::File(_) => 1,
+            FolderOrFile::Folder(f) => 1 + (&f.content).into_iter().fold(0, |c, f| c + f.len()),
+        }
+    }
+}
+
 impl From<Either<File, Folder>> for FolderOrFile {
     fn from(value: Either<File, Folder>) -> Self {
         match value {

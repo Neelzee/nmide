@@ -1,12 +1,12 @@
 use eyre::{Context, OptionExt, Result};
-use std::fs::File;
+use std::fs::{read_dir, File};
 use std::io::Read;
 use std::io::{BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
 
 use crate::{
     either::Either,
-    errors::{ErrorLevel, NmideError, NmideReport},
+    errors::{fold_nmide, ErrorLevel, NmideError, NmideReport},
     nmrep,
     types::{self, FolderOrFile},
     utils::funcs::os_to_str,
@@ -79,13 +79,51 @@ fn visit_dirs_recursive(
             }),
         };
 
-        let (content, content_rep) = visit_dirs_recursive(dir, depth - 1)
-            .vmap(|vc| {
-                vc.into_iter()
-                    .map(|e| e.into())
-                    .collect::<Vec<FolderOrFile>>()
+        let (content, content_rep) = NmideError::from_err(read_dir(dir))
+            .map(|sub_dir| -> NmideError<Vec<FolderOrFile>> {
+                match sub_dir.val {
+                    Some(sd) => fold_nmide(
+                        sd.map(|e| match e {
+                            Ok(p) => NmideError {
+                                val: p.path(),
+                                rep: None,
+                            },
+                            Err(err) => NmideError {
+                                val: PathBuf::new(),
+                                rep: Some(NmideReport::from_err(err)),
+                            },
+                        })
+                        .map(|p| {
+                            if p.val.is_dir() {
+                                visit_dirs_recursive(p.val.as_path(), depth - 1)
+                                    .vmap(|vc| {
+                                        vc.into_iter()
+                                            .map(|e| e.into())
+                                            .collect::<Vec<FolderOrFile>>()
+                                    })
+                                    .map(|e| {
+                                        types::Folder::new(p.val.as_path()).vmap(|mut f| {
+                                            f.content = e.val;
+                                            FolderOrFile::Folder(f)
+                                        })
+                                    })
+                            } else {
+                                p.map(|e| {
+                                    types::File::new(e.val.as_path())
+                                        .vmap(|f| FolderOrFile::File(f))
+                                })
+                            }
+                        })
+                        .collect(),
+                    ),
+                    None => NmideError {
+                        val: Vec::new(),
+                        rep: sub_dir.rep,
+                    },
+                }
             })
             .unwrap_with_err();
+
         let (name, name_rep) = name.unwrap_with_err();
         let (path_str, path_str_rep) = path_str.unwrap_with_err();
 

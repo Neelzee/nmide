@@ -3,7 +3,7 @@ pub mod ws_folder;
 
 use crate::{
     either::Either,
-    errors::{collect, NmideError, NmideReport},
+    errors::{NmideError, NmideReport},
     nmrep,
     osops::{get_folder_or_file, get_paths},
     types::{self, Folder, FolderOrFile},
