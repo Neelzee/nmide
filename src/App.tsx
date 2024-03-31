@@ -16,7 +16,7 @@ function App() {
   // detach the browser console from the log stream
   detach();
 
-  invoke("get_workspace", { path: "/home/nmf/Documents/nmide" })
+  invoke("get_workspace", { path: "/home/nmf/Documents/nmide/" })
     .then(res => {
       console.log(res);
     })

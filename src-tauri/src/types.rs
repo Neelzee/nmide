@@ -8,7 +8,7 @@ use crate::{
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum FolderOrFile {
     File(File),
     Folder(Folder),
@@ -41,7 +41,7 @@ impl From<FolderOrFile> for Either<File, Folder> {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct File {
     pub name: String,
     pub extension: String,
@@ -108,7 +108,7 @@ impl File {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Folder {
     pub name: String,
     pub path: String,

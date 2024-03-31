@@ -11,8 +11,6 @@ use crate::{
     workspace::{ws_file::WSFile, ws_folder::WSFolder},
 };
 use eyre::{Context, OptionExt, Result};
-#[warn(unused_imports)]
-use log::{debug, info, warn};
 use std::{
     collections::HashMap,
     fmt::write,
@@ -69,9 +67,7 @@ impl Workspace {
     }
 
     pub fn init(path: &Path) -> NmideError<Self> {
-        info!("Initializing workspace on `{path:?}`");
         let i = 3;
-        info!("Walking `{i}` deep");
 
         let (paths, path_rep) = get_paths(path, i).unwrap_with_err();
 

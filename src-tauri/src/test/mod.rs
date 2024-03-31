@@ -7,9 +7,8 @@ use crate::{
 
 use std::path::{Path, PathBuf};
 
-#[cfg(test)]
 mod osops_test;
-#[cfg(test)]
+mod utils_test;
 mod workspace_test;
 
 const TEST_PATH: &str = "../../../.test/";
