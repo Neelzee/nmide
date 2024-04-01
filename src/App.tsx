@@ -3,6 +3,7 @@ import { Explorer } from "./components/explorer";
 import "./styles/main.scss";
 import { invoke } from "@tauri-apps/api";
 import { trace, info, error, attachConsole } from "tauri-plugin-log-api";
+import { ErrorPane } from "./components/errorPane";
 
 const detach = await attachConsole();
 
@@ -28,6 +29,7 @@ function App() {
       <ToolBar />
       <article>
         <Explorer files={["f1"]} />
+        <ErrorPane errors={[]} />
       </article>
     </main>
   );
