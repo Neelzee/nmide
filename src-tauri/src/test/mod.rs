@@ -8,6 +8,7 @@ use crate::{
 use std::path::{Path, PathBuf};
 
 mod osops_test;
+mod type_test;
 mod utils_test;
 mod workspace_test;
 
