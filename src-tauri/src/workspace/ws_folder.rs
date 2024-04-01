@@ -3,7 +3,10 @@ use crate::{
     errors::NmideError,
     nmrep,
     osops::{get_folder_or_file, get_paths},
-    types::{self, FolderOrFile},
+    types::{
+        self,
+        modules::{self, FolderOrFile},
+    },
     utils::funcs::os_to_str,
     workspace::ws_file::WSFile,
 };
@@ -93,9 +96,9 @@ impl WSFolder {
             )
     }
 
-    pub fn to_folder(&self) -> NmideError<types::Folder> {
+    pub fn to_folder(&self) -> NmideError<modules::Folder> {
         self.get_content().map(|err| NmideError {
-            val: types::Folder {
+            val: modules::Folder {
                 name: self.name.clone(),
                 path: self.path.to_str().unwrap_or_default().to_string(),
                 content: err.val,

@@ -2,7 +2,7 @@ use std::ffi::OsStr;
 
 use crate::{
     errors::{ErrorLevel, NmideError, NmideReport},
-    types::FolderOrFile,
+    types::modules::FolderOrFile,
 };
 
 pub fn os_to_str(s: &OsStr) -> NmideError<String> {

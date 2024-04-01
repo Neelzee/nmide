@@ -1,7 +1,7 @@
 use crate::{
     errors::{ErrorLevel, NmideError},
     nmrep,
-    types::FolderOrFile,
+    types::modules::FolderOrFile,
     utils::funcs::pretty_display,
     workspace::Workspace,
     WORKSPACE,
