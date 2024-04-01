@@ -7,10 +7,10 @@ use crate::{
     nmrep,
     osops::{get_folder_or_file, get_paths},
     types::{self, Folder, FolderOrFile},
-    utils::funcs::os_to_str,
+    utils::funcs::{os_to_str, pretty_display},
     workspace::{ws_file::WSFile, ws_folder::WSFolder},
 };
-use eyre::{Context, OptionExt, Result};
+use log::debug;
 use std::{
     collections::HashMap,
     fmt::write,
@@ -67,7 +67,7 @@ impl Workspace {
     }
 
     pub fn init(path: &Path) -> NmideError<Self> {
-        let i = 3;
+        let i = 2;
 
         let (paths, path_rep) = get_paths(path, i).unwrap_with_err();
 
