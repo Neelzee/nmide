@@ -67,7 +67,7 @@ impl Workspace {
     }
 
     pub fn init(path: &Path) -> NmideError<Self> {
-        let i = 2;
+        let i = 3;
 
         let (paths, path_rep) = get_paths(path, i).unwrap_with_err();
 

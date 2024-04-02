@@ -1,16 +1,12 @@
-import { createSignal } from "solid-js";
+import { Accessor } from "solid-js";
 import "../styles/error_pane.scss";
 import { NmideReport } from "../types";
 
-export function ErrorPane(props: { errors: NmideReport[] }) {
-  const [errors, setErrors] = createSignal<NmideReport[]>([]);
-
-  setErrors(props.errors);
-
+export function ErrorPane(props: { errors: Accessor<NmideReport[]> }) {
   return (
     <section class="error-pane">
       {
-        errors().map(e => <RenderError error={e} />)
+        props.errors().map(e => <RenderError error={e} />)
       }
     </section>
   );
