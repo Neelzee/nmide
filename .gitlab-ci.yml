@@ -13,15 +13,13 @@ linting:
   script:
     - rustup component add clippy
     - cd src-tauri
-    - git checkout -b linting_fix
     - cargo fix --allow-dirty
     - cargo clippy --fix --allow-dirty
     - git config user.email "nfi005@uib.no"
     - git config user.name "ci-bot"
-    - git remote add linting_fix https://oauth2:$PROJECT_TOKEN@git.app.uib.no/Nils.Fitjar/nmide.git
     - git add .
     - git commit -m "Automated fixes by clippy, and cargo fix"
-    - git push --set-upstream dev -o ci.skip # prevent triggering pipeline again
+    - git push https://oauth2:$PROJECT_TOKEN@git.app.uib.no/Nils.Fitjar/nmide.git HEAD:dev -o ci.skip # prevent triggering pipeline again
 
 rust_test:
   stage: test
