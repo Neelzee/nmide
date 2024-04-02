@@ -1,4 +1,5 @@
-use eyre::{Context, OptionExt, Result};
+use eyre::{Context, Result};
+use std::collections::HashSet;
 use std::fs::{read_dir, File};
 use std::io::Read;
 use std::io::{BufReader, BufWriter, Write};
@@ -9,7 +10,7 @@ use crate::{
     errors::{fold_nmide, ErrorLevel, NmideError, NmideReport},
     nmrep,
     types::{modules, modules::FolderOrFile},
-    utils::funcs::os_to_str,
+    utils::funcs::{os_to_str, to_paths},
 };
 
 /// Reads from the file into a buffer
@@ -31,31 +32,40 @@ pub fn write_to_file(file: &File, content: &str) -> Result<()> {
     Ok(())
 }
 
-/// Returns a list of all the paths in the given directory
+/// Returns a list of all the absolute paths in the given directory
 ///
 /// Recursively checks for until level = 0
 pub fn get_paths(path: &Path, level: usize) -> NmideError<Vec<PathBuf>> {
-    visit_dirs_recursive(path, level).vmap(|v| {
-        v.into_iter()
-            .map(|e| match e {
-                Either::Left(f) => PathBuf::from(f.path),
-                Either::Right(f) => PathBuf::from(f.path),
+    visit_dirs_recursive(path, level)
+        .vmap(|v| {
+            v.into_iter().fold(Vec::new(), |mut acc, e| match e {
+                Either::Right(f) => {
+                    acc.push(PathBuf::from(f.path));
+                    return acc;
+                }
+                Either::Left(f) => {
+                    acc.push(PathBuf::from(f.path));
+                    acc.append(&mut to_paths(
+                        f.content.into_iter().map(|e| e.into()).collect(),
+                    ));
+                    return acc;
+                }
             })
-            .collect()
-    })
+        }) // Ensures no duplicates
+        .vmap(|e| e.into_iter().collect::<HashSet<_>>().into_iter().collect())
 }
 
 pub fn get_folder_or_file(
     path: &Path,
     level: usize,
-) -> NmideError<Vec<Either<modules::File, modules::Folder>>> {
+) -> NmideError<Vec<Either<modules::Folder, modules::File>>> {
     visit_dirs_recursive(path, level)
 }
 
 fn visit_dirs_recursive(
     dir: &Path,
     depth: usize,
-) -> NmideError<Vec<Either<modules::File, modules::Folder>>> {
+) -> NmideError<Vec<Either<modules::Folder, modules::File>>> {
     let mut res = NmideError {
         val: Vec::new(),
         rep: None,
@@ -127,7 +137,7 @@ fn visit_dirs_recursive(
         let (name, name_rep) = name.unwrap_with_err();
         let (path_str, path_str_rep) = path_str.unwrap_with_err();
 
-        res.val.push(Either::Right(modules::Folder {
+        res.val.push(Either::Left(modules::Folder {
             name,
             path: path_str.unwrap_or_default(),
             content,
@@ -154,7 +164,7 @@ fn visit_dirs_recursive(
 
         res.rep = nmrep!(name_rep, path_str_rep, extension_rep);
 
-        res.val.push(Either::Left(modules::File {
+        res.val.push(Either::Right(modules::File {
             name,
             path: path_str.unwrap_or_default(),
             extension,

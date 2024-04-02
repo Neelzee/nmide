@@ -12,7 +12,7 @@ mod type_test;
 mod utils_test;
 mod workspace_test;
 
-const TEST_PATH: &str = "../../../.test/";
+const TEST_PATH: &str = "/home/nmf/Documents/nmide/.test/";
 
 const FOLDER: Lazy<FolderOrFile> = Lazy::new(|| {
     FolderOrFile::Folder(Folder {

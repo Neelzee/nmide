@@ -21,11 +21,11 @@ use std::{
 #[derive(Debug)]
 pub struct Workspace {
     root: PathBuf,
-    files: HashMap<String, Either<WSFile, WSFolder>>,
+    files: HashMap<String, Either<WSFolder, WSFile>>,
 }
 
 impl Workspace {
-    pub fn get_files(&self) -> Vec<&Either<WSFile, WSFolder>> {
+    pub fn get_files(&self) -> Vec<&Either<WSFolder, WSFile>> {
         self.files.values().collect()
     }
 
@@ -33,8 +33,8 @@ impl Workspace {
         (&self.files)
             .into_iter()
             .map(|(_, v)| match v {
-                Either::Left(ws) => Either::Left(ws.to_file()),
-                Either::Right(ws) => Either::Right(ws.to_folder()),
+                Either::Left(ws) => Either::Left(ws.to_folder()),
+                Either::Right(ws) => Either::Right(ws.to_file()),
             })
             .map(|e| e.transpose().vmap(|e| -> FolderOrFile { e.into() }))
             .fold(
@@ -59,7 +59,7 @@ impl Workspace {
         }
     }
 
-    pub fn new(root: &Path, files: HashMap<String, Either<WSFile, WSFolder>>) -> Workspace {
+    pub fn new(root: &Path, files: HashMap<String, Either<WSFolder, WSFile>>) -> Workspace {
         Workspace {
             root: root.to_owned(),
             files,
@@ -77,9 +77,9 @@ impl Workspace {
                 let key = p.to_str().unwrap_or_default().to_string();
 
                 if p.is_dir() {
-                    (key, Either::Right(WSFolder::new(p.as_path(), i - 1)))
+                    (key, Either::Left(WSFolder::new(p.as_path(), i - 1)))
                 } else {
-                    (key, Either::Left(WSFile::new(&p)))
+                    (key, Either::Right(WSFile::new(&p)))
                 }
             })
             .map(|(a, b)| -> (String, NmideError<Either<_, _>>) { (a, b.transpose()) })

@@ -1,8 +1,9 @@
 use crate::{
+    either::Either,
     errors::{ErrorLevel, NmideError, NmideReport},
-    types::modules::FolderOrFile,
+    types::modules::{File, Folder, FolderOrFile},
 };
-use std::ffi::OsStr;
+use std::{ffi::OsStr, path::PathBuf};
 
 pub fn os_to_str(s: &OsStr) -> NmideError<String> {
     NmideError {
@@ -34,4 +35,22 @@ pub fn pretty_display(files: &Vec<FolderOrFile>, lvl: usize) -> String {
     }
 
     s
+}
+
+pub fn to_paths(vec: Vec<Either<Folder, File>>) -> Vec<PathBuf> {
+    vec.into_iter().fold(Vec::new(), |mut acc, e| {
+        match e {
+            Either::Right(f) => acc.push(PathBuf::from(f.path)),
+            Either::Left(f) => {
+                acc.push(PathBuf::from(f.path));
+                acc.append(&mut to_paths(
+                    f.content
+                        .into_iter()
+                        .map(|e| e.into())
+                        .collect::<Vec<Either<_, _>>>(),
+                ));
+            }
+        }
+        acc
+    })
 }

@@ -22,7 +22,7 @@ use std::{
 pub struct WSFolder {
     path: PathBuf,
     name: String,
-    content: Vec<Either<WSFile, WSFolder>>,
+    content: Vec<Either<WSFolder, WSFile>>,
 }
 
 impl WSFolder {
@@ -33,8 +33,8 @@ impl WSFolder {
         let (content, content_rep) = raw_content
             .into_iter()
             .map(|f| match f {
-                Either::Left(f) => Either::Left(f.to_wsfile()),
-                Either::Right(f) => Either::Right(f.to_wsfolder()),
+                Either::Left(f) => Either::Left(f.to_wsfolder()),
+                Either::Right(f) => Either::Right(f.to_wsfile()),
             })
             .fold(
                 NmideError {
@@ -70,11 +70,11 @@ impl WSFolder {
         (&self.content)
             .into_iter()
             .map(|v| match v {
-                Either::Left(f) => f.to_file().map(|e| NmideError {
+                Either::Right(f) => f.to_file().map(|e| NmideError {
                     val: FolderOrFile::File(e.val),
                     rep: e.rep,
                 }),
-                Either::Right(f) => f.to_folder().map(|e| NmideError {
+                Either::Left(f) => f.to_folder().map(|e| NmideError {
                     val: FolderOrFile::Folder(e.val),
                     rep: e.rep,
                 }),
@@ -107,7 +107,7 @@ impl WSFolder {
         })
     }
 
-    pub fn push_content(&mut self, mut content: Vec<Either<WSFile, WSFolder>>) {
+    pub fn push_content(&mut self, mut content: Vec<Either<WSFolder, WSFile>>) {
         self.content.append(&mut content);
     }
 }

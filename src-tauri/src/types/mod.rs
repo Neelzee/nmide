@@ -8,23 +8,22 @@ use crate::{
     utils::funcs::os_to_str,
     workspace::{ws_file::WSFile, ws_folder::WSFolder},
 };
-use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
-impl From<Either<File, Folder>> for FolderOrFile {
-    fn from(value: Either<File, Folder>) -> Self {
+impl From<Either<Folder, File>> for FolderOrFile {
+    fn from(value: Either<Folder, File>) -> Self {
         match value {
-            Either::Left(f) => FolderOrFile::File(f),
-            Either::Right(f) => FolderOrFile::Folder(f),
+            Either::Right(f) => FolderOrFile::File(f),
+            Either::Left(f) => FolderOrFile::Folder(f),
         }
     }
 }
 
-impl From<FolderOrFile> for Either<File, Folder> {
+impl From<FolderOrFile> for Either<Folder, File> {
     fn from(value: FolderOrFile) -> Self {
         match value {
-            FolderOrFile::File(f) => Either::Left(f),
-            FolderOrFile::Folder(f) => Either::Right(f),
+            FolderOrFile::File(f) => Either::Right(f),
+            FolderOrFile::Folder(f) => Either::Left(f),
         }
     }
 }
@@ -153,10 +152,10 @@ impl Folder {
             let r = self
                 .content
                 .into_iter()
-                .map(|f| -> Either<NmideError<WSFile>, NmideError<WSFolder>> {
+                .map(|f| -> Either<NmideError<WSFolder>, NmideError<WSFile>> {
                     match f {
-                        FolderOrFile::File(f) => Either::Left(f.to_wsfile()),
-                        FolderOrFile::Folder(f) => Either::Right(f.to_wsfolder()),
+                        FolderOrFile::File(f) => Either::Right(f.to_wsfile()),
+                        FolderOrFile::Folder(f) => Either::Left(f.to_wsfolder()),
                     }
                 })
                 .map(|e| e.transpose())
