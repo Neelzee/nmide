@@ -1,11 +1,18 @@
-use std::{fs::File, path::Path};
+use std::{path::Path};
 
-use eyre::{Context, Result};
+
+
+use super::{TEST_PATH};
+use crate::workspace::Workspace;
 
 #[test]
-fn test_wsfile_creation() -> Result<()> {
-    let path = Path::new("src/main.rs").to_owned();
-    let file = File::open(path.clone())?;
+fn test_wsfile_creation() {
+    let path = Path::new(TEST_PATH);
 
-    Ok(())
+    let (ws, _) = Workspace::init(path).unwrap_with_err();
+
+    println!("{ws:?}");
+    println!("{:?}", ws.get_files());
+
+    assert!(ws.get_files().len() > 1);
 }

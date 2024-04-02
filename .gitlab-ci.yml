@@ -17,19 +17,24 @@ linting:
     - cargo clippy --fix --allow-dirty
     - git config user.email "nfi005@uib.no"
     - git config user.name "ci-bot"
-    - git remote add gitlab-origin https://oauth2:$ACCESS_TOKEN@git.app.uib.no:Nils.Fitjar/nmide.git
     - git add .
     - git commit -m "Automated fixes by clippy, and cargo fix"
-    - git push gitlab_origin HEAD:main -o ci.skip # prevent triggering pipeline again
+    - git push https://oauth2:$PROJECT_TOKEN@git.app.uib.no/Nils.Fitjar/nmide.git HEAD:dev -o ci.skip # prevent triggering pipeline again
 
-test:
+rust_test:
+  stage: test
+  image: neelzee/tauri_img
+  script:
+    - cd src-tauri
+    - cargo test
+
+js_test:
   stage: test
   image: neelzee/tauri_img
   script:
     - yarn install
     - yarn test
-    - cd src-tauri
-    - cargo test
+
 
 pts:
   stage: push-to-svn
@@ -38,7 +43,8 @@ pts:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
       when: always
   dependencies:
-    - "test"
+    - "js_test"
+    - "rust_test"
   script:
     - ./pushToSvn.sh
 
