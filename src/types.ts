@@ -11,3 +11,23 @@ export type Folder = {
   path: string,
   content: FolderOrFile[]
 };
+
+export type NmideError<T> = {
+  val: T,
+  rep: NmideReport | null
+};
+
+export type NmideReport = {
+  msg: string,
+  lvl: ErrorLevel,
+  tag: [],
+  stack: [],
+  origin: string
+};
+
+export enum ErrorLevel {
+  Low,
+  Medium,
+  High,
+  Unknown
+};

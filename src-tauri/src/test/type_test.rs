@@ -3,7 +3,7 @@ use std::{
     io::{BufWriter, Write},
 };
 
-use crate::types::modules;
+use crate::{errors, types::modules};
 
 use eyre::Result;
 
@@ -42,7 +42,38 @@ fn type_test() -> Result<()> {
 
     let str_folder_or_file = format!("export type FolderOrFile = Folder | File;");
 
-    writer.write_all(format!("{str_folder_or_file}\n\n{str_file}\n\n{str_folder}").as_bytes())?;
+    let str_nmide_err = r#"export type NmideError<T> = {
+  val: T,
+  rep: NmideReport | null
+};"#
+    .to_string();
+
+    let str_nmide_rep = format!(
+        "export type NmideReport = {};",
+        serde_json::to_string_pretty(&errors::NmideReport {
+            msg: "string".to_string(),
+            lvl: errors::ErrorLevel::Low,
+            tag: Vec::new(),
+            stack: Vec::new(),
+            origin: "string".to_string(),
+        })?
+    )
+    .replace("Low", "ErrorLevel")
+    .replacen("tag: []", "tag: string[]", 1)
+    .replacen("stack: []", "stack: NmideReport[]", 1)
+    .replace("\"", "");
+
+    let str_error_lvl = r#"export enum ErrorLevel {
+  Low,
+  Medium,
+  High,
+  Unknown
+};"#
+    .to_string();
+
+    writer.write_all(
+        format!("{str_folder_or_file}\n\n{str_file}\n\n{str_folder}\n\n{str_nmide_err}\n\n{str_nmide_rep}\n\n{str_error_lvl}").as_bytes(),
+    )?;
 
     Ok(())
 }
