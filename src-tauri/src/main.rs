@@ -4,7 +4,6 @@
 use crate::{cmds::get_workspace, workspace::Workspace};
 use eyre::{Context, Result};
 use once_cell::sync::Lazy;
-use std::path::Path;
 use tauri_plugin_log::LogTarget;
 use tokio::sync::Mutex;
 

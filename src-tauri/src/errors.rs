@@ -25,6 +25,34 @@ impl NmideReport {
         }
         Self { stack, ..self }
     }
+
+    pub fn from_res<T, E>(err: Result<T, E>) -> Option<Self>
+    where
+        E: std::error::Error,
+    {
+        err.err().and_then(|e| {
+            Some(NmideReport {
+                msg: format!("{e:?}"),
+                lvl: ErrorLevel::Unknown,
+                tag: Vec::new(),
+                stack: Vec::new(),
+                origin: format!("{:?}", e.source()),
+            })
+        })
+    }
+
+    pub fn from_err<E>(err: E) -> Self
+    where
+        E: std::error::Error,
+    {
+        NmideReport {
+            msg: format!("{err:?}"),
+            lvl: ErrorLevel::Unknown,
+            tag: Vec::new(),
+            stack: Vec::new(),
+            origin: format!("{:?}", err.source()),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -69,19 +97,25 @@ impl<T> NmideError<T> {
         }
     }
 
-    pub fn from_err<E>(val: T, err: E) -> Self
+    pub fn from_err<E>(err: Result<T, E>) -> NmideError<Option<T>>
     where
         E: std::error::Error,
     {
-        NmideError {
-            val,
-            rep: Some(NmideReport {
-                msg: format!("{err:?}"),
-                lvl: ErrorLevel::Unknown,
-                tag: Vec::new(),
-                stack: Vec::new(),
-                origin: format!("{:?}", err.source()),
-            }),
+        match err {
+            Ok(t) => NmideError {
+                val: Some(t),
+                rep: None,
+            },
+            Err(e) => NmideError {
+                val: None,
+                rep: Some(NmideReport {
+                    msg: format!("{e:?}"),
+                    lvl: ErrorLevel::Unknown,
+                    tag: Vec::new(),
+                    stack: Vec::new(),
+                    origin: format!("{:?}", e.source()),
+                }),
+            },
         }
     }
 
@@ -217,7 +251,26 @@ impl<T, E: std::error::Error> NmideError<Result<T, E>> {
     }
 }
 
-pub fn collect<T>(vec: Vec<NmideError<T>>) -> (Vec<T>, Option<NmideReport>) {
+impl<T> NmideError<NmideError<T>> {
+    pub fn fold(self) -> NmideError<T> {
+        let (v, r) = self.unwrap_with_err();
+
+        if let Some(rep) = r {
+            let e = v.push_nmide(rep);
+            NmideError {
+                val: e.val,
+                rep: e.rep,
+            }
+        } else {
+            NmideError {
+                val: v.val,
+                rep: v.rep,
+            }
+        }
+    }
+}
+
+pub fn filter_nmide<T>(vec: Vec<NmideError<T>>) -> (Vec<T>, Option<NmideReport>) {
     vec.into_iter().map(|e| e.unwrap_with_err()).fold(
         (Vec::new(), None::<NmideReport>),
         |(mut vals, err), (v, e)| {
@@ -226,6 +279,22 @@ pub fn collect<T>(vec: Vec<NmideError<T>>) -> (Vec<T>, Option<NmideReport>) {
                 (Some(a), b) => (vals, Some(a.push_stack(b))),
                 (_, b) => (vals, b),
             }
+        },
+    )
+}
+
+pub fn fold_nmide<T>(vec: Vec<NmideError<T>>) -> NmideError<Vec<T>> {
+    vec.into_iter().fold(
+        NmideError {
+            val: Vec::new(),
+            rep: None,
+        },
+        |mut err, e| {
+            err.val.push(e.val);
+            if let Some(r) = e.rep {
+                err = err.push_nmide(r);
+            }
+            err
         },
     )
 }

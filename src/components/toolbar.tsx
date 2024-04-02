@@ -1,6 +1,8 @@
+import { Setter } from "solid-js";
 import "../styles/toolbar.scss";
+import { Folder } from "../types.ts";
 
-export function ToolBar() {
+export function ToolBar(props: { setFiles: Setter<Folder> }) {
   return (
     <section id="toolbar">
       <span class="toolbar-elem logo">

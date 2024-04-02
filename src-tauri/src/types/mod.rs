@@ -1,18 +1,15 @@
+pub mod modules;
+
 use crate::{
     either::Either,
     errors::{ErrorLevel, NmideError, NmideReport},
     nmrep,
+    types::modules::{File, Folder, FolderOrFile},
     utils::funcs::os_to_str,
     workspace::{ws_file::WSFile, ws_folder::WSFolder},
 };
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
-
-#[derive(Debug, Deserialize, Serialize)]
-pub enum FolderOrFile {
-    File(File),
-    Folder(Folder),
-}
 
 impl From<Either<File, Folder>> for FolderOrFile {
     fn from(value: Either<File, Folder>) -> Self {
@@ -32,12 +29,13 @@ impl From<FolderOrFile> for Either<File, Folder> {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
-pub struct File {
-    pub name: String,
-    pub extension: String,
-    pub path: String,
-    pub content: Option<String>,
+impl FolderOrFile {
+    pub fn len(&self) -> usize {
+        match self {
+            FolderOrFile::File(_) => 1,
+            FolderOrFile::Folder(f) => 1 + (&f.content).into_iter().fold(0, |c, f| c + f.len()),
+        }
+    }
 }
 
 impl File {
@@ -46,7 +44,6 @@ impl File {
             name: String::new(),
             extension: String::new(),
             path: String::new(),
-            content: None,
         }
     }
 
@@ -88,7 +85,6 @@ impl File {
                 name,
                 extension,
                 path: path_str.unwrap_or_default(),
-                content: Some(String::new()),
             },
             rep: nmrep!(name_rep, extension_rep, path_str_rep),
         }
@@ -97,13 +93,6 @@ impl File {
     pub fn to_wsfile(&self) -> NmideError<WSFile> {
         WSFile::new(&PathBuf::from(self.path.clone()))
     }
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct Folder {
-    pub name: String,
-    pub path: String,
-    pub content: Vec<FolderOrFile>,
 }
 
 impl Folder {
@@ -134,9 +123,6 @@ impl Folder {
 
         let (name, name_rep) = os_to_str(path.file_name().unwrap_or_default()).unwrap_with_err();
 
-        let (extension, extension_rep) =
-            os_to_str(path.extension().unwrap_or_default()).unwrap_with_err();
-
         let (path_str, path_str_rep) = NmideError {
             val: path.to_str().and_then(|s| Some(s.to_string())),
             rep: Some(NmideReport {
@@ -155,11 +141,12 @@ impl Folder {
                 path: path_str.unwrap_or_default(),
                 content: Vec::new(),
             },
-            rep: nmrep!(name_rep, extension_rep, path_str_rep),
+            rep: nmrep!(name_rep, path_str_rep),
         };
 
         err
     }
+
     /// Creates a WSFolder, with path 1
     pub fn to_wsfolder(self) -> NmideError<WSFolder> {
         WSFolder::new(&Path::new(&self.path), 0).or_else(|mut w| {

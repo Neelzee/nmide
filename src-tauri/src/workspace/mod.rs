@@ -3,16 +3,14 @@ pub mod ws_folder;
 
 use crate::{
     either::Either,
-    errors::{collect, NmideError, NmideReport},
+    errors::{NmideError, NmideReport},
     nmrep,
     osops::{get_folder_or_file, get_paths},
-    types::{self, Folder, FolderOrFile},
-    utils::funcs::os_to_str,
+    types::modules::{self, Folder, FolderOrFile},
+    utils::funcs::{os_to_str, pretty_display},
     workspace::{ws_file::WSFile, ws_folder::WSFolder},
 };
-use eyre::{Context, OptionExt, Result};
-#[warn(unused_imports)]
-use log::{debug, info, warn};
+use log::debug;
 use std::{
     collections::HashMap,
     fmt::write,
@@ -69,9 +67,7 @@ impl Workspace {
     }
 
     pub fn init(path: &Path) -> NmideError<Self> {
-        info!("Initializing workspace on `{path:?}`");
         let i = 3;
-        info!("Walking `{i}` deep");
 
         let (paths, path_rep) = get_paths(path, i).unwrap_with_err();
 
@@ -111,14 +107,14 @@ impl Workspace {
         }
     }
 
-    pub fn to_folder(&self) -> NmideError<types::Folder> {
+    pub fn to_folder(&self) -> NmideError<modules::Folder> {
         let (name, name_rep) =
             os_to_str(self.root.file_name().unwrap_or_default()).unwrap_with_err();
 
         let (content, content_rep) = self.copy_files().unwrap_with_err();
 
         NmideError {
-            val: types::Folder {
+            val: modules::Folder {
                 name,
                 path: self.root.to_str().unwrap_or_default().to_string(),
                 content,
