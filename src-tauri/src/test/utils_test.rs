@@ -1,5 +1,5 @@
 use super::FOLDER;
-use crate::{types::FolderOrFile, utils::funcs::pretty_display};
+use crate::{types::modules::FolderOrFile, utils::funcs::pretty_display};
 
 #[test]
 fn test_pretty_display() {

@@ -8,7 +8,7 @@ use crate::{
     either::Either,
     errors::{fold_nmide, ErrorLevel, NmideError, NmideReport},
     nmrep,
-    types::{self, FolderOrFile},
+    types::{modules, modules::FolderOrFile},
     utils::funcs::os_to_str,
 };
 
@@ -48,14 +48,14 @@ pub fn get_paths(path: &Path, level: usize) -> NmideError<Vec<PathBuf>> {
 pub fn get_folder_or_file(
     path: &Path,
     level: usize,
-) -> NmideError<Vec<Either<types::File, types::Folder>>> {
+) -> NmideError<Vec<Either<modules::File, modules::Folder>>> {
     visit_dirs_recursive(path, level)
 }
 
 fn visit_dirs_recursive(
     dir: &Path,
     depth: usize,
-) -> NmideError<Vec<Either<types::File, types::Folder>>> {
+) -> NmideError<Vec<Either<modules::File, modules::Folder>>> {
     let mut res = NmideError {
         val: Vec::new(),
         rep: None,
@@ -102,14 +102,14 @@ fn visit_dirs_recursive(
                                             .collect::<Vec<FolderOrFile>>()
                                     })
                                     .map(|e| {
-                                        types::Folder::new(p.val.as_path()).vmap(|mut f| {
+                                        modules::Folder::new(p.val.as_path()).vmap(|mut f| {
                                             f.content = e.val;
                                             FolderOrFile::Folder(f)
                                         })
                                     })
                             } else {
                                 p.map(|e| {
-                                    types::File::new(e.val.as_path())
+                                    modules::File::new(e.val.as_path())
                                         .vmap(|f| FolderOrFile::File(f))
                                 })
                             }
@@ -127,7 +127,7 @@ fn visit_dirs_recursive(
         let (name, name_rep) = name.unwrap_with_err();
         let (path_str, path_str_rep) = path_str.unwrap_with_err();
 
-        res.val.push(Either::Right(types::Folder {
+        res.val.push(Either::Right(modules::Folder {
             name,
             path: path_str.unwrap_or_default(),
             content,
@@ -154,11 +154,10 @@ fn visit_dirs_recursive(
 
         res.rep = nmrep!(name_rep, path_str_rep, extension_rep);
 
-        res.val.push(Either::Left(types::File {
+        res.val.push(Either::Left(modules::File {
             name,
             path: path_str.unwrap_or_default(),
             extension,
-            content: None::<String>,
         }));
     }
 

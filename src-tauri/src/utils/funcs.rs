@@ -1,9 +1,8 @@
-use std::ffi::OsStr;
-
 use crate::{
     errors::{ErrorLevel, NmideError, NmideReport},
-    types::FolderOrFile,
+    types::modules::FolderOrFile,
 };
+use std::ffi::OsStr;
 
 pub fn os_to_str(s: &OsStr) -> NmideError<String> {
     NmideError {

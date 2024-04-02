@@ -1,7 +1,7 @@
 use crate::{
     errors::{ErrorLevel, NmideError},
     nmrep,
-    types::FolderOrFile,
+    types::modules::FolderOrFile,
     utils::funcs::pretty_display,
     workspace::Workspace,
     WORKSPACE,
@@ -20,8 +20,6 @@ pub async fn get_workspace(path: &str) -> Result<NmideError<FolderOrFile>, ()> {
 
     *ws = new_ws;
 
-    debug!("{:?}", ws.get_files());
-
     let mut res = ws.to_folder();
 
     if let Some(r) = rep {
@@ -30,7 +28,7 @@ pub async fn get_workspace(path: &str) -> Result<NmideError<FolderOrFile>, ()> {
 
     Ok(res.vmap(|f| {
         let r = FolderOrFile::Folder(f);
-        debug!("{}", pretty_display(&vec![r.clone()], 0));
+        //debug!("{}", pretty_display(&vec![r.clone()], 0));
         r
     }))
 }
