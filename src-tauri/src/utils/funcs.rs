@@ -8,8 +8,7 @@ use std::{ffi::OsStr, path::PathBuf};
 pub fn os_to_str(s: &OsStr) -> NmideError<String> {
     NmideError {
         val: s
-            .to_str()
-            .and_then(|s| Some(s.to_string()))
+            .to_str().map(|s| s.to_string())
             .unwrap_or(format!("{s:?}")),
         rep: Some(NmideReport {
             msg: format!("Failed converting String: `{s:?}`"),

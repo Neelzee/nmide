@@ -27,7 +27,7 @@ fn type_test() -> Result<()> {
             path: "string".to_string(),
         })?
     )
-    .replace("\"", "");
+    .replace('\"', "");
 
     let str_folder = format!(
         "export type Folder = {};",
@@ -37,10 +37,10 @@ fn type_test() -> Result<()> {
             content: Vec::new(),
         })?
     )
-    .replace("\"", "")
+    .replace('\"', "")
     .replace("[]", "FolderOrFile[]");
 
-    let str_folder_or_file = format!("export type FolderOrFile = Folder | File;");
+    let str_folder_or_file = "export type FolderOrFile = Folder | File;".to_string();
 
     let str_nmide_err = r#"export type NmideError<T> = {
   val: T,
@@ -61,7 +61,7 @@ fn type_test() -> Result<()> {
     .replace("Low", "ErrorLevel")
     .replacen("tag: []", "tag: string[]", 1)
     .replacen("stack: []", "stack: NmideReport[]", 1)
-    .replace("\"", "");
+    .replace('\"', "");
 
     let str_error_lvl = r#"export enum ErrorLevel {
   Low,

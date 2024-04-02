@@ -32,7 +32,7 @@ impl FolderOrFile {
     pub fn len(&self) -> usize {
         match self {
             FolderOrFile::File(_) => 1,
-            FolderOrFile::Folder(f) => 1 + (&f.content).into_iter().fold(0, |c, f| c + f.len()),
+            FolderOrFile::Folder(f) => 1 + f.content.iter().fold(0, |c, f| c + f.len()),
         }
     }
 }
@@ -68,7 +68,7 @@ impl File {
             os_to_str(path.extension().unwrap_or_default()).unwrap_with_err();
 
         let (path_str, path_str_rep) = NmideError {
-            val: path.to_str().and_then(|s| Some(s.to_string())),
+            val: path.to_str().map(|s| s.to_string()),
             rep: Some(NmideReport {
                 msg: format!("Failed converting Path to String: `{path:?}`"),
                 lvl: ErrorLevel::Low,
@@ -123,7 +123,7 @@ impl Folder {
         let (name, name_rep) = os_to_str(path.file_name().unwrap_or_default()).unwrap_with_err();
 
         let (path_str, path_str_rep) = NmideError {
-            val: path.to_str().and_then(|s| Some(s.to_string())),
+            val: path.to_str().map(|s| s.to_string()),
             rep: Some(NmideReport {
                 msg: format!("Failed converting Path to String: `{path:?}`"),
                 lvl: ErrorLevel::Low,
@@ -134,21 +134,21 @@ impl Folder {
         }
         .unwrap_with_err();
 
-        let mut err = NmideError {
+        
+
+        NmideError {
             val: Folder {
                 name,
                 path: path_str.unwrap_or_default(),
                 content: Vec::new(),
             },
             rep: nmrep!(name_rep, path_str_rep),
-        };
-
-        err
+        }
     }
 
     /// Creates a WSFolder, with path 1
     pub fn to_wsfolder(self) -> NmideError<WSFolder> {
-        WSFolder::new(&Path::new(&self.path), 0).or_else(|mut w| {
+        WSFolder::new(Path::new(&self.path), 0).or_else(|mut w| {
             let r = self
                 .content
                 .into_iter()
