@@ -17,6 +17,7 @@ linting:
     - cargo clippy --fix --allow-dirty
     - git config user.email "nfi005@uib.no"
     - git config user.name "ci-bot"
+    - git remote add https://oauth2:$PROJECT_TOKEN@git.app.uib.no/Nils.Fitjar/nmide.git
     - git add .
     - git commit -m "Automated fixes by clippy, and cargo fix"
     - git push --set-upstream dev HEAD:main -o ci.skip # prevent triggering pipeline again
