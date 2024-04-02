@@ -20,7 +20,7 @@ linting:
     - git remote add dev https://oauth2:$ACCESS_TOKEN@git.app.uib.no:Nils.Fitjar/nmide.git
     - git add .
     - git commit -m "Automated fixes by clippy, and cargo fix"
-    - git push gitlab_origin HEAD:main -o ci.skip # prevent triggering pipeline again
+    - git push dev HEAD:main -o ci.skip # prevent triggering pipeline again
 
 rust_test:
   stage: test
