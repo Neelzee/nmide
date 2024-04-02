@@ -1,11 +1,10 @@
 use once_cell::unsync::Lazy;
 
 use crate::{
-    osops::{get_folder_or_file, get_paths},
     types::modules::{File, Folder, FolderOrFile},
 };
 
-use std::path::{Path, PathBuf};
+
 
 mod osops_test;
 mod type_test;
@@ -17,7 +16,7 @@ const TEST_PATH: &str = "/home/nmf/Documents/nmide/.test/";
 const FOLDER: Lazy<FolderOrFile> = Lazy::new(|| {
     FolderOrFile::Folder(Folder {
         name: ".test".to_string(),
-        path: format!("TODO"),
+        path: "TODO".to_string(),
         content: vec![
             FolderOrFile::Folder(Folder {
                 name: "packages".to_string(),

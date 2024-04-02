@@ -1,8 +1,8 @@
-use crate::osops::{get_folder_or_file, get_paths};
+use crate::osops::{get_paths};
 use crate::test::{FOLDER, TEST_PATH};
-use crate::types::modules::FolderOrFile;
 
-use std::path::{Path, PathBuf};
+
+use std::path::{Path};
 
 /// Test that the path count is correct
 #[test]

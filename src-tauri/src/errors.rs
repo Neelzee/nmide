@@ -1,4 +1,4 @@
-use crate::{either::Either, nmrep};
+use crate::{nmrep};
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 
@@ -43,15 +43,13 @@ impl NmideReport {
     where
         E: std::error::Error,
     {
-        err.err().and_then(|e| {
-            Some(NmideReport {
+        err.err().map(|e| NmideReport {
                 msg: format!("{e:?}"),
                 lvl: ErrorLevel::Unknown,
                 tag: Vec::new(),
                 stack: Vec::new(),
                 origin: format!("{:?}", e.source()),
             })
-        })
     }
 
     pub fn from_err<E>(err: E) -> Self
@@ -195,8 +193,8 @@ impl<T> Display for NmideError<T> {
         write!(
             f,
             "WSError: `{:?}`, level: `{:?}`",
-            self.rep.clone().and_then(|r| Some(r.msg)),
-            self.rep.clone().and_then(|r| Some(r.lvl))
+            self.rep.clone().map(|r| r.msg),
+            self.rep.clone().map(|r| r.lvl)
         )
     }
 }
@@ -204,12 +202,12 @@ impl<T> Display for NmideError<T> {
 impl<T> NmideError<Option<T>> {
     pub fn transpose(self) -> Option<NmideError<T>> {
         if self.val.is_none() {
-            return None;
+            None
         } else {
-            return Some(NmideError {
+            Some(NmideError {
                 val: self.val.unwrap(),
                 rep: self.rep,
-            });
+            })
         }
     }
 }
@@ -232,9 +230,9 @@ impl<T, E: std::error::Error> NmideError<Result<T, E>> {
                     origin: format!("{:?}", err.source()),
                 };
                 if let Some(r) = rep {
-                    return Err(r.push_stack(Some(nm)));
+                    Err(r.push_stack(Some(nm)))
                 } else {
-                    return Err(nm);
+                    Err(nm)
                 }
             }
         }
@@ -321,7 +319,7 @@ macro_rules! nmrep {
                 .fold(None, |a, b| match (a, b) {
                     (None, None) => None,
                     (None, b) => b,
-                    (Some(mut a), b) => Some(a.push_stack(b)),
+                    (Some(a), b) => Some(a.push_stack(b)),
                 })
         }
     };

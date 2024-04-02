@@ -2,19 +2,16 @@ use crate::{
     either::Either,
     errors::NmideError,
     nmrep,
-    osops::{get_folder_or_file, get_paths},
+    osops::{get_folder_or_file},
     types::{
-        self,
         modules::{self, FolderOrFile},
     },
     utils::funcs::os_to_str,
     workspace::ws_file::WSFile,
 };
-use eyre::{eyre, Context, OptionExt, Result};
-use log::debug;
+
+
 use std::{
-    fs::File,
-    io::{BufReader, BufWriter, Read, Write},
     path::{Path, PathBuf},
 };
 
@@ -28,7 +25,7 @@ pub struct WSFolder {
 impl WSFolder {
     pub fn new(path: &Path, level: usize) -> NmideError<Self> {
         let (name, name_rep) = os_to_str(path.file_name().unwrap_or_default()).unwrap_with_err();
-        let (mut raw_content, raw_content_rep) = get_folder_or_file(path, level).unwrap_with_err();
+        let (raw_content, raw_content_rep) = get_folder_or_file(path, level).unwrap_with_err();
 
         let (content, content_rep) = raw_content
             .into_iter()
@@ -67,8 +64,8 @@ impl WSFolder {
     }
 
     pub fn get_content(&self) -> NmideError<Vec<FolderOrFile>> {
-        (&self.content)
-            .into_iter()
+        self.content
+            .iter()
             .map(|v| match v {
                 Either::Right(f) => f.to_file().map(|e| NmideError {
                     val: FolderOrFile::File(e.val),

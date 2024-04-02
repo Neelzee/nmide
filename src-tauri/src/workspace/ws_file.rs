@@ -1,9 +1,8 @@
-use crate::{either::Either, errors::NmideError, nmrep, types, utils::funcs::os_to_str};
-use eyre::{Context, Result};
+use crate::{errors::NmideError, nmrep, types, utils::funcs::os_to_str};
+
 use std::{
     fs::File,
-    io::{BufReader, BufWriter, Read, Write},
-    path::{Path, PathBuf},
+    path::{PathBuf},
 };
 
 #[derive(Debug)]

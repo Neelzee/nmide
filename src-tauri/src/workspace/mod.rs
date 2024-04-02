@@ -3,18 +3,16 @@ pub mod ws_folder;
 
 use crate::{
     either::Either,
-    errors::{NmideError, NmideReport},
+    errors::{NmideError},
     nmrep,
-    osops::{get_folder_or_file, get_paths},
-    types::modules::{self, Folder, FolderOrFile},
-    utils::funcs::{os_to_str, pretty_display},
+    osops::{get_paths},
+    types::modules::{self, FolderOrFile},
+    utils::funcs::{os_to_str},
     workspace::{ws_file::WSFile, ws_folder::WSFolder},
 };
-use log::debug;
+
 use std::{
     collections::HashMap,
-    fmt::write,
-    fs::File,
     path::{Path, PathBuf},
 };
 
@@ -30,8 +28,8 @@ impl Workspace {
     }
 
     fn copy_files(&self) -> NmideError<Vec<FolderOrFile>> {
-        (&self.files)
-            .into_iter()
+        self.files
+            .iter()
             .map(|(_, v)| match v {
                 Either::Left(ws) => Either::Left(ws.to_folder()),
                 Either::Right(ws) => Either::Right(ws.to_file()),

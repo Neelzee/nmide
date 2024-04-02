@@ -1,8 +1,8 @@
-use std::{fs::File, path::Path};
+use std::{path::Path};
 
-use eyre::{Context, Result};
 
-use super::{FOLDER, TEST_PATH};
+
+use super::{TEST_PATH};
 use crate::workspace::Workspace;
 
 #[test]

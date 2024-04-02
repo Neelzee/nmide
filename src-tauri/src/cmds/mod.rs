@@ -1,12 +1,10 @@
 use crate::{
-    errors::{ErrorLevel, NmideError, NmideReport},
-    nmrep,
-    types::modules::{File, FolderOrFile},
-    utils::funcs::pretty_display,
+    errors::{NmideError, NmideReport},
+    types::modules::{FolderOrFile},
     workspace::Workspace,
     WORKSPACE,
 };
-use log::{debug, info};
+
 use std::path::Path;
 
 /// Gets workspace
@@ -31,18 +29,18 @@ pub async fn get_workspace(path: &str) -> Result<NmideError<FolderOrFile>, Nmide
     }
 
     Ok(res.vmap(|f| {
-        let r = FolderOrFile::Folder(f);
+        
         //debug!("{}", pretty_display(&vec![r.clone()], 0));
-        r
+        FolderOrFile::Folder(f)
     }))
 }
 
 /// Saves the given content to the given file
-pub fn save_file(path: &str, content: &str) -> Result<(), String> {
+pub fn save_file(_path: &str, _content: &str) -> Result<(), String> {
     todo!()
 }
 
 /// Closes the given file, without saving
-pub fn close_file(path: &str) -> Result<(), String> {
+pub fn close_file(_path: &str) -> Result<(), String> {
     todo!()
 }

@@ -41,14 +41,14 @@ pub fn get_paths(path: &Path, level: usize) -> NmideError<Vec<PathBuf>> {
             v.into_iter().fold(Vec::new(), |mut acc, e| match e {
                 Either::Right(f) => {
                     acc.push(PathBuf::from(f.path));
-                    return acc;
+                    acc
                 }
                 Either::Left(f) => {
                     acc.push(PathBuf::from(f.path));
                     acc.append(&mut to_paths(
                         f.content.into_iter().map(|e| e.into()).collect(),
                     ));
-                    return acc;
+                    acc
                 }
             })
         }) // Ensures no duplicates
@@ -79,7 +79,7 @@ fn visit_dirs_recursive(
         let name = os_to_str(dir.file_name().unwrap_or_default());
 
         let path_str = NmideError {
-            val: dir.to_str().and_then(|p| Some(p.to_string())),
+            val: dir.to_str().map(|p| p.to_string()),
             rep: Some(NmideReport {
                 msg: format!("Failed converting Path to String: `{dir:?}`"),
                 lvl: ErrorLevel::Low,
@@ -120,7 +120,7 @@ fn visit_dirs_recursive(
                             } else {
                                 p.map(|e| {
                                     modules::File::new(e.val.as_path())
-                                        .vmap(|f| FolderOrFile::File(f))
+                                        .vmap(FolderOrFile::File)
                                 })
                             }
                         })
@@ -148,7 +148,7 @@ fn visit_dirs_recursive(
         let (name, name_rep) = os_to_str(dir.file_name().unwrap_or_default()).unwrap_with_err();
 
         let (path_str, path_str_rep) = NmideError {
-            val: dir.to_str().and_then(|p| Some(p.to_string())),
+            val: dir.to_str().map(|p| p.to_string()),
             rep: Some(NmideReport {
                 msg: format!("Failed converting Path to String: `{dir:?}`"),
                 lvl: ErrorLevel::Low,
