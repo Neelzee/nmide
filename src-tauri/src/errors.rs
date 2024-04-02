@@ -18,6 +18,19 @@ pub struct NmideReport {
 }
 
 impl NmideReport {
+    pub fn new<S>(msg: S, origin: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self {
+            msg: msg.into(),
+            lvl: ErrorLevel::Unknown,
+            tag: Vec::new(),
+            stack: Vec::new(),
+            origin: origin.into(),
+        }
+    }
+
     pub fn push_stack(self, other: Option<NmideReport>) -> Self {
         let mut stack = self.stack;
         if let Some(o) = other {

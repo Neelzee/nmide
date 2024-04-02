@@ -14,6 +14,7 @@ const detach = await attachConsole();
 function App() {
   const [errors, setErrors] = createSignal<NmideReport[]>([]);
   const [folders, setFolders] = createSignal<Folder>({ name: "", path: "", content: [] });
+  const [root, setRoot] = createSignal("");
 
   // with LogTarget::Webview enabled this function will print logs to the browser console
 
@@ -24,30 +25,36 @@ function App() {
   // detach the browser console from the log stream
   detach();
 
-  invoke("get_workspace", { path: "/home/nmf/Documents/nmide/" })
-    .then(res => {
-      const response = res as NmideError<FolderOrFile>;
-      const [val, rep] = split_with_err<FolderOrFile>(response);
-      if (rep !== null) {
-        setErrors(produce(arr => {
-          arr.push(rep);
-        }));
-      }
-      if ("content" in val) {
-        setFolders(val);
-      } else {
-        // Its a file
-        setFolders({
-          name: "nmide",
-          path: "nmide",
-          content: [val]
-        });
-      }
-    })
-    .catch(err => console.error(err));
+  if (root() !== "") {
+    invoke("get_workspace", { path: root() })
+      .then(res => {
+        const response = res as NmideError<FolderOrFile>;
+        const [val, rep] = split_with_err<FolderOrFile>(response);
+        if (rep !== null) {
+          setErrors(produce(arr => {
+            arr.push(rep);
+          }));
+        }
+        if ("content" in val) {
+          setFolders(val);
+        } else {
+          // Its a file
+          setFolders({
+            name: "nmide",
+            path: "nmide",
+            content: [val]
+          });
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        setErrors(produce(arr => arr.push(err)))
+      });
+  }
+
   return (
     <main>
-      <ToolBar setFiles={setFolders} />
+      <ToolBar setRoot={setRoot} />
       <article>
         <Explorer files={folders} />
         <ErrorPane errors={errors} />

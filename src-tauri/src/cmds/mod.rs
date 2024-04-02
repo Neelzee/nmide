@@ -1,7 +1,7 @@
 use crate::{
-    errors::{ErrorLevel, NmideError},
+    errors::{ErrorLevel, NmideError, NmideReport},
     nmrep,
-    types::modules::FolderOrFile,
+    types::modules::{File, FolderOrFile},
     utils::funcs::pretty_display,
     workspace::Workspace,
     WORKSPACE,
@@ -13,7 +13,11 @@ use std::path::Path;
 ///
 /// Should only be called once, as it also initializes a workspace
 #[tauri::command]
-pub async fn get_workspace(path: &str) -> Result<NmideError<FolderOrFile>, ()> {
+pub async fn get_workspace(path: &str) -> Result<NmideError<FolderOrFile>, NmideReport> {
+    if path.is_empty() {
+        return Err(NmideReport::new("Can't open empty path", "get_workspace"));
+    }
+
     let mut ws = WORKSPACE.lock().await;
 
     let (new_ws, rep) = Workspace::init(Path::new(path)).unwrap_with_err();
