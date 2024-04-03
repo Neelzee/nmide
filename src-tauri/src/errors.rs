@@ -1,4 +1,4 @@
-use crate::{nmrep};
+use crate::nmrep;
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 
@@ -44,12 +44,12 @@ impl NmideReport {
         E: std::error::Error,
     {
         err.err().map(|e| NmideReport {
-                msg: format!("{e:?}"),
-                lvl: ErrorLevel::Unknown,
-                tag: Vec::new(),
-                stack: Vec::new(),
-                origin: format!("{:?}", e.source()),
-            })
+            msg: format!("{e:?}"),
+            lvl: ErrorLevel::Unknown,
+            tag: Vec::new(),
+            stack: Vec::new(),
+            origin: format!("{:?}", e.source()),
+        })
     }
 
     pub fn from_err<E>(err: E) -> Self

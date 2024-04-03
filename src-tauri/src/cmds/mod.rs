@@ -5,18 +5,17 @@ use crate::{
     WORKSPACE,
 };
 use log::info;
+use serde_json::Value;
 use std::path::Path;
 
 /// Gets workspace
 ///
 /// Should only be called once, as it also initializes a workspace
 #[tauri::command]
-pub async fn get_workspace(path: &str) -> Result<NmideError<FolderOrFile>, NmideReport> {
+pub async fn get_workspace(path: &str) -> Result<NmideError<Value>, NmideReport> {
     if path.is_empty() {
-        info!("Empty path");
         return Err(NmideReport::new("Can't open empty path", "get_workspace"));
     }
-    info!("Path: {path}");
 
     let mut ws = WORKSPACE.lock().await;
 
@@ -30,11 +29,13 @@ pub async fn get_workspace(path: &str) -> Result<NmideError<FolderOrFile>, Nmide
         res = res.push_nmide(r);
     }
 
-    let result = Ok(res.vmap(|f| FolderOrFile::Folder(f)));
-
-    info!("Finished on backend");
-
-    return result;
+    match serde_json::to_value(&res.val) {
+        Ok(val) => Ok(NmideError { val, rep: res.rep }),
+        Err(err) => Err(NmideReport::new(
+            format!("{err:?}"),
+            "get_workspace".to_string(),
+        )),
+    }
 }
 
 /// Saves the given content to the given file
