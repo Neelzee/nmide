@@ -1,10 +1,16 @@
-import { Accessor } from "solid-js";
+import { Accessor, createEffect, createSignal } from "solid-js";
 import { Folder, File } from "../types.ts";
 
-export function Explorer(props: { files: Accessor<Folder> }) {
+export default function Explorer(props: { files: Accessor<Folder> }) {
+  const [folder, setFolder] = createSignal<Folder>({ name: "", path: "", content: [] });
+
+  createEffect(() => {
+    setFolder(props.files());
+  })
+
   return (
     <section class="explorer">
-      <RenderFolder folder={props.files()} />
+      <RenderFolder folder={folder()} />
     </section>
   );
 }

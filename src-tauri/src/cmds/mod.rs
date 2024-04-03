@@ -1,10 +1,10 @@
 use crate::{
     errors::{NmideError, NmideReport},
-    types::modules::{FolderOrFile},
+    types::modules::FolderOrFile,
     workspace::Workspace,
     WORKSPACE,
 };
-
+use log::info;
 use std::path::Path;
 
 /// Gets workspace
@@ -13,8 +13,10 @@ use std::path::Path;
 #[tauri::command]
 pub async fn get_workspace(path: &str) -> Result<NmideError<FolderOrFile>, NmideReport> {
     if path.is_empty() {
+        info!("Empty path");
         return Err(NmideReport::new("Can't open empty path", "get_workspace"));
     }
+    info!("Path: {path}");
 
     let mut ws = WORKSPACE.lock().await;
 
@@ -28,11 +30,11 @@ pub async fn get_workspace(path: &str) -> Result<NmideError<FolderOrFile>, Nmide
         res = res.push_nmide(r);
     }
 
-    Ok(res.vmap(|f| {
-        
-        //debug!("{}", pretty_display(&vec![r.clone()], 0));
-        FolderOrFile::Folder(f)
-    }))
+    let result = Ok(res.vmap(|f| FolderOrFile::Folder(f)));
+
+    info!("Finished on backend");
+
+    return result;
 }
 
 /// Saves the given content to the given file
