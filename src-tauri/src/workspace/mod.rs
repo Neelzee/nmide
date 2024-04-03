@@ -3,32 +3,34 @@ pub mod ws_folder;
 
 use crate::{
     either::Either,
-    errors::{NmideError},
+    errors::NmideError,
     nmrep,
-    osops::{get_paths},
+    osops::get_paths,
     types::modules::{self, FolderOrFile},
-    utils::funcs::{os_to_str},
+    utils::funcs::os_to_str,
     workspace::{ws_file::WSFile, ws_folder::WSFolder},
 };
 
-use std::{
-    collections::HashMap,
-    path::{Path, PathBuf},
-};
+use std::path::{Path, PathBuf};
 
 #[derive(Debug)]
 pub struct Workspace {
     root: PathBuf,
-    files: HashMap<String, Either<WSFolder, WSFile>>,
+    files: Vec<Either<WSFolder, WSFile>>,
 }
 
 impl Workspace {
-    pub fn get_files(&self) -> Vec<&Either<WSFolder, WSFile>> {
-        self.files.values().collect()
+    pub fn len(&self) -> usize {
+        self.files.len()
+    }
+    pub fn get_files(&self) -> &Vec<Either<WSFolder, WSFile>> {
+        &self.files
     }
 
     fn copy_files(&self) -> NmideError<Vec<FolderOrFile>> {
-        self.files.values().map(|v| match v {
+        (&self.files)
+            .into_iter()
+            .map(|v| match v {
                 Either::Left(ws) => Either::Left(ws.to_folder()),
                 Either::Right(ws) => Either::Right(ws.to_file()),
             })
@@ -51,11 +53,11 @@ impl Workspace {
     pub fn empty() -> Self {
         Self {
             root: PathBuf::new(),
-            files: HashMap::new(),
+            files: Vec::new(),
         }
     }
 
-    pub fn new(root: &Path, files: HashMap<String, Either<WSFolder, WSFile>>) -> Workspace {
+    pub fn new(root: &Path, files: Vec<Either<WSFolder, WSFile>>) -> Workspace {
         Workspace {
             root: root.to_owned(),
             files,
@@ -63,29 +65,27 @@ impl Workspace {
     }
 
     pub fn init(path: &Path) -> NmideError<Self> {
-        let i = 3;
+        let i = 2;
 
         let (paths, path_rep) = get_paths(path, i).unwrap_with_err();
 
         let (files, files_rep) = paths
             .into_iter()
-            .map(|p| -> (String, Either<_, _>) {
-                let key = p.to_str().unwrap_or_default().to_string();
-
+            .map(|p| -> Either<_, _> {
                 if p.is_dir() {
-                    (key, Either::Left(WSFolder::new(p.as_path(), i - 1)))
+                    Either::Left(WSFolder::new(p.as_path(), i - 1))
                 } else {
-                    (key, Either::Right(WSFile::new(&p)))
+                    Either::Right(WSFile::new(&p))
                 }
             })
-            .map(|(a, b)| -> (String, NmideError<Either<_, _>>) { (a, b.transpose()) })
+            .map(|b| -> NmideError<Either<_, _>> { b.transpose() })
             .fold(
                 NmideError {
-                    val: HashMap::new(),
+                    val: Vec::new(),
                     rep: None,
                 },
-                |mut acc, (k, e)| {
-                    acc.val.insert(k, e.val);
+                |mut acc, e| {
+                    acc.val.push(e.val);
                     if let Some(rep) = e.rep {
                         acc = acc.push_nmide(rep);
                     }
