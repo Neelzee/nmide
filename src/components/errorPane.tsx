@@ -7,6 +7,7 @@ export default function ErrorPane(props: { errors: Accessor<NmideReport[]> }) {
   const [err, setErr] = createSignal<NmideReport[]>([]);
 
   createEffect(() => {
+    console.log("errorpane");
     // Synchronize local state with props
     setErr(props.errors());
     // Cleanup effect to avoid memory leaks

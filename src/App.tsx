@@ -45,7 +45,10 @@ function App() {
           console.log("ERROR")
           setErrors(produce(arr => arr.push(err)));
         })
-        .finally(() => console.log("stopped"));
+        .finally(() => {
+          console.log(folders());
+          console.log(errors());
+        });
     }
   });
   return (

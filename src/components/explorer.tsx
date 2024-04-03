@@ -6,6 +6,7 @@ export default function Explorer(props: { files: Accessor<Folder> }) {
   const [folder, setFolder] = createSignal<Folder>({ name: "", path: "", content: [] });
 
   createEffect(() => {
+    console.log("explorer");
     // Synchronize local state with props
     setFolder(props.files());
     // Cleanup effect to avoid memory leaks
