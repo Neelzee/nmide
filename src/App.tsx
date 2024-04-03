@@ -19,9 +19,11 @@ function App() {
   const [root, setRoot] = createSignal("");
 
   createEffect(() => {
+    console.log(root());
     if (root() !== "") {
       invoke<NmideError<FolderOrFile>>("get_workspace", { path: root() })
         .then(res => {
+          console.log("START")
           const [val, rep] = split_with_err<FolderOrFile>(res);
           if (rep !== null) {
             setErrors(produce(arr => {
@@ -40,8 +42,10 @@ function App() {
           }
         })
         .catch(err => {
+          console.log("ERROR")
           setErrors(produce(arr => arr.push(err)));
-        });
+        })
+        .finally(() => console.log("stopped"));
     }
   });
   return (
