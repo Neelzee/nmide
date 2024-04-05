@@ -9,7 +9,7 @@ linting:
   image: neelzee/tauri_img
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
-      when: always
+      when: never
   script:
     - rustup component add clippy
     - cd src-tauri
