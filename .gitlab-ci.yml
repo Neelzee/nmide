@@ -1,7 +1,7 @@
 stages:
   - linting
   - test
-  - push-to-svn
+  - svn
   - build
 
 linting:
@@ -37,7 +37,7 @@ js_test:
 
 
 pts:
-  stage: push-to-svn
+  stage: svn
   image: neelzee/tauri_img
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
@@ -46,6 +46,7 @@ pts:
     - "js_test"
     - "rust_test"
   script:
+    - ./issueGen "https://git.app.uib.no/api/v4/projects/Nils.Fitjar%f2Nmide/issues"
     - ./pushToSvn.sh
 
 windows-build:
