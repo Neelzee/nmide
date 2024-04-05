@@ -46,6 +46,7 @@ pts:
     - "js_test"
     - "rust_test"
   script:
+    - rm "ISSUE.md"
     - ./issueGen "https://git.app.uib.no/api/v4/projects/Nils.Fitjar%f2Nmide/issues"
     - ./pushToSvn.sh
 
