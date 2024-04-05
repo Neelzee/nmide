@@ -1,10 +1,9 @@
 use crate::{
     errors::{NmideError, NmideReport},
-    types::modules::FolderOrFile,
     workspace::Workspace,
     WORKSPACE,
 };
-use log::info;
+
 use serde_json::Value;
 use std::path::Path;
 

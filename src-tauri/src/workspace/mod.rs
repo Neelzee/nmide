@@ -28,8 +28,8 @@ impl Workspace {
     }
 
     fn copy_files(&self) -> NmideError<Vec<FolderOrFile>> {
-        (&self.files)
-            .into_iter()
+        self.files
+            .iter()
             .map(|v| match v {
                 Either::Left(ws) => Either::Left(ws.to_folder()),
                 Either::Right(ws) => Either::Right(ws.to_file()),
