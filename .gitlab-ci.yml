@@ -47,7 +47,8 @@ pts:
     - "rust_test"
   script:
     - rm -f "ISSUE.md"
-    - ./issueGen "https://git.app.uib.no/api/v4/projects/Nils.Fitjar%f2Nmide/issues"
+    - python3 pip install requirements.txt
+    - pythin3 issueGen.py "https://git.app.uib.no/api/v4/projects/Nils.Fitjar%f2Nmide/issues"
     - ./pushToSvn.sh
 
 windows-build:
