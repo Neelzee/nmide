@@ -78,7 +78,7 @@ impl Workspace {
                     Either::Right(WSFile::new(&p))
                 }
             })
-            .map(|b| -> NmideError<Either<_, _>> { b.transpose() })
+            .map(|b| b.transpose())
             .fold(
                 NmideError {
                     val: Vec::new(),
@@ -87,9 +87,10 @@ impl Workspace {
                 |mut acc, e| {
                     acc.val.push(e.val);
                     if let Some(rep) = e.rep {
-                        acc = acc.push_nmide(rep);
+                        acc.push_nmide(rep)
+                    } else {
+                        acc
                     }
-                    acc
                 },
             )
             .unwrap_with_err();
