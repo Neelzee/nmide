@@ -1,5 +1,6 @@
 import { Accessor, createEffect, createSignal } from "solid-js";
 import { Folder, File } from "../types";
+import "../styles/explorer.scss";
 
 export default function Explorer(props: { files: Accessor<Folder> }) {
   const [folder, setFolder] = createSignal<Folder>({ name: "", path: "", content: [] });
@@ -11,11 +12,10 @@ export default function Explorer(props: { files: Accessor<Folder> }) {
   });
 
   const f = folder();
-  console.log("Rerender?");
 
   return (
     <section class="explorer">
-      <RenderFolder key={f.path} folder={folder()} />
+      <RenderFolder key={f.path} folder={f} />
     </section>
   );
 }
@@ -42,9 +42,9 @@ function RenderFolder(props: { folder: Folder, key: string }) {
   });
 
   return (
-    <ul id={props.key}>
-      <li>{folder().name}</li>
-      <ul>
+    <span id={props.key}>
+      <span>{folder().name}</span>
+      <span>
         {folder().content.map(fof => {
           if ("content" in fof) {
             const sf = fof as Folder;
@@ -54,8 +54,8 @@ function RenderFolder(props: { folder: Folder, key: string }) {
             return <RenderFile key={sf.path} file={sf} />;
           }
         })}
-      </ul>
-    </ul>
+      </span>
+    </span>
   );
 }
 

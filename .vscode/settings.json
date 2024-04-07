@@ -1,0 +1,18 @@
+{
+	"editor.tabSize": 4,
+	"[sass]": {
+		"editor.tabSize": 2
+	},
+	"[html]": {
+		"editor.tabSize": 2
+	},
+	"[javascript]": {
+		"editor.tabSize": 2
+	},
+	"[typescript]": {
+		"editor.tabSize": 2
+	},
+	"[typescriptreact]": {
+		"editor.tabSize": 2
+	}
+}
