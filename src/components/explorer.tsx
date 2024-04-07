@@ -5,17 +5,15 @@ export default function Explorer(props: { files: Accessor<Folder> }) {
   const [folder, setFolder] = createSignal<Folder>({ name: "", path: "", content: [] });
 
   createEffect(() => {
-    console.log(props.files());
     // Synchronize local state with props
     setFolder(props.files());
   });
 
   const f = folder();
-  console.log("Rerender?");
 
   return (
     <section class="explorer">
-      <RenderFolder key={f.path} folder={folder()} />
+      <RenderFolder key={f.path} folder={f} />
     </section>
   );
 }
