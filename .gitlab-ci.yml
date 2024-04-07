@@ -19,7 +19,8 @@ linting:
     - git config user.name "ci-bot"
     - git add .
     - git commit -m "Automated fixes by clippy, and cargo fix"
-    - git push https://oauth2:$PROJECT_TOKEN@git.app.uib.no/Nils.Fitjar/nmide.git HEAD:dev -o ci.skip # prevent triggering pipeline again
+    - git remote add origin linting-fix https://oauth2:$PROJECT_TOKEN@git.app.uib.no/Nils.Fitjar/nmide.git
+    - git push --set-upstream origin linting-fix -o ci.skip # prevent triggering pipeline again
 
 rust_test:
   stage: test
