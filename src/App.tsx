@@ -2,16 +2,12 @@ import ToolBar from "./components/toolbar";
 import Explorer from "./components/explorer";
 import "./styles/main.scss";
 import { invoke } from "@tauri-apps/api";
-import { attachConsole } from "tauri-plugin-log-api";
 import ErrorPane from "./components/errorPane";
 import { createEffect, createSignal } from "solid-js";
 import { NmideReport, NmideError, FolderOrFile, Folder, File } from "./types";
 import { split_with_err } from "./funcs";
 import { produce } from "solid-js/store";
 
-const detach = await attachConsole();
-// detach the browser console from the log stream
-detach();
 
 function App() {
   const [errors, setErrors] = createSignal<NmideReport[]>([]);
