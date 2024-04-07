@@ -28,9 +28,9 @@ function RenderFile(props: { file: File, key: string }) {
   });
 
   return (
-    <div class={`file ${file().extension} ${file().name}`} >
-      <span>{file().name}</span>
-    </div>
+    <span class={`file ${file().extension} ${file().name}`}>
+      {file().name}
+    </span>
   );
 }
 
