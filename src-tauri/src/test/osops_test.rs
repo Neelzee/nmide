@@ -1,17 +1,23 @@
-use crate::osops::get_paths;
-use eyre::{Context, Result};
-use log::debug;
-use std::path::Path;
+use crate::osops::{get_paths};
+use crate::test::{FOLDER, TEST_PATH};
 
+
+use std::path::{Path};
+
+/// Test that the path count is correct
 #[test]
-fn test_path_getter() -> Result<()> {
-    let path = Path::new("./src/test");
+fn test_get_paths_count() {
+    let path = Path::new(TEST_PATH);
 
-    let dirs = get_paths(path, 1).wrap_err("Failed getting paths for testing")?;
+    let (dirs, _) = get_paths(path, 2).unwrap_with_err();
+    let count = dirs.len();
+    let expected_count = FOLDER.len();
 
-    debug!("{dirs:?}");
+    println!("Expected: {expected_count}");
+    println!("Count: {count}");
 
-    assert!(dirs.len() != 0);
-
-    Ok(())
+    assert_eq!(
+        expected_count, count,
+        "Expected: {expected_count}, got {count}, from: `{dirs:?}`"
+    );
 }
