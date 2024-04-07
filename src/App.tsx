@@ -15,12 +15,9 @@ function App() {
   const [root, setRoot] = createSignal("");
 
   createEffect(() => {
-    console.log(root());
     if (root() !== "") {
       invoke<NmideError<FolderOrFile>>("get_workspace", { path: root() })
         .then(res => {
-          console.log("START")
-          console.log(res);
           const [val, rep] = split_with_err<FolderOrFile>(res);
           if (rep !== null) {
             setErrors(produce(arr => {
@@ -37,6 +34,7 @@ function App() {
               content: [val]
             });
           }
+          console.log(val);
         })
         .catch(err => {
           setErrors(produce(arr => arr.push(err)));
@@ -47,22 +45,7 @@ function App() {
     <main>
       <ToolBar setRoot={setRoot} />
       <article>
-        <ul id={root()}>
-          <li>{folders().name}</li>
-          <ul>
-            {folders().content.map(fof => {
-              console.log(fof);
-              console.log((fof as Folder).content !== undefined);
-              if ("content" in fof) {
-                const sf = fof as Folder;
-                return <RenderFolder key={sf.path} folder={sf} />;
-              } else {
-                const sf = fof as File;
-                return <RenderFile key={sf.path} file={sf} />;
-              }
-            })}
-          </ul>
-        </ul>
+        <Explorer files={folders} />
         <ErrorPane errors={errors} />
       </article>
     </main>
