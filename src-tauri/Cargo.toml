@@ -6,6 +6,7 @@ authors = ["Nils Michael Fitjar"]
 license = ""
 repository = "https://git.app.uib.no/Nils.Fitjar/nmide"
 edition = "2021"
+default-run = "nmide"
 
 [build-dependencies]
 tauri-build = { version = "1.5", features = [] }
@@ -27,3 +28,11 @@ custom-protocol = ["tauri/custom-protocol"]
 
 [profile.dev]
 env = { RUST_LOG = "debug" }
+
+[[bin]]
+name = "nmide"
+path = "src/main.rs"
+
+[[bin]]
+name = "server"
+path = "src/server.rs"

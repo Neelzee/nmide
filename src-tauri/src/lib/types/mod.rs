@@ -1,12 +1,14 @@
 pub mod modules;
 
 use crate::{
-    either::Either,
-    errors::{ErrorLevel, NmideError, NmideReport},
+    lib::{
+        either::Either,
+        errors::{ErrorLevel, NmideError, NmideReport},
+        types::modules::{File, Folder, FolderOrFile},
+        utils::funcs::os_to_str,
+        workspace::{ws_file::WSFile, ws_folder::WSFolder},
+    },
     nmrep,
-    types::modules::{File, Folder, FolderOrFile},
-    utils::funcs::os_to_str,
-    workspace::{ws_file::WSFile, ws_folder::WSFolder},
 };
 use std::path::{Path, PathBuf};
 
@@ -133,8 +135,6 @@ impl Folder {
             }),
         }
         .unwrap_with_err();
-
-        
 
         NmideError {
             val: Folder {

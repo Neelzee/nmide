@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use super::{FOLDER, TEST_PATH};
-use crate::workspace::Workspace;
+use crate::lib::workspace::Workspace;
 
 #[test]
 fn test_wsfile_creation() {

@@ -1,19 +1,16 @@
 use crate::{
-    either::Either,
-    errors::NmideError,
-    nmrep,
-    osops::{get_folder_or_file},
-    types::{
-        modules::{self, FolderOrFile},
+    lib::{
+        either::Either,
+        errors::NmideError,
+        osops::get_folder_or_file,
+        types::modules::{self, FolderOrFile},
+        utils::funcs::os_to_str,
+        workspace::ws_file::WSFile,
     },
-    utils::funcs::os_to_str,
-    workspace::ws_file::WSFile,
+    nmrep,
 };
 
-
-use std::{
-    path::{Path, PathBuf},
-};
+use std::path::{Path, PathBuf};
 
 #[derive(Debug)]
 pub struct WSFolder {

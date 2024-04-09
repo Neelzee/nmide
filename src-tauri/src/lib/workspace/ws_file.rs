@@ -1,9 +1,9 @@
-use crate::{errors::NmideError, nmrep, types, utils::funcs::os_to_str};
-
-use std::{
-    fs::File,
-    path::{PathBuf},
+use crate::{
+    lib::{errors::NmideError, types, utils::funcs::os_to_str},
+    nmrep,
 };
+
+use std::{fs::File, path::PathBuf};
 
 #[derive(Debug)]
 pub struct WSFile {

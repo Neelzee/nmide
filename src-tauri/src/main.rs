@@ -1,23 +1,13 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use crate::{cmds::get_workspace, workspace::Workspace};
+use crate::cmds::get_workspace;
+use crate::lib::{workspace::Workspace, WORKSPACE};
 use eyre::{Context, Result};
-use once_cell::sync::Lazy;
 use tauri_plugin_log::LogTarget;
-use tokio::sync::Mutex;
 
 mod cmds;
-mod either;
-mod errors;
-mod osops;
-#[cfg(test)]
-mod test;
-mod types;
-mod utils;
-mod workspace;
-
-pub static WORKSPACE: Lazy<Mutex<Workspace>> = Lazy::new(|| Mutex::new(Workspace::empty()));
+mod lib;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
