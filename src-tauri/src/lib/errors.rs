@@ -337,3 +337,22 @@ macro_rules! nmrep {
         }
     };
 }
+
+#[macro_export]
+macro_rules! nmfold {
+    ($vec:expr) => {{
+        $vec.into_iter().fold(
+            NmideError {
+                val: Vec::new(),
+                rep: None,
+            },
+            |mut err, e| {
+                err.val.push(e.val);
+                if let Some(rep) = e.rep {
+                    err = err.push_nmide(rep);
+                }
+                err
+            },
+        )
+    }};
+}

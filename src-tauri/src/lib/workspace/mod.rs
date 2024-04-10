@@ -10,10 +10,12 @@ use crate::{
         utils::funcs::os_to_str,
         workspace::{ws_file::WSFile, ws_folder::WSFolder},
     },
-    nmrep,
+    nmfold, nmrep,
 };
 
 use std::path::{Path, PathBuf};
+
+use super::osops::get_folder_or_file;
 
 #[derive(Debug, Clone)]
 pub struct Workspace {
@@ -46,34 +48,19 @@ impl Workspace {
     pub fn init(path: &Path) -> NmideError<Self> {
         let i = 2;
 
-        get_paths(path, i)
-            .map(|val| {
+        get_folder_or_file(path, i)
+            .vmap(|val| -> Vec<_> {
                 val.into_iter()
-                    .map(|p| -> Either<_, _> {
-                        if p.is_dir() {
-                            Either::Left(WSFolder::new(p.as_path(), i - 1))
-                        } else {
-                            Either::Right(WSFile::new(&p))
-                        }
+                    .map(|f| match f {
+                        Either::Left(f) => Either::Left(f.to_wsfolder()),
+                        Either::Right(f) => Either::Right(f.to_wsfile()),
                     })
-                    .map(|b| b.transpose())
-                    .fold(
-                        NmideError {
-                            val: Vec::new(),
-                            rep: None,
-                        },
-                        |mut acc, e| {
-                            acc.val.push(e.val);
-                            if let Some(rep) = e.rep {
-                                acc.push_nmide(rep)
-                            } else {
-                                acc
-                            }
-                        },
-                    )
+                    .map(|e| e.transpose())
+                    .collect()
             })
-            .vmap(|files| Workspace {
-                root: path.to_owned(),
+            .map(|e| nmfold!(e))
+            .vmap(|files| Self {
+                root: path.to_path_buf(),
                 files,
             })
     }

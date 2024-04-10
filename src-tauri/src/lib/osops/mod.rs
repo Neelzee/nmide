@@ -1,4 +1,5 @@
 use eyre::{Context, Result};
+use log::warn;
 use std::collections::HashSet;
 use std::fs::{read_dir, File};
 use std::io::Read;
@@ -91,6 +92,7 @@ fn visit_dirs_recursive(
             }),
         };
 
+        // TODO: This does not work
         let (content, content_rep) = NmideError::from_err(read_dir(dir))
             .map(|sub_dir| -> NmideError<Vec<FolderOrFile>> {
                 match sub_dir {
