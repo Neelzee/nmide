@@ -8,6 +8,15 @@ pub struct NmideError<T> {
     pub rep: Option<NmideReport>,
 }
 
+impl<T: Clone> Clone for NmideError<T> {
+    fn clone(&self) -> Self {
+        Self {
+            val: self.val.clone(),
+            rep: self.rep.clone(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct NmideReport {
     pub msg: String,
@@ -93,6 +102,10 @@ impl Display for ErrorLevel {
 }
 
 impl<T> NmideError<T> {
+    pub fn new(val: T) -> Self {
+        Self { val, rep: None }
+    }
+
     pub fn push_nmide(self, other: NmideReport) -> Self {
         let (val, rep) = self.unwrap_with_err();
         if let Some(r) = rep {
@@ -165,14 +178,14 @@ impl<T> NmideError<T> {
     /// Applies the function to self, carrying with the reports
     pub fn map<F, U>(self, f: F) -> NmideError<U>
     where
-        F: FnOnce(Self) -> NmideError<U>,
+        F: FnOnce(T) -> NmideError<U>,
     {
-        let r = self.rep.clone();
-        let res = f(self);
+        let (v, rep) = self.unwrap_with_err();
+        let (val, r) = f(v).unwrap_with_err();
 
         NmideError {
-            val: res.val,
-            rep: nmrep!(res.rep, r),
+            val,
+            rep: nmrep!(rep, r),
         }
     }
 

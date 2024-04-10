@@ -91,7 +91,7 @@ fn visit_dirs_recursive(
 
         let (content, content_rep) = NmideError::from_err(read_dir(dir))
             .map(|sub_dir| -> NmideError<Vec<FolderOrFile>> {
-                match sub_dir.val {
+                match sub_dir {
                     Some(sd) => fold_nmide(
                         sd.map(|e| match e {
                             Ok(p) => NmideError {
@@ -111,16 +111,15 @@ fn visit_dirs_recursive(
                                             .map(|e| e.into())
                                             .collect::<Vec<FolderOrFile>>()
                                     })
-                                    .map(|e| {
+                                    .map(|val| {
                                         modules::Folder::new(p.val.as_path()).vmap(|mut f| {
-                                            f.content = e.val;
+                                            f.content = val;
                                             FolderOrFile::Folder(f)
                                         })
                                     })
                             } else {
-                                p.map(|e| {
-                                    modules::File::new(e.val.as_path())
-                                        .vmap(FolderOrFile::File)
+                                p.map(|val| {
+                                    modules::File::new(val.as_path()).vmap(FolderOrFile::File)
                                 })
                             }
                         })
@@ -128,7 +127,7 @@ fn visit_dirs_recursive(
                     ),
                     None => NmideError {
                         val: Vec::new(),
-                        rep: sub_dir.rep,
+                        rep: None,
                     },
                 }
             })

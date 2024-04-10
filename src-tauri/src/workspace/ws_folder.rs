@@ -2,20 +2,15 @@ use crate::{
     either::Either,
     errors::NmideError,
     nmrep,
-    osops::{get_folder_or_file},
-    types::{
-        modules::{self, FolderOrFile},
-    },
+    osops::get_folder_or_file,
+    types::modules::{self, FolderOrFile},
     utils::funcs::os_to_str,
     workspace::ws_file::WSFile,
 };
 
+use std::path::{Path, PathBuf};
 
-use std::{
-    path::{Path, PathBuf},
-};
-
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct WSFolder {
     path: PathBuf,
     name: String,
@@ -67,14 +62,12 @@ impl WSFolder {
         self.content
             .iter()
             .map(|v| match v {
-                Either::Right(f) => f.to_file().map(|e| NmideError {
-                    val: FolderOrFile::File(e.val),
-                    rep: e.rep,
-                }),
-                Either::Left(f) => f.to_folder().map(|e| NmideError {
-                    val: FolderOrFile::Folder(e.val),
-                    rep: e.rep,
-                }),
+                Either::Right(f) => f
+                    .to_file()
+                    .map(|val| NmideError::new(FolderOrFile::File(val))),
+                Either::Left(f) => f
+                    .to_folder()
+                    .map(|val| NmideError::new(FolderOrFile::Folder(val))),
             })
             .fold(
                 NmideError {
@@ -94,13 +87,12 @@ impl WSFolder {
     }
 
     pub fn to_folder(&self) -> NmideError<modules::Folder> {
-        self.get_content().map(|err| NmideError {
-            val: modules::Folder {
+        self.get_content().map(|val| {
+            NmideError::new(modules::Folder {
                 name: self.name.clone(),
                 path: self.path.to_str().unwrap_or_default().to_string(),
-                content: err.val,
-            },
-            rep: err.rep,
+                content: val,
+            })
         })
     }
 

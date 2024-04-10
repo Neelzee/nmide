@@ -13,7 +13,7 @@ use crate::{
 
 use std::path::{Path, PathBuf};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Workspace {
     root: PathBuf,
     files: Vec<Either<WSFolder, WSFile>>,
@@ -25,29 +25,6 @@ impl Workspace {
     }
     pub fn get_files(&self) -> &Vec<Either<WSFolder, WSFile>> {
         &self.files
-    }
-
-    fn copy_files(&self) -> NmideError<Vec<FolderOrFile>> {
-        self.files
-            .iter()
-            .map(|v| match v {
-                Either::Left(ws) => Either::Left(ws.to_folder()),
-                Either::Right(ws) => Either::Right(ws.to_file()),
-            })
-            .map(|e| e.transpose().vmap(|e| -> FolderOrFile { e.into() }))
-            .fold(
-                NmideError {
-                    val: Vec::new(),
-                    rep: None,
-                },
-                |mut err, e| {
-                    err.val.push(e.val);
-                    if let Some(rep) = e.rep {
-                        err = err.push_nmide(rep);
-                    }
-                    err
-                },
-            )
     }
 
     pub fn empty() -> Self {
@@ -67,56 +44,70 @@ impl Workspace {
     pub fn init(path: &Path) -> NmideError<Self> {
         let i = 2;
 
-        let (paths, path_rep) = get_paths(path, i).unwrap_with_err();
-
-        let (files, files_rep) = paths
-            .into_iter()
-            .map(|p| -> Either<_, _> {
-                if p.is_dir() {
-                    Either::Left(WSFolder::new(p.as_path(), i - 1))
-                } else {
-                    Either::Right(WSFile::new(&p))
-                }
+        get_paths(path, i)
+            .map(|val| {
+                val.into_iter()
+                    .map(|p| -> Either<_, _> {
+                        if p.is_dir() {
+                            Either::Left(WSFolder::new(p.as_path(), i - 1))
+                        } else {
+                            Either::Right(WSFile::new(&p))
+                        }
+                    })
+                    .map(|b| b.transpose())
+                    .fold(
+                        NmideError {
+                            val: Vec::new(),
+                            rep: None,
+                        },
+                        |mut acc, e| {
+                            acc.val.push(e.val);
+                            if let Some(rep) = e.rep {
+                                acc.push_nmide(rep)
+                            } else {
+                                acc
+                            }
+                        },
+                    )
             })
-            .map(|b| b.transpose())
-            .fold(
-                NmideError {
-                    val: Vec::new(),
-                    rep: None,
-                },
-                |mut acc, e| {
-                    acc.val.push(e.val);
-                    if let Some(rep) = e.rep {
-                        acc.push_nmide(rep)
-                    } else {
-                        acc
-                    }
-                },
-            )
-            .unwrap_with_err();
-
-        NmideError {
-            val: Workspace {
+            .vmap(|files| Workspace {
                 root: path.to_owned(),
                 files,
-            },
-            rep: nmrep!(path_rep, files_rep),
-        }
+            })
     }
 
     pub fn to_folder(&self) -> NmideError<modules::Folder> {
         let (name, name_rep) =
             os_to_str(self.root.file_name().unwrap_or_default()).unwrap_with_err();
 
-        let (content, content_rep) = self.copy_files().unwrap_with_err();
-
-        NmideError {
-            val: modules::Folder {
+        let res = self
+            .files
+            .clone()
+            .into_iter()
+            .map(|e| match e {
+                Either::Left(f) => Either::Left(f.to_folder()),
+                Either::Right(f) => Either::Right(f.to_file()),
+            })
+            .map(|e| e.transpose())
+            .fold(NmideError::new(Vec::new()), |mut err, e| {
+                err.val.push(e.val);
+                if let Some(rep) = e.rep {
+                    err.push_nmide(rep)
+                } else {
+                    err
+                }
+            })
+            .vmap(|e| -> Vec<FolderOrFile> { e.into_iter().map(|f| f.into()).collect::<Vec<_>>() })
+            .vmap(|content| modules::Folder {
                 name,
                 path: self.root.to_str().unwrap_or_default().to_string(),
                 content,
-            },
-            rep: nmrep!(name_rep, content_rep),
+            });
+
+        if let Some(rep) = name_rep {
+            res.push_nmide(rep)
+        } else {
+            res
         }
     }
 }

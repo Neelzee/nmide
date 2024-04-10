@@ -95,6 +95,16 @@ impl File {
 }
 
 impl Folder {
+    pub fn len(&self) -> usize {
+        1 + self.content.clone().into_iter().fold(0, |mut i, f| {
+            match f {
+                FolderOrFile::File(_) => i += 1,
+                FolderOrFile::Folder(folder) => i += folder.len(),
+            }
+            i
+        })
+    }
+
     pub fn empty() -> Folder {
         Folder {
             name: String::new(),
@@ -133,8 +143,6 @@ impl Folder {
             }),
         }
         .unwrap_with_err();
-
-        
 
         NmideError {
             val: Folder {
