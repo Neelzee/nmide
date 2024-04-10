@@ -4,24 +4,23 @@ use crate::{
         errors::NmideError,
         osops::get_folder_or_file,
         types::modules::{self, FolderOrFile},
-        utils::funcs::os_to_str,
         workspace::ws_file::WSFile,
     },
     nmrep,
 };
 use std::ffi::OsString;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 #[derive(Debug, Clone)]
 pub struct WSFolder {
-    path: PathBuf,
-    name: String,
+    path: OsString,
+    name: OsString,
     content: Vec<Either<WSFolder, WSFile>>,
 }
 
 impl WSFolder {
     pub fn new(path: &Path, level: usize) -> NmideError<Self> {
-        let (name, name_rep) = os_to_str(path.file_name().unwrap_or_default()).unwrap_with_err();
+        let name = path.file_name().unwrap_or_default().to_os_string();
         let (raw_content, raw_content_rep) = get_folder_or_file(path, level).unwrap_with_err();
 
         let (content, content_rep) = raw_content
@@ -49,14 +48,14 @@ impl WSFolder {
             .unwrap_with_err();
 
         let ws = WSFolder {
-            path: path.to_owned(),
+            path: path.as_os_str().to_os_string(),
             name,
             content,
         };
 
         NmideError {
             val: ws,
-            rep: nmrep!(name_rep, raw_content_rep, content_rep),
+            rep: nmrep!(raw_content_rep, content_rep),
         }
     }
 
