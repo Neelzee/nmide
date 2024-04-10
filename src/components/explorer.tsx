@@ -1,5 +1,6 @@
 import { Accessor, createEffect, createSignal } from "solid-js";
 import { Folder, File } from "../types";
+import "../styles/explorer.scss";
 
 export default function Explorer(props: { files: Accessor<Folder> }) {
   const [folder, setFolder] = createSignal<Folder>({ name: "", path: "", content: [] });
@@ -51,7 +52,7 @@ function RenderFolder(props: { folder: Folder, key: string }) {
   }
 
   return (
-    <ul id={props.key} class="folder" >
+    <ul id={props.key} class="folder">
       <li
         class={`folder-name ${folder().name}`}
         onClick={folderName}
@@ -69,7 +70,7 @@ function RenderFolder(props: { folder: Folder, key: string }) {
           }
         })}
       </ul>
-    </ul>
+    </ul >
   );
 }
 
