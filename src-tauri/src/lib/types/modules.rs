@@ -16,15 +16,30 @@ impl Serialize for FolderOrFile {
         match self {
             FolderOrFile::File(f) => {
                 let mut state = serializer.serialize_struct("File", 3)?;
-                state.serialize_field("name", &f.name)?;
-                state.serialize_field("extension", &f.extension)?;
-                state.serialize_field("path", &f.path)?;
+                state.serialize_field(
+                    "name",
+                    &(f.name.clone().into_string().ok().unwrap_or_default()),
+                )?;
+                state.serialize_field(
+                    "extension",
+                    &(f.extension.clone().into_string().ok().unwrap_or_default()),
+                )?;
+                state.serialize_field(
+                    "path",
+                    &(f.path.clone().into_string().ok().unwrap_or_default()),
+                )?;
                 state.end()
             }
             FolderOrFile::Folder(f) => {
                 let mut state = serializer.serialize_struct("Folder", 4)?;
-                state.serialize_field("name", &f.name)?;
-                state.serialize_field("path", &f.path)?;
+                state.serialize_field(
+                    "name",
+                    &(f.name.clone().into_string().ok().unwrap_or_default()),
+                )?;
+                state.serialize_field(
+                    "path",
+                    &(f.path.clone().into_string().ok().unwrap_or_default()),
+                )?;
                 state.serialize_field("content", &f.content)?;
                 state.end()
             }

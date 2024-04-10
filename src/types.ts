@@ -1,14 +1,59 @@
 export type FolderOrFile = Folder | File;
 
 export type File = {
-  name: string,
-  extension: string,
-  path: string
+  name: {
+    Unix: [
+      115,
+      116,
+      114,
+      105,
+      110,
+      103
+    ]
+  },
+  extension: {
+    Unix: [
+      115,
+      116,
+      114,
+      105,
+      110,
+      103
+    ]
+  },
+  path: {
+    Unix: [
+      115,
+      116,
+      114,
+      105,
+      110,
+      103
+    ]
+  }
 };
 
 export type Folder = {
-  name: string,
-  path: string,
+  name: {
+    Unix: [
+      115,
+      116,
+      114,
+      105,
+      110,
+      103
+    ]
+  },
+  path: {
+    Unix: [
+      115,
+      116,
+      114,
+      105,
+      110,
+      103
+    ]
+  },
   content: FolderOrFile[]
 };
 
