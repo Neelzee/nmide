@@ -1,6 +1,6 @@
-@import "_const.scss";
+@use "const" as const;
 
 .error-pane {
-  background-color: $red;
+  background-color: const.$red;
 } 
 

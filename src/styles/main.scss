@@ -1,8 +1,9 @@
-@import "_const.scss";
+@use "const" as const;
 
 html,
 body {
-    padding: 0;
-    margin: 0;
-    background-color: $background;
+  color: const.$foreground;
+  padding: 0;
+  margin: 0;
+  background-color: const.$background;
 }

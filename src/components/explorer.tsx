@@ -1,6 +1,6 @@
 import { Accessor, createEffect, createSignal } from "solid-js";
 import { Folder, File } from "../types";
-import "../styles/explorer.scss";
+import "@styles/explorer.scss";
 
 export default function Explorer(props: { files: Accessor<Folder> }) {
   const [folder, setFolder] = createSignal<Folder>({ name: "", path: "", content: [] });

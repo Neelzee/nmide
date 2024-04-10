@@ -1,8 +1,8 @@
-import ToolBar from "./components/toolbar";
-import Explorer from "./components/explorer";
-import "./styles/main.scss";
+import ToolBar from "@components/toolbar";
+import Explorer from "@components/explorer";
+import "@styles/main.scss";
 import { invoke } from "@tauri-apps/api";
-import ErrorPane from "./components/errorPane";
+import ErrorPane from "@components/errorPane";
 import { createEffect, createSignal } from "solid-js";
 import { NmideReport, NmideError, FolderOrFile, Folder } from "./types";
 import { split_with_err } from "./funcs";

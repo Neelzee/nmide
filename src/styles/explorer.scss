@@ -1,4 +1,4 @@
-@import "_const.scss";
+@use "const" as const;
 
 .file {
   background-color: "blue";

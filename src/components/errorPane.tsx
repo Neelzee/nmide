@@ -1,6 +1,6 @@
 
 import { Accessor, createEffect, createSignal } from "solid-js";
-import "../styles/error_pane.scss";
+import "@styles/error_pane.scss";
 import { NmideReport } from "../types";
 
 export default function ErrorPane(props: { errors: Accessor<NmideReport[]> }) {
