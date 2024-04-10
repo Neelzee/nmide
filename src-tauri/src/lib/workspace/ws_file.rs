@@ -37,7 +37,8 @@ impl WSFile {
     }
 
     pub fn new(path: &PathBuf) -> NmideError<WSFile> {
-        let name = path.clone().into_os_string();
+        let name = path.clone().file_name().unwrap_or_default().to_os_string();
+
         let ext = path
             .extension()
             .and_then(|s| Some(s.to_os_string()))
