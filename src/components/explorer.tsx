@@ -25,8 +25,15 @@ function RenderFile(props: { file: File, key: string }) {
     setFile(props.file);
   });
 
+  const fileName = () => {
+    console.log(file().name);
+  };
+
   return (
-    <span class={`file ${file().extension} ${file().name}`} >
+    <span
+      class={`file ${file().extension} ${file().name}`}
+      onClick={fileName}
+    >
       {file().name}
     </span>
   );
@@ -39,10 +46,19 @@ function RenderFolder(props: { folder: Folder, key: string }) {
     setFolder(props.folder);
   });
 
+  const folderName = () => {
+    console.log(folder().name);
+  }
+
   return (
-    <ul id={props.key}>
-      <li>{folder().name}</li>
-      <ul>
+    <ul id={props.key} class="folder" >
+      <li
+        class={`folder-name ${folder().name}`}
+        onClick={folderName}
+      >
+        {folder().name}
+      </li>
+      <ul class="folder-content">
         {folder().content.map(f => {
           if ("content" in f) {
             const sf = f as Folder;
