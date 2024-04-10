@@ -66,11 +66,7 @@ impl Workspace {
     }
 
     pub fn to_folder(&self) -> NmideError<modules::Folder> {
-        let (name, name_rep) =
-            os_to_str(self.root.file_name().unwrap_or_default()).unwrap_with_err();
-
-        let res = self
-            .files
+        self.files
             .clone()
             .into_iter()
             .map(|e| match e {
@@ -88,15 +84,9 @@ impl Workspace {
             })
             .vmap(|e| -> Vec<FolderOrFile> { e.into_iter().map(|f| f.into()).collect::<Vec<_>>() })
             .vmap(|content| modules::Folder {
-                name,
-                path: self.root.to_str().unwrap_or_default().to_string(),
+                name: self.root.file_name().unwrap_or_default().to_os_string(),
+                path: self.root.as_os_str().to_os_string(),
                 content,
-            });
-
-        if let Some(rep) = name_rep {
-            res.push_nmide(rep)
-        } else {
-            res
-        }
+            })
     }
 }

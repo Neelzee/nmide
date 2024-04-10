@@ -9,7 +9,7 @@ use crate::{
     },
     nmrep,
 };
-
+use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
 #[derive(Debug, Clone)]
@@ -91,8 +91,8 @@ impl WSFolder {
     pub fn to_folder(&self) -> NmideError<modules::Folder> {
         self.get_content().map(|val| {
             NmideError::new(modules::Folder {
-                name: self.name.clone(),
-                path: self.path.to_str().unwrap_or_default().to_string(),
+                name: OsString::from(self.name.clone()),
+                path: self.path.as_os_str().to_os_string(),
                 content: val,
             })
         })

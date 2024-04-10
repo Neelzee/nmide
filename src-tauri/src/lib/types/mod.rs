@@ -10,6 +10,7 @@ use crate::{
     },
     nmrep,
 };
+use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
 impl From<Either<Folder, File>> for FolderOrFile {
@@ -42,9 +43,9 @@ impl FolderOrFile {
 impl File {
     pub fn empty() -> Self {
         Self {
-            name: String::new(),
-            extension: String::new(),
-            path: String::new(),
+            name: OsString::new(),
+            extension: OsString::new(),
+            path: OsString::new(),
         }
     }
 
@@ -64,30 +65,16 @@ impl File {
                 }),
             };
         }
-        let (name, name_rep) = os_to_str(path.file_name().unwrap_or_default()).unwrap_with_err();
-
-        let (extension, extension_rep) =
-            os_to_str(path.extension().unwrap_or_default()).unwrap_with_err();
-
-        let (path_str, path_str_rep) = NmideError {
-            val: path.to_str().map(|s| s.to_string()),
-            rep: Some(NmideReport {
-                msg: format!("Failed converting Path to String: `{path:?}`"),
-                lvl: ErrorLevel::Low,
-                tag: Vec::new(),
-                stack: Vec::new(),
-                origin: "Folder::new".to_string(),
-            }),
-        }
-        .unwrap_with_err();
+        let name = path.file_name().unwrap_or_default().to_os_string();
+        let extension = path.extension().unwrap_or_default().to_os_string();
 
         NmideError {
             val: File {
                 name,
                 extension,
-                path: path_str.unwrap_or_default(),
+                path: path.as_os_str().to_os_string(),
             },
-            rep: nmrep!(name_rep, extension_rep, path_str_rep),
+            rep: None,
         }
     }
 
@@ -109,8 +96,8 @@ impl Folder {
 
     pub fn empty() -> Folder {
         Folder {
-            name: String::new(),
-            path: String::new(),
+            name: OsString::new(),
+            path: OsString::new(),
             content: Vec::new(),
         }
     }
@@ -132,27 +119,15 @@ impl Folder {
             };
         }
 
-        let (name, name_rep) = os_to_str(path.file_name().unwrap_or_default()).unwrap_with_err();
-
-        let (path_str, path_str_rep) = NmideError {
-            val: path.to_str().map(|s| s.to_string()),
-            rep: Some(NmideReport {
-                msg: format!("Failed converting Path to String: `{path:?}`"),
-                lvl: ErrorLevel::Low,
-                tag: Vec::new(),
-                stack: Vec::new(),
-                origin: "Folder::new".to_string(),
-            }),
-        }
-        .unwrap_with_err();
+        let name = path.file_name().unwrap_or_default().to_os_string();
 
         NmideError {
             val: Folder {
                 name,
-                path: path_str.unwrap_or_default(),
+                path: path.as_os_str().to_os_string(),
                 content: Vec::new(),
             },
-            rep: nmrep!(name_rep, path_str_rep),
+            rep: None,
         }
     }
 

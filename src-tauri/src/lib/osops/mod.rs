@@ -79,18 +79,8 @@ fn visit_dirs_recursive(
     }
 
     if dir.is_dir() {
-        let name = os_to_str(dir.file_name().unwrap_or_default());
-
-        let path_str = NmideError {
-            val: dir.to_str().map(|p| p.to_string()),
-            rep: Some(NmideReport {
-                msg: format!("Failed converting Path to String: `{dir:?}`"),
-                lvl: ErrorLevel::Low,
-                tag: Vec::new(),
-                stack: Vec::new(),
-                origin: "visit_dirs_recursive".to_string(),
-            }),
-        };
+        let name = dir.file_name().unwrap_or_default().to_os_string();
+        let path_str = dir.as_os_str().to_os_string();
 
         // TODO: This does not work
         let (content, content_rep) = NmideError::from_err(read_dir(dir))
@@ -137,39 +127,22 @@ fn visit_dirs_recursive(
             })
             .unwrap_with_err();
 
-        let (name, name_rep) = name.unwrap_with_err();
-        let (path_str, path_str_rep) = path_str.unwrap_with_err();
-
         res.val.push(Either::Left(modules::Folder {
             name,
-            path: path_str.unwrap_or_default(),
+            path: path_str,
             content,
         }));
 
-        res.rep = nmrep!(res.rep, name_rep, path_str_rep, content_rep);
+        res.rep = nmrep!(res.rep, content_rep);
     } else {
-        let (name, name_rep) = os_to_str(dir.file_name().unwrap_or_default()).unwrap_with_err();
+        let name = dir.file_name().unwrap_or_default().to_os_string();
+        let path_str = dir.as_os_str().to_os_string();
 
-        let (path_str, path_str_rep) = NmideError {
-            val: dir.to_str().map(|p| p.to_string()),
-            rep: Some(NmideReport {
-                msg: format!("Failed converting Path to String: `{dir:?}`"),
-                lvl: ErrorLevel::Low,
-                tag: Vec::new(),
-                stack: Vec::new(),
-                origin: "_visit_dirs_recursive".to_string(),
-            }),
-        }
-        .unwrap_with_err();
-
-        let (extension, extension_rep) =
-            os_to_str(dir.extension().unwrap_or_default()).unwrap_with_err();
-
-        res.rep = nmrep!(name_rep, path_str_rep, extension_rep);
+        let extension = dir.extension().unwrap_or_default().to_os_string();
 
         res.val.push(Either::Right(modules::File {
             name,
-            path: path_str.unwrap_or_default(),
+            path: path_str,
             extension,
         }));
     }

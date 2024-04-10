@@ -26,9 +26,9 @@ pub fn pretty_display(files: &Vec<FolderOrFile>, lvl: usize) -> String {
 
     for f in files {
         match f {
-            FolderOrFile::File(f) => s += &format!("{}{}\n", " ".repeat(lvl), f.name),
+            FolderOrFile::File(f) => s += &format!("{}{:?}\n", " ".repeat(lvl), f.name),
             FolderOrFile::Folder(f) => {
-                s += &format!("{}{}\n", " ".repeat(lvl), f.name);
+                s += &format!("{}{:?}\n", " ".repeat(lvl), f.name);
                 s += &pretty_display(&f.content, lvl + 2);
             }
         }

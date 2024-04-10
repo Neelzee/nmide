@@ -1,5 +1,6 @@
 use serde::ser::{SerializeStruct, Serializer};
 use serde::Serialize;
+use std::ffi::OsString;
 
 #[derive(Debug, Clone)]
 pub enum FolderOrFile {
@@ -33,14 +34,14 @@ impl Serialize for FolderOrFile {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Folder {
-    pub name: String,
-    pub path: String,
+    pub name: OsString,
+    pub path: OsString,
     pub content: Vec<FolderOrFile>,
 }
 
 #[derive(Debug, Clone, Serialize)]
 pub struct File {
-    pub name: String,
-    pub extension: String,
-    pub path: String,
+    pub name: OsString,
+    pub extension: OsString,
+    pub path: OsString,
 }

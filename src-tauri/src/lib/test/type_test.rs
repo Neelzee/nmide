@@ -1,4 +1,5 @@
 use std::{
+    ffi::OsString,
     fs::File,
     io::{BufWriter, Write},
 };
@@ -22,9 +23,9 @@ fn type_test() -> Result<()> {
     let str_file = format!(
         "export type File = {};",
         serde_json::to_string_pretty(&modules::File {
-            name: "string".to_string(),
-            extension: "string".to_string(),
-            path: "string".to_string(),
+            name: OsString::from("string"),
+            extension: OsString::from("string"),
+            path: OsString::from("string"),
         })?
     )
     .replace('\"', "");
@@ -32,8 +33,8 @@ fn type_test() -> Result<()> {
     let str_folder = format!(
         "export type Folder = {};",
         serde_json::to_string_pretty(&modules::Folder {
-            name: "string".to_string(),
-            path: "string".to_string(),
+            name: OsString::from("string"),
+            path: OsString::from("string"),
             content: Vec::new(),
         })?
     )
