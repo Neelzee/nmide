@@ -294,6 +294,27 @@ impl<T> NmideError<NmideError<T>> {
     }
 }
 
+impl<T> NmideError<Option<NmideError<T>>> {
+    pub fn option_combine(self) -> NmideError<Option<T>> {
+        let (val, rep) = self.unwrap_with_err();
+
+        match val {
+            Some(v) => {
+                let n = v.vmap(|t| Some(t));
+                if let Some(rep) = rep {
+                    n.push_nmide(rep)
+                } else {
+                    n
+                }
+            }
+            None => NmideError {
+                val: None::<T>,
+                rep,
+            },
+        }
+    }
+}
+
 pub fn filter_nmide<T>(vec: Vec<NmideError<T>>) -> (Vec<T>, Option<NmideReport>) {
     vec.into_iter().map(|e| e.unwrap_with_err()).fold(
         (Vec::new(), None::<NmideReport>),

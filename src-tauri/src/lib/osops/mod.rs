@@ -6,6 +6,7 @@ use std::io::Read;
 use std::io::{BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
 
+use crate::nmfold;
 use crate::{
     lib::{
         either::Either,
@@ -69,83 +70,47 @@ fn visit_dirs_recursive(
     dir: &Path,
     depth: usize,
 ) -> NmideError<Vec<Either<modules::Folder, modules::File>>> {
-    let mut res = NmideError {
-        val: Vec::new(),
-        rep: None,
-    };
-
     if depth == 0 {
-        return res;
+        return NmideError::new(Vec::new());
     }
 
     if dir.is_dir() {
-        let name = dir.file_name().unwrap_or_default().to_os_string();
-        let path_str = dir.as_os_str().to_os_string();
+        NmideError::from_err(read_dir(dir).map(|e| {
+            nmfold!(e
+                .filter_map(|p| p.ok())
+                .map(
+                    |p| -> Either<NmideError<modules::Folder>, NmideError<modules::File>> {
+                        let sub_path = p.path();
 
-        // TODO: This does not work
-        let (content, content_rep) = NmideError::from_err(read_dir(dir))
-            .map(|sub_dir| -> NmideError<Vec<FolderOrFile>> {
-                match sub_dir {
-                    Some(sd) => fold_nmide(
-                        sd.map(|e| match e {
-                            Ok(p) => NmideError {
-                                val: p.path(),
-                                rep: None,
-                            },
-                            Err(err) => NmideError {
-                                val: PathBuf::new(),
-                                rep: Some(NmideReport::from_err(err)),
-                            },
-                        })
-                        .map(|p| {
-                            if p.val.is_dir() {
-                                visit_dirs_recursive(p.val.as_path(), depth - 1)
-                                    .vmap(|vc| {
-                                        vc.into_iter()
-                                            .map(|e| e.into())
-                                            .collect::<Vec<FolderOrFile>>()
-                                    })
-                                    .map(|val| {
-                                        modules::Folder::new(p.val.as_path()).vmap(|mut f| {
-                                            f.content = val;
-                                            FolderOrFile::Folder(f)
-                                        })
-                                    })
-                            } else {
-                                p.map(|val| {
-                                    modules::File::new(val.as_path()).vmap(FolderOrFile::File)
-                                })
-                            }
-                        })
-                        .collect(),
-                    ),
-                    None => NmideError {
-                        val: Vec::new(),
-                        rep: None,
+                        if sub_path.is_dir() {
+                            Either::Left(visit_dirs_recursive(&sub_path, depth - 1).vmap(
+                                |content| modules::Folder {
+                                    name: sub_path.file_name().unwrap_or_default().to_os_string(),
+                                    path: sub_path.as_os_str().to_os_string(),
+                                    content: content.into_iter().map(|e| e.into()).collect(),
+                                },
+                            ))
+                        } else {
+                            Either::Right(modules::File::new(&sub_path))
+                        }
                     },
-                }
-            })
-            .unwrap_with_err();
-
-        res.val.push(Either::Left(modules::Folder {
-            name,
-            path: path_str,
-            content,
-        }));
-
-        res.rep = nmrep!(res.rep, content_rep);
+                )
+                .map(|e| e.transpose())
+                .collect::<Vec<_>>())
+        }))
+        .option_combine()
+        .map(|v| match v {
+            Some(v) => NmideError::new(v),
+            None => NmideError::new(Vec::new()).push_nmide(NmideReport::new(
+                format!("Failed getting content from: `{dir:?}`"),
+                format!("visit_dirs_recursive({dir:?}, {depth:?})"),
+            )),
+        })
     } else {
-        let name = dir.file_name().unwrap_or_default().to_os_string();
-        let path_str = dir.as_os_str().to_os_string();
-
-        let extension = dir.extension().unwrap_or_default().to_os_string();
-
-        res.val.push(Either::Right(modules::File {
-            name,
-            path: path_str,
-            extension,
-        }));
+        NmideError::new(vec![Either::Right(modules::File {
+            name: dir.file_name().unwrap_or_default().to_os_string(),
+            extension: dir.extension().unwrap_or_default().to_os_string(),
+            path: dir.as_os_str().to_os_string(),
+        })])
     }
-
-    res
 }
