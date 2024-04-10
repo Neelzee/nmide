@@ -1,7 +1,7 @@
 use super::{FOLDER, TEST_PATH};
-use crate::types::modules::FolderOrFile;
-use crate::utils::funcs::pretty_display;
-use crate::workspace::Workspace;
+use crate::lib::types::modules::FolderOrFile;
+use crate::lib::utils::funcs::pretty_display;
+use crate::lib::workspace::Workspace;
 use std::path::Path;
 
 #[test]

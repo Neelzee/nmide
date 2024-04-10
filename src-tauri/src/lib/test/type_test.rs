@@ -3,7 +3,7 @@ use std::{
     io::{BufWriter, Write},
 };
 
-use crate::{errors, types::modules};
+use crate::lib::{errors, types::modules};
 
 use eyre::Result;
 

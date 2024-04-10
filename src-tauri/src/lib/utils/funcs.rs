@@ -1,4 +1,4 @@
-use crate::{
+use crate::lib::{
     either::Either,
     errors::{ErrorLevel, NmideError, NmideReport},
     types::modules::{File, Folder, FolderOrFile},
@@ -8,7 +8,8 @@ use std::{ffi::OsStr, path::PathBuf};
 pub fn os_to_str(s: &OsStr) -> NmideError<String> {
     NmideError {
         val: s
-            .to_str().map(|s| s.to_string())
+            .to_str()
+            .map(|s| s.to_string())
             .unwrap_or(format!("{s:?}")),
         rep: Some(NmideReport {
             msg: format!("Failed converting String: `{s:?}`"),

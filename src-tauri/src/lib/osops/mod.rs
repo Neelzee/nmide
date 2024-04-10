@@ -6,11 +6,13 @@ use std::io::{BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
 
 use crate::{
-    either::Either,
-    errors::{fold_nmide, ErrorLevel, NmideError, NmideReport},
+    lib::{
+        either::Either,
+        errors::{fold_nmide, ErrorLevel, NmideError, NmideReport},
+        types::{modules, modules::FolderOrFile},
+        utils::funcs::{os_to_str, to_paths},
+    },
     nmrep,
-    types::{modules, modules::FolderOrFile},
-    utils::funcs::{os_to_str, to_paths},
 };
 
 /// Reads from the file into a buffer

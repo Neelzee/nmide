@@ -2,13 +2,15 @@ pub mod ws_file;
 pub mod ws_folder;
 
 use crate::{
-    either::Either,
-    errors::NmideError,
+    lib::{
+        either::Either,
+        errors::NmideError,
+        osops::get_paths,
+        types::modules::{self, FolderOrFile},
+        utils::funcs::os_to_str,
+        workspace::{ws_file::WSFile, ws_folder::WSFolder},
+    },
     nmrep,
-    osops::get_paths,
-    types::modules::{self, FolderOrFile},
-    utils::funcs::os_to_str,
-    workspace::{ws_file::WSFile, ws_folder::WSFolder},
 };
 
 use std::path::{Path, PathBuf};

@@ -1,11 +1,13 @@
 use crate::{
-    either::Either,
-    errors::NmideError,
+    lib::{
+        either::Either,
+        errors::NmideError,
+        osops::get_folder_or_file,
+        types::modules::{self, FolderOrFile},
+        utils::funcs::os_to_str,
+        workspace::ws_file::WSFile,
+    },
     nmrep,
-    osops::get_folder_or_file,
-    types::modules::{self, FolderOrFile},
-    utils::funcs::os_to_str,
-    workspace::ws_file::WSFile,
 };
 
 use std::path::{Path, PathBuf};

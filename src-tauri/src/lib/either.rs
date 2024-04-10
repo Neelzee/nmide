@@ -1,4 +1,4 @@
-use crate::errors::NmideError;
+use crate::lib::errors::NmideError;
 
 #[derive(Debug, Clone)]
 pub enum Either<L: Clone, R: Clone> {
