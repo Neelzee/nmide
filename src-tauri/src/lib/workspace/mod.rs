@@ -19,13 +19,16 @@ use super::osops::get_folder_or_file;
 
 #[derive(Debug, Clone)]
 pub struct Workspace {
-    root: PathBuf,
-    files: Vec<Either<WSFolder, WSFile>>,
+    pub root: PathBuf,
+    pub files: Vec<Either<WSFolder, WSFile>>,
 }
 
 impl Workspace {
     pub fn len(&self) -> usize {
-        self.files.len()
+        (&self.files).into_iter().fold(1, |c, f| match f {
+            Either::Left(f) => c + f.len(),
+            Either::Right(_) => c + 1,
+        })
     }
     pub fn get_files(&self) -> &Vec<Either<WSFolder, WSFile>> {
         &self.files
@@ -43,6 +46,18 @@ impl Workspace {
             root: root.to_owned(),
             files,
         }
+    }
+
+    pub fn pretty_display(&self) -> String {
+        let mut str = String::new();
+        for f in &self.files {
+            match f {
+                Either::Left(f) => str.push_str(&f.pretty_display()),
+                Either::Right(f) => str.push_str(&f.pretty_display()),
+            }
+        }
+
+        str
     }
 
     pub fn init(path: &Path) -> NmideError<Self> {

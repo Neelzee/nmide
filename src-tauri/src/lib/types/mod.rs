@@ -81,9 +81,43 @@ impl File {
     pub fn to_wsfile(&self) -> NmideError<WSFile> {
         WSFile::new(&PathBuf::from(self.path.clone()))
     }
+
+    fn display(&self, indent: usize) -> String {
+        format!("{}{:?}", " ".repeat(indent), self.name)
+    }
+
+    pub fn pretty_display(&self) -> String {
+        self.display(2)
+    }
 }
 
 impl Folder {
+    pub fn pretty_display(&self) -> String {
+        let indent: usize = 2;
+        let mut str = String::new();
+        for f in &self.content {
+            match f {
+                FolderOrFile::File(f) => str.push_str(&f.display(indent)),
+                FolderOrFile::Folder(f) => str.push_str(&f.display(indent)),
+            }
+        }
+
+        str
+    }
+
+    fn display(&self, indent: usize) -> String {
+        let content = self
+            .content
+            .clone()
+            .into_iter()
+            .map(|e| match e {
+                FolderOrFile::File(f) => f.display(indent),
+                FolderOrFile::Folder(f) => f.display(indent),
+            })
+            .fold(String::new(), |s, f| s + &format!("\n{f}"));
+        format!("{}{:?}\n{}", " ".repeat(indent), self.name, content)
+    }
+
     pub fn len(&self) -> usize {
         1 + self.content.clone().into_iter().fold(0, |mut i, f| {
             match f {

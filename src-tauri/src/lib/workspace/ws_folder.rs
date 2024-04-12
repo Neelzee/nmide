@@ -13,12 +13,23 @@ use std::path::Path;
 
 #[derive(Debug, Clone)]
 pub struct WSFolder {
-    path: OsString,
+    pub path: OsString,
     name: OsString,
     content: Vec<Either<WSFolder, WSFile>>,
 }
 
 impl WSFolder {
+    pub fn pretty_display(&self) -> String {
+        self.to_folder().val.pretty_display()
+    }
+
+    pub fn len(&self) -> usize {
+        (&self.content).into_iter().fold(1, |c, f| match f {
+            Either::Left(f) => c + f.len(),
+            Either::Right(_) => c + 1,
+        })
+    }
+
     pub fn new(path: &Path, level: usize) -> NmideError<Self> {
         let name = path.file_name().unwrap_or_default().to_os_string();
         let (raw_content, raw_content_rep) = get_folder_or_file(path, level).unwrap_with_err();

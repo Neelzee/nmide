@@ -17,8 +17,35 @@ fn test_wsfile_creation() {
             5
         )
     );
-    let f: FolderOrFile = FOLDER.clone();
-    println!("{}", pretty_display(&vec![f], 5));
-    assert_eq!(ws.len(), FOLDER.len());
+    let paths = ws
+        .files
+        .clone()
+        .into_iter()
+        .map(|f| -> String {
+            match f {
+                crate::lib::either::Either::Left(f) => f
+                    .path
+                    .clone()
+                    .into_string()
+                    .unwrap_or(format!("{:?}", f.path)),
+                crate::lib::either::Either::Right(f) => f
+                    .path
+                    .clone()
+                    .into_string()
+                    .unwrap_or(format!("{:?}", f.path)),
+            }
+        })
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    println!("{paths}");
+
+    assert_eq!(
+        ws.len(),
+        FOLDER.len(),
+        "Failed, ws: \n{:?}\n, \nFOLDER\n{:?}",
+        paths,
+        FOLDER
+    );
     assert_eq!(ws.to_folder().unwrap_with_err().0.len(), FOLDER.len(),);
 }

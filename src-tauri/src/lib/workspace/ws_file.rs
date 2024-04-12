@@ -6,7 +6,7 @@ use std::{ffi::OsString, fs::File, path::PathBuf};
 
 #[derive(Debug)]
 pub struct WSFile {
-    path: PathBuf,
+    pub path: OsString,
     name: OsString,
     ext: OsString,
     content: Option<String>,
@@ -28,14 +28,16 @@ impl Clone for WSFile {
 impl WSFile {
     pub fn empty() -> Self {
         Self {
-            path: PathBuf::new(),
+            path: OsString::new(),
             name: OsString::new(),
             ext: OsString::new(),
             content: None,
             file: None,
         }
     }
-
+    pub fn pretty_display(&self) -> String {
+        self.to_file().val.pretty_display()
+    }
     pub fn new(path: &PathBuf) -> NmideError<WSFile> {
         let name = path.clone().file_name().unwrap_or_default().to_os_string();
 
@@ -46,7 +48,7 @@ impl WSFile {
 
         NmideError {
             val: WSFile {
-                path: path.clone(),
+                path: path.as_os_str().to_os_string(),
                 name,
                 ext,
                 content: None,
