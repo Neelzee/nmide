@@ -1,12 +1,12 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use crate::cmds::get_workspace;
+use crate::ide::cmds::get_workspace;
 use crate::nmide::WORKSPACE;
 use eyre::{Context, Result};
 use tauri_plugin_log::LogTarget;
 
-mod cmds;
+mod ide;
 mod nmide;
 
 #[tauri::command]
