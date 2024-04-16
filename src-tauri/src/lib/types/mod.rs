@@ -45,6 +45,7 @@ impl File {
             name: OsString::new(),
             extension: OsString::new(),
             path: OsString::new(),
+            symbol: String::new(),
         }
     }
 
@@ -72,6 +73,7 @@ impl File {
                 name,
                 extension,
                 path: path.as_os_str().to_os_string(),
+                symbol: String::new(),
             },
             rep: None,
         }
@@ -132,6 +134,7 @@ impl Folder {
             name: OsString::new(),
             path: OsString::new(),
             content: Vec::new(),
+            symbol: String::new(),
         }
     }
 
@@ -159,6 +162,7 @@ impl Folder {
                 name,
                 path: path.as_os_str().to_os_string(),
                 content: Vec::new(),
+                symbol: String::new(),
             },
             rep: None,
         }

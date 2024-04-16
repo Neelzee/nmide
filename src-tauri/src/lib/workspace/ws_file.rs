@@ -63,6 +63,7 @@ impl WSFile {
             name: self.name.clone(),
             extension: self.ext.clone(),
             path: self.path.as_os_str().to_os_string(),
+            symbol: String::new(),
         })
     }
 }

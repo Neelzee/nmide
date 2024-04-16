@@ -28,6 +28,7 @@ impl Serialize for FolderOrFile {
                     "path",
                     &(f.path.clone().into_string().ok().unwrap_or_default()),
                 )?;
+                state.serialize_field("symbol", &f.symbol)?;
                 state.end()
             }
             FolderOrFile::Folder(f) => {
@@ -41,6 +42,7 @@ impl Serialize for FolderOrFile {
                     &(f.path.clone().into_string().ok().unwrap_or_default()),
                 )?;
                 state.serialize_field("content", &f.content)?;
+                state.serialize_field("symbol", &f.symbol)?;
                 state.end()
             }
         }
@@ -52,6 +54,7 @@ pub struct Folder {
     pub name: OsString,
     pub path: OsString,
     pub content: Vec<FolderOrFile>,
+    pub symbol: String,
 }
 
 impl Serialize for Folder {
@@ -69,6 +72,7 @@ impl Serialize for Folder {
             &(self.path.clone().into_string().ok().unwrap_or_default()),
         )?;
         state.serialize_field("content", &self.content)?;
+        state.serialize_field("symbol", &self.symbol)?;
         state.end()
     }
 }
@@ -78,6 +82,7 @@ pub struct File {
     pub name: OsString,
     pub extension: OsString,
     pub path: OsString,
+    pub symbol: String,
 }
 
 impl Serialize for File {
@@ -103,6 +108,7 @@ impl Serialize for File {
             "path",
             &(self.path.clone().into_string().ok().unwrap_or_default()),
         )?;
+        state.serialize_field("symbol", &self.symbol);
         state.end()
     }
 }

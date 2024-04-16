@@ -102,6 +102,7 @@ impl Workspace {
                 name: self.root.file_name().unwrap_or_default().to_os_string(),
                 path: self.root.as_os_str().to_os_string(),
                 content,
+                symbol: String::new(),
             })
     }
 }

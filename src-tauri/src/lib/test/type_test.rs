@@ -26,6 +26,7 @@ fn type_test() -> Result<()> {
             name: OsString::from("string"),
             extension: OsString::from("string"),
             path: OsString::from("string"),
+            symbol: "🗈".to_string()
         })?
     )
     .replace('\"', "");
@@ -36,6 +37,7 @@ fn type_test() -> Result<()> {
             name: OsString::from("string"),
             path: OsString::from("string"),
             content: Vec::new(),
+            symbol: "📁".to_string()
         })?
     )
     .replace('\"', "")

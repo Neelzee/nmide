@@ -104,6 +104,7 @@ impl WSFolder {
                 name: OsString::from(self.name.clone()),
                 path: self.path.as_os_str().to_os_string(),
                 content: val,
+                symbol: String::new(),
             })
         })
     }

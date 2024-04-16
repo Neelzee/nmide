@@ -88,6 +88,7 @@ fn visit_dirs_recursive(
                                     name: sub_path.file_name().unwrap_or_default().to_os_string(),
                                     path: sub_path.as_os_str().to_os_string(),
                                     content: content.into_iter().map(|e| e.into()).collect(),
+                                    symbol: String::new(),
                                 },
                             ))
                         } else {
@@ -111,6 +112,7 @@ fn visit_dirs_recursive(
             name: dir.file_name().unwrap_or_default().to_os_string(),
             extension: dir.extension().unwrap_or_default().to_os_string(),
             path: dir.as_os_str().to_os_string(),
+            symbol: String::new(),
         })])
     }
 }
