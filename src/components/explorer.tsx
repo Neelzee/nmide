@@ -1,4 +1,4 @@
-import { Accessor, createEffect, createSignal } from "solid-js";
+import { JSX, Accessor, Show, createEffect, createSignal } from "solid-js";
 import { Folder, File } from "../types";
 import "@styles/explorer.scss";
 
@@ -14,7 +14,9 @@ export default function Explorer(props: { files: Accessor<Folder> }) {
 
   return (
     <section class="explorer">
-      <RenderFolder key={f.path} folder={folder()} />
+      <Show when={folder().name !== ""} fallback={EmptyExplorer()}>
+        <RenderFolder key={f.path} folder={folder()} />
+      </Show>
     </section>
   );
 }
@@ -75,4 +77,4 @@ function RenderFolder(props: { folder: Folder, key: string }) {
 }
 
 
-
+function EmptyExplorer(): JSX.Element { return <div>Open project</div> }
