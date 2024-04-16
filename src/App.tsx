@@ -1,13 +1,15 @@
 import ToolBar from "@components/toolbar";
 import Explorer from "@components/explorer";
+import { ExplorerProps } from "@components/explorer";
 import "@styles/main.scss";
 import { invoke } from "@tauri-apps/api";
 import ErrorPane from "@components/errorPane";
-import { createEffect, createSignal, JSX, Accessor } from "solid-js";
+import { createEffect, createSignal, JSX, Accessor, Setter } from "solid-js";
 import { NmideReport, NmideError, FolderOrFile, Folder } from "./types";
 import { split_with_err } from "./funcs";
 import { produce } from "solid-js/store";
 import { Dynamic } from "solid-js/web";
+import Editor from "@components/editor";
 
 
 function App() {
@@ -15,14 +17,17 @@ function App() {
   const [folders, setFolders] = createSignal<Folder>({ name: "", path: "", content: [], symbol: "" });
   const [root, setRoot] = createSignal("");
   const [pages, setPages] = createSignal<((props: any) => JSX.Element)[]>([]);
+  const [content, setContent] = createSignal<string[]>([]);
+  const [loading, setLoading] = createSignal(false);
 
-  const explorer = (props: { files: Accessor<Folder> }) => Explorer(props);
+  const explorer = (props: ExplorerProps) => Explorer(props);
   const errorPane = (props: { errors: Accessor<NmideReport[]> }) => ErrorPane(props);
 
   setPages([explorer, errorPane]);
 
   createEffect(() => {
     if (root() !== "") {
+      setLoading(true);
       invoke<NmideError<FolderOrFile>>("get_workspace", { path: root() })
         .then(res => {
           const [val, rep] = split_with_err<FolderOrFile>(res);
@@ -45,7 +50,8 @@ function App() {
         })
         .catch(err => {
           setErrors(produce(arr => arr.push(err)));
-        });
+        })
+        .finally(() => setLoading(false));
     }
   });
 
@@ -55,7 +61,14 @@ function App() {
     <main>
       <ToolBar setRoot={setRoot} />
       <article>
-        <Dynamic component={pages()[0]} files={folders} errors={errors} />
+        <Dynamic
+          component={pages()[0]}
+          files={folders}
+          errors={errors}
+          content={content}
+          curPage={setPages}
+          loading={loading}
+        />
       </article>
     </main>
   );

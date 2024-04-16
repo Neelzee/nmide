@@ -1,13 +1,26 @@
-import { JSX, Accessor, Show, createEffect, createSignal } from "solid-js";
+import { JSX, Accessor, Show, createEffect, createSignal, Setter } from "solid-js";
 import { Folder, File } from "../types";
 import "@styles/explorer.scss";
+import { invoke } from "@tauri-apps/api";
 
-export default function Explorer(props: { files: Accessor<Folder> }) {
+export type ExplorerProps = {
+  files: Accessor<Folder>,
+  content: Accessor<string[]>,
+  curPage: Setter<(props: Accessor<string[]>) => JSX.Element>
+  loading: Accessor<boolean>,
+};
+
+export default function Explorer(props: ExplorerProps) {
   const [folder, setFolder] = createSignal<Folder>({ name: "", path: "", content: [], symbol: "" });
+  const [loading, setLoading] = createSignal(false);
 
   createEffect(() => {
     // Synchronize local state with props
     setFolder(props.files());
+  });
+
+  createEffect(() => {
+    setLoading(props.loading());
   });
 
   const f = folder();
@@ -15,7 +28,9 @@ export default function Explorer(props: { files: Accessor<Folder> }) {
   return (
     <section class="explorer">
       <Show when={folder().name !== ""} fallback={EmptyExplorer()}>
-        <RenderFolder key={f.path} folder={folder()} />
+        <Show when={!loading()} fallback={<h3>Loading...</h3>}>
+          <RenderFolder key={f.path} folder={folder()} />
+        </Show>
       </Show>
     </section>
   );
@@ -28,14 +43,16 @@ function RenderFile(props: { file: File, key: string }) {
     setFile(props.file);
   });
 
-  const fileName = () => {
-    console.log(file().name);
-  };
+  const openFile = () => {
+    invoke("get_content", { path: file() })
+      .then(res => console.log(res))
+      .catch(err => console.error(err));
+  }
 
   return (
     <li
       class={`file ${file().extension} ${file().name}`}
-      onClick={fileName}
+      onClick={openFile}
     >
       {`${file().symbol}${file().name}`}
     </li>
