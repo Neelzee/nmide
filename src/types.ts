@@ -3,13 +3,15 @@ export type FolderOrFile = Folder | File;
 export type File = {
   name: string,
   extension: string,
-  path: string
+  path: string,
+  symbol: string
 };
 
 export type Folder = {
   name: string,
   path: string,
-  content: FolderOrFile[]
+  content: FolderOrFile[],
+  symbol: string
 };
 
 export type NmideError<T> = {

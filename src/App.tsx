@@ -12,7 +12,7 @@ import { Dynamic } from "solid-js/web";
 
 function App() {
   const [errors, setErrors] = createSignal<NmideReport[]>([]);
-  const [folders, setFolders] = createSignal<Folder>({ name: "", path: "", content: [] });
+  const [folders, setFolders] = createSignal<Folder>({ name: "", path: "", content: [], symbol: "" });
   const [root, setRoot] = createSignal("");
   const [pages, setPages] = createSignal<((props: any) => JSX.Element)[]>([]);
 
@@ -36,9 +36,10 @@ function App() {
           } else {
             // Its a file
             setFolders({
-              name: "nmide",
-              path: "nmide",
-              content: [val]
+              name: val.name,
+              path: val.path,
+              content: [val],
+              symbol: val.symbol,
             });
           }
         })
