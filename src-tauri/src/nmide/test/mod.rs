@@ -1,4 +1,4 @@
-use crate::lib::types::modules::{File, Folder, FolderOrFile};
+use crate::nmide::types::modules::{File, Folder, FolderOrFile};
 use once_cell::unsync::Lazy;
 use std::ffi::OsString;
 

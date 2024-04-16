@@ -2,7 +2,8 @@ pub mod ws_file;
 pub mod ws_folder;
 
 use crate::{
-    lib::{
+    nmfold,
+    nmide::{
         either::Either,
         errors::NmideError,
         osops::get_paths,
@@ -10,7 +11,7 @@ use crate::{
         utils::funcs::os_to_str,
         workspace::{ws_file::WSFile, ws_folder::WSFolder},
     },
-    nmfold, nmrep,
+    nmrep,
 };
 
 use std::path::{Path, PathBuf};
@@ -61,9 +62,7 @@ impl Workspace {
     }
 
     pub fn init(path: &Path) -> NmideError<Self> {
-        let i = 2;
-
-        get_folder_or_file(path, i)
+        get_folder_or_file(path)
             .vmap(|val| -> Vec<_> {
                 val.into_iter()
                     .map(|f| match f {

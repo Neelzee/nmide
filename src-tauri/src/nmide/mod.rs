@@ -7,7 +7,7 @@ pub mod types;
 pub mod utils;
 pub mod workspace;
 
-use crate::lib::workspace::Workspace;
+use crate::nmide::workspace::Workspace;
 use once_cell::sync::Lazy;
 use tokio::sync::Mutex;
 

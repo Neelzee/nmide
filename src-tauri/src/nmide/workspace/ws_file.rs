@@ -1,5 +1,5 @@
 use crate::{
-    lib::{errors::NmideError, types, utils::funcs::os_to_str},
+    nmide::{errors::NmideError, types, utils::funcs::os_to_str},
     nmrep,
 };
 use std::{ffi::OsString, fs::File, path::PathBuf};

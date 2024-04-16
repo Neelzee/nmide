@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 
 use crate::nmfold;
 use crate::{
-    lib::{
+    nmide::{
         either::Either,
         errors::{fold_nmide, ErrorLevel, NmideError, NmideReport},
         types::{modules, modules::FolderOrFile},
@@ -37,10 +37,8 @@ pub fn write_to_file(file: &File, content: &str) -> Result<()> {
 }
 
 /// Returns a list of all the absolute paths in the given directory
-///
-/// Recursively checks for until level = 0
-pub fn get_paths(path: &Path, level: usize) -> NmideError<Vec<PathBuf>> {
-    visit_dirs_recursive(path, level)
+pub fn get_paths(path: &Path) -> NmideError<Vec<PathBuf>> {
+    visit_dirs_recursive(path)
         .vmap(|v| {
             v.into_iter().fold(Vec::new(), |mut acc, e| match e {
                 Either::Right(f) => {
@@ -59,21 +57,11 @@ pub fn get_paths(path: &Path, level: usize) -> NmideError<Vec<PathBuf>> {
         .vmap(|e| e.into_iter().collect::<HashSet<_>>().into_iter().collect())
 }
 
-pub fn get_folder_or_file(
-    path: &Path,
-    level: usize,
-) -> NmideError<Vec<Either<modules::Folder, modules::File>>> {
-    visit_dirs_recursive(path, level)
+pub fn get_folder_or_file(path: &Path) -> NmideError<Vec<Either<modules::Folder, modules::File>>> {
+    visit_dirs_recursive(path)
 }
 
-fn visit_dirs_recursive(
-    dir: &Path,
-    depth: usize,
-) -> NmideError<Vec<Either<modules::Folder, modules::File>>> {
-    if depth == 0 {
-        return NmideError::new(Vec::new());
-    }
-
+fn visit_dirs_recursive(dir: &Path) -> NmideError<Vec<Either<modules::Folder, modules::File>>> {
     if dir.is_dir() {
         NmideError::from_err(read_dir(dir).map(|e| {
             nmfold!(e
@@ -83,14 +71,14 @@ fn visit_dirs_recursive(
                         let sub_path = p.path();
 
                         if sub_path.is_dir() {
-                            Either::Left(visit_dirs_recursive(&sub_path, depth - 1).vmap(
-                                |content| modules::Folder {
+                            Either::Left(visit_dirs_recursive(&sub_path).vmap(|content| {
+                                modules::Folder {
                                     name: sub_path.file_name().unwrap_or_default().to_os_string(),
                                     path: sub_path.as_os_str().to_os_string(),
                                     content: content.into_iter().map(|e| e.into()).collect(),
                                     symbol: String::new(),
-                                },
-                            ))
+                                }
+                            }))
                         } else {
                             Either::Right(modules::File::new(&sub_path))
                         }
@@ -104,7 +92,7 @@ fn visit_dirs_recursive(
             Some(v) => NmideError::new(v),
             None => NmideError::new(Vec::new()).push_nmide(NmideReport::new(
                 format!("Failed getting content from: `{dir:?}`"),
-                format!("visit_dirs_recursive({dir:?}, {depth:?})"),
+                format!("visit_dirs_recursive({dir:?})"),
             )),
         })
     } else {

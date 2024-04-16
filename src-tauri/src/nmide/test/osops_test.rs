@@ -1,4 +1,4 @@
-use crate::lib::{
+use crate::nmide::{
     osops::{get_folder_or_file, get_paths},
     test::{FOLDER, TEST_PATH},
     types::modules::{Folder, FolderOrFile},
@@ -12,7 +12,7 @@ use std::path::Path;
 fn test_get_paths_count() {
     let path = Path::new(TEST_PATH);
 
-    let (dirs, _) = get_paths(path, 2).unwrap_with_err();
+    let (dirs, _) = get_paths(path).unwrap_with_err();
     let count = dirs.len();
     let expected_count = FOLDER.len() - 1;
 
@@ -29,13 +29,13 @@ fn test_get_paths_count() {
 fn test_get_folder_or_file_no_root() {
     let path = Path::new(TEST_PATH);
 
-    let (dirs, _) = get_folder_or_file(path, 2).unwrap_with_err();
+    let (dirs, _) = get_folder_or_file(path).unwrap_with_err();
 
     let paths = dirs
         .into_iter()
         .map(|f| match f {
-            crate::lib::either::Either::Left(f) => f.path,
-            crate::lib::either::Either::Right(f) => f.path,
+            crate::nmide::either::Either::Left(f) => f.path,
+            crate::nmide::either::Either::Right(f) => f.path,
         })
         .collect::<Vec<_>>();
 
@@ -46,7 +46,7 @@ fn test_get_folder_or_file_no_root() {
 fn test_get_folder_or_file_count() {
     let path = Path::new(TEST_PATH);
 
-    let (dirs, _) = get_folder_or_file(path, 2).unwrap_with_err();
+    let (dirs, _) = get_folder_or_file(path).unwrap_with_err();
 
     println!("{dirs:?}");
     let r = dirs

@@ -1,5 +1,5 @@
 use crate::{
-    lib::{
+    nmide::{
         either::Either,
         errors::NmideError,
         osops::get_folder_or_file,
@@ -30,9 +30,9 @@ impl WSFolder {
         })
     }
 
-    pub fn new(path: &Path, level: usize) -> NmideError<Self> {
+    pub fn new(path: &Path) -> NmideError<Self> {
         let name = path.file_name().unwrap_or_default().to_os_string();
-        let (raw_content, raw_content_rep) = get_folder_or_file(path, level).unwrap_with_err();
+        let (raw_content, raw_content_rep) = get_folder_or_file(path).unwrap_with_err();
 
         let (content, content_rep) = raw_content
             .into_iter()

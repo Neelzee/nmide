@@ -1,4 +1,4 @@
-use crate::lib::{
+use crate::nmide::{
     either::Either,
     errors::{ErrorLevel, NmideError, NmideReport},
     types::modules::{File, Folder, FolderOrFile},

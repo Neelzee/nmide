@@ -2,12 +2,12 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use crate::cmds::get_workspace;
-use crate::lib::{workspace::Workspace, WORKSPACE};
+use crate::nmide::WORKSPACE;
 use eyre::{Context, Result};
 use tauri_plugin_log::LogTarget;
 
 mod cmds;
-mod lib;
+mod nmide;
 
 #[tauri::command]
 fn greet(name: &str) -> String {

@@ -1,7 +1,7 @@
 pub mod modules;
 
 use crate::{
-    lib::{
+    nmide::{
         either::Either,
         errors::{ErrorLevel, NmideError, NmideReport},
         types::modules::{File, Folder, FolderOrFile},
@@ -170,7 +170,7 @@ impl Folder {
 
     /// Creates a WSFolder, with path 1
     pub fn to_wsfolder(self) -> NmideError<WSFolder> {
-        WSFolder::new(Path::new(&self.path), 0).or_else(|mut w| {
+        WSFolder::new(Path::new(&self.path)).or_else(|mut w| {
             let r = self
                 .content
                 .into_iter()

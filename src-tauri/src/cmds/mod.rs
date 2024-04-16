@@ -1,4 +1,4 @@
-use crate::lib::{
+use crate::nmide::{
     errors::{NmideError, NmideReport},
     workspace::Workspace,
     WORKSPACE,

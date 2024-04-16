@@ -1,7 +1,7 @@
 use super::{FOLDER, TEST_PATH};
-use crate::lib::types::modules::FolderOrFile;
-use crate::lib::utils::funcs::pretty_display;
-use crate::lib::workspace::Workspace;
+use crate::nmide::types::modules::FolderOrFile;
+use crate::nmide::utils::funcs::pretty_display;
+use crate::nmide::workspace::Workspace;
 use std::path::Path;
 
 #[test]
@@ -23,12 +23,12 @@ fn test_wsfile_creation() {
         .into_iter()
         .map(|f| -> String {
             match f {
-                crate::lib::either::Either::Left(f) => f
+                crate::nmide::either::Either::Left(f) => f
                     .path
                     .clone()
                     .into_string()
                     .unwrap_or(format!("{:?}", f.path)),
-                crate::lib::either::Either::Right(f) => f
+                crate::nmide::either::Either::Right(f) => f
                     .path
                     .clone()
                     .into_string()

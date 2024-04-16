@@ -4,7 +4,7 @@ use std::{
     io::{BufWriter, Write},
 };
 
-use crate::lib::{errors, types::modules};
+use crate::nmide::{errors, types::modules};
 
 use eyre::Result;
 
