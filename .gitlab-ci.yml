@@ -8,7 +8,7 @@ linting-fix:
   stage: linting
   image: neelzee/tauri_img
   only:
-    main
+    - main
   script:
     - rustup component add clippy
     - cd src-tauri
@@ -78,7 +78,7 @@ windows-build:
     - "pts"
   when: manual
   only:
-    main
+    - main
   script:
     - yarn install
     - cargo install cargo-xwin
@@ -95,7 +95,7 @@ debian-build:
     - "pts"
   when: manual
   only:
-    main
+    - main
   script:
     - yarn install
     - yarn tauri build
@@ -107,6 +107,6 @@ mac-build:
     - "pts"
   when: manual
   only:
-    main
+    - main
   script:
     - echo "TODO"

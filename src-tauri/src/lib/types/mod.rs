@@ -5,7 +5,6 @@ use crate::{
         either::Either,
         errors::{ErrorLevel, NmideError, NmideReport},
         types::modules::{File, Folder, FolderOrFile},
-        utils::funcs::os_to_str,
         workspace::{ws_file::WSFile, ws_folder::WSFolder},
     },
     nmrep,
