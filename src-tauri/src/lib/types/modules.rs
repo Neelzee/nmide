@@ -47,16 +47,62 @@ impl Serialize for FolderOrFile {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone)]
 pub struct Folder {
     pub name: OsString,
     pub path: OsString,
     pub content: Vec<FolderOrFile>,
 }
 
-#[derive(Debug, Clone, Serialize)]
+impl Serialize for Folder {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut state = serializer.serialize_struct("Folder", 4)?;
+        state.serialize_field(
+            "name",
+            &(self.name.clone().into_string().ok().unwrap_or_default()),
+        )?;
+        state.serialize_field(
+            "path",
+            &(self.path.clone().into_string().ok().unwrap_or_default()),
+        )?;
+        state.serialize_field("content", &self.content)?;
+        state.end()
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct File {
     pub name: OsString,
     pub extension: OsString,
     pub path: OsString,
+}
+
+impl Serialize for File {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut state = serializer.serialize_struct("File", 3)?;
+        state.serialize_field(
+            "name",
+            &(self.name.clone().into_string().ok().unwrap_or_default()),
+        )?;
+        state.serialize_field(
+            "extension",
+            &(self
+                .extension
+                .clone()
+                .into_string()
+                .ok()
+                .unwrap_or_default()),
+        )?;
+        state.serialize_field(
+            "path",
+            &(self.path.clone().into_string().ok().unwrap_or_default()),
+        )?;
+        state.end()
+    }
 }
