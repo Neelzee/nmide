@@ -3,7 +3,7 @@ import { Folder, File } from "../types";
 import "@styles/explorer.scss";
 
 export default function Explorer(props: { files: Accessor<Folder> }) {
-  const [folder, setFolder] = createSignal<Folder>({ name: "", path: "", content: [] });
+  const [folder, setFolder] = createSignal<Folder>({ name: "", path: "", content: [], symbol: "" });
 
   createEffect(() => {
     // Synchronize local state with props
@@ -33,12 +33,12 @@ function RenderFile(props: { file: File, key: string }) {
   };
 
   return (
-    <span
+    <li
       class={`file ${file().extension} ${file().name}`}
       onClick={fileName}
     >
-      {file().name}
-    </span>
+      {`${file().symbol}${file().name}`}
+    </li>
   );
 }
 
@@ -59,7 +59,7 @@ function RenderFolder(props: { folder: Folder, key: string }) {
         class={`folder-name ${folder().name}`}
         onClick={folderName}
       >
-        {folder().name}
+        {`${folder().symbol}${folder().name}`}
       </li>
       <ul class="folder-content">
         {folder().content.map(f => {
