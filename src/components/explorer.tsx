@@ -10,6 +10,8 @@ export type ExplorerProps = {
   loading: Accessor<boolean>,
 };
 
+const MAX_DEPTH = 3;
+
 export default function Explorer(props: ExplorerProps) {
   const [folder, setFolder] = createSignal<Folder>({ name: "", path: "", content: [], symbol: "" });
   const [loading, setLoading] = createSignal(false);
@@ -29,14 +31,19 @@ export default function Explorer(props: ExplorerProps) {
     <section class="explorer">
       <Show when={folder().name !== ""} fallback={EmptyExplorer()}>
         <Show when={!loading()} fallback={<h3>Loading...</h3>}>
-          <RenderFolder key={f.path} folder={folder()} />
+          <RenderFolder key={f.path} folder={folder()} depth={MAX_DEPTH} />
         </Show>
       </Show>
     </section>
   );
 }
 
-function RenderFile(props: { file: File, key: string }) {
+function RenderFile(props: { file: File, key: string, depth: number }) {
+
+  if (props.depth === 0) {
+    return <></>;
+  }
+
   const [file, setFile] = createSignal<File>({} as File);
 
   createEffect(() => {
@@ -59,7 +66,12 @@ function RenderFile(props: { file: File, key: string }) {
   );
 }
 
-function RenderFolder(props: { folder: Folder, key: string }) {
+function RenderFolder(props: { folder: Folder, key: string, depth: number }) {
+
+  if (props.depth === 0) {
+    return <></>;
+  }
+
   const [folder, setFolder] = createSignal<Folder>(props.folder);
 
   createEffect(() => {
@@ -82,10 +94,10 @@ function RenderFolder(props: { folder: Folder, key: string }) {
         {folder().content.map(f => {
           if ("content" in f) {
             const sf = f as Folder;
-            return <RenderFolder key={sf.path} folder={sf} />;
+            return <RenderFolder key={sf.path} folder={sf} depth={props.depth - 1} />;
           } else {
             const sf = f as File;
-            return <RenderFile key={sf.path} file={sf} />;
+            return <RenderFile key={sf.path} file={sf} depth={props.depth - 1} />;
           }
         })}
       </ul>
