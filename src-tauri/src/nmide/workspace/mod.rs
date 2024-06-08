@@ -1,5 +1,6 @@
 pub mod ws_file;
 pub mod ws_folder;
+use eyre::Context;
 
 use crate::{
     nmfold,
@@ -13,10 +14,10 @@ use crate::{
     },
     nmrep,
 };
-
+use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
-use super::osops::get_folder_or_file;
+use super::{errors::NmideReport, osops::get_folder_or_file};
 
 #[derive(Debug, Clone)]
 pub struct Workspace {
@@ -31,8 +32,32 @@ impl Workspace {
             Either::Right(_) => c + 1,
         })
     }
+
     pub fn get_files(&self) -> &Vec<Either<WSFolder, WSFile>> {
         &self.files
+    }
+
+    pub async fn open_file(&mut self, path: OsString) -> NmideError<Vec<String>> {
+        for f in &self.files {
+            match f {
+                Either::Right(f) => {
+                    if f.path == path {
+                        return NmideError::from_err(
+                            f.clone().open().await.wrap_err("Failed opening file"),
+                        )
+                        .map(|f| NmideError::new(f.unwrap_or_default()));
+                    }
+                }
+                f => continue,
+            }
+        }
+        NmideError {
+            val: Vec::new(),
+            rep: Some(NmideReport::new(
+                "Could not find file: `{path:?}`",
+                "Workspace::open_file",
+            )),
+        }
     }
 
     pub fn empty() -> Self {

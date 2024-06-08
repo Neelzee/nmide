@@ -63,30 +63,40 @@ pub fn get_folder_or_file(path: &Path) -> NmideError<Vec<Either<modules::Folder,
 
 fn visit_dirs_recursive(dir: &Path) -> NmideError<Vec<Either<modules::Folder, modules::File>>> {
     if dir.is_dir() {
-        NmideError::from_err(read_dir(dir).map(|e| {
-            nmfold!(e
-                .filter_map(|p| p.ok())
-                .map(
-                    |p| -> Either<NmideError<modules::Folder>, NmideError<modules::File>> {
-                        let sub_path = p.path();
+        NmideError::from_err(
+            read_dir(dir)
+                .wrap_err("Failed reading from directory")
+                .map(|e| {
+                    nmfold!(e
+                        .filter_map(|p| p.ok())
+                        .map(
+                            |p| -> Either<NmideError<modules::Folder>, NmideError<modules::File>> {
+                                let sub_path = p.path();
 
-                        if sub_path.is_dir() {
-                            Either::Left(visit_dirs_recursive(&sub_path).vmap(|content| {
-                                modules::Folder {
-                                    name: sub_path.file_name().unwrap_or_default().to_os_string(),
-                                    path: sub_path.as_os_str().to_os_string(),
-                                    content: content.into_iter().map(|e| e.into()).collect(),
-                                    symbol: String::new(),
+                                if sub_path.is_dir() {
+                                    Either::Left(visit_dirs_recursive(&sub_path).vmap(|content| {
+                                        modules::Folder {
+                                            name: sub_path
+                                                .file_name()
+                                                .unwrap_or_default()
+                                                .to_os_string(),
+                                            path: sub_path.as_os_str().to_os_string(),
+                                            content: content
+                                                .into_iter()
+                                                .map(|e| e.into())
+                                                .collect(),
+                                            symbol: String::new(),
+                                        }
+                                    }))
+                                } else {
+                                    Either::Right(modules::File::new(&sub_path))
                                 }
-                            }))
-                        } else {
-                            Either::Right(modules::File::new(&sub_path))
-                        }
-                    },
-                )
-                .map(|e| e.transpose())
-                .collect::<Vec<_>>())
-        }))
+                            },
+                        )
+                        .map(|e| e.transpose())
+                        .collect::<Vec<_>>())
+                }),
+        )
         .option_combine()
         .map(|v| match v {
             Some(v) => NmideError::new(v),

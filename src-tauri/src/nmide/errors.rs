@@ -121,10 +121,7 @@ impl<T> NmideError<T> {
         }
     }
 
-    pub fn from_err<E>(err: Result<T, E>) -> NmideError<Option<T>>
-    where
-        E: std::error::Error,
-    {
+    pub fn from_err(err: Result<T, eyre::ErrReport>) -> NmideError<Option<T>> {
         match err {
             Ok(t) => NmideError {
                 val: Some(t),

@@ -8,7 +8,7 @@ include!("src\\nmide\\utils\\consts.rs");
 include!("src/nmide/utils/consts.rs");
 
 fn main() -> Result<()> {
-    setup()?;
+    //setup()?;
     tauri_build::build();
 
     Ok(())
