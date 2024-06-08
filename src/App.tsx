@@ -5,16 +5,23 @@ import "@styles/main.scss";
 import { invoke } from "@tauri-apps/api";
 import ErrorPane from "@components/errorPane";
 import { createEffect, createSignal, JSX, Accessor, Setter } from "solid-js";
-import { NmideReport, NmideError, FolderOrFile, Folder } from "./types";
-import { split_with_err } from "./funcs";
+import { split_with_err } from "./lib/funcs";
 import { produce } from "solid-js/store";
 import { Dynamic } from "solid-js/web";
-import Editor from "@components/editor";
+import { NmideReport } from "./lib/models/NmideReport";
+import { Folder } from "./lib/models/Folder";
+import { FolderOrFile } from "./lib/models/FolderOrFile";
+import { NmideError } from "./lib/models/NmideError";
 
 
 function App() {
   const [errors, setErrors] = createSignal<NmideReport[]>([]);
-  const [folders, setFolders] = createSignal<Folder>({ name: "", path: "", content: [], symbol: "" });
+  const [folders, setFolders] = createSignal<Folder>({
+    name: "",
+    path: "",
+    content: [],
+    symbol: ""
+  });
   const [root, setRoot] = createSignal("");
   const [pages, setPages] = createSignal<((props: any) => JSX.Element)[]>([]);
   const [content, setContent] = createSignal<string[]>([]);
@@ -28,10 +35,10 @@ function App() {
   createEffect(() => {
     if (root() !== "") {
       setLoading(true);
-      invoke<NmideError<FolderOrFile>>("get_workspace", { path: root() })
+      invoke<NmideError>("get_workspace", { path: root() })
         .then(res => {
           const [val, rep] = split_with_err<FolderOrFile>(res);
-          if (rep !== null) {
+          if (rep !== undefined) {
             setErrors(produce(arr => {
               arr.push(rep);
             }));
