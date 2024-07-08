@@ -1,15 +1,14 @@
 stages:
   - linting
   - test
-  - push-to-svn
+  - svn
   - build
 
-linting:
+linting-fix:
   stage: linting
   image: neelzee/tauri_img
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
-      when: always
+  only:
+    - main
   script:
     - rustup component add clippy
     - cd src-tauri
@@ -19,7 +18,16 @@ linting:
     - git config user.name "ci-bot"
     - git add .
     - git commit -m "Automated fixes by clippy, and cargo fix"
-    - git push https://oauth2:$PROJECT_TOKEN@git.app.uib.no/Nils.Fitjar/nmide.git HEAD:dev -o ci.skip # prevent triggering pipeline again
+    - git remote add origin main https://oauth2:$PROJECT_TOKEN@git.app.uib.no/Nils.Fitjar/nmide.git
+    - git push --set-upstream origin main -o ci.skip # prevent triggering pipeline again
+
+linting:
+  stage: linting
+  image: neelzee/tauri_img
+  script:
+    - rustup component add clippy
+    - cd src-tauri
+    - cargo clippy -- -D clippy::restriction
 
 rust_test:
   stage: test
@@ -37,7 +45,7 @@ js_test:
 
 
 pts:
-  stage: push-to-svn
+  stage: svn
   image: neelzee/tauri_img
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
@@ -48,12 +56,29 @@ pts:
   script:
     - ./pushToSvn.sh
 
+pis:
+  stage: svn
+  image: neelzee/tauri_img
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      when: always
+  dependencies:
+    - "js_test"
+    - "rust_test"
+  script:
+    - ./issueGen.sh "https://git.app.uib.no/api/v4/projects/Nils.Fitjar%f2Nmide/issues"
+
+
+
+
 windows-build:
   stage: build
   image: neelzee/tauri_img
   dependencies:
     - "pts"
   when: manual
+  only:
+    - main
   script:
     - yarn install
     - cargo install cargo-xwin
@@ -69,6 +94,8 @@ debian-build:
   dependencies:
     - "pts"
   when: manual
+  only:
+    - main
   script:
     - yarn install
     - yarn tauri build
@@ -79,5 +106,7 @@ mac-build:
   dependencies:
     - "pts"
   when: manual
+  only:
+    - main
   script:
     - echo "TODO"
