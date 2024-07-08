@@ -1,63 +1,81 @@
-import { ToolBar } from "./components/toolbar";
-import { Explorer } from "./components/explorer";
-import "./styles/main.scss";
+import ToolBar from "@components/toolbar";
+import Explorer from "@components/explorer";
+import { ExplorerProps } from "@components/explorer";
+import "@styles/main.scss";
 import { invoke } from "@tauri-apps/api";
-import { trace, info, error, attachConsole } from "tauri-plugin-log-api";
-import { ErrorPane } from "./components/errorPane";
-import { createSignal } from "solid-js";
-import { NmideReport, NmideError, FolderOrFile, Folder } from "./types";
-import { split_with_err } from "./funcs";
+import ErrorPane from "@components/errorPane";
+import { createEffect, createSignal, JSX, Accessor, Setter } from "solid-js";
+import { split_with_err } from "./lib/funcs";
 import { produce } from "solid-js/store";
+import { Dynamic } from "solid-js/web";
+import { NmideReport } from "./lib/models/NmideReport";
+import { Folder } from "./lib/models/Folder";
+import { FolderOrFile } from "./lib/models/FolderOrFile";
+import { NmideError } from "./lib/models/NmideError";
 
-const detach = await attachConsole();
 
 function App() {
   const [errors, setErrors] = createSignal<NmideReport[]>([]);
-  const [folders, setFolders] = createSignal<Folder>({ name: "", path: "", content: [] });
+  const [folders, setFolders] = createSignal<Folder>({
+    name: "",
+    path: "",
+    content: [],
+    symbol: ""
+  });
   const [root, setRoot] = createSignal("");
+  const [pages, setPages] = createSignal<((props: any) => JSX.Element)[]>([]);
+  const [content, setContent] = createSignal<string[]>([]);
+  const [loading, setLoading] = createSignal(false);
 
-  // with LogTarget::Webview enabled this function will print logs to the browser console
+  const explorer = (props: ExplorerProps) => Explorer(props);
+  const errorPane = (props: { errors: Accessor<NmideReport[]> }) => ErrorPane(props);
 
-  trace("Trace");
-  info("Info");
-  error("Error");
+  setPages([explorer, errorPane]);
 
-  // detach the browser console from the log stream
-  detach();
+  createEffect(() => {
+    if (root() !== "") {
+      setLoading(true);
+      invoke<NmideError>("get_workspace", { path: root() })
+        .then(res => {
+          const [val, rep] = split_with_err<FolderOrFile>(res);
+          if (rep !== undefined) {
+            setErrors(produce(arr => {
+              arr.push(rep);
+            }));
+          }
+          if ("content" in val) {
+            setFolders(val);
+          } else {
+            // Its a file
+            setFolders({
+              name: val.name,
+              path: val.path,
+              content: [val],
+              symbol: val.symbol,
+            });
+          }
+        })
+        .catch(err => {
+          setErrors(produce(arr => arr.push(err)));
+        })
+        .finally(() => setLoading(false));
+    }
+  });
 
-  if (root() !== "") {
-    invoke("get_workspace", { path: root() })
-      .then(res => {
-        const response = res as NmideError<FolderOrFile>;
-        const [val, rep] = split_with_err<FolderOrFile>(response);
-        if (rep !== null) {
-          setErrors(produce(arr => {
-            arr.push(rep);
-          }));
-        }
-        if ("content" in val) {
-          setFolders(val);
-        } else {
-          // Its a file
-          setFolders({
-            name: "nmide",
-            path: "nmide",
-            content: [val]
-          });
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        setErrors(produce(arr => arr.push(err)))
-      });
-  }
+
 
   return (
     <main>
       <ToolBar setRoot={setRoot} />
       <article>
-        <Explorer files={folders} />
-        <ErrorPane errors={errors} />
+        <Dynamic
+          component={pages()[0]}
+          files={folders}
+          errors={errors}
+          content={content}
+          curPage={setPages}
+          loading={loading}
+        />
       </article>
     </main>
   );

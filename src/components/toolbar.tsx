@@ -1,8 +1,8 @@
 import { Setter } from "solid-js";
-import "../styles/toolbar.scss";
+import "@styles/toolbar.scss";
 import { open } from '@tauri-apps/api/dialog';
 
-export function ToolBar(props: { setRoot: Setter<string> }) {
+export default function ToolBar(props: { setRoot: Setter<string> }) {
 
   const openFolder = () => {
     open({

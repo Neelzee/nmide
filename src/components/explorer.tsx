@@ -1,41 +1,109 @@
-import { Accessor } from "solid-js";
-import { Folder, File } from "../types.ts";
+import { JSX, Accessor, Show, createEffect, createSignal, Setter } from "solid-js";
+import { Folder, File } from "../types";
+import "@styles/explorer.scss";
+import { invoke } from "@tauri-apps/api";
 
-export function Explorer(props: { files: Accessor<Folder> }) {
+export type ExplorerProps = {
+  files: Accessor<Folder>,
+  content: Accessor<string[]>,
+  curPage: Setter<(props: Accessor<string[]>) => JSX.Element>
+  loading: Accessor<boolean>,
+};
+
+const MAX_DEPTH = 3;
+
+export default function Explorer(props: ExplorerProps) {
+  const [folder, setFolder] = createSignal<Folder>({ name: "", path: "", content: [], symbol: "" });
+  const [loading, setLoading] = createSignal(false);
+
+  createEffect(() => {
+    // Synchronize local state with props
+    setFolder(props.files());
+  });
+
+  createEffect(() => {
+    setLoading(props.loading());
+  });
+
+  const f = folder();
+
   return (
     <section class="explorer">
-      <RenderFolder folder={props.files()} />
+      <Show when={folder().name !== ""} fallback={EmptyExplorer()}>
+        <Show when={!loading()} fallback={<h3>Loading...</h3>}>
+          <RenderFolder key={f.path} folder={folder()} depth={MAX_DEPTH} />
+        </Show>
+      </Show>
     </section>
   );
 }
 
-function RenderFile(props: { file: File }) {
-  const file = props.file;
+function RenderFile(props: { file: File, key: string, depth: number }) {
+
+  if (props.depth === 0) {
+    return <></>;
+  }
+
+  const [file, setFile] = createSignal<File>({} as File);
+
+  createEffect(() => {
+    setFile(props.file);
+  });
+
+  const openFile = () => {
+    invoke("get_content", { path: file() })
+      .then(res => console.log(res))
+      .catch(err => console.error(err));
+  }
+
   return (
-    <span class={`file ${file.extension} ${file.name}`} >
-      <span>{file.name}</span>
-    </span >
+    <li
+      class={`file ${file().extension} ${file().name}`}
+      onClick={openFile}
+    >
+      {`${file().symbol}${file().name}`}
+    </li>
   );
 }
 
-function RenderFolder(props: { folder: Folder }) {
-  const folder = props.folder;
+function RenderFolder(props: { folder: Folder, key: string, depth: number }) {
+
+  if (props.depth === 0) {
+    return <></>;
+  }
+
+  const [folder, setFolder] = createSignal<Folder>(props.folder);
+
+  createEffect(() => {
+    setFolder(props.folder);
+  });
+
+  const folderName = () => {
+    console.log(folder().name);
+  }
+
   return (
-    <span>
-      <span>{folder.name}</span>
-      <span>
-        {
-          folder.content.map(fof => {
-            if ("content" in fof) {
-              const sf = fof as Folder;
-              return <RenderFolder folder={sf} />
-            } else {
-              const sf = fof as File;
-              return <RenderFile file={sf} />
-            }
-          })
-        }
-      </span>
-    </span>
+    <ul id={props.key} class="folder">
+      <li
+        class={`folder-name ${folder().name}`}
+        onClick={folderName}
+      >
+        {`${folder().symbol}${folder().name}`}
+      </li>
+      <ul class="folder-content">
+        {folder().content.map(f => {
+          if ("content" in f) {
+            const sf = f as Folder;
+            return <RenderFolder key={sf.path} folder={sf} depth={props.depth - 1} />;
+          } else {
+            const sf = f as File;
+            return <RenderFile key={sf.path} file={sf} depth={props.depth - 1} />;
+          }
+        })}
+      </ul>
+    </ul >
   );
 }
+
+
+function EmptyExplorer(): JSX.Element { return <div>Open project</div> }

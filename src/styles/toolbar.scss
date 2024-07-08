@@ -1,7 +1,7 @@
-@import "_const.scss";
+@use "const" as const;
 
 #toolbar {
-  background-color: $dark_background;
+  background-color: const.$dark_background;
   display: flex;
   flex-direction: row;
 
@@ -16,11 +16,11 @@
 
   .toolbar-elem:hover {
     cursor: pointer;
-    background-color: $selection;
+    background-color: const.$selection;
   }
 
   .logo:hover {
-    background-color: $dark_background;
+    background-color: const.$dark_background;
   }
 
 }

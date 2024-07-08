@@ -1,23 +1,13 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use crate::{cmds::get_workspace, workspace::Workspace};
+use crate::ide::cmds::{get_content, get_workspace};
+use crate::nmide::WORKSPACE;
 use eyre::{Context, Result};
-use once_cell::sync::Lazy;
 use tauri_plugin_log::LogTarget;
-use tokio::sync::Mutex;
 
-mod cmds;
-mod either;
-mod errors;
-mod osops;
-#[cfg(test)]
-mod test;
-mod types;
-mod utils;
-mod workspace;
-
-pub static WORKSPACE: Lazy<Mutex<Workspace>> = Lazy::new(|| Mutex::new(Workspace::empty()));
+mod ide;
+mod nmide;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -36,7 +26,7 @@ async fn main() -> Result<()> {
                 .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
                 .build(),
         )
-        .invoke_handler(tauri::generate_handler![greet, get_workspace])
+        .invoke_handler(tauri::generate_handler![greet, get_workspace, get_content])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
     Ok(())

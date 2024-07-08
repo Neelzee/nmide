@@ -1,0 +1,89 @@
+openapi: 3.0.0
+info:
+  title: nmide API
+  version: 1.0.0
+
+paths:
+  /IGNORE:
+    description: "IGNORE"
+
+components:
+  schemas:
+    File:
+      type: object
+      required:
+        - name
+        - path
+        - symbol
+        - extension
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        extension:
+          type: string
+        symbol:
+          type: string
+    Folder:
+      type: object
+      required:
+        - name
+        - path
+        - content
+        - symbol
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/FolderOrFile"
+        symbol:
+          type: string
+    FolderOrFile:
+      oneOf:
+        - $ref: "#/components/schemas/File"
+        - $ref: "#/components/schemas/Folder"
+    NmideError:
+      type: object
+      required:
+        - val
+      properties:
+        val:
+          type: any
+        rep:
+          $ref: "#/components/schemas/NmideReport"
+    NmideReport:
+      type: object
+      required:
+        - msg
+        - lvl
+        - tag
+        - stack
+        - origin
+      properties:
+        msg:
+          type: string
+        lvl:
+          enum:
+            - Unknown
+            - Low
+            - Medium
+            - High
+        tag:
+          type: array
+          items:
+            enum:
+              - WSError
+              - NonSpecified
+        stack:
+          type: array
+          items:
+            $ref: "#/components/schemas/NmideReport"
+        origin:
+          type: string
+
+
