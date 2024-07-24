@@ -1,0 +1,22 @@
+[package]
+name = "nmide-ffi"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = [
+  "staticlib",
+  "lib"
+]
+
+[dependencies]
+anyhow = "1.0.86"
+safer-ffi.version = "0.1.9"
+safer-ffi.features = ["alloc"]
+
+[[bin]]
+name = "generate-headers"
+required-features = ["headers"]
+
+[features]
+headers = ["safer-ffi/headers"]
