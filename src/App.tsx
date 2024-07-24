@@ -1,83 +1,52 @@
-import ToolBar from "@components/toolbar";
-import Explorer from "@components/explorer";
-import { ExplorerProps } from "@components/explorer";
-import "@styles/main.scss";
-import { invoke } from "@tauri-apps/api";
-import ErrorPane from "@components/errorPane";
-import { createEffect, createSignal, JSX, Accessor, Setter } from "solid-js";
-import { split_with_err } from "./lib/funcs";
-import { produce } from "solid-js/store";
-import { Dynamic } from "solid-js/web";
-import { NmideReport } from "./lib/models/NmideReport";
-import { Folder } from "./lib/models/Folder";
-import { FolderOrFile } from "./lib/models/FolderOrFile";
-import { NmideError } from "./lib/models/NmideError";
-
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import { invoke } from "@tauri-apps/api/tauri";
+import "./App.css";
 
 function App() {
-  const [errors, setErrors] = createSignal<NmideReport[]>([]);
-  const [folders, setFolders] = createSignal<Folder>({
-    name: "",
-    path: "",
-    content: [],
-    symbol: ""
-  });
-  const [root, setRoot] = createSignal("");
-  const [pages, setPages] = createSignal<((props: any) => JSX.Element)[]>([]);
-  const [content, setContent] = createSignal<string[]>([]);
-  const [loading, setLoading] = createSignal(false);
+  const [greetMsg, setGreetMsg] = useState("");
+  const [name, setName] = useState("");
 
-  const explorer = (props: ExplorerProps) => Explorer(props);
-  const errorPane = (props: { errors: Accessor<NmideReport[]> }) => ErrorPane(props);
-
-  setPages([explorer, errorPane]);
-
-  createEffect(() => {
-    if (root() !== "") {
-      setLoading(true);
-      invoke<NmideError>("get_workspace", { path: root() })
-        .then(res => {
-          const [val, rep] = split_with_err<FolderOrFile>(res);
-          if (rep !== undefined) {
-            setErrors(produce(arr => {
-              arr.push(rep);
-            }));
-          }
-          if ("content" in val) {
-            setFolders(val);
-          } else {
-            // Its a file
-            setFolders({
-              name: val.name,
-              path: val.path,
-              content: [val],
-              symbol: val.symbol,
-            });
-          }
-        })
-        .catch(err => {
-          setErrors(produce(arr => arr.push(err)));
-        })
-        .finally(() => setLoading(false));
-    }
-  });
-
-
+  async function greet() {
+    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+    setGreetMsg(await invoke("greet", { name }));
+  }
 
   return (
-    <main>
-      <ToolBar setRoot={setRoot} />
-      <article>
-        <Dynamic
-          component={pages()[0]}
-          files={folders}
-          errors={errors}
-          content={content}
-          curPage={setPages}
-          loading={loading}
+    <div className="container">
+      <h1>Welcome to Tauri!</h1>
+
+      <div className="row">
+        <a href="https://vitejs.dev" target="_blank">
+          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
+        </a>
+        <a href="https://tauri.app" target="_blank">
+          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
+        </a>
+        <a href="https://reactjs.org" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
+      </div>
+
+      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
+
+      <form
+        className="row"
+        onSubmit={(e) => {
+          e.preventDefault();
+          greet();
+        }}
+      >
+        <input
+          id="greet-input"
+          onChange={(e) => setName(e.currentTarget.value)}
+          placeholder="Enter a name..."
         />
-      </article>
-    </main>
+        <button type="submit">Greet</button>
+      </form>
+
+      <p>{greetMsg}</p>
+    </div>
   );
 }
 
