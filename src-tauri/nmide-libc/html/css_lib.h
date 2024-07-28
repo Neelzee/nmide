@@ -1,7 +1,5 @@
 #ifndef CSS_LIB
 
-#include "../nmidelib.h"
-
 /**
  * Enumeration of different HTML Attributes
  **/
@@ -45,7 +43,7 @@ CColor CColorNew(int r, int g, int b);
 
 typedef struct CAttr {
   CAttribute key;
-  CString value;
+  char *value;
 } CAttr;
 
 typedef enum CStyleUnit {

@@ -18,6 +18,7 @@ typedef enum CElement {
   Aside,
   Nav,
   A,
+  None,
 } CElement;
 
 /**
@@ -25,9 +26,10 @@ typedef enum CElement {
  **/
 typedef struct CHtml {
   CElement kind;
-  int attrs;
   struct CHtml *kids;
   int kid_count;
 } CHtml;
+
+CHtml create_chtml(CElement kind, CHtml *kids, int kid_count);
 
 #endif // !HTML_LIB

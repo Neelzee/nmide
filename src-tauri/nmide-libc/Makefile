@@ -7,7 +7,7 @@ TARGET_LIB = nmidelib.so
 STATIC_LIB = nmidelib.a
 
 # Source files
-SRCS = nmidelib.c html/css_lib.c
+SRCS = nmidelib.c html/css_lib.c html/html_lib.c
 HDRS = nmidelib.h html/css_lib.h html/html_lib.h
 
 OBJS = $(SRCS:.c=.o)

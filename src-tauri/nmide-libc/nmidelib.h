@@ -1,10 +1,8 @@
 #ifndef NMIDELIB
 
-#define NMIDELIB
+#include "html/css_lib.h"
+#include "html/html_lib.h"
 
-typedef struct CString {
-  char *chars;
-  int length;
-} CString;
+#define NMIDELIB
 
 #endif // !NMIDELIB

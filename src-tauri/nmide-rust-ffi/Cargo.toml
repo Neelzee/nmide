@@ -3,20 +3,11 @@ name = "nmide-rust-ffi"
 version = "0.1.0"
 edition = "2021"
 
-[lib]
-crate-type = [
-  "staticlib",
-  "lib"
-]
-
 [dependencies]
 anyhow = "1.0.86"
-safer-ffi.version = "0.1.9"
+c_vec = "2.0.0"
 safer-ffi.features = ["alloc"]
+safer-ffi.version = "0.1.9"
 
-[[bin]]
-name = "generate-headers"
-required-features = ["headers"]
-
-[features]
-headers = ["safer-ffi/headers"]
+[build-dependencies]
+bindgen = "0.69.4"
