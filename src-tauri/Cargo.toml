@@ -1,5 +1,5 @@
 [workspace]
-members = ["nmide-ffi"]
+members = ["nmide-rust-ffi"]
 
 [package]
 name = "nmide"

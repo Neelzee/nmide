@@ -1812,14 +1812,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "nmide-ffi"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "safer-ffi",
-]
-
-[[package]]
 name = "nmide-lib"
 version = "0.1.0"
 source = "git+https://github.com/Neelzee/nmide-lib.git#e84fe1981590475270b5773bf89148779d5238cd"
@@ -1829,6 +1821,14 @@ dependencies = [
  "rstest",
  "semver",
  "url",
+]
+
+[[package]]
+name = "nmide-rust-ffi"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "safer-ffi",
 ]
 
 [[package]]
