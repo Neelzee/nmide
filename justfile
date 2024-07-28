@@ -1,17 +1,28 @@
 default:
   just --list
 
+alias dev := run
+
 run:
   npm run tauri dev
 
 clean:
-  cd src-tauri/nmide-rust-ffi && cargo clean
+  cd src-tauri/nmide-rust-ffi && cargo clean && rm *.h ./html/*.h
   cd src-tauri && cargo clean
   cd src-tauri/nmide-libc && make clean
-  rm -rf node_modules
   rm -rf dist
+  rm src-tauri/nmide-rust-ffi/bindings/*.ts
 
 build:
-  -cd src-tauri/nmide-rust-ffi && cargo build --release && cargo run --features headers --bin generate-headers
+  -cd src-tauri/nmide-rust-ffi && cargo test && cargo build --release
+  cp src-tauri/nmide-rust-ffi/bindings/*.ts src/bindings/
   cd src-tauri/nmide-libc && make
   npm run tauri build
+
+make:
+  cd src-tauri/nmide-libc && make clean && make
+  cp src-tauri/nmide-libc/html/*.h src-tauri/nmide-rust-ffi/html/
+  cp src-tauri/nmide-libc/*.h src-tauri/nmide-rust-ffi
+
+test:
+  cd src-tauri && cargo test

@@ -1,4 +1,5 @@
 use c_vec::CVec;
+use ts_rs::TS;
 
 use crate::{
     CElement, CElement_A, CElement_Aside, CElement_Button, CElement_Div, CElement_Input,
@@ -6,6 +7,8 @@ use crate::{
     CElement_Span, CElement_Text, CHtml,
 };
 
+#[derive(TS)]
+#[ts(export)]
 pub enum Element {
     Div,
     P,
@@ -60,6 +63,8 @@ impl Element {
     }
 }
 
+#[derive(TS)]
+#[ts(export)]
 pub struct Html {
     kind: Element,
     kids: Vec<Html>,

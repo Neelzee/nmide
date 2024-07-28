@@ -27,6 +27,7 @@ tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", br
 dotenv = "0.15.0"
 anyhow = "1.0.86"
 nmide-lib = { git = "https://github.com/Neelzee/nmide-lib.git" }
+nmide-rust-ffi.path = "nmide-rust-ffi"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

@@ -8,6 +8,7 @@ anyhow = "1.0.86"
 c_vec = "2.0.0"
 safer-ffi.features = ["alloc"]
 safer-ffi.version = "0.1.9"
+ts-rs = "9.0.1"
 
 [build-dependencies]
 bindgen = "0.69.4"
