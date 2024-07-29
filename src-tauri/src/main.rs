@@ -7,7 +7,6 @@ use once_cell::sync::Lazy;
 use plugload::{Nmlugin, NmluginType};
 use tauri::Window;
 use tauri_plugin_log::LogTarget;
-use tokio::sync::Mutex;
 
 mod plugload;
 

@@ -9,6 +9,7 @@ authors = ["Nils Michael Fitjar <nfi005@uib.no>"]
 license = ""
 repository = "https://git.app.uib.no/Nils.Fitjar/nmide"
 edition = "2021"
+default-run = "nmide"
 
 [build-dependencies]
 tauri-build = { version = "1.5", features = [] }

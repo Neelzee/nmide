@@ -2,6 +2,44 @@
 
 ## Development
 
+## Setup
+
+### Windows
+
+TODO: Add exe
+
+
+### Linux
+
+TODO: Find out how to do this, _easily_
+
+
+### Mac
+
+TODO: Find out how hard this is.
+
+
+## How to build
+
+## Prerequisites
+
+- [Rust](https://www.rust-lang.org/learn/get-started)
+- [Tauri requisites](https://beta.tauri.app/guides/prerequisites/)
+- [Node](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+- [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/)
+
+
+### Windows/Linux
+
+```bash
+yarn install && yarn tauri build
+```
+
+The executable will be in `src-tauri/target/release`
+
+
+TODO: Move this to its own wiki?
+
 
 
 ## Setup
