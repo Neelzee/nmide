@@ -25,11 +25,16 @@ function App() {
     await invoke("greet", {})
   }
 
+  async function test() {
+    await invoke("test", {})
+  }
+
   return (
     <div>
       <p>Hello, World!</p>
       <button onClick={greet} />
       <p>{events.map((e) => { return <>{e}</> })}</p>
+      <button onClick={test} />
     </div>
   );
 }

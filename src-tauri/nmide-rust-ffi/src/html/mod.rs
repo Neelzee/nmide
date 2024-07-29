@@ -1,13 +1,16 @@
+use core::str;
+
 use c_vec::CVec;
+use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 use crate::{
     CElement, CElement_A, CElement_Aside, CElement_Button, CElement_Div, CElement_Input,
     CElement_Nav, CElement_None, CElement_P, CElement_Script, CElement_Section, CElement_Select,
-    CElement_Span, CElement_Text, CHtml,
+    CElement_Span, CHtml, CHtmlText,
 };
 
-#[derive(TS)]
+#[derive(Debug, TS, Serialize, Deserialize)]
 #[ts(export)]
 pub enum Element {
     Div,
@@ -16,7 +19,7 @@ pub enum Element {
     Section,
     Input,
     Button,
-    Text,
+    Text(String),
     Script,
     Select,
     Aside,
@@ -34,7 +37,6 @@ impl Element {
             CElement_Section => Self::Section,
             CElement_Input => Self::Input,
             CElement_Button => Self::Button,
-            CElement_Text => Self::Text,
             CElement_Script => Self::Script,
             CElement_Select => Self::Select,
             CElement_Aside => Self::Aside,
@@ -52,18 +54,17 @@ impl Element {
             Element::Section => CElement_Section,
             Element::Input => CElement_Input,
             Element::Button => CElement_Button,
-            Element::Text => CElement_Text,
             Element::Script => CElement_Script,
             Element::Select => CElement_Select,
             Element::Aside => CElement_Aside,
             Element::Nav => CElement_Nav,
             Element::A => CElement_A,
-            Element::None => CElement_None,
+            _ => CElement_None,
         }
     }
 }
 
-#[derive(TS)]
+#[derive(Debug, TS, Serialize, Deserialize)]
 #[ts(export)]
 pub struct Html {
     kind: Element,
@@ -71,6 +72,10 @@ pub struct Html {
 }
 
 impl Html {
+    pub fn new(kind: Element, kids: Vec<Self>) -> Self {
+        Self { kind, kids }
+    }
+
     pub fn from_c(ch: CHtml) -> Self {
         let cvec: CVec<CHtml> = unsafe { CVec::new(ch.kids, ch.kid_count as usize) };
 
@@ -83,6 +88,31 @@ impl Html {
         Self {
             kind: Element::from_c(ch.kind),
             kids,
+        }
+    }
+
+    pub fn from_c_text(ch: CHtmlText) -> Self {
+        let slice = unsafe { std::slice::from_raw_parts(ch.text, ch.len as usize) };
+        let mut vec: Vec<u8> = Vec::new();
+
+        for i in slice {
+            if *i < 0i8 {
+                panic!("Expected unsigned integers, found signed");
+            } else {
+                vec.push(*i as u8);
+            }
+        }
+
+        let buf = vec.as_slice();
+
+        let s = match str::from_utf8(buf) {
+            Ok(v) => v,
+            Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
+        };
+
+        Self {
+            kind: Element::Text(s.to_string()),
+            kids: Vec::new(),
         }
     }
 

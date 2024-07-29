@@ -2,6 +2,7 @@ default:
   just --list
 
 alias dev := run
+alias bp := build-plugins
 
 run:
   npm run tauri dev
@@ -18,6 +19,10 @@ build:
   cp src-tauri/nmide-rust-ffi/bindings/*.ts src/bindings/
   cd src-tauri/nmide-libc && make
   npm run tauri build
+
+build-plugins:
+  cd src-tauri/nmide-framework && cargo build --release
+  cp src-tauri/target/release/libnmide_framework.so src-tauri/plugin-libs/
 
 make:
   cd src-tauri/nmide-libc && make clean && make

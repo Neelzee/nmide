@@ -14,8 +14,13 @@ export default function RenderHtml(props: { html: Html }) {
       })}</div>
 
     default:
-      return <>{html.kids.map(k => {
-        return <RenderHtml html={k} />
-      })}</>
+      if (typeof html.kind === "object" && "Text" in html.kind) {
+        return <>{html.kind.Text}</>
+      }
+      return (
+        <>{html.kids.map((k) => {
+          return <RenderHtml html={k} />
+        })}</>
+      );
   }
 }

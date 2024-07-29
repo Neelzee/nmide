@@ -12,7 +12,6 @@ typedef enum CElement {
   Section,
   Input,
   Button,
-  Text,
   Script,
   Select,
   Aside,
@@ -29,6 +28,11 @@ typedef struct CHtml {
   struct CHtml *kids;
   int kid_count;
 } CHtml;
+
+typedef struct CHtmlText {
+  char *text;
+  int len;
+} CHtmlText;
 
 CHtml create_chtml(CElement kind, CHtml *kids, int kid_count);
 

@@ -1,5 +1,9 @@
 # Nmide
 
+## Development
+
+
+
 ## Setup
 
 ### Windows
@@ -24,13 +28,12 @@ TODO: Find out how hard this is.
 - [Rust](https://www.rust-lang.org/learn/get-started)
 - [Tauri requisites](https://beta.tauri.app/guides/prerequisites/)
 - [Node](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-- [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/)
 
 
 ### Windows/Linux
 
-```bash
-yarn install && yarn tauri build
+```shell
+just build
 ```
 
 The executable will be in `src-tauri/target/release`
@@ -38,7 +41,7 @@ The executable will be in `src-tauri/target/release`
 
 TODO: Move this to its own wiki?
 
-## Solidjs _Frontend_
+## React _Frontend_
 
 - TODO: Add info about frontend
 
