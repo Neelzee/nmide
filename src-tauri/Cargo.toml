@@ -3,7 +3,7 @@ members = [ "nmide-framework", "nmide-rust-ffi" ]
 
 [package]
 name = "nmide"
-version = "0.1.0"
+version = "0.1.0-alpha"
 description = "A simple IDE"
 authors = ["Nils Michael Fitjar <nfi005@uib.no>"]
 license = ""
