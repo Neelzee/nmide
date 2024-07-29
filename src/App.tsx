@@ -1,83 +1,41 @@
-import ToolBar from "@components/toolbar";
-import Explorer from "@components/explorer";
-import { ExplorerProps } from "@components/explorer";
-import "@styles/main.scss";
-import { invoke } from "@tauri-apps/api";
-import ErrorPane from "@components/errorPane";
-import { createEffect, createSignal, JSX, Accessor, Setter } from "solid-js";
-import { split_with_err } from "./lib/funcs";
-import { produce } from "solid-js/store";
-import { Dynamic } from "solid-js/web";
-import { NmideReport } from "./lib/models/NmideReport";
-import { Folder } from "./lib/models/Folder";
-import { FolderOrFile } from "./lib/models/FolderOrFile";
-import { NmideError } from "./lib/models/NmideError";
-
+import { useEffect, useState } from "react";
+import { invoke } from "@tauri-apps/api/tauri";
+import "./App.css";
+import { listen } from "@tauri-apps/api/event";
 
 function App() {
-  const [errors, setErrors] = createSignal<NmideReport[]>([]);
-  const [folders, setFolders] = createSignal<Folder>({
-    name: "",
-    path: "",
-    content: [],
-    symbol: ""
-  });
-  const [root, setRoot] = createSignal("");
-  const [pages, setPages] = createSignal<((props: any) => JSX.Element)[]>([]);
-  const [content, setContent] = createSignal<string[]>([]);
-  const [loading, setLoading] = createSignal(false);
+  const [events, setEvents] = useState<string[]>([]);
 
-  const explorer = (props: ExplorerProps) => Explorer(props);
-  const errorPane = (props: { errors: Accessor<NmideReport[]> }) => ErrorPane(props);
+  useEffect(() => {
+    listen("nils", (e) => {
+      setEvents(prev => {
+        prev.push(e.event);
+        return prev;
+      })
+    }).then(un => {
+      return () => un();
+    }).catch((err) => {
+      console.error(err);
+      return () => { };
+    })
+  }, []);
 
-  setPages([explorer, errorPane]);
+  async function greet() {
+    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+    await invoke("greet", {})
+  }
 
-  createEffect(() => {
-    if (root() !== "") {
-      setLoading(true);
-      invoke<NmideError>("get_workspace", { path: root() })
-        .then(res => {
-          const [val, rep] = split_with_err<FolderOrFile>(res);
-          if (rep !== undefined) {
-            setErrors(produce(arr => {
-              arr.push(rep);
-            }));
-          }
-          if ("content" in val) {
-            setFolders(val);
-          } else {
-            // Its a file
-            setFolders({
-              name: val.name,
-              path: val.path,
-              content: [val],
-              symbol: val.symbol,
-            });
-          }
-        })
-        .catch(err => {
-          setErrors(produce(arr => arr.push(err)));
-        })
-        .finally(() => setLoading(false));
-    }
-  });
-
-
+  async function test() {
+    await invoke("test", {})
+  }
 
   return (
-    <main>
-      <ToolBar setRoot={setRoot} />
-      <article>
-        <Dynamic
-          component={pages()[0]}
-          files={folders}
-          errors={errors}
-          content={content}
-          curPage={setPages}
-          loading={loading}
-        />
-      </article>
-    </main>
+    <div>
+      <p>Hello, World!</p>
+      <button onClick={greet} />
+      <p>{events.map((e) => { return <>{e}</> })}</p>
+      <button onClick={test} />
+    </div>
   );
 }
 

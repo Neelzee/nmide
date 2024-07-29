@@ -1,9 +1,0 @@
-@use "const" as const;
-
-html,
-body {
-  color: const.$foreground;
-  padding: 0;
-  margin: 0;
-  background-color: const.$background;
-}

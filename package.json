@@ -1,32 +1,25 @@
 {
-	"name": "nmide",
-	"version": "0.1.0",
-	"description": "IDE",
-	"type": "module",
-	"scripts": {
-		"start": "vite",
-		"dev": "vite",
-		"test": "vitest",
-		"build": "vite build",
-		"serve": "vite preview",
-		"pretauri": "./preBuild.sh",
-		"tauri": "tauri"
-	},
-	"license": "MIT",
-	"dependencies": {
-		"@tauri-apps/api": "^1.5.2",
-		"@types/node": "^20.12.7",
-		"sass": "^1.70.0",
-		"solid-js": "^1.7.8",
-		"tauri-plugin-log-api": "https://github.com/tauri-apps/tauri-plugin-log#v1",
-		"vite-tsconfig-paths": "^4.3.2"
-	},
-	"devDependencies": {
-		"@tauri-apps/cli": "^1.5.8",
-		"jsdom": "^24.0.0",
-		"typescript": "^5.0.2",
-		"vite": "^5.0.0",
-		"vite-plugin-solid": "^2.8.0",
-		"vitest": "^1.4.0"
-	}
+  "name": "nmide",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@tauri-apps/api": "^1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.3.1",
+    "@tauri-apps/cli": "^1"
+  }
 }

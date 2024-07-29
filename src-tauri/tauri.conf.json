@@ -1,29 +1,36 @@
 {
   "build": {
-    "beforeDevCommand": "yarn dev",
-    "beforeBuildCommand": "yarn build",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
     "devPath": "http://localhost:1420",
     "distDir": "../dist"
   },
   "package": {
     "productName": "nmide",
-    "version": "0.1.0"
+    "version": "0.0.0"
   },
   "tauri": {
     "allowlist": {
       "all": false,
-      "dialog": {
-        "all": true
-      },
       "shell": {
         "all": false,
         "open": true
       }
     },
+    "windows": [
+      {
+        "title": "nmide",
+        "width": 800,
+        "height": 600
+      }
+    ],
+    "security": {
+      "csp": null
+    },
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "no.uib.nmf",
+      "identifier": "no.nilsmf.uib",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -31,18 +38,6 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ]
-    },
-    "security": {
-      "csp": null
-    },
-    "windows": [
-      {
-        "fullscreen": false,
-        "resizable": true,
-        "title": "nmide",
-        "width": 800,
-        "height": 600
-      }
-    ]
+    }
   }
 }
