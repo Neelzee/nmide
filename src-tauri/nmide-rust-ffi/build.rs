@@ -3,7 +3,8 @@ use std::path::PathBuf;
 
 fn main() {
     // Tell cargo to look for shared libraries in the specified directory
-    println!("cargo:rustc-link-search=./nmidelib.so");
+    println!("cargo:rustc-link-search=/home/nmf/Documents/uib/nmide/src-tauri/nmide-rust-ffi");
+    println!("cargo:rust-link-lib=/home/nmf/Documents/uib/nmide/src-tauri/nmide-rust-ffi/nmidelib.so");
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for

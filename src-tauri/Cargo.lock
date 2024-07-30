@@ -1826,7 +1826,7 @@ checksum = "650eef8c711430f1a879fdd01d4745a7deea475becfb90269c06775983bbf086"
 
 [[package]]
 name = "nmide"
-version = "0.1.0"
+version = "0.1.1-alpha"
 dependencies = [
  "anyhow",
  "dotenv",
@@ -1851,7 +1851,7 @@ dependencies = [
 
 [[package]]
 name = "nmide-rust-ffi"
-version = "0.1.0"
+version = "0.1.2-alpha"
 dependencies = [
  "anyhow",
  "bindgen",

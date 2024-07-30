@@ -27,7 +27,8 @@ build-plugins:
 make:
   cd src-tauri/nmide-libc && make clean && make
   cp src-tauri/nmide-libc/html/*.h src-tauri/nmide-rust-ffi/html/
-  cp src-tauri/nmide-libc/*.h src-tauri/nmide-rust-ffi
+  cp src-tauri/nmide-libc/*.h src-tauri/nmide-rust-ffi/
+  cp src-tauri/nmide-libc/*.so  src-tauri/nmide-rust-ffi/
 
 test:
   cd src-tauri && cargo test
