@@ -23,17 +23,25 @@ typedef enum CElement {
 /**
  * Struct representation of an HTML node
  **/
-typedef struct CHtml {
+typedef struct CHtmlNode {
   CElement kind;
-  struct CHtml *kids;
+  struct CHtmlNode *kids;
   int kid_count;
-} CHtml;
+} CHtmlNode;
 
 typedef struct CHtmlText {
   char *text;
   int len;
 } CHtmlText;
 
-CHtml create_chtml(CElement kind, CHtml *kids, int kid_count);
+typedef union CHtmlUnion {
+  CHtmlNode node;
+  CHtmlText text;
+} CHtmlUnion;
+
+typedef struct CHtml {
+  CHtmlUnion node;
+  int isNode;
+} CHtml;
 
 #endif // !HTML_LIB
