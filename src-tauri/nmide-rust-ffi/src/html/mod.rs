@@ -1,13 +1,12 @@
 use core::str;
 
+use anyhow::{Context, Result};
 use c_vec::CVec;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 use crate::{
-    CElement, CElement_A, CElement_Aside, CElement_Button, CElement_Div, CElement_Input,
-    CElement_Nav, CElement_None, CElement_P, CElement_Script, CElement_Section, CElement_Select,
-    CElement_Span, CHtml, CHtmlText,
+    CElement, CElement_A, CElement_Aside, CElement_Button, CElement_Div, CElement_Input, CElement_Nav, CElement_None, CElement_P, CElement_Script, CElement_Section, CElement_Select, CElement_Span, CHtml, CHtmlNode, CHtmlText, CHtmlUnion
 };
 
 #[derive(Debug, TS, Serialize, Deserialize)]
@@ -71,60 +70,86 @@ pub struct Html {
     kids: Vec<Html>,
 }
 
+
 impl Html {
     pub fn new(kind: Element, kids: Vec<Self>) -> Self {
         Self { kind, kids }
     }
 
-    pub fn from_c(ch: CHtml) -> Self {
-        let cvec: CVec<CHtml> = unsafe { CVec::new(ch.kids, ch.kid_count as usize) };
+    pub fn from_c(ch: CHtml) -> Result<Self> { 
+        if ch.isNode == 0 {
+            return Ok(Self::new(Element::Text(unsafe { Self::c_str(ch.node.text)? }), Vec::new()));
+        }
+
+        let ch_node = unsafe { ch.node.node };
+
+        let cvec: CVec<CHtmlNode> = unsafe { CVec::new(ch_node.kids, ch_node.kid_count as usize) };
 
         let mut kids = Vec::new();
 
         for sch in cvec.iter() {
-            kids.push(Self::from_c(*sch));
+            kids.push(Self::from_c(CHtml {
+                node: crate::CHtmlUnion { node: *sch },
+                isNode: 1,
+            })?);
         }
 
-        Self {
-            kind: Element::from_c(ch.kind),
+        Ok(Self {
+            kind: Element::from_c(ch_node.kind),
             kids,
-        }
+        })
+
     }
 
-    pub fn from_c_text(ch: CHtmlText) -> Self {
-        let slice = unsafe { std::slice::from_raw_parts(ch.text, ch.len as usize) };
-        let mut vec: Vec<u8> = Vec::new();
-
-        for i in slice {
-            if *i < 0i8 {
-                panic!("Expected unsigned integers, found signed");
-            } else {
-                vec.push(*i as u8);
-            }
-        }
-
-        let buf = vec.as_slice();
-
-        let s = match str::from_utf8(buf) {
-            Ok(v) => v,
-            Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
-        };
-
-        Self {
-            kind: Element::Text(s.to_string()),
-            kids: Vec::new(),
-        }
+    unsafe fn c_str(ch: CHtmlText) -> Result<String> {
+        str::from_utf8(
+                std::slice::from_raw_parts(ch.text, ch.len as usize)
+                .into_iter()
+                .map(|i| if *i < 0 { panic!("Expected unsigned integers, found signed"); } else { *i as u8 })
+                .collect::<Vec<_>>()
+                .as_slice()
+            )
+            .and_then(|s| Ok(s.to_string()))
+            .context("Invalid UTF-8 sequence")
     }
 
     pub fn to_c(self) -> CHtml {
-        let mut chkids: Vec<CHtml> = self.kids.into_iter().map(|ch| ch.to_c()).collect();
-        let slice = &mut chkids;
-        let kids = slice.as_mut_ptr();
 
-        CHtml {
-            kind: self.kind.to_c(),
-            kid_count: chkids.len() as i32,
-            kids,
+        match self.kind {
+            Element::Text(s) => CHtml {
+                node: CHtmlUnion {
+                    text: CHtmlText {
+                        text: s.as_bytes()
+                            .into_iter()
+                            .map(|i| *i as i8)
+                            .collect::<Vec<i8>>()
+                            .as_mut_ptr(), len: s.chars()
+                            .count() as i32 
+                    }
+                },
+                isNode: 0,
+            },
+            _ => {
+                let mut chkids: Vec<CHtmlNode> = self.kids
+                    .into_iter()
+                    .map(|ch| ch.to_c())
+                    .filter(|c| c.isNode == 1)
+                    .map(|c| unsafe { c.node.node })
+                    .collect();
+                let slice = &mut chkids;
+                let kids = slice.as_mut_ptr();
+
+                CHtml {
+                    node: CHtmlUnion {
+                        node: CHtmlNode {
+                            kind: self.kind.to_c(),
+                            kids,
+                            kid_count: chkids.len() as i32,
+                        }
+                    },
+                    isNode: 1,
+                }
+            }
         }
     }
 }
