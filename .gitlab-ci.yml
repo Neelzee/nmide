@@ -31,6 +31,21 @@ pts:
   script:
     - ./pushToSvn.sh
 
+pdf-build:
+  state: build
+  dependencies:
+    - pts
+  when: manual
+  only:
+    - main
+  script:
+    - just pdf
+  artifacts:
+    when: on_success
+    access: all
+    paths:
+      - nmide-thesis/*.pdf
+
 windows-build:
   stage: build
   dependencies:
