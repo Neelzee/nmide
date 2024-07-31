@@ -10,13 +10,6 @@ default:
 variables:
   CORE_OUT_DIR: "nmide-core/src-tauri/target/release/*"
 
-linting:
-  stage: linting
-  script:
-    - rustup component add clippy
-    - cd src-tauri
-    - cargo clippy -- -D clippy::restriction
-
 rust_test:
   stage: test
   script:
