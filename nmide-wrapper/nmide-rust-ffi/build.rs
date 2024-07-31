@@ -2,9 +2,14 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
+    println!("Building");
+
     // Tell cargo to look for shared libraries in the specified directory
-    println!("cargo:rustc-link-search=/home/nmf/Documents/uib/nmide/src-tauri/nmide-rust-ffi");
-    println!("cargo:rust-link-lib=/home/nmf/Documents/uib/nmide/src-tauri/nmide-rust-ffi/nmidelib.so");
+    println!("cargo:rustc-link-search=.");
+    println!("cargo:rustc-link-search=./html/");
+    println!("cargo:rust-link-lib=./html/css_lib.o");
+    println!("cargo:rust-link-lib=./html/html_lib.o");
+    println!("cargo:rust-link-lib=./nmidelib");
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
