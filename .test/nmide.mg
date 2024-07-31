@@ -1,3 +1,0 @@
-concept Nmide {
-
-};

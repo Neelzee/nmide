@@ -1,6 +1,3 @@
-[workspace]
-members = [ "nmide-framework", "nmide-rust-ffi" ]
-
 [package]
 name = "nmide"
 version = "0.1.1-alpha"
