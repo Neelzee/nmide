@@ -5,33 +5,36 @@ alias dev := run
 alias bp := build-plugins
 
 nmcdir := "nmide-core/src-tauri/"
-nmlibc := nmcdir / "nmide-libc/"
+nmlibc := "nmide-lib/"
 
 run:
   npm run tauri dev
 
 clean:
-  cd {{nmcdir}}nmide-rust-ffi && cargo clean && rm *.h ./html/*.h
+  cd nmide-wrapper/nmide-rust-ffi && cargo clean && rm *.h ./html/*.h
   cd nmide-core/src-tauri && cargo clean
   cd {{nmlibc}} && make clean
   rm -rf dist
-  rm {{nmcdir}}nmide-rust-ffi/bindings/*.ts
+  rm nmide-wrapper/nmide-rust-ffi/bindings/*.ts
 
 build:
-  -cd {{nmcdir}}nmide-rust-ffi && cargo test && cargo build --release
-  cp {{nmcdir}}nmide-rust-ffi/bindings/*.ts nmide-core/src/bindings/
+  -cd nmide-wrapper/nmide-rust-ffi && cargo test && cargo build --release
+  cp nmide-wrapper/nmide-rust-ffi/bindings/*.ts nmide-core/src/bindings/
   cd {{nmlibc}} && make
   cd nmide-core/ && npm run tauri build
 
 build-plugins:
-  cd {{nmcdir}}nmide-framework && cargo build --release
-  cp {{nmcdir}}target/release/libnmide_framework.so {{nmcdir}}plugin-libs/
+  cd nmide-plugin/nmide-framework && cargo build --release
+  cp nmide-plugin/nmide-framework/target/release/libnmide_framework.so {{nmcdir}}plugin-libs/
+
+build-release:
+  cd nmide-core && npm i && npm run tauri build
 
 make:
   cd {{nmlibc}} && make clean && make
-  cp {{nmlibc}}/html/*.h {{nmcdir}}nmide-rust-ffi/html/
-  cp {{nmlibc}}/*.h {{nmcdir}}nmide-rust-ffi/
-  cp {{nmlibc}}/*.so  {{nmcdir}}nmide-rust-ffi/
+  cp {{nmlibc}}/html/*.h nmide-wrapper/nmide-rust-ffi/html/
+  cp {{nmlibc}}/*.h nmide-wrapper/nmide-rust-ffi/
+  cp {{nmlibc}}/*.so  nmide-wrapper/nmide-rust-ffi/
 
 test:
   cd {{nmcdir}} && cargo test
