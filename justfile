@@ -33,6 +33,7 @@ build-release:
 make:
   cd {{nmlibc}} && make clean && make
   cp {{nmlibc}}/html/*.h nmide-wrapper/nmide-rust-ffi/html/
+  cp {{nmlibc}}/html/*.o nmide-wrapper/nmide-rust-ffi/html/
   cp {{nmlibc}}/*.h nmide-wrapper/nmide-rust-ffi/
   cp {{nmlibc}}/*.so  nmide-wrapper/nmide-rust-ffi/
 
