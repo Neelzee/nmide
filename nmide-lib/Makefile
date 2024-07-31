@@ -6,10 +6,11 @@ ARFLAGS = rcs
 TARGET_LIB = nmidelib.so
 STATIC_LIB = nmidelib.a
 
-# Source files
-SRCS = nmidelib.c html/css_lib.c
+# Source and header files
+SRCS = nmidelib.c html/css_lib.c html/html_lib.c
 HDRS = nmidelib.h html/css_lib.h html/html_lib.h
 
+# Object files (accounting for subdirectories)
 OBJS = $(SRCS:.c=.o)
 
 # Default target
@@ -24,7 +25,8 @@ $(STATIC_LIB): $(OBJS)
 	$(AR) $(ARFLAGS) $@ $^
 
 # Compile source files into object files
-%.o: %.c $(HDRS)
+# Note: Use a pattern rule that correctly matches subdirectories
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Clean up build artifacts
@@ -32,3 +34,4 @@ clean:
 	rm -f $(OBJS) $(TARGET_LIB) $(STATIC_LIB)
 
 .PHONY: all clean
+
