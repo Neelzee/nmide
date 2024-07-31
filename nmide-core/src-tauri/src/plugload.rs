@@ -30,6 +30,6 @@ impl Nmlugin {
         let _view: Symbol<unsafe extern "C" fn() -> CHtml> =
             unsafe { self.lib.get(b"view") }.context("Failed getting `view`")?;
 
-        Ok(Html::from_c(unsafe { _view() }))
+        Html::from_c(unsafe { _view() })
     }
 }

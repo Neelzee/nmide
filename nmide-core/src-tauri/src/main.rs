@@ -7,6 +7,7 @@ use once_cell::sync::Lazy;
 use plugload::{Nmlugin, NmluginType};
 use tauri::Window;
 use tauri_plugin_log::LogTarget;
+use tokio::sync::Mutex;
 
 mod plugload;
 
@@ -31,7 +32,7 @@ static NMLUG: Lazy<Mutex<Nmlugin>> = Lazy::new(|| {
         Nmlugin::new(
             "nmide-framework",
             NmluginType::Worker,
-            "/home/nmf/Documents/uib/nmide/src-tauri/plugin-libs/libnmide_framework.so",
+            "/home/nmf/Documents/uib/nmide/nmide-core/src-tauri/plugin-libs/libnmide_framework.so",
         )
         .unwrap(),
     )
