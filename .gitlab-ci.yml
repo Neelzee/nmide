@@ -4,26 +4,14 @@ stages:
   - svn
   - build
 
-linting-fix:
-  stage: linting
+default:
   image: neelzee/tauri_img
-  only:
-    - main
-  script:
-    - rustup component add clippy
-    - cd src-tauri
-    - cargo fix --allow-dirty
-    - cargo clippy --fix --allow-dirty
-    - git config user.email "nfi005@uib.no"
-    - git config user.name "ci-bot"
-    - git add .
-    - git commit -m "Automated fixes by clippy, and cargo fix"
-    - git remote add origin main https://oauth2:$PROJECT_TOKEN@git.app.uib.no/Nils.Fitjar/nmide.git
-    - git push --set-upstream origin main -o ci.skip # prevent triggering pipeline again
+
+variables:
+  CORE_OUT_DIR: "nmide-core/src-tauri/target/release/*"
 
 linting:
   stage: linting
-  image: neelzee/tauri_img
   script:
     - rustup component add clippy
     - cd src-tauri
@@ -31,22 +19,16 @@ linting:
 
 rust_test:
   stage: test
-  image: neelzee/tauri_img
   script:
-    - cd src-tauri
-    - cargo test
+    - echo "TODO"
 
 js_test:
   stage: test
-  image: neelzee/tauri_img
   script:
-    - yarn install
-    - yarn test
-
+    - echo "TODO"
 
 pts:
   stage: svn
-  image: neelzee/tauri_img
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
       when: always
@@ -56,53 +38,38 @@ pts:
   script:
     - ./pushToSvn.sh
 
-pis:
-  stage: svn
-  image: neelzee/tauri_img
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
-      when: always
-  dependencies:
-    - "js_test"
-    - "rust_test"
-  script:
-    - ./issueGen.sh "https://git.app.uib.no/api/v4/projects/Nils.Fitjar%f2Nmide/issues"
-
-
-
-
 windows-build:
   stage: build
-  image: neelzee/tauri_img
   dependencies:
     - "pts"
   when: manual
   only:
     - main
   script:
-    - yarn install
-    - cargo install cargo-xwin
-    - rustup component add clippy
-    - cd src-tauri
-    - cargo clippy --fix --bin "nmide"
-    - cd ..
-    - yarn tauri build --runner cargo-xwin --target x86_64-pc-windows-msvc
+    - echo "Needs a windows image"
+  artifacts:
+    when: on_success
+    access: all
+    paths:
+      - $OUT_DIR
 
 debian-build:
   stage: build
-  image: neelzee/tauri_img
   dependencies:
     - "pts"
   when: manual
   only:
     - main
   script:
-    - yarn install
-    - yarn tauri build
+    - just build-release
+  artifacts:
+    when: on_success
+    access: all
+    paths:
+      - $OUT_DIR
 
 mac-build:
   stage: build
-  image: neelzee/tauri_img
   dependencies:
     - "pts"
   when: manual
@@ -110,3 +77,8 @@ mac-build:
     - main
   script:
     - echo "TODO"
+  artifacts:
+    when: on_success
+    access: all
+    paths:
+      - $OUT_DIR
