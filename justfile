@@ -6,6 +6,7 @@ alias bp := build-plugins
 
 nmcdir := "nmide-core/src-tauri/"
 nmlibc := "nmide-lib/"
+thesis := "nmide-thesis"
 
 run:
   npm run tauri dev
@@ -36,6 +37,9 @@ make:
   cp {{nmlibc}}/html/*.o nmide-wrapper/nmide-rust-ffi/html/
   cp {{nmlibc}}/*.h nmide-wrapper/nmide-rust-ffi/
   cp {{nmlibc}}/*.so  nmide-wrapper/nmide-rust-ffi/
+
+pdf:
+  pdflatex --output-directory={{thesis}} {{thesis}}/main.tex
 
 test:
   cd {{nmcdir}} && cargo test
