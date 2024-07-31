@@ -1,0 +1,62 @@
+\section{Architecture}
+
+%% Some explanation on why this is an issue
+%% Also talk about what we tried first
+
+First attempt was to create a Visual Studio Code Copy. This would've worked, but would've created alot of extra work.
+
+
+Then I saw her, while working on my personal website\dots My Love\dots Elm-Lang.
+
+\subsection{Elm-Architecture}
+
+%% Insert the elm-lang architecture graph
+%% Also explain elm-lang
+
+\subsection{Nmide-Plugin-Architecture}
+
+In this application, the Elm-box is a plugin, while the runtime system, is the IDE itself. The IDE calls all plugins,
+which all should have these three functions defined:
+
+\begin{itemize}
+  \item init :: Model -> Model
+  \item view :: Model -> [(Html, Location)]
+  \item update :: Msg -> Model -> Model
+\end{itemize}
+
+Firstly, the types.
+
+\paragraph{Model}
+Model is the \textit{state} of the application. In this case, it has the same structure as a JSON object. A few values are
+set at the start of the application, so it looks like this:
+
+%% Insert some code-snippet that showcases the model
+\text{\{ "location": \{ "main": \[ \] \} \}}
+
+%% Should probably explain before-hand that the IDE uses HTML to display stuff.
+So, the way any plugin inserts HTML into the IDE, is by sending a tuple, of the HTML, and Location, which is where
+the HTML element should be inserted. Main corresponds to the <main>-tag in a standard HTML document, like so:
+
+html > body > main
+
+But this introduces a possibility for some hierarchy in the plugin eco-system. For example,
+a plugin could act as a framework, and therefore needs to only be loaded once, creating new locations, with styling.
+
+
+\paragraph{Html}
+Just a representation of HTML
+%% TODO: Expand
+
+
+\paragraph{Location}
+Just a type-alias for String, to ensure type-safety
+%% TODO: Expand
+
+
+\paragraph{Msg}
+Plugins create Msg-s, that are sent to all other plugins that subscribe to them.
+
+For example, if a plugin creates some Button, that when pressed sends Msg "btn-clicked", then any Plugin that are
+listening for this message, can pick it up, whena user clicks on the button, and then optionally change the Model.
+
+

@@ -1,0 +1,52 @@
+\documentclass[runningheads]{llncs}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{graphicx}
+
+\begin{document}
+
+\title{Modular IDE}
+
+\author{Nils Michael Fitjar\inst{1,2}
+}
+
+\authorrunning{Nils Michael Fitjar}
+
+\institute{Western Norway University of Applied Sciences\\
+\email{798183@stud.hvl.no}
+ \and
+University of Bergen\\
+\email{nfi005@uib.no}
+}
+
+\maketitle
+\begin{abstract}
+This paper introduces a modular Integrated Development Environment (IDE) for experimental programming languages,
+addressing limitations in traditional IDEs. While standard IDEs are crucial in software development,
+their support for experimental languages is often inadequate. This project proposes a modular IDE to extend its
+lifespan and enhance support for experimental languages. Analyzing the essential features of traditional IDEs and
+the need for adaptability to new paradigms and tools. Magnolia, a generic programming language developed at UIB,
+serves as a case study, highlighting its unique characteristics and the necessity for a specialized IDE.
+The primary research question explores how modularization facilitates the design and implementation of experimental
+programming languages. Specific modules or plugins tailored for experimental languages, including
+Abstract Semantic Representation (ASR) Transformation, Term Algebras, MoA translation,
+and Syntactic Theory Functor (STF), are outlined. These plugins will be implemented to validate the
+modularized IDE's functionality, with a focus on the ASR Transformation module.
+
+\keywords{Modularization \and IDE \and Magnolia.}
+\end{abstract} 
+
+\include{sections/000_introduction}
+
+\include{sections/001_background}
+
+\include{sections/002_research_question}
+
+\include{sections/003_plugins}
+
+\include{sections/004_implementation}
+
+\include{sections/005_architecture}
+
+\end{document}

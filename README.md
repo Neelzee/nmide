@@ -1,100 +1,36 @@
 # Nmide
 
+A *simple* IDE.
+
 ## Development
 
-## Setup
+### Git Commit Convention
 
-### Windows
-
-TODO: Add exe
+Follow [this](https://www.conventionalcommits.org/en/v1.0.0/#summary)
 
 
-### Linux
+### Plugin Development
 
-TODO: Find out how to do this, _easily_
-
-
-### Mac
-
-TODO: Find out how hard this is.
+A plugin (`Nmlugin`), in Nmide is either a C Library, or a WASM file. Either way,
+it follows the same architecture, the [Elm Architecture](https://guide.elm-lang.org/architecture/).
+Using `init`, `update`, and `update` functions, the plugins will mutate the
+state (`model`) of the IDE.
 
 
-## How to build
+## Installation
 
-## Prerequisites
+### Manual
 
-- [Rust](https://www.rust-lang.org/learn/get-started)
-- [Tauri requisites](https://beta.tauri.app/guides/prerequisites/)
-- [Node](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-- [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/)
-
-
-### Windows/Linux
-
-```bash
-yarn install && yarn tauri build
-```
-
-The executable will be in `src-tauri/target/release`
+**Prerequisites**:
+- Git
+- Rust
+- Just
+- Node
+- NPM
 
 
-TODO: Move this to its own wiki?
-
-
-
-## Setup
-
-### Windows
-
-TODO: Add exe
-
-
-### Linux
-
-TODO: Find out how to do this, _easily_
-
-
-### Mac
-
-TODO: Find out how hard this is.
-
-
-## How to build
-
-## Prerequisites
-
-- [Rust](https://www.rust-lang.org/learn/get-started)
-- [Tauri requisites](https://beta.tauri.app/guides/prerequisites/)
-- [Node](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-
-
-### Windows/Linux
+After installing all the prerequisites just run:
 
 ```shell
 just build
 ```
-
-The executable will be in `src-tauri/target/release`
-
-
-TODO: Move this to its own wiki?
-
-## React _Frontend_
-
-- TODO: Add info about frontend
-
-
-## Rust Backend
-
-### Structure
-
-#### osops
-
-Os-operations. Managing folder and files.
-
-
-#### workspace
-
-Abstraction of file-management, communication between the frontend and backend happen at this level.
-
-No function call from the frontend should be directly to an os-operation.
