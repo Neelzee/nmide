@@ -22,37 +22,31 @@ University of Bergen\\
 
 \maketitle
 \begin{abstract}
-This paper introduces a modular Integrated Development Environment (IDE) for experimental programming languages, addressing limitations in traditional IDEs. While standard IDEs are crucial in software development, their support for experimental languages is often inadequate. This project proposes a modular IDE to extend its lifespan and enhance support for experimental languages.
-
-Analyzing the essential features of traditional IDEs and the need for adaptability to new paradigms and tools. Magnolia, a generic programming language developed at UIB, serves as a case study, highlighting its unique characteristics and the necessity for a specialized IDE.
-
-The primary research question explores how modularization facilitates the design and implementation of experimental programming languages. Specific modules or plugins tailored for experimental languages, including Abstract Semantic Representation (ASR) Transformation, Term Algebras, MoA translation, and Syntactic Theory Functor (STF), are outlined. These plugins will be implemented to validate the modularized IDE's functionality, with a focus on the ASR Transformation module.
+This paper introduces a modular Integrated Development Environment (IDE) for experimental programming languages,
+addressing limitations in traditional IDEs. While standard IDEs are crucial in software development,
+their support for experimental languages is often inadequate. This project proposes a modular IDE to extend its
+lifespan and enhance support for experimental languages. Analyzing the essential features of traditional IDEs and
+the need for adaptability to new paradigms and tools. Magnolia, a generic programming language developed at UIB,
+serves as a case study, highlighting its unique characteristics and the necessity for a specialized IDE.
+The primary research question explores how modularization facilitates the design and implementation of experimental
+programming languages. Specific modules or plugins tailored for experimental languages, including
+Abstract Semantic Representation (ASR) Transformation, Term Algebras, MoA translation,
+and Syntactic Theory Functor (STF), are outlined. These plugins will be implemented to validate the
+modularized IDE's functionality, with a focus on the ASR Transformation module.
 
 \keywords{Modularization \and IDE \and Magnolia.}
 \end{abstract} 
 
-\include{sections/introduction}
+\include{sections/000_introduction}
 
-\section{Background}
+\include{sections/001_background}
 
-Traditional IDEs encompass essential features such as syntax highlighting, code navigation, and hover-help, playing a crucial role in the software development process. However, their limitations become apparent when working with experimental languages. The paper advocates for modularization and composability as key design principles, demonstrating their ability to extend the operational lifespan of software by adapting to new paradigms and tools.
-The discussion revolves around Magnolia, a generic programming language developed at UIB, as a case study illustrating the need for a specialized IDE. It is a way to experiment with generic programming. And too achieve this in a sufficient manner, a more specialized IDE is required.
+\include{sections/002_research_question}
 
-\section{Research questions} 
+\include{sections/003_plugins}
 
-Exploring how modularization can facilitate the design and implementation of experimental programming languages.
+\include{sections/004_implementation}
 
-\section{Modules/Plugins}
-
-The proposed modular IDE includes specific modules or plugins tailored for experimental languages, such as ASR Transformation, Term Algebras, MoA translation, and STF. As a part of this project, these plugins will be implemented to verify the functionality of the modularization of the IDE.
-
-\subsection{Abstract Semantic Representation Transformation}
-
-The ASR of a language, is an extension of a normal AST, but with extra information. This representation of the syntax is handy when developing. Specifically for Magnolia, the interest is in the transformation of this ASR; the flattened version.  
-
-
-\section{Implementation and Expected Results}
-
-The implementation adopts XML-based tooling for the modular IDE. The tools developed will be employed by a research group, providing insights into their practicality and effectiveness.
+\include{sections/005_architecture}
 
 \end{document}
