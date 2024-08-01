@@ -29,6 +29,7 @@ build-plugins:
   cp nmide-plugin/nmide-framework/target/release/libnmide_framework.so {{nmcdir}}plugin-libs/
 
 build-release:
+  just make
   cd nmide-core && npm i && npm run tauri build
 
 make:
@@ -43,3 +44,7 @@ pdf:
 
 test:
   cd {{nmcdir}} && cargo test
+
+docker:
+  docker build . -t neelzee/tauri_img:latest
+  docker push neelzee/tauri_img:latest
