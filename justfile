@@ -12,16 +12,23 @@ run:
   npm run tauri dev
 
 clean:
-  cd nmide-wrapper/nmide-rust-ffi && cargo clean && rm *.h ./html/*.h
+  cd nmide-wrapper/nmide-rust-ffi && cargo clean && rm -f *.h ./html/*.h
   cd nmide-core/src-tauri && cargo clean
-  cd {{nmlibc}} && make clean
-  rm -rf dist
-  rm nmide-wrapper/nmide-rust-ffi/bindings/*.ts
+  rm -rf nmide-core/dist
+  rm -rf nmide-core/node_modules
+  rm -rf nmide-core/src-tauri/target
+  rm -rf nmide-plugin/*/target
+  rm -rf nmide-wrapper/nmide-rust-ffi/target
+  rm -f nmide-thesis/**.aux
+  rm -f nmide-thesis/**.log
+  rm -f nmide-thesis/**.pdf
+  rm -f nmide-wrapper/nmide-rust-ffi/bindings/*.ts
 
 build:
+  just make
+  cd nmide-wrapper/nmide-rust-ffi && bindgen nmidelib.h -o src/bindings.rs
   -cd nmide-wrapper/nmide-rust-ffi && cargo test && cargo build --release
   cp nmide-wrapper/nmide-rust-ffi/bindings/*.ts nmide-core/src/bindings/
-  cd {{nmlibc}} && make
   cd nmide-core/ && npm run tauri build
 
 build-plugins:
@@ -33,11 +40,9 @@ build-release:
   cd nmide-core && npm i && npm run tauri build
 
 make:
-  cd {{nmlibc}} && make clean && make
-  cp {{nmlibc}}/html/*.h nmide-wrapper/nmide-rust-ffi/html/
-  cp {{nmlibc}}/html/*.o nmide-wrapper/nmide-rust-ffi/html/
+  cd {{nmlibc}}/build && cmake --build .
   cp {{nmlibc}}/*.h nmide-wrapper/nmide-rust-ffi/
-  cp {{nmlibc}}/*.so  nmide-wrapper/nmide-rust-ffi/
+  cp {{nmlibc}}build/*.a  nmide-wrapper/nmide-rust-ffi/
 
 pdf:
   pdflatex --output-directory={{thesis}} {{thesis}}/main.tex
@@ -48,3 +53,8 @@ test:
 docker:
   docker build . -t neelzee/tauri_img:latest
   docker push neelzee/tauri_img:latest
+
+svn:
+  just clean
+  svn add . --force
+  svn commit -m "Push changes to SVN Repo" --username ${SVN_USERNAME} --password ${SVN_PASSWORD} --non-interactive
