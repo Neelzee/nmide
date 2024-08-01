@@ -1,7 +1,7 @@
 #ifndef NMIDELIB
 
-#include "html/css_lib.h"
-#include "html/html_lib.h"
+#include "html/css.h"
+#include "html/html.h"
 
 #define NMIDELIB
 

@@ -1,4 +1,4 @@
-#include "html_lib.h"
+#include "html.h"
 
 CHtml div() {
   CHtmlUnion u;
@@ -141,7 +141,7 @@ CHtml text() {
   CHtml html;
   html.kid_count = 0;
   html.node = u;
-  html.isNode = 1;
+  html.isNode = 0;
 
   return html;
 }
