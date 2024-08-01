@@ -15,4 +15,7 @@ RUN apt-get install -y libclang-dev
 # Ease of project building
 RUN cargo install just
 
+# For SVN
+RUN apt-get install -y subversion
+
 CMD ["/bin/bash"]
