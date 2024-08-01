@@ -1,12 +1,17 @@
 use anyhow::Result;
 
-use crate::simple_test;
+use crate::{html::c_html_to_string, simple_test, CHtml};
 
 use super::{Element, Html};
 
 #[test]
 fn ffi_simple_test() -> Result<()> {
+    println!("heyo");
+
     let ch = unsafe { simple_test() };
+
+    println!("{}", c_html_to_string(ch.clone()));
+
     let html = Html::from_c(ch)?;
 
     let e_html = Html::new(
@@ -20,10 +25,10 @@ fn ffi_simple_test() -> Result<()> {
         )],
     );
 
-    assert_eq!(e_html, html);
+    println!("E: {:?}", e_html);
+    println!("R: {:?}", html);
 
-    println!("{:?}", e_html);
-    println!("{:?}", html);
+    assert_eq!(e_html, html);
 
     Ok(())
 }

@@ -152,11 +152,36 @@ impl Html {
 
                 CHtml {
                     isNode: 1,
-                    node: CHtmlUnion { kind: self.kind.to_c() },
+                    node: CHtmlUnion {
+                        kind: self.kind.to_c(),
+                    },
                     kids,
                     kid_count: chkids.len() as i32,
                 }
             }
         }
     }
+}
+
+pub fn c_html_to_string(ch: CHtml) -> String {
+    let element;
+    let kids;
+    if ch.isNode == 1 {
+        //element = Element::from_c(unsafe { ch.node.kind });
+        //let cvec: CVec<CHtml> = unsafe { CVec::new(ch.kids, ch.kid_count as usize) };
+
+        element = Element::None;
+
+        let mut vec: Vec<String> = Vec::new();
+
+        //for c in cvec.iter() {
+        //vec.push(c_html_to_string(c.clone())); }
+
+        kids = vec.join(", ");
+    } else {
+        element = Element::Text("".to_string());
+        kids = String::new();
+    }
+
+    format!("{element:?}, [] [{kids}]")
 }

@@ -2,4 +2,5 @@
 **.ts
 **.so
 **.o
+**.a
 target/
