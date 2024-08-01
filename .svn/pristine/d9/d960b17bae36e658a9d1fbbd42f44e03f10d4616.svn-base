@@ -1,0 +1,4 @@
+CMakeFiles/nmide.dir/html/html.c.o: \
+ /home/nmf/Documents/uib/nmide/nmide-lib/html/html.c \
+ /usr/include/stdc-predef.h \
+ /home/nmf/Documents/uib/nmide/nmide-lib/html/html.h
