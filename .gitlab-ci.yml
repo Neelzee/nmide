@@ -36,7 +36,7 @@ pdf-build:
   script:
     - pdflatex --output-directory=nmide-thesis nmide-thesis/main.tex
   rules:
-    - if: $CI_COMMIT_REF_NAME == "main" 
+    - if: $CI_COMMIT_BRANCH == "main"
       changes:
         - nmide-thesis/main.tex
   artifacts:
