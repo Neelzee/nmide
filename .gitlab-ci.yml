@@ -33,12 +33,15 @@ pts:
 pdf-build:
   image: neelzee/nmide-thesis:latest
   stage: build
+  dependencies:
+    - pts
   script:
     - pdflatex --output-directory=nmide-thesis nmide-thesis/main.tex
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
       changes:
         - nmide-thesis/main.tex
+      when: manual
   artifacts:
     when: on_success
     access: all
