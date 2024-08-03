@@ -1,0 +1,6 @@
+node_modules
+dist
+.svn
+.git
+.gitignore
+.gitlab-ci.yml

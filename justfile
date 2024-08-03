@@ -7,6 +7,7 @@ alias bp := build-plugins
 nmcdir := "nmide-core/src-tauri/"
 nmlibc := "nmide-lib/"
 thesis := "nmide-thesis"
+docker_user := "neelzee"
 
 run:
   npm run tauri dev
@@ -40,9 +41,10 @@ build-release:
   cd nmide-core && npm i && npm run tauri build
 
 make:
-  cd {{nmlibc}}/build && cmake --build .
-  cp {{nmlibc}}/*.h nmide-wrapper/nmide-rust-ffi/
-  cp {{nmlibc}}build/*.a  nmide-wrapper/nmide-rust-ffi/
+  -just init
+  cd {{nmlibc}} && cmake --build .
+  cp {{nmlibc}}*.h nmide-wrapper/nmide-rust-ffi/
+  cp {{nmlibc}}*.a  nmide-wrapper/nmide-rust-ffi/
 
 pdf:
   pdflatex --output-directory={{thesis}} {{thesis}}/main.tex
@@ -50,11 +52,24 @@ pdf:
 test:
   cd {{nmcdir}} && cargo test
 
-docker:
-  docker build . -t neelzee/tauri_img:latest
-  docker push neelzee/tauri_img:latest
+docker-build:
+  #docker build -f nmide-docker/Dockerfile.tauri . -t nmide-tauri:latest # Tauri
+  #docker build -f nmide-docker/Dockerfile.full . -t nmide-full:latest # Full
+  docker build -f nmide-docker/Dockerfile.thesis . -t nmide-thesis:latest # Thesis
+
+docker-tag:
+  docker tag nmide-tauri:latest {{docker_user}}/nmide-tauri:latest
+  docker tag nmide-full:latest {{docker_user}}/nmide-full:latest
+  docker tag nmide-thesis:latest {{docker_user}}/nmide-thesis:latest
 
 svn:
   just clean
   svn add . --force
   svn commit -m "Push changes to SVN Repo" --username ${SVN_USERNAME} --password ${SVN_PASSWORD} --non-interactive
+
+init:
+  -mkdir {{nmlibc}}CMakeFiles
+  cd {{nmlibc}} && cmake .
+
+make-clean:
+  rm -rf {{nmlibc}}CMakeFiles {{nmlibc}}CMakeCache.txt
