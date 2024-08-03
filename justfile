@@ -53,9 +53,9 @@ test:
   cd {{nmcdir}} && cargo test
 
 docker-build: # Builds Docker Images
-  docker build -f nmide-docker/Dockerfile.tauri . -t nmide-tauri:latest # Tauri
-  docker build -f nmide-docker/Dockerfile.full . -t nmide-full:latest # Full
-  docker build -f nmide-docker/Dockerfile.thesis . -t nmide-thesis:latest # Thesis
+  docker build -f nmide-docker/tauri.Dockerfile . -t nmide-tauri:latest # Tauri
+  docker build -f nmide-docker/full.Dockerfile . -t nmide-full:latest # Full
+  docker build -f nmide-docker/thesis.Dockerfile . -t nmide-thesis:latest # Thesis
 
 docker-tag: # Tags Docker Images for release
   docker tag nmide-tauri:latest {{docker_user}}/nmide-tauri:latest
