@@ -4,7 +4,7 @@ stages:
   - build
 
 default:
-  image: neelzee/tauri_img
+  image: neelzee/nmide-tauri:latest
 
 variables:
   CORE_OUT_DIR: "nmide-core/src-tauri/target/release/*"
@@ -28,9 +28,10 @@ pts:
     - "js_test"
     - "rust_test"
   script:
-    - ./pushToSvn.sh
+    - echo "TODO"
 
 pdf-build:
+  image: neelzee/nmide-thesis:latest
   stage: build
   dependencies:
     - pts
@@ -38,7 +39,7 @@ pdf-build:
   only:
     - main
   script:
-    - just pdf
+    - pdflatex --output-directory=nmide-thesis nmide-thesis/main.tex
   artifacts:
     when: on_success
     access: all
