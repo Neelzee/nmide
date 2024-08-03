@@ -52,15 +52,25 @@ pdf:
 test:
   cd {{nmcdir}} && cargo test
 
-docker-build:
-  #docker build -f nmide-docker/Dockerfile.tauri . -t nmide-tauri:latest # Tauri
-  #docker build -f nmide-docker/Dockerfile.full . -t nmide-full:latest # Full
+docker-build: # Builds Docker Images
+  docker build -f nmide-docker/Dockerfile.tauri . -t nmide-tauri:latest # Tauri
+  docker build -f nmide-docker/Dockerfile.full . -t nmide-full:latest # Full
   docker build -f nmide-docker/Dockerfile.thesis . -t nmide-thesis:latest # Thesis
 
-docker-tag:
+docker-tag: # Tags Docker Images for release
   docker tag nmide-tauri:latest {{docker_user}}/nmide-tauri:latest
   docker tag nmide-full:latest {{docker_user}}/nmide-full:latest
   docker tag nmide-thesis:latest {{docker_user}}/nmide-thesis:latest
+
+docker-push: # Publishes Docker Images
+  docker push {{docker_user}}/nmide-tauri:latest
+  docker push {{docker_user}}/nmide-full:latest
+  docker push {{docker_user}}/nmide-thesis:latest
+
+docker-full:
+  just docker-build
+  just docker-tag
+  just docker-push
 
 svn:
   just clean
