@@ -7,7 +7,7 @@ default:
   image: neelzee/nmide-tauri:latest
 
 variables:
-  CORE_OUT_DIR: "nmide-core/src-tauri/target/release/*"
+  CORE_OUT_DIR: "nmide-core/src-tauri/target/release/nmide"
 
 rust_test:
   stage: test
