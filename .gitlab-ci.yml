@@ -36,6 +36,9 @@ pdf-build:
   dependencies:
     - pts
   when: manual
+  rules:
+    - changes:
+      - nmide-thesis/main.tex
   only:
     - main
   script:
