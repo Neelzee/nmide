@@ -35,6 +35,7 @@ build-plugins:
   cp nmide-plugin/nmide-framework/target/release/libnmide_framework.so {{nmcdir}}plugin-libs/
 
 build-release:
+  just init
   just make
   cd nmide-core && npm i && npm run tauri build
 
