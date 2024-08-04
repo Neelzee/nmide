@@ -3,7 +3,7 @@ extern crate cmake;
 use cmake::Config;
 
 fn main() {
-    #[cfg(feature = "test_lib")]
+    #[cfg(feature = "test-lib")]
     build_with_lib();
 }
 

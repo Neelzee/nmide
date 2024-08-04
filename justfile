@@ -27,10 +27,8 @@ clean:
 
 build:
   just make
-  cd nmide-wrapper/nmide-rust-ffi && bindgen nmidelib.h -o src/bindings.rs
-  -cd nmide-wrapper/nmide-rust-ffi && cargo test && cargo build --release
-  cp nmide-wrapper/nmide-rust-ffi/bindings/*.ts nmide-core/src/bindings/
-  cd nmide-core/ && npm run tauri build
+  -cd nmide-wrapper/nmide-rust-ffi &&  cargo build --release
+  -cp nmide-wrapper/nmide-rust-ffi/bindings/*.ts nmide-core/src/bindings/
 
 build-plugins:
   cd nmide-plugin/nmide-framework && cargo build --release
