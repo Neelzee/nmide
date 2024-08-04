@@ -2,10 +2,15 @@
 
 #define HTML_LIB
 
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 /**
- * Enumeration of HTML-Elements
+ * Enumeration of HTML-Tags
  **/
-typedef enum CElement {
+typedef enum CHtmlTag {
   Div,
   P,
   Span,
@@ -18,90 +23,79 @@ typedef enum CElement {
   Nav,
   A,
   None,
-} CElement;
+} CHtmlTag;
 
+/**
+ * Raw text, used if you want a raw string in another node.
+ */
 typedef struct CHtmlText {
+  /**
+   * Text field
+   */
   char *text;
-  int len;
+  /**
+   * Amount of characters.
+   * TODO: Ensure this is safe with UTF-8
+   */
+  size_t len;
 } CHtmlText;
 
-typedef union CHtmlUnion {
-  CElement kind;
-  CHtmlText text;
-} CHtmlUnion;
+/**
+ * Standard Html Element Representation.
+ *
+ * Represents any Html-tag, along with their subsequent children.
+ */
+typedef struct CHtmlElement {
+  /**
+   * Kind of Html element
+   */
+  enum CHtmlTag tag;
+  /**
+   * Array of children
+   */
+  struct CHtml **children;
+  /**
+   * Amount of children
+   */
+  size_t len;
+} CHtmlElement;
+
+/**
+ * Union of a Html Element, and Raw text.
+ */
+typedef union CHtmlContent {
+  CHtmlElement *element;
+  CHtmlText *text;
+} CHtmlContent;
 
 typedef struct CHtml {
-  CHtmlUnion node;
-  int isNode;
-  struct CHtml *kids;
-  int kid_count;
+  CHtmlContent *content;
+  bool isElement;
 } CHtml;
 
 /**
- * Empty div
+ * Creates empty CHtmlElement Div
  */
-CHtml div();
+CHtmlElement *e_div();
 
 /**
- * Empty p
+ * Creates empty CHtmlText text
  */
-CHtml p();
+CHtmlText *e_text();
 
-/**
- * Empty span
- */
-CHtml span();
-
-/**
- * Empty section
- */
-CHtml section();
-
-/**
- * Empty input
- */
-CHtml input();
-
-/**
- * Empty button
- */
-CHtml button();
-
-/**
- * Empty script
- */
-CHtml script();
-
-/**
- * Empty select
- */
-CHtml select();
-
-/**
- * Empty aside
- */
-CHtml aside();
-
-/**
- * Empty nav
- */
-CHtml nav();
-
-/**
- * Empty a
- */
-CHtml a();
-
-/**
- * Empty text
- */
-CHtml text();
+CHtmlContent *unionize(CHtmlElement *element, CHtmlText *text);
 
 /**
  * <div>
  *  <p>Hello, World!</p>
  * </div>
  */
-CHtml simple_test();
+CHtml *simple_test();
+
+/**
+ * Recursively frees the given html node
+ * TODO: Find out if this works.
+ */
+void free_chtml(CHtml *chtml);
 
 #endif // !HTML_LIB

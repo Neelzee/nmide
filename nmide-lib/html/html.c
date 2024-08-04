@@ -1,163 +1,87 @@
 #include "html.h"
 
-CHtml div() {
-  CHtmlUnion u;
-  u.kind = Div;
+CHtmlElement *element(CHtmlTag tag) {
+  CHtmlElement *e = (CHtmlElement *)malloc(sizeof(CHtmlElement));
+  e->len = 0;
+  e->tag = tag;
 
-  CHtml html;
-  html.kid_count = 0;
-  html.node = u;
-  html.isNode = 1;
-
-  return html;
+  return e;
 }
 
-CHtml p() {
-  CHtmlUnion u;
-  u.kind = P;
+CHtmlElement *e_div() { return element(Div); }
 
-  CHtml html;
-  html.kid_count = 0;
-  html.node = u;
-  html.isNode = 1;
-
-  return html;
+CHtmlText *e_text() {
+  CHtmlText *e = (CHtmlText *)malloc(sizeof(CHtmlText));
+  e->text = "";
+  e->len = 1;
+  return e;
 }
 
-CHtml span() {
-  CHtmlUnion u;
-  u.kind = Span;
+CHtmlContent *unionize(CHtmlElement *element, CHtmlText *text) {
+  CHtmlContent *e = (CHtmlContent *)malloc(sizeof(CHtmlContent));
 
-  CHtml html;
-  html.kid_count = 0;
-  html.node = u;
-  html.isNode = 1;
+  if (element == NULL && text == NULL) {
+    fprintf(stderr, "Error: Both element and text is null");
+    exit(1);
+  }
 
-  return html;
+  if (element != NULL && text != NULL) {
+    fprintf(stderr, "Error: Both element and text are defined");
+    exit(1);
+  }
+
+  if (element != NULL) {
+    e->element = element;
+  }
+
+  if (text != NULL) {
+    e->text = text;
+  }
+
+  return e;
 }
 
-CHtml section() {
-  CHtmlUnion u;
-  u.kind = Section;
+CHtml *simple_test() {
+  CHtmlElement *p_e_div = e_div();
+  CHtmlText *p_e_text = e_text();
 
-  CHtml html;
-  html.kid_count = 0;
-  html.node = u;
-  html.isNode = 1;
+  p_e_text->text = "Hello, world!";
+  p_e_text->len = sizeof(p_e_text->text);
 
-  return html;
+  CHtmlContent *c_text = unionize(NULL, p_e_text);
+
+  CHtml *html_text = (CHtml *)malloc(sizeof(CHtml));
+
+  html_text->isElement = false;
+
+  html_text->content = c_text;
+
+  p_e_div->children = &html_text;
+  p_e_div->len++;
+
+  CHtmlContent *c_div = unionize(p_e_div, NULL);
+
+  CHtml *html_div = (CHtml *)malloc(sizeof(CHtml));
+
+  html_div->isElement = true;
+  html_div->content = c_div;
+
+  return html_div;
 }
 
-CHtml input() {
-  CHtmlUnion u;
-  u.kind = Input;
+void free_chtml(CHtml *chtml) {
+  if (chtml != NULL) {
 
-  CHtml html;
-  html.kid_count = 0;
-  html.node = u;
-  html.isNode = 1;
+    if (chtml->isElement) {
+      CHtmlElement *element = chtml->content->element;
 
-  return html;
-}
-
-CHtml button() {
-  CHtmlUnion u;
-  u.kind = Button;
-
-  CHtml html;
-  html.kid_count = 0;
-  html.node = u;
-  html.isNode = 1;
-
-  return html;
-}
-
-CHtml script() {
-  CHtmlUnion u;
-  u.kind = Script;
-
-  CHtml html;
-  html.kid_count = 0;
-  html.node = u;
-  html.isNode = 1;
-
-  return html;
-}
-
-CHtml select() {
-  CHtmlUnion u;
-  u.kind = Select;
-
-  CHtml html;
-  html.kid_count = 0;
-  html.node = u;
-  html.isNode = 1;
-
-  return html;
-}
-
-CHtml aside() {
-  CHtmlUnion u;
-  u.kind = Aside;
-
-  CHtml html;
-  html.kid_count = 0;
-  html.node = u;
-  html.isNode = 1;
-
-  return html;
-}
-
-CHtml nav() {
-  CHtmlUnion u;
-  u.kind = Nav;
-
-  CHtml html;
-  html.kid_count = 0;
-  html.node = u;
-  html.isNode = 1;
-
-  return html;
-}
-
-CHtml a() {
-  CHtmlUnion u;
-  u.kind = Div;
-
-  CHtml html;
-  html.kid_count = 0;
-  html.node = u;
-  html.isNode = 1;
-
-  return html;
-}
-
-CHtml text() {
-  CHtmlUnion u;
-  CHtmlText text;
-  text.len = 0;
-  u.text = text;
-
-  CHtml html;
-  html.kid_count = 0;
-  html.node = u;
-  html.isNode = 0;
-
-  return html;
-}
-
-CHtml simple_test() {
-  CHtml _text = text();
-  _text.node.text.text = "Hello, World!";
-  _text.node.text.len = sizeof(_text.node.text.text);
-
-  CHtml _p = p();
-  _p.kid_count = 1;
-  _p.kids = &_text;
-
-  CHtml _div = div();
-  _div.kid_count = 1;
-  _div.kids = &_p;
-
-  return _div;
+      while (element->len > 0) {
+        CHtml *child = element->children[0];
+        free_chtml(child);
+        element->len--;
+      }
+    }
+    free(chtml->content);
+    free(chtml);
+  }
 }

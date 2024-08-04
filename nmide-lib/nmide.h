@@ -1,8 +1,8 @@
-#ifndef NMIDELIB
+#ifndef NMIDE
 
 #include "html/css.h"
 #include "html/html.h"
 
-#define NMIDELIB
+#define NMIDE
 
-#endif // !NMIDELIB
+#endif // !NMIDE

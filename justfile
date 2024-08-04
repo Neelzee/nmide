@@ -27,10 +27,8 @@ clean:
 
 build:
   just make
-  cd nmide-wrapper/nmide-rust-ffi && bindgen nmidelib.h -o src/bindings.rs
-  -cd nmide-wrapper/nmide-rust-ffi && cargo test && cargo build --release
-  cp nmide-wrapper/nmide-rust-ffi/bindings/*.ts nmide-core/src/bindings/
-  cd nmide-core/ && npm run tauri build
+  -cd nmide-wrapper/nmide-rust-ffi &&  cargo build --release
+  -cp nmide-wrapper/nmide-rust-ffi/bindings/*.ts nmide-core/src/bindings/
 
 build-plugins:
   cd nmide-plugin/nmide-framework && cargo build --release
@@ -41,31 +39,41 @@ build-release:
   cd nmide-core && npm i && npm run tauri build
 
 make:
-  -just init
-  cd {{nmlibc}} && cmake --build .
+  cd {{nmlibc}}build && make
   cp {{nmlibc}}*.h nmide-wrapper/nmide-rust-ffi/
-  cp {{nmlibc}}*.a  nmide-wrapper/nmide-rust-ffi/
+  cp {{nmlibc}}build/*.a  nmide-wrapper/nmide-rust-ffi/
 
 pdf:
   pdflatex --output-directory={{thesis}} {{thesis}}/main.tex
 
-test:
+test-all:
   cd {{nmcdir}} && cargo test
+  ./{{nmlibc}}/nmide_test
 
-docker-build: # Builds Docker Images
-  docker build -f nmide-docker/Dockerfile.tauri . -t nmide-tauri:latest # Tauri
-  docker build -f nmide-docker/Dockerfile.full . -t nmide-full:latest # Full
-  docker build -f nmide-docker/Dockerfile.thesis . -t nmide-thesis:latest # Thesis
+# Builds Docker Images
+docker-build:
+  docker build -f nmide-docker/tauri.Dockerfile . -t nmide-tauri:latest # Tauri
+  docker build -f nmide-docker/full.Dockerfile . -t nmide-full:latest # Full
+  docker build -f nmide-docker/thesis.Dockerfile . -t nmide-thesis:latest # Thesis
+  docker build -f nmide-docker/rust.Dockerfile . -t nmide-rust:latest # Rust Testing
+  docker build -f nmide-docker/node.Dockerfile . -t nmide-node:latest # Node Testing
+  
 
-docker-tag: # Tags Docker Images for release
+# Tags Docker Images for release
+docker-tag:
   docker tag nmide-tauri:latest {{docker_user}}/nmide-tauri:latest
   docker tag nmide-full:latest {{docker_user}}/nmide-full:latest
   docker tag nmide-thesis:latest {{docker_user}}/nmide-thesis:latest
+  docker tag nmide-rust:latest {{docker_user}}/nmide-rust:latest
+  docker tag nmide-node:latest {{docker_user}}/nmide-node:latest
 
-docker-push: # Publishes Docker Images
+# Publishes Docker Images
+docker-push:
   docker push {{docker_user}}/nmide-tauri:latest
   docker push {{docker_user}}/nmide-full:latest
   docker push {{docker_user}}/nmide-thesis:latest
+  docker push {{docker_user}}/nmide-rust:latest
+  docker push {{docker_user}}/nmide-node:latest
 
 docker-full:
   just docker-build
@@ -78,8 +86,10 @@ svn:
   svn commit -m "Push changes to SVN Repo" --username ${SVN_USERNAME} --password ${SVN_PASSWORD} --non-interactive
 
 init:
-  -mkdir {{nmlibc}}CMakeFiles
-  cd {{nmlibc}} && cmake .
+  -cd {{nmlibc}} && git clone https://github.com/nemequ/munit.git
+  -mkdir {{nmlibc}}build
+  -cd {{nmlibc}}build && export CC=gcc && cmake ..
 
 make-clean:
-  rm -rf {{nmlibc}}CMakeFiles {{nmlibc}}CMakeCache.txt
+  rm -rf {{nmlibc}}build
+  rm -rf {{nmlibc}}munit
