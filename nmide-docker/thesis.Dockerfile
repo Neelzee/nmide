@@ -4,11 +4,7 @@ FROM debian:bookworm
 RUN apt-get update
 
 # PDF
-RUN apt-get install -y texlive
-RUN apt-get install -y texinfo
-RUN apt-get install -y texlive-fonts-recommended
-RUN apt-get install -y texlive-fonts-extra
-RUN apt-get install -y texlive-latex-extra
+RUN apt-get install -y texlive texinfo texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra
 
 RUN rm -rf /var/lib/apt/lists/*
 

@@ -52,21 +52,28 @@ test-all:
 
 # Builds Docker Images
 docker-build:
-  #docker build -f nmide-docker/tauri.Dockerfile . -t nmide-tauri:latest # Tauri
-  #docker build -f nmide-docker/full.Dockerfile . -t nmide-full:latest # Full
-  #docker build -f nmide-docker/thesis.Dockerfile . -t nmide-thesis:latest # Thesis
+  docker build -f nmide-docker/tauri.Dockerfile . -t nmide-tauri:latest # Tauri
+  docker build -f nmide-docker/full.Dockerfile . -t nmide-full:latest # Full
+  docker build -f nmide-docker/thesis.Dockerfile . -t nmide-thesis:latest # Thesis
+  docker build -f nmide-docker/rust.Dockerfile . -t nmide-rust:latest # Rust Testing
+  docker build -f nmide-docker/node.Dockerfile . -t nmide-node:latest # Node Testing
+  
 
 # Tags Docker Images for release
 docker-tag:
   docker tag nmide-tauri:latest {{docker_user}}/nmide-tauri:latest
   docker tag nmide-full:latest {{docker_user}}/nmide-full:latest
   docker tag nmide-thesis:latest {{docker_user}}/nmide-thesis:latest
+  docker tag nmide-rust:latest {{docker_user}}/nmide-rust:latest
+  docker tag nmide-node:latest {{docker_user}}/nmide-node:latest
 
 # Publishes Docker Images
 docker-push:
   docker push {{docker_user}}/nmide-tauri:latest
   docker push {{docker_user}}/nmide-full:latest
   docker push {{docker_user}}/nmide-thesis:latest
+  docker push {{docker_user}}/nmide-rust:latest
+  docker push {{docker_user}}/nmide-node:latest
 
 docker-full:
   just docker-build

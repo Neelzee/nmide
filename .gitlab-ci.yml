@@ -10,13 +10,17 @@ variables:
   CORE_OUT_DIR: "nmide-core/src-tauri/target/release/*"
 
 rust_test:
+  image: neelzee/nmide-rust:latest
   stage: test
   script:
+    - echo "cargo --version"
     - echo "TODO"
 
 js_test:
+  image: neelzee/nmide-node:latest
   stage: test
   script:
+    - echo "npm --version"
     - echo "TODO"
 
 pts:
@@ -39,6 +43,7 @@ pdf-build:
   only:
     - main
   script:
+    - pdflatex --version
     - pdflatex --output-directory=nmide-thesis nmide-thesis/main.tex
   artifacts:
     when: on_success
@@ -59,7 +64,7 @@ windows-build:
     when: on_success
     access: all
     paths:
-      - $OUT_DIR
+      - $CORE_OUT_DIR
 
 debian-build:
   stage: build
@@ -74,7 +79,7 @@ debian-build:
     when: on_success
     access: all
     paths:
-      - $OUT_DIR
+      - $CORE_OUT_DIR
 
 mac-build:
   stage: build
@@ -89,4 +94,4 @@ mac-build:
     when: on_success
     access: all
     paths:
-      - $OUT_DIR
+      - $CORE_OUT_DIR
