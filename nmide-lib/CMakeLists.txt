@@ -1,17 +1,22 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.15)
 
-project(LibNmide VERSION 0.1)
+project(LibNmide C)
 
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_STANDARD_REQUIRED True)
 
-include_directories(html)
+# Include directories
+include_directories(html munit test)
 
+# Create the static library
 add_library(nmide STATIC
   nmide.c
   html/html.c
   html/css.c
+  munit
 )
 
+# Define the test executable and link it with the library
+add_executable(nmide_test  test/test_nmide.c)
+
+# Install the library
 install(TARGETS nmide DESTINATION .)
 

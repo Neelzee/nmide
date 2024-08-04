@@ -42,15 +42,16 @@ build-release:
 
 make:
   -just init
-  cd {{nmlibc}} && cmake --build .
+  cd {{nmlibc}}buiold && make
   cp {{nmlibc}}*.h nmide-wrapper/nmide-rust-ffi/
-  cp {{nmlibc}}*.a  nmide-wrapper/nmide-rust-ffi/
+  cp {{nmlibc}}build/*.a  nmide-wrapper/nmide-rust-ffi/
 
 pdf:
   pdflatex --output-directory={{thesis}} {{thesis}}/main.tex
 
-test:
+test-all:
   cd {{nmcdir}} && cargo test
+  ./{{nmlibc}}/nmide_test
 
 # Builds Docker Images
 docker-build:
@@ -81,8 +82,10 @@ svn:
   svn commit -m "Push changes to SVN Repo" --username ${SVN_USERNAME} --password ${SVN_PASSWORD} --non-interactive
 
 init:
-  -mkdir {{nmlibc}}CMakeFiles
-  cd {{nmlibc}} && cmake .
+  -cd {{nmlibc}} && git clone https://github.com/nemequ/munit.git
+  -mkdir {{nmlibc}}build
+  -cd {{nmlibc}}build && export CC=gcc && cmake ..
 
 make-clean:
-  rm -rf {{nmlibc}}CMakeFiles {{nmlibc}}CMakeCache.txt
+  rm -rf {{nmlibc}}build
+  rm -rf {{nmlibc}}munit
