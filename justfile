@@ -41,8 +41,7 @@ build-release:
   cd nmide-core && npm i && npm run tauri build
 
 make:
-  -just init
-  cd {{nmlibc}}buiold && make
+  cd {{nmlibc}}build && make
   cp {{nmlibc}}*.h nmide-wrapper/nmide-rust-ffi/
   cp {{nmlibc}}build/*.a  nmide-wrapper/nmide-rust-ffi/
 
