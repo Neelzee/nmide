@@ -30,7 +30,8 @@ c-test:
     - gcc --version
     - cmake --version
     - make --version
-    - cd nmide-lib/build && make && ./nmide-test
+    - mkdir nmide-lib/build
+    - cd nmide-lib/build && export CC=gcc && cmake .. && make && ./nmide-test
 
 c-check:
   image: neelzee/nmide-c:latest
