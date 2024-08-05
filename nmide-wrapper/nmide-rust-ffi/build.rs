@@ -1,8 +1,14 @@
 extern crate cmake;
 
 use cmake::Config;
+use std::process::Command;
 
 fn main() {
+    let mut binding = Command::new("bindgen");
+    let res = binding.arg("nmide.h").arg("-o").arg("src/bindings.rs");
+
+    println!("{:?}", &res);
+
     #[cfg(feature = "test-lib")]
     build_with_lib();
 }

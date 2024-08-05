@@ -42,6 +42,7 @@ build-release:
 make:
   cd {{nmlibc}}build && make
   cp {{nmlibc}}*.h nmide-wrapper/nmide-rust-ffi/
+  cp {{nmlibc}}html/*.h nmide-wrapper/nmide-rust-ffi/html
   cp {{nmlibc}}build/*.a  nmide-wrapper/nmide-rust-ffi/
 
 pdf:
