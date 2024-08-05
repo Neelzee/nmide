@@ -102,4 +102,4 @@ check:
   cd {{nmlibc}} && cppcheck --enable=all --force --quiet -imunit -ibuild .
 
 c-test:
-  cd {{nmlibc}}build && make && ./nmide_test
+  cd {{nmlibc}}debug && make && ./nmide_test
