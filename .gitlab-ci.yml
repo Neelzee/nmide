@@ -9,19 +9,45 @@ default:
 variables:
   CORE_OUT_DIR: "nmide-core/src-tauri/target/release/*"
 
-rust_test:
+rust-test:
   image: neelzee/nmide-rust:latest
   stage: test
   script:
-    - echo "cargo --version"
+    - cargo --version
     - echo "TODO"
 
-js_test:
+js-test:
   image: neelzee/nmide-node:latest
   stage: test
   script:
-    - echo "npm --version"
+    - npm --version
     - echo "TODO"
+
+c-test:
+  image: neelzee/nmide-c:latest
+  stage: test
+  script:
+    - gcc --version
+    - cmake --version
+    - make --version
+    - cd nmide-lib/build && make && ./nmide-test
+
+c-check:
+  image: neelzee/nmide-c:latest
+  stage: test
+  dependencies:
+    - c-test
+  script:
+    - gcc --version
+    - cppcheck --version
+    - touch nmide-lib/report
+    - cd nmide-lib && cppcheck --enable=all --force --quiet --output-file=report -imunit -ibuild .
+    - mv nmide-lib/report nmide-lib/report-"$(date -I)".log
+  artifacts:
+    when: on_success
+    access: all
+    paths:
+      - nmide-lib/report-*.log
 
 pts:
   stage: svn
@@ -29,8 +55,9 @@ pts:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
       when: always
   dependencies:
-    - "js_test"
-    - "rust_test"
+    - js-test
+    - rust-test
+    - c-check
   script:
     - echo "TODO"
 
