@@ -10,7 +10,14 @@ project(
 
 
 # Include directories
-include_directories(html munit test)
+include_directories(
+  html
+  model
+  munit
+  test
+  map
+  map/test
+)
 
 # Create the static library
 add_library(nmide STATIC
@@ -18,11 +25,21 @@ add_library(nmide STATIC
   html/html.c
   html/css.c
   munit/munit.c
+  model/cmodel.c
+  map/cmap.c
 )
 
 # Define the test executable and link it with the library
 add_executable(
-  nmide_test  test/test_nmide.c  html/html.c  html/css.c  munit/munit.c
+  nmide_test
+  test/test_nmide.c
+  test/test_util.c
+  html/html.c
+  html/css.c
+  munit/munit.c
+  model/cmodel.c
+  map/cmap.c
+  map/test/test_cmap.c
 )
 
 # Install the library

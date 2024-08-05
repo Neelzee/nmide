@@ -8,3 +8,6 @@ Makefile
 cmake_install.cmake
 munit/*
 munit
+report
+report-*.log
+debug
