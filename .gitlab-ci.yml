@@ -38,7 +38,7 @@ c-test:
     - cmake ..
     - make
     - ls
-    - ./nmide-test
+    - ./nmide_test
 
 c-check:
   image: neelzee/nmide-c:latest
