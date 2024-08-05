@@ -31,7 +31,7 @@ c-test:
     - cmake --version
     - make --version
     - mkdir nmide-lib/build
-    - git clone https://github.com/nemequ/munit.git nmide-lib/
+    - git clone https://github.com/nemequ/munit.git nmide-lib/munit
     - cd nmide-lib/build
     - pwd
     - export CC=gcc && cmake .. && make && ./nmide-test
