@@ -31,7 +31,10 @@ c-test:
     - cmake --version
     - make --version
     - mkdir nmide-lib/build
-    - cd nmide-lib/build && export CC=gcc && cmake .. && make && ./nmide-test
+    - git clone https://github.com/nemequ/munit.git nmide-lib/
+    - cd nmide-lib/build
+    - pwd
+    - export CC=gcc && cmake .. && make && ./nmide-test
 
 c-check:
   image: neelzee/nmide-c:latest
@@ -42,8 +45,10 @@ c-check:
     - gcc --version
     - cppcheck --version
     - touch nmide-lib/report
-    - cd nmide-lib && cppcheck --enable=all --force --quiet --output-file=report -imunit -ibuild .
-    - mv nmide-lib/report nmide-lib/report-"$(date -I)".log
+    - cd nmide-lib
+    - pwd
+    - cppcheck --enable=all --force --quiet --output-file=report -imunit -ibuild .
+    - mv report report-"$(date -I)".log
   artifacts:
     when: on_success
     access: all
