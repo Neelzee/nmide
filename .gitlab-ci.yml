@@ -34,7 +34,11 @@ c-test:
     - git clone https://github.com/nemequ/munit.git nmide-lib/munit
     - cd nmide-lib/build
     - pwd
-    - export CC=gcc && cmake .. && make && ./nmide-test
+    - export CC=gcc
+    - cmake ..
+    - make
+    - ls
+    - ./nmide-test
 
 c-check:
   image: neelzee/nmide-c:latest
