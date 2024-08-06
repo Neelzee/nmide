@@ -54,10 +54,9 @@ if(CMAKE_BUILD_TYPE STREQUAL Release)
   nmide.c
   html/html.c
   html/css.c
-  munit/munit.c
   model/cmodel.c
   map/cmap.c
-)
+  )
 
   install(TARGETS nmide DESTINATION .)
 endif()
