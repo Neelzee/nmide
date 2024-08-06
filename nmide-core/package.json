@@ -1,5 +1,5 @@
 {
-  "name": "nmide",
+  "name": "nmide-core",
   "private": true,
   "version": "0.1.0-alpha",
   "type": "module",
@@ -7,19 +7,25 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "test": "vitest"
   },
   "dependencies": {
+    "@tauri-apps/api": "^1",
+    "jsdom": "^24.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@tauri-apps/api": "^1"
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^1",
+    "@testing-library/react": "^16.0.0",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
+    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^4.2.1",
     "typescript": "^5.2.2",
     "vite": "^5.3.1",
-    "@tauri-apps/cli": "^1"
+    "vitest": "^2.0.5"
   }
 }
