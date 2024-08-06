@@ -8,24 +8,20 @@ project(
     0.1.0
 )
 
-set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD 11)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-# Include directories
-include_directories(
-  html
-  model
-  munit
-  test
-  map
-  map/test
-)
-
 # Testing add_executables
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
+  include_directories(
+  html
+  model
+  map
+  )
+
   add_executable(
     nmide_test
     test/test_nmide.c
@@ -45,6 +41,15 @@ endif()
 
 # Create the static library
 if(CMAKE_BUILD_TYPE STREQUAL Release)
+  include_directories(
+  html
+  model
+  munit
+  test
+  map
+  map/test
+  )
+
   add_library(nmide STATIC
   nmide.c
   html/html.c
