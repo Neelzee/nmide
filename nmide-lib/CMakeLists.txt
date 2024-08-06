@@ -10,6 +10,10 @@ project(
 
 set(CMAKE_C_STANDARD 23)
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 # Include directories
 include_directories(
   html
@@ -20,8 +24,28 @@ include_directories(
   map/test
 )
 
+# Testing add_executables
+if(CMAKE_BUILD_TYPE STREQUAL Debug)
+  add_executable(
+    nmide_test
+    test/test_nmide.c
+    test/test_util.c
+    html/html.c
+    html/css.c
+  )
+
+  add_executable(
+    test_cmap
+    map/test/test_cmap.c
+    munit/munit.c
+    model/cmodel.c
+    map/cmap.c
+  )
+endif()
+
 # Create the static library
-add_library(nmide STATIC
+if(CMAKE_BUILD_TYPE STREQUAL Release)
+  add_library(nmide STATIC
   nmide.c
   html/html.c
   html/css.c
@@ -30,23 +54,6 @@ add_library(nmide STATIC
   map/cmap.c
 )
 
-# Define the test executable and link it with the library
-add_executable(
-  nmide_test
-  test/test_nmide.c
-  test/test_util.c
-  html/html.c
-  html/css.c
-)
-
-add_executable(
-  test_cmap
-  map/test/test_cmap.c
-  munit/munit.c
-  model/cmodel.c
-  map/cmap.c
-)
-
-# Install the library
-install(TARGETS nmide DESTINATION .)
+  install(TARGETS nmide DESTINATION .)
+endif()
 
