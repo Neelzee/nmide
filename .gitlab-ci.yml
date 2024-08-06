@@ -56,21 +56,20 @@ c-test:
 c-check:
   image: neelzee/nmide-c:latest
   stage: test
-  dependencies:
-    - c-test
   script:
     - gcc --version
     - cppcheck --version
     - touch nmide-lib/report
     - cd nmide-lib
     - pwd
-    - cppcheck --enable=all --force --quiet --output-file=report -imunit -ibuild .
-    - mv report report-"$(date -I)".log
+    - cppcheck --enable=all --errorlist --force --quiet --output-file=report.xml -imunit -ibuild -irelease -idebug .
+    - mv report.xml report-"$(date -I)".xml
+    - cppcheck --enable=all --error-exitcode=1 --force --quiet -imunit -ibuild -irelease -idebug .
   artifacts:
     when: on_success
     access: all
     paths:
-      - nmide-lib/report-*.log
+      - nmide-lib/report-*.xml
 
 pts:
   stage: svn
