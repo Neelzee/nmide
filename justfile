@@ -104,3 +104,9 @@ check:
 
 c-test:
   cd {{nmlibc}}debug && make && ./nmide_test
+
+make-release:
+  mkdir -p {{nmlibc}}release
+  @cd {{nmlibc}}release && pwd
+  cd {{nmlibc}}release && cmake -DCMAKE_BUILD_TYPE=Release ..
+  cd {{nmlibc}}release && make

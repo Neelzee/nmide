@@ -11,3 +11,4 @@ munit
 report
 report-*.log
 debug
+release

@@ -35,9 +35,10 @@ c-test:
     - cd nmide-lib/build
     - pwd
     - export CC=gcc
-    - cmake ..
+    - cmake -DCMAKE_BUILD_TYPE=Debug ..
     - make
     - ls
+    - ./test_cmap
     - ./nmide_test
 
 c-check:
@@ -87,6 +88,28 @@ pdf-build:
     access: all
     paths:
       - nmide-thesis/*.pdf
+
+nmide-lib-build:
+  stage: build
+  dependencies:
+    - pts
+  when: manual
+  script:
+    - gcc --version
+    - cmake --version
+    - make --version
+    - mkdir nmide-lib/release
+    - cd nmide-lib/release
+    - pwd
+    - export CC=gcc
+    - cmake -DCMAKE_BUILD_TYPE=Release ..
+    - make
+    - ls
+  artifacts:
+    when: on_success
+    access: all
+    paths:
+      - nmide-lib/release/libnmide.*
 
 windows-build:
   stage: build
