@@ -9,19 +9,30 @@ default:
 variables:
   CORE_OUT_DIR: "nmide-core/src-tauri/target/release/*"
 
-rust-test:
+rust-test-core:
   image: neelzee/nmide-rust:latest
   stage: test
   script:
+    - cd nmide-core
+    - pwd
     - cargo --version
-    - echo "TODO"
+
+rust-test-ffi:
+  image: neelzee/nmide-rust:latest
+  stage: test
+  script:
+    - cd nmide-wrapper/nmide-rust-ffi
+    - pwd
+    - cargo --version
 
 js-test:
   image: neelzee/nmide-node:latest
   stage: test
   script:
+    - cd nmide-core
+    - pwd
     - npm --version
-    - echo "TODO"
+    - npm run test
 
 c-test:
   image: neelzee/nmide-c:latest
@@ -30,9 +41,9 @@ c-test:
     - gcc --version
     - cmake --version
     - make --version
-    - mkdir nmide-lib/build
+    - mkdir nmide-lib/debug
     - git clone https://github.com/nemequ/munit.git nmide-lib/munit
-    - cd nmide-lib/build
+    - cd nmide-lib/debug
     - pwd
     - export CC=gcc
     - cmake -DCMAKE_BUILD_TYPE=Debug ..
