@@ -5,7 +5,6 @@
 #include "../../munit/munit.h"
 #include "../../test/test_util.h"
 #include "../cmap.h"
-
-void test_cmap();
+#include <stdlib.h>
 
 #endif // !TEST_CMAP

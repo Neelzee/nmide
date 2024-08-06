@@ -1,9 +1,8 @@
 #include "test_cmap.h"
 
-void test_adding_keys() {
+MunitResult test_adding_keys(const MunitParameter _[], void *__) {
   CMap *map = create_cmap();
 
-  printf("\nEmpty map should have 0 values: %zu\n", map->val_len);
   munit_assert_size(map->val_len, ==, 0);
 
   CKey *key = new_ckey();
@@ -14,19 +13,19 @@ void test_adding_keys() {
 
   cmap_insert(map, val, key);
 
-  printf("\nAfter insert, map should have 1 value: %zu\n", map->val_len);
   munit_assert_size(map->val_len, ==, 1);
 
   free_map(map);
+
+  return MUNIT_OK;
 }
 
-void test_lookup() {
+MunitResult test_lookup(const MunitParameter _[], void *__) {
   CMap *map = create_cmap();
 
   CKey *key = new_ckey();
 
   change_key(key, "foo");
-  printf("\nEmpty map should have 0 keys");
 
   MaybeVal *tuple = cmap_lookup(map, key);
   munit_assert_false(tuple->just);
@@ -35,16 +34,16 @@ void test_lookup() {
 
   cmap_insert(map, val, key);
 
-  printf("\nAfter insert, map should have 1 value: %zu\n", map->val_len);
   munit_assert_size(map->val_len, ==, 1);
 
   MaybeVal *tuple_2 = cmap_lookup(map, key);
 
-  printf("\nMap should have 1 key called foo: %d\n", tuple_2->just);
   munit_assert_true(tuple_2->just);
+
+  return MUNIT_OK;
 }
 
-void test_removing_keys() {
+MunitResult test_removing_keys(const MunitParameter _[], void *__) {
   // Setup
   CMap *map = create_cmap();
 
@@ -56,10 +55,7 @@ void test_removing_keys() {
 
   MaybeVal *res = cmap_remove(map, key);
 
-  printf("\nRemoval on an empty map should not change len: %zu\n",
-         map->val_len);
   munit_assert_size(map->val_len, ==, 0);
-  printf("\nThe maybe value should not be `just`: %d\n", res->just);
   munit_assert_false(res->just);
 
   // Setup
@@ -72,18 +68,46 @@ void test_removing_keys() {
 
   cmap_remove(map, key);
 
-  printf("\nAfter remove, map should have 0 value: %zu\n", map->val_len);
   munit_assert_size(map->val_len, ==, 0);
 
   free_map(map);
+
+  return MUNIT_OK;
 }
 
-void test_cmap() {
-  run_test(test_adding_keys, "test_adding_keys",
-           "tests if adding keys to the cmap increases the key count");
+MunitTest cmap_tests[] = {
+    {
+        (char *)"/test_adding_keys", /* name */
+        test_adding_keys,            /* test */
+        NULL,                        /* setup */
+        NULL,                        /* tear_down */
+        MUNIT_TEST_OPTION_NONE,      /* options */
+        NULL                         /* parameters */
+    },
+    {
+        (char *)"/test_lookup", /* name */
+        test_lookup,            /* test */
+        NULL,                   /* setup */
+        NULL,                   /* tear_down */
+        MUNIT_TEST_OPTION_NONE, /* options */
+        NULL                    /* parameters */
+    },
+    {
+        (char *)"/test_removing_keys", /* name */
+        test_removing_keys,            /* test */
+        NULL,                          /* setup */
+        NULL,                          /* tear_down */
+        MUNIT_TEST_OPTION_NONE,        /* options */
+        NULL                           /* parameters */
+    },
+    /* Mark the end of the array with an entry where the test
+     * function is NULL */
+    {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+};
 
-  run_test(test_lookup, "test_lookup", "tests if lookup works");
+const MunitSuite suite = {(char *)"/cmap_tests", cmap_tests, NULL, 1,
+                          MUNIT_SUITE_OPTION_NONE};
 
-  run_test(test_removing_keys, "test_removing_keys",
-           "tests if removing keys from the cmap changes the key count");
+int main(int argc, char *argv[]) {
+  return munit_suite_main(&suite, (void *)"munit", argc, argv);
 }

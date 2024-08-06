@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.25)
 
 project(
   LibNmide
@@ -8,6 +8,7 @@ project(
     0.1.0
 )
 
+set(CMAKE_C_STANDARD 23)
 
 # Include directories
 include_directories(
@@ -36,10 +37,14 @@ add_executable(
   test/test_util.c
   html/html.c
   html/css.c
+)
+
+add_executable(
+  test_cmap
+  map/test/test_cmap.c
   munit/munit.c
   model/cmodel.c
   map/cmap.c
-  map/test/test_cmap.c
 )
 
 # Install the library
