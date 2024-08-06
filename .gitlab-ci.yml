@@ -62,9 +62,9 @@ c-check:
     - touch nmide-lib/report
     - cd nmide-lib
     - pwd
-    - cppcheck --enable=all --errorlist --force --quiet --output-file=report.xml -imunit -ibuild -irelease -idebug .
+    - cppcheck --enable=all --errorlist --force --quiet --output-file=report -imunit -ibuild -irelease -idebug .
     - ls
-    - mv report.xml report-"$(date -I)".xml
+    - mv report report-"$(date -I)".xml
     - cppcheck --enable=all --error-exitcode=1 --force --quiet -imunit -ibuild -irelease -idebug .
   artifacts:
     when: on_success
