@@ -78,7 +78,8 @@ pts:
       when: always
   dependencies:
     - js-test
-    - rust-test
+    - rust-test-core
+    - rust-test-ffi
     - c-check
   script:
     - echo "TODO"
