@@ -2,10 +2,9 @@
 
 #define NMIDE_TEST
 
-#include "../html/html.h"
 #include "../munit/munit.h"
 #include <stdio.h>
-
-void test_simple_test();
+#include <stdlib.h>
+#include <string.h>
 
 #endif // !NMIDE_TEST

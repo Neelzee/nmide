@@ -9,19 +9,69 @@ default:
 variables:
   CORE_OUT_DIR: "nmide-core/src-tauri/target/release/nmide"
 
-rust_test:
+rust-test-core:
   image: neelzee/nmide-rust:latest
   stage: test
   script:
-    - echo "cargo --version"
-    - echo "TODO"
+    - cd nmide-core
+    - pwd
+    - cargo --version
 
-js_test:
+rust-test-ffi:
+  image: neelzee/nmide-rust:latest
+  stage: test
+  script:
+    - cd nmide-wrapper/nmide-rust-ffi
+    - pwd
+    - cargo --version
+
+js-test:
   image: neelzee/nmide-node:latest
   stage: test
   script:
-    - echo "npm --version"
-    - echo "TODO"
+    - cd nmide-core
+    - pwd
+    - npm --version
+    - npm i
+    - npm run test
+
+c-test:
+  image: neelzee/nmide-c:latest
+  stage: test
+  script:
+    - gcc --version
+    - cmake --version
+    - make --version
+    - mkdir nmide-lib/debug
+    - git clone https://github.com/nemequ/munit.git nmide-lib/munit
+    - cd nmide-lib/debug
+    - pwd
+    - export CC=gcc
+    - cmake -DCMAKE_BUILD_TYPE=Debug ..
+    - make
+    - ls
+    - ./test_cmap
+    - ./nmide_test
+
+c-check:
+  image: neelzee/nmide-c:latest
+  stage: test
+  script:
+    - gcc --version
+    - cppcheck --version
+    - touch nmide-lib/report
+    - cd nmide-lib
+    - pwd
+    - cppcheck --enable=all --errorlist --force --quiet --output-file=report -imunit -ibuild -irelease -idebug .
+    - ls
+    - mv report report-"$(date -I)".xml
+    - cppcheck --enable=all --error-exitcode=1 --force --quiet -imunit -ibuild -irelease -idebug .
+  allow_failure: true
+  artifacts:
+    access: all
+    paths:
+      - nmide-lib/report-*.xml
+    
 
 pts:
   stage: svn
@@ -29,8 +79,10 @@ pts:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
       when: always
   dependencies:
-    - "js_test"
-    - "rust_test"
+    - js-test
+    - rust-test-core
+    - rust-test-ffi
+    - c-check
   script:
     - echo "TODO"
 
@@ -52,6 +104,28 @@ pdf-build:
     access: all
     paths:
       - nmide-thesis/*.pdf
+
+nmide-lib-build:
+  stage: build
+  dependencies:
+    - pts
+  when: manual
+  script:
+    - gcc --version
+    - cmake --version
+    - make --version
+    - mkdir nmide-lib/release
+    - cd nmide-lib/release
+    - pwd
+    - export CC=gcc
+    - cmake -DCMAKE_BUILD_TYPE=Release ..
+    - make
+    - ls
+  artifacts:
+    when: on_success
+    access: all
+    paths:
+      - nmide-lib/release/libnmide.*
 
 windows-build:
   stage: build

@@ -1,14 +1,14 @@
 use core::str;
+use std::ffi::{CStr, CString};
 
 use anyhow::{Context, Result};
 use c_vec::CVec;
+use safer_ffi::c_char;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 use crate::{
-    CElement, CElement_A, CElement_Aside, CElement_Button, CElement_Div, CElement_Input,
-    CElement_Nav, CElement_None, CElement_P, CElement_Script, CElement_Section, CElement_Select,
-    CElement_Span, CHtml, CHtmlText, CHtmlUnion,
+    CHtml, CHtmlContent, CHtmlElement, CHtmlTag, CHtmlTag_A, CHtmlTag_Aside, CHtmlTag_Button, CHtmlTag_Div, CHtmlTag_Input, CHtmlTag_Nav, CHtmlTag_None, CHtmlTag_P, CHtmlTag_Script, CHtmlTag_Section, CHtmlTag_Select, CHtmlTag_Span
 };
 
 #[cfg(test)]
@@ -33,37 +33,37 @@ pub enum Element {
 }
 
 impl Element {
-    pub fn from_c(ce: CElement) -> Self {
+    pub fn from_c(ce: CHtmlTag) -> Self {
         match ce {
-            CElement_Div => Self::Div,
-            CElement_P => Self::P,
-            CElement_Span => Self::Span,
-            CElement_Section => Self::Section,
-            CElement_Input => Self::Input,
-            CElement_Button => Self::Button,
-            CElement_Script => Self::Script,
-            CElement_Select => Self::Select,
-            CElement_Aside => Self::Aside,
-            CElement_Nav => Self::Nav,
-            CElement_A => Self::A,
+            CHtmlTag_Div => Self::Div,
+            CHtmlTag_P => Self::P,
+            CHtmlTag_Span => Self::Span,
+            CHtmlTag_Section => Self::Section,
+            CHtmlTag_Input => Self::Input,
+            CHtmlTag_Button => Self::Button,
+            CHtmlTag_Script => Self::Script,
+            CHtmlTag_Select => Self::Select,
+            CHtmlTag_Aside => Self::Aside,
+            CHtmlTag_Nav => Self::Nav,
+            CHtmlTag_A => Self::A,
             _ => Self::None,
         }
     }
 
-    pub fn to_c(self) -> CElement {
+    pub fn to_c(self) -> CHtmlTag {
         match self {
-            Element::Div => CElement_Div,
-            Element::P => CElement_P,
-            Element::Span => CElement_Span,
-            Element::Section => CElement_Section,
-            Element::Input => CElement_Input,
-            Element::Button => CElement_Button,
-            Element::Script => CElement_Script,
-            Element::Select => CElement_Select,
-            Element::Aside => CElement_Aside,
-            Element::Nav => CElement_Nav,
-            Element::A => CElement_A,
-            _ => CElement_None,
+            Element::Div => CHtmlTag_Div,
+            Element::P => CHtmlTag_P,
+            Element::Span => CHtmlTag_Span,
+            Element::Section => CHtmlTag_Section,
+            Element::Input => CHtmlTag_Input,
+            Element::Button => CHtmlTag_Button,
+            Element::Script => CHtmlTag_Script,
+            Element::Select => CHtmlTag_Select,
+            Element::Aside => CHtmlTag_Aside,
+            Element::Nav => CHtmlTag_Nav,
+            Element::A => CHtmlTag_A,
+            _ => CHtmlTag_None,
         }
     }
 }
@@ -75,113 +75,42 @@ pub struct Html {
     kids: Vec<Html>,
 }
 
-impl Html {
-    pub fn new(kind: Element, kids: Vec<Self>) -> Self {
-        Self { kind, kids }
-    }
+#[derive(Debug, TS, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[ts(export)]
+pub enum RHtml {
+    Div { kids: Vec<RHtml> },
+    Text(String),
+}
 
-    pub fn from_c(ch: CHtml) -> Result<Self> {
-        if ch.isNode == 0 {
-            return Ok(Self::new(
-                Element::Text(unsafe { Self::c_str(ch.node.text)? }),
-                Vec::new(),
-            ));
-        }
+impl RHtml {
+    pub fn from_c(chtml: CHtml) -> Result<Self> {
+        if chtml.isElement {
+            let element: CHtmlElement = unsafe { *(*chtml.content).element };
 
-        let kind = unsafe { ch.node.kind };
+            let raw_kids = element.children;
 
-        let cvec: CVec<CHtml> = unsafe { CVec::new(ch.kids, ch.kid_count as usize) };
+            let mut kids = Vec::with_capacity(element.len);
 
-        let mut kids = Vec::new();
+            for i in 0..element.len {
+                let ptr = unsafe { *raw_kids.add(i) };
 
-        for sch in cvec.iter() {
-            kids.push(Self::from_c(sch.to_owned())?);
-        }
-
-        Ok(Self {
-            kind: Element::from_c(kind),
-            kids,
-        })
-    }
-
-    unsafe fn c_str(ch: CHtmlText) -> Result<String> {
-        str::from_utf8(
-            std::slice::from_raw_parts(ch.text, ch.len as usize)
-                .into_iter()
-                .map(|i| {
-                    if *i < 0 {
-                        panic!("Expected unsigned integers, found signed");
-                    } else {
-                        *i as u8
-                    }
-                })
-                .collect::<Vec<_>>()
-                .as_slice(),
-        )
-        .and_then(|s| Ok(s.to_string()))
-        .context("Invalid UTF-8 sequence")
-    }
-
-    pub fn to_c(self) -> CHtml {
-        match self.kind {
-            Element::Text(s) => CHtml {
-                node: CHtmlUnion {
-                    text: CHtmlText {
-                        text: s
-                            .as_bytes()
-                            .into_iter()
-                            .map(|i| *i as i8)
-                            .collect::<Vec<i8>>()
-                            .as_mut_ptr(),
-                        len: s.chars().count() as i32,
-                    },
-                },
-                isNode: 0,
-                kids: Vec::new().as_mut_ptr(),
-                kid_count: 0,
-            },
-            _ => {
-                let mut chkids: Vec<CHtml> = self
-                    .kids
-                    .into_iter()
-                    .map(|ch| ch.to_c())
-                    .filter(|c| c.isNode == 1)
-                    .collect();
-                let slice = &mut chkids;
-                let kids = slice.as_mut_ptr();
-
-                CHtml {
-                    isNode: 1,
-                    node: CHtmlUnion {
-                        kind: self.kind.to_c(),
-                    },
-                    kids,
-                    kid_count: chkids.len() as i32,
+                if !ptr.is_null() {
+                    kids.push(Self::from_c(unsafe { *ptr })?);
                 }
+
             }
+
+            match Element::from_c(element.tag) {
+                Element::Div => Ok(Self::Div { kids }),
+                _ => unimplemented!("TODO"),
+            }
+
+        } else {
+            Ok(Self::Text(from_char(unsafe { (*(*chtml.content).text).text.clone() })?))
         }
     }
 }
 
-pub fn c_html_to_string(ch: CHtml) -> String {
-    let element;
-    let kids;
-    if ch.isNode == 1 {
-        //element = Element::from_c(unsafe { ch.node.kind });
-        //let cvec: CVec<CHtml> = unsafe { CVec::new(ch.kids, ch.kid_count as usize) };
-
-        element = Element::None;
-
-        let mut vec: Vec<String> = Vec::new();
-
-        //for c in cvec.iter() {
-        //vec.push(c_html_to_string(c.clone())); }
-
-        kids = vec.join(", ");
-    } else {
-        element = Element::Text("".to_string());
-        kids = String::new();
-    }
-
-    format!("{element:?}, [] [{kids}]")
+pub fn from_char(c: *mut i8) -> Result<String> {
+    Ok(unsafe {CStr::from_ptr(c)}.to_str()?.to_string())
 }

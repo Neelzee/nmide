@@ -35,12 +35,14 @@ build-plugins:
   cp nmide-plugin/nmide-framework/target/release/libnmide_framework.so {{nmcdir}}plugin-libs/
 
 build-release:
+  just init
   just make
   cd nmide-core && npm i && npm run tauri build
 
 make:
   cd {{nmlibc}}build && make
   cp {{nmlibc}}*.h nmide-wrapper/nmide-rust-ffi/
+  cp {{nmlibc}}html/*.h nmide-wrapper/nmide-rust-ffi/html
   cp {{nmlibc}}build/*.a  nmide-wrapper/nmide-rust-ffi/
 
 pdf:
@@ -57,6 +59,7 @@ docker-build:
   docker build -f nmide-docker/thesis.Dockerfile . -t nmide-thesis:latest # Thesis
   docker build -f nmide-docker/rust.Dockerfile . -t nmide-rust:latest # Rust Testing
   docker build -f nmide-docker/node.Dockerfile . -t nmide-node:latest # Node Testing
+  docker build -f nmide-docker/c.Dockerfile . -t nmide-c:latest # C Testing
   
 
 # Tags Docker Images for release
@@ -66,6 +69,7 @@ docker-tag:
   docker tag nmide-thesis:latest {{docker_user}}/nmide-thesis:latest
   docker tag nmide-rust:latest {{docker_user}}/nmide-rust:latest
   docker tag nmide-node:latest {{docker_user}}/nmide-node:latest
+  docker tag nmide-c:latest {{docker_user}}/nmide-c:latest
 
 # Publishes Docker Images
 docker-push:
@@ -74,6 +78,7 @@ docker-push:
   docker push {{docker_user}}/nmide-thesis:latest
   docker push {{docker_user}}/nmide-rust:latest
   docker push {{docker_user}}/nmide-node:latest
+  docker push {{docker_user}}/nmide-c:latest
 
 docker-full:
   just docker-build
@@ -93,3 +98,15 @@ init:
 make-clean:
   rm -rf {{nmlibc}}build
   rm -rf {{nmlibc}}munit
+
+check:
+  cd {{nmlibc}} && cppcheck --enable=all --force --quiet -imunit -ibuild .
+
+c-test:
+  cd {{nmlibc}}debug && make && ./nmide_test
+
+make-release:
+  mkdir -p {{nmlibc}}release
+  @cd {{nmlibc}}release && pwd
+  cd {{nmlibc}}release && cmake -DCMAKE_BUILD_TYPE=Release ..
+  cd {{nmlibc}}release && make
