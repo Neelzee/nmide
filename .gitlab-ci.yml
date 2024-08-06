@@ -32,6 +32,7 @@ js-test:
     - cd nmide-core
     - pwd
     - npm --version
+    - npm i
     - npm run test
 
 c-test:
