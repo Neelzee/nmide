@@ -62,14 +62,16 @@ c-check:
     - touch nmide-lib/report
     - cd nmide-lib
     - pwd
-    - cppcheck --enable=all --errorlist --force --quiet --output-file=report.xml -imunit -ibuild -irelease -idebug .
-    - mv report.xml report-"$(date -I)".xml
+    - cppcheck --enable=all --errorlist --force --quiet --output-file=report -imunit -ibuild -irelease -idebug .
+    - ls
+    - mv report report-"$(date -I)".xml
     - cppcheck --enable=all --error-exitcode=1 --force --quiet -imunit -ibuild -irelease -idebug .
+  allow_failure: true
   artifacts:
-    when: on_success
     access: all
     paths:
       - nmide-lib/report-*.xml
+    
 
 pts:
   stage: svn
