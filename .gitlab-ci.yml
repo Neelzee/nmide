@@ -55,6 +55,8 @@ c-test-build:
       - nmide-lib/debug
 
 c-test:
+  dependencies:
+    - c-test-build
   image: neelzee/nmide-c:latest
   stage: test
   script:
@@ -68,7 +70,7 @@ c-test:
 
 c-check-report:
   dependencies:
-    - c-test
+    - c-test-build
   image: neelzee/nmide-c:latest
   stage: test
   script:
@@ -109,7 +111,7 @@ c-check-valgrind-cmap:
   image: neelzee/nmide-c:latest
   stage: test
   dependencies:
-    - c-test
+    - c-test-build
   script:
     - gcc --version
     - valgrind --version
@@ -121,7 +123,7 @@ c-check-valgrind-cmap:
 
 c-check-valgrind-cmodel:
   image: neelzee/nmide-c:latest
-  stage: test
+  stage: test-build
   dependencies:
     - c-test
   script:
