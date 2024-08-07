@@ -4,6 +4,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -19,7 +20,6 @@ typedef union CValUnion {
 } CValUnion;
 
 struct CArr {
-  size_t len;
   CVal **elements;
 };
 
@@ -45,25 +45,18 @@ typedef struct CKey {
   size_t len;
 } CKey;
 
-typedef struct CTuple {
+typedef struct CKeyPair {
   CKey *key;
   CVal *val;
-} CTuple;
+} CKeyPair;
 
 struct CMap {
-  CTuple **values;
-  size_t val_len;
+  CKeyPair **values;
 };
 
 // TODO: Add doc-strings
-CVal *new_val(CValType type, void *val);
-CVal *empty_val();
-MaybeVal *new_maybe();
-CKey *new_ckey();
-void change_key(CKey *self, char *new_key);
-CTuple *new_ctuple();
-CArr *new_arr();
-
+size_t map_size(CMap *self);
+size_t arr_size(CArr *self);
 void insert_arr(CArr *self, CVal *val);
 
 // TODO: Add doc-strings
@@ -71,9 +64,22 @@ void insert_arr(CArr *self, CVal *val);
 void free_cval(CVal *val);
 void free_maybe(MaybeVal *val);
 void free_key(CKey *key);
-void free_tuple(CTuple *tuple);
+void free_keypair(CKeyPair *pair);
 void free_map(CMap *map);
 void free_arr(CArr *arr);
+
+MaybeVal *maybe(CVal *val);
+
+CVal *new_val(CValType type, void *val);
+
+CArr *new_arr(CVal **elements);
+
+CKey *key(char *key);
+
+CKeyPair *key_pair(char *key, CVal *val);
+
+CVal *carr_get(CArr *self, size_t i);
+CVal *carr_remove(CArr *self, size_t i);
 
 /**
  * Creates an empty cmap
@@ -81,25 +87,20 @@ void free_arr(CArr *arr);
 CMap *create_cmap();
 
 /**
- * Gets all keys in the map
- */
-CKey **get_keys(CMap *self);
-
-/**
  * Inserts the given element to the map
  * Returning true if the key already existed
  */
-bool cmap_insert(CMap *self, CVal *val, CKey *key);
+bool cmap_insert(CMap *self, CVal *val, char *key);
 
 /**
  * Returns the given element, if it exists
  */
-MaybeVal *cmap_lookup(CMap *self, CKey *key);
+MaybeVal *cmap_lookup(CMap *self, char *key);
 
 /**
  * Removes the given element
  * Returns the element, if it exists
  */
-MaybeVal *cmap_remove(CMap *self, CKey *key);
+MaybeVal *cmap_remove(CMap *self, char *key);
 
 #endif // !CMAP

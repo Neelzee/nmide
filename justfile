@@ -110,3 +110,12 @@ make-release:
   @cd {{nmlibc}}release && pwd
   cd {{nmlibc}}release && cmake -DCMAKE_BUILD_TYPE=Release ..
   cd {{nmlibc}}release && make
+
+make-test:
+  cd {{nmlibc}}debug && make && ./test_cmap
+  cd {{nmlibc}}debug && make && ./test_cmodel
+
+make-check:
+  cd {{nmlibc}} && cppcheck --enable=all --force --quiet -imunit -ibuild -idebug -irelease .
+  cd {{nmlibc}} && valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmodel
+  cd {{nmlibc}} && valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmap

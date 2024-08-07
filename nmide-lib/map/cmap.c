@@ -1,204 +1,287 @@
 #include "cmap.h"
 
+// CMap ========================================================================
+
+size_t map_size(CMap *self) {
+  if (self == NULL) {
+    return 0;
+  }
+  size_t i = 0;
+  CKeyPair *pair = self->values[i];
+  while (pair != NULL) {
+    i++;
+    pair = self->values[i];
+  }
+  return i;
+}
+
 CMap *create_cmap() {
   CMap *map = (CMap *)malloc(sizeof(CMap));
-
-  map->val_len = 0;
-  map->values = NULL;
-
+  CKeyPair **values = (CKeyPair **)malloc(sizeof(CKeyPair *));
+  values[0] = NULL;
+  map->values = values;
   return map;
 }
 
-CKey **get_keys(CMap *self) {
-  CKey **keys = (CKey **)malloc(self->val_len * sizeof(CKey *));
-
-  for (int i = 0; i < self->val_len; i++) {
-    keys[i] = self->values[i]->key;
+bool cmap_insert(CMap *self, CVal *val, char *key) {
+  size_t i = 0;
+  CKeyPair *pair = self->values[i];
+  bool has_key = false;
+  while (pair != NULL) {
+    if (strcmp(pair->key->key, key)) {
+      CVal *old_val = pair->val;
+      pair->val = val;
+      free_cval(old_val);
+    }
+    i++;
+    pair = self->values[i];
   }
-
-  return keys;
+  if (has_key) {
+    return true;
+  }
+  CKeyPair **new_values = (CKeyPair **)malloc(sizeof(CKeyPair *) * (i + 2));
+  for (int j = 0; j < i + 1; j++) {
+    new_values[j] = self->values[j];
+  }
+  new_values[i - 2] = key_pair(key, val);
+  new_values[i - 1] = NULL;
+  self->values = new_values;
+  return false;
 }
 
-bool cmap_insert(CMap *self, CVal *val, CKey *key) {
-  bool has_key = false;
-
-  for (int i = 0; i < self->val_len; i++) {
-    if (self->values[i]->key->key == key->key) {
-      has_key = true;
-      self->values[i]->val = val;
+MaybeVal *cmap_lookup(CMap *self, char *key) {
+  size_t i = 0;
+  CKeyPair *pair = self->values[i];
+  while (pair != NULL) {
+    if (strcmp(pair->key->key, key)) {
+      return maybe(pair->val);
     }
+    i++;
+    pair = self->values[i];
   }
+  return maybe(NULL);
+}
 
-  if (!has_key) {
-    CTuple *m_val = new_ctuple();
-    m_val->key = key;
-    m_val->val = val;
-    self->val_len++;
-    CTuple **new_values = (CTuple **)malloc(self->val_len * sizeof(CTuple *));
-    for (int i = 0; i < self->val_len - 1; i++) {
-      new_values[i] = self->values[i];
+MaybeVal *cmap_remove(CMap *self, char *key) {
+  MaybeVal *m = maybe(NULL);
+  size_t i = 0;
+  size_t index = 0;
+  CKeyPair *pair = self->values[i];
+  while (pair != NULL) {
+    if (strcmp(pair->key->key, key)) {
+      CVal *val = pair->val;
+      m->just = true;
+      m->val = val;
+      index = i;
+      free_key(pair->key);
+      pair->key = NULL;
+      free(pair);
+      pair = NULL;
     }
-    new_values[self->val_len - 1] = m_val;
+    i++;
+    pair = self->values[i];
+  }
+  if (m->just) {
+    CKeyPair **new_values = (CKeyPair **)malloc(sizeof(CKeyPair *) * i);
+    for (int j = 0; j < i; j++) {
+      if (j == index) {
+        continue;
+      }
+      new_values[j] = self->values[j];
+    }
     self->values = new_values;
   }
-
-  return has_key;
-}
-
-MaybeVal *cmap_lookup(CMap *self, CKey *key) {
-  MaybeVal *m = (MaybeVal *)malloc(sizeof(MaybeVal));
-
-  m->just = false;
-  m->val = (CVal *)malloc(sizeof(CVal));
-
-  for (int i = 0; i < self->val_len; i++) {
-    if (self->values[i]->key->key == key->key) {
-      m->val = self->values[i]->val;
-      m->just = true;
-      return m;
-    }
-  }
-
   return m;
 }
 
-MaybeVal *cmap_remove(CMap *self, CKey *key) {
-  MaybeVal *m = (MaybeVal *)malloc(sizeof(MaybeVal));
-  m->just = false;
-  m->val = (CVal *)malloc(sizeof(CVal));
+// =============================================================================
 
-  if (self->val_len == 0) {
-    return m;
+// CArr ========================================================================
+
+size_t arr_size(CArr *self) {
+  if (self == NULL) {
+    return 0;
   }
+  size_t i = 0;
+  CVal *elem = self->elements[i];
+  while (elem != NULL) {
+    i++;
+    elem = self->elements[i];
+  }
+  return i;
+}
 
-  for (int i = 0; i < self->val_len; i++) {
-    if (self->values[i]->key->key == key->key) {
-      m->val = self->values[i]->val;
-      m->just = true;
-      self->values[i] = NULL;
-      break;
+void insert_arr(CArr *self, CVal *val) {
+  size_t og_size = arr_size(self);
+  CVal **new_elems = (CVal **)malloc(sizeof(new_elems) * (og_size + 2));
+  for (int i = 0; i < og_size; i++) {
+    new_elems[i] = self->elements[i];
+  }
+  new_elems[og_size - 2] = val;
+  new_elems[og_size - 1] = NULL;
+  free(self->elements);
+  self->elements = new_elems;
+}
+
+CArr *new_arr(CVal **elements) {
+  CArr *arr = (CArr *)malloc(sizeof(CArr));
+  if (elements == NULL) {
+    elements = (CVal **)malloc(sizeof(CVal *));
+    elements[0] = NULL;
+  }
+  arr->elements = elements;
+  return arr;
+}
+
+CVal *carr_get(CArr *self, size_t i) {
+  return arr_size(self) >= i ? NULL : self->elements[i];
+}
+
+CVal *carr_remove(CArr *self, size_t i) {
+  size_t size = arr_size(self);
+  CVal *val = NULL;
+  if (size >= i) {
+    return val;
+  }
+  CVal **new_elems = (CVal **)malloc(sizeof(new_elems) * size);
+  for (int j = 0; j < size - 1; j++) {
+    if (j == i) {
+      val = self->elements[i];
+      continue;
     }
+    new_elems[j] = self->elements[j];
   }
+  new_elems[size] = NULL - 1;
+  self->elements = new_elems;
+  return val;
+}
 
-  if (m->just) {
-    self->val_len--;
-  }
+// =============================================================================
 
+MaybeVal *maybe(CVal *val) {
+  MaybeVal *m = (MaybeVal *)malloc(sizeof(MaybeVal));
+  m->val = val;
+  m->just = val != NULL;
   return m;
 }
 
 CVal *new_val(CValType type, void *val) {
-  CVal *res = (CVal *)malloc(sizeof(CVal));
-
-  res->val = (CValUnion *)malloc(sizeof(CValUnion));
-
-  res->type = type;
-
+  CVal *v = (CVal *)malloc(sizeof(CVal));
+  v->type = type;
+  CValUnion *u = (CValUnion *)malloc(sizeof(CValUnion));
+  v->val = u;
   switch (type) {
   case Str:
-    res->val->str = (char *)val;
-    break;
+    u->str = (char *)val;
+    return v;
   case Int:
-    res->val->_int = *(int *)val;
-    break;
+    u->_int = *(int *)val;
+    return v;
   case Arr:
-    res->val->arr = (CArr *)val;
-    break;
+    u->arr = (CArr *)val;
+    return v;
   case Obj:
-    res->val->obj = (CMap *)val;
-    break;
+    u->obj = (CMap *)val;
+    return v;
   }
-
-  return res;
 }
 
-CVal *empty_val() { return new_val(Str, ""); }
-
-MaybeVal *new_maybe() {
-  MaybeVal *m = (MaybeVal *)malloc(sizeof(MaybeVal));
-
-  m->just = false;
-  m->val = (CVal *)malloc(sizeof(CVal));
-
-  return m;
-}
-
-CKey *new_ckey() {
+CKey *key(char *key) {
   CKey *k = (CKey *)malloc(sizeof(CKey));
-
-  k->key = "";
-  k->len = 0;
-
+  k->key = key;
+  k->len = strlen(key);
   return k;
 }
 
-void change_key(CKey *self, char *new_key) {
-  self->key = new_key;
-  self->len = strlen(new_key);
-}
-
-CTuple *new_ctuple() {
-  CTuple *val = (CTuple *)malloc(sizeof(CTuple));
-
-  val->key = new_ckey();
-  val->val = empty_val();
-
-  return val;
-}
-
-CArr *new_arr() {
-  CArr *arr = (CArr *)malloc(sizeof(CArr));
-
-  arr->elements = NULL;
-  arr->len = 0;
-
-  return arr;
-}
-
-void insert_arr(CArr *self, CVal *val) {
-  CVal **new_arr = (CVal **)malloc(sizeof(CVal) * (self->len + 1));
-  for (int i = 0; i < self->len; i++) {
-    new_arr[i] = self->elements[i];
-  }
-  new_arr[self->len] = val;
-  self->elements = new_arr;
+CKeyPair *key_pair(char *_key, CVal *val) {
+  CKeyPair *pair = (CKeyPair *)malloc(sizeof(CKeyPair));
+  pair->key = key(_key);
+  pair->val = val;
+  return pair;
 }
 
 void free_cval(CVal *val) {
-  switch (val->type) {
-  case Str:
-    free(val->val);
-    break;
-  case Int:
-    break;
-  case Arr:
-    free_arr(val->val->arr);
-    break;
-  case Obj:
-    free_map(val->val->obj);
-    break;
+  if (val != NULL) {
+    if (val->val != NULL) {
+      switch (val->type) {
+      case Str:
+        free(val->val->str);
+        val->val->str = NULL;
+        break;
+      case Int:
+        break;
+      case Arr:
+        free_arr(val->val->arr);
+        break;
+      case Obj:
+        free_map(val->val->obj);
+        break;
+      }
+      free(val->val);
+      val->val = NULL;
+    }
+    free(val);
+    val = NULL;
   }
-  free(val->val);
-  free(val);
 }
 
 void free_maybe(MaybeVal *val) {
-  if (val->just) {
-    free_cval(val->val);
+  if (val != NULL) {
+    if (val->val != NULL) {
+      free_cval(val->val);
+      val->val = NULL;
+    }
+    free(val);
+    val = NULL;
   }
-  free(val);
 }
 
 void free_key(CKey *key) {
-  free(key->key);
-  free(key);
+  if (key != NULL) {
+    free(key);
+    key = NULL;
+  }
 }
 
-void free_tuple(CTuple *tuple) {
-  free_key(tuple->key);
-  free_cval(tuple->val);
+void free_keypair(CKeyPair *pair) {
+  if (pair != NULL) {
+    free_key(pair->key);
+    pair->key = NULL;
+    free_cval(pair->val);
+    pair->val = NULL;
+    free(pair);
+    pair = NULL;
+  }
 }
 
-void free_map(CMap *map) { free(map); }
+void free_arr(CArr *arr) {
+  if (arr != NULL) {
+    if (arr->elements != NULL) {
+      int i = 0;
+      while (arr->elements[i] != NULL) {
+        free_cval(arr->elements[0]);
+        i++;
+      }
+      free(arr->elements);
+      arr->elements = NULL;
+    }
+    free(arr);
+    arr = NULL;
+  }
+}
 
-void free_arr(CArr *arr) { free(arr); }
+void free_map(CMap *map) {
+  if (map != NULL) {
+    if (map->values != NULL) {
+      int i = 0;
+      while (map->values[i] != NULL) {
+        free_keypair(map->values[0]);
+        i++;
+      }
+      free(map->values);
+      map->values = NULL;
+    }
+    free(map);
+    map = NULL;
+  }
+}
