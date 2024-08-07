@@ -123,9 +123,9 @@ c-check-valgrind-cmap:
 
 c-check-valgrind-cmodel:
   image: neelzee/nmide-c:latest
-  stage: test-build
+  stage: test
   dependencies:
-    - c-test
+    - c-test-build
   script:
     - gcc --version
     - valgrind --version
