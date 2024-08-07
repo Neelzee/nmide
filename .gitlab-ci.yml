@@ -127,7 +127,6 @@ pts:
     - js-test
     - rust-test-core
     - rust-test-ffi
-    - c-check
   script:
     - echo "TODO"
 
