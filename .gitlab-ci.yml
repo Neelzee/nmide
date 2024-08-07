@@ -52,16 +52,24 @@ c-test:
     - ls
     - ./test_cmap
     - ./test_cmodel
+  artifacts:
+    paths:
+      - nmide-lib/debug
 
 c-check-report:
+  dependencies:
+    - c-test
   image: neelzee/nmide-c:latest
   stage: test
   script:
     - gcc --version
     - cppcheck --version
+    - valgrind --version
     - cd nmide-lib
-    - pwd
+    - ls
     - cppcheck --enable=all --errorlist --force --quiet --output-file=report -imunit -ibuild -irelease -idebug .
+    - cd debug
+    - ls
     - valgrind --log-file=valgrind_test_cmap.txt --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmap
     - valgrind --log-file=valgrind_test_cmodel.txt --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmodel
     - ls
@@ -89,9 +97,11 @@ c-check-cppcheck:
 c-check-valgrind-cmap:
   image: neelzee/nmide-c:latest
   stage: test
+  dependencies:
+    - c-test
   script:
     - gcc --version
-    - cppcheck --version
+    - valgrind --version
     - cd nmide-lib
     - pwd
     - mkdir debug
@@ -105,16 +115,13 @@ c-check-valgrind-cmap:
 c-check-valgrind-cmodel:
   image: neelzee/nmide-c:latest
   stage: test
+  dependencies:
+    - c-test
   script:
     - gcc --version
-    - cppcheck --version
-    - cd nmide-lib
+    - valgrind --version
+    - cd nmide-lib/debug
     - pwd
-    - mkdir debug
-    - cd debug
-    - pwd
-    - cmake -DCMAKE_BUILD_TYPE=Debug ..
-    - make
     - ls
     - valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmodel
 
