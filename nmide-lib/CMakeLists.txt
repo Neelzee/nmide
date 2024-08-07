@@ -19,22 +19,38 @@ if(CMAKE_BUILD_TYPE STREQUAL Debug)
   include_directories(
   html
   model
+  model/test
   map
-  )
-
-  add_executable(
-    nmide_test
-    test/test_nmide.c
-    test/test_util.c
-    html/html.c
-    html/css.c
+  map/test
+  map/test/test_carr
+  map/test/test_cfree
+  map/test/test_ckey
+  map/test/test_ckeypair
+  map/test/test_cmap
+  map/test/test_cval
+  map/test/test_maybe
   )
 
   add_executable(
     test_cmap
-    map/test/test_cmap.c
+    map/test/cmap_test_suite.c
+    map/test/test_carr/test_carr.c
+    map/test/test_cfree/test_cfree.c
+    map/test/test_ckey/test_ckey.c
+    map/test/test_ckeypair/test_ckeypair.c
+    map/test/test_cmap/test_cmap.c
+    map/test/test_cval/test_cval.c
+    map/test/test_maybe/test_maybe.c
     munit/munit.c
     model/cmodel.c
+    map/cmap.c
+  )
+
+  add_executable(
+    test_cmodel
+    model/test/test_cmodel.c
+    model/cmodel.c
+    munit/munit.c
     map/cmap.c
   )
 endif()
@@ -44,10 +60,7 @@ if(CMAKE_BUILD_TYPE STREQUAL Release)
   include_directories(
   html
   model
-  munit
-  test
   map
-  map/test
   )
 
   add_library(nmide STATIC
