@@ -83,8 +83,8 @@ c-check-report:
     - ls
     - cd debug
     - ls
-    - valgrind --log-file=valgrind_test_cmap.txt --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmap
-    - valgrind --log-file=valgrind_test_cmodel.txt --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmodel
+    - valgrind --log-file=valgrind_test_cmap.txt --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --error-exitcode=0 ./test_cmap
+    - valgrind --log-file=valgrind_test_cmodel.txt --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --error-exitcode=0 ./test_cmodel
     - ls
     - mv report report-"$(date -I)".xml
     - mv valgrind_test_cmap.txt valgrind_"$(date -I)"_test_cmap.txt
