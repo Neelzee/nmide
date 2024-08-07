@@ -68,6 +68,7 @@ c-check-report:
     - cd nmide-lib
     - ls
     - cppcheck --enable=all --errorlist --force --quiet --output-file=report -imunit -ibuild -irelease -idebug .
+    - ls
     - cd debug
     - ls
     - valgrind --log-file=valgrind_test_cmap.txt --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmap
@@ -103,12 +104,8 @@ c-check-valgrind-cmap:
     - gcc --version
     - valgrind --version
     - cd nmide-lib
-    - pwd
-    - mkdir debug
+    - ls
     - cd debug
-    - pwd
-    - cmake -DCMAKE_BUILD_TYPE=Debug ..
-    - make
     - ls
     - valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmap
 
