@@ -64,9 +64,9 @@ c-test:
     - ls
     - ./test_cmap
     - ./test_cmodel
-  artifacts:
-    paths:
-      - nmide-lib/debug
+  needs:
+  - job: c-test-build
+    artifacts: true
 
 c-check-report:
   dependencies:
@@ -89,6 +89,9 @@ c-check-report:
     - mv report report-"$(date -I)".xml
     - mv valgrind_test_cmap.txt valgrind_"$(date -I)"_test_cmap.txt
     - mv valgrind_test_cmodel.txt valgrind_"$(date -I)"_test_cmodel.txt
+  needs:
+  - job: c-test-build
+    artifacts: true
   artifacts:
     access: all
     paths:
@@ -120,6 +123,9 @@ c-check-valgrind-cmap:
     - cd debug
     - ls
     - valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmap
+  needs:
+  - job: c-test-build
+    artifacts: true
 
 c-check-valgrind-cmodel:
   image: neelzee/nmide-c:latest
@@ -133,6 +139,9 @@ c-check-valgrind-cmodel:
     - pwd
     - ls
     - valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmodel
+  needs:
+  - job: c-test-build
+    artifacts: true
 
 pts:
   stage: svn
