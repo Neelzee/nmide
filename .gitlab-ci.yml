@@ -81,12 +81,12 @@ c-check-report:
     - ls
     - cppcheck --enable=all --errorlist --force --quiet --output-file=report -imunit -ibuild -irelease -idebug .
     - ls
+    - mv report report-"$(date -I)".xml
     - cd debug
     - ls
     - valgrind --xml=yes --xml-file=valgrind_test_cmap.xml --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmap || true
     - valgrind --xml=yes --xml-file=valgrind_test_cmodel.xml --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmodel || true
     - ls
-    - mv report report-"$(date -I)".xml
     - mv valgrind_test_cmap.xml valgrind_"$(date -I)"_test_cmap.xml
     - mv valgrind_test_cmodel.xml valgrind_"$(date -I)"_test_cmodel.xml
   needs:
