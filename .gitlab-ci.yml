@@ -79,6 +79,7 @@ c-check-report:
     - valgrind --version
     - cd nmide-lib
     - ls
+    - touch report
     - cppcheck --enable=all --errorlist --force --quiet --output-file=report -imunit -ibuild -irelease -idebug .
     - ls
     - mv report report-"$(date -I)".xml
