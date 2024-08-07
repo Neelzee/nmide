@@ -80,7 +80,7 @@ c-check-report:
     - cd nmide-lib
     - ls
     - touch report
-    - cppcheck --enable=all --errorlist --force --quiet --output-file=report -imunit -ibuild -irelease -idebug .
+    - cppcheck --enable=all --errorlist --force --quiet --output-file=report -imunit -ibuild -irelease -idebug . >> report
     - ls
     - mv report report-"$(date -I)".xml
     - cd debug
@@ -97,8 +97,8 @@ c-check-report:
     access: all
     paths:
       - nmide-lib/report-*.xml
-      - nmide-lib/valgrind_*_test_cmap.xml
-      - nmide-lib/valgrind_*_test_cmodel.xml
+      - nmide-lib/debug/valgrind_*_test_cmap.xml
+      - nmide-lib/debug/valgrind_*_test_cmodel.xml
 
 c-check-cppcheck:
   image: neelzee/nmide-c:latest
