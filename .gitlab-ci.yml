@@ -35,7 +35,7 @@ js-test:
     - npm i
     - npm run test
 
-c-test:
+c-test-build:
   image: neelzee/nmide-c:latest
   stage: test
   script:
@@ -49,6 +49,16 @@ c-test:
     - export CC=gcc
     - cmake -DCMAKE_BUILD_TYPE=Debug ..
     - make
+    - ls
+  artifacts:
+    paths:
+      - nmide-lib/debug
+
+c-test:
+  image: neelzee/nmide-c:latest
+  stage: test
+  script:
+    - cd nmide-lib/debug
     - ls
     - ./test_cmap
     - ./test_cmodel
