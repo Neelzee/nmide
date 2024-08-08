@@ -24,10 +24,7 @@ static CVal *get_cval_from_str(char *val, char *type) {
  */
 static MunitResult test_new_cmsg(const MunitParameter params[], void *__) {
   char *msg = (char *)munit_parameters_get(params, "msg_b");
-  char *val_str = (char *)munit_parameters_get(params, "val");
-  char *type_str = (char *)munit_parameters_get(params, "type");
-  CVal *val = get_cval_from_str(val_str, type_str);
-  CMsg *m = new_cmsg(msg, val);
+  CMsg *m = new_cmsg(msg, NULL);
   munit_assert_not_null(m);
   return MUNIT_OK;
 }
@@ -53,13 +50,9 @@ static MunitResult test_drop_cmsg(const MunitParameter params[],
  * - Two of the same strings, different cases - true
  */
 static MunitResult test_cmsg_kind_cmp(const MunitParameter params[], void *_) {
-  char *val_str = (char *)munit_parameters_get(params, "val");
-  char *type_str = (char *)munit_parameters_get(params, "type");
-  CMsg *msg_a = new_cmsg((char *)munit_parameters_get(params, "msg_a"),
-                         get_cval_from_str(val_str, type_str));
+  CMsg *msg_a = new_cmsg((char *)munit_parameters_get(params, "msg_a"), NULL);
   char *msg_b_str = (char *)munit_parameters_get(params, "msg_b");
-  CMsg *msg_b = new_cmsg((char *)munit_parameters_get(params, "msg_a"),
-                         get_cval_from_str(val_str, type_str));
+  CMsg *msg_b = new_cmsg((char *)munit_parameters_get(params, "msg_a"), NULL);
   bool result = cmsg_kind_cmp(msg_a, msg_b);
   bool expected = strcmp(msg_a->msg, msg_b->msg);
   if (expected) {
@@ -74,24 +67,20 @@ static MunitResult test_cmsg_kind_cmp(const MunitParameter params[], void *_) {
 
 // CMsg Params =================================================================
 
-static char *types[] = {(char *)"Str", (char *)"Int", NULL};
+static char *msgs[] = {(char *)"oof",
+                       (char *)"æøå",
+                       (char *)"ÆÆÆÆ",
+                       (char *)"!!?#)?=!#",
+                       (char *)"-10",
+                       (char *)"ABS",
+                       (char *)"OOF",
+                       (char *)"RABOOF",
+                       (char *)"abs",
+                       (char *)"10",
+                       NULL};
 
-static char *values[] = {(char *)"A",   (char *)"10",  (char *)"13190",
-                         (char *)"-1",  (char *)"0",   (char *)"oof",
-                         (char *)"æøå", (char *)"zab", (char *)"!!?#)?=!#",
-                         NULL};
-
-static char *msgs[] = {
-    (char *)"oof", (char *)"æøå", (char *)"zab", (char *)"!!?#)?=!#",
-    (char *)"-10", (char *)"ABS", (char *)"OOF", (char *)"RABOOF",
-    (char *)"oof", (char *)"rab", (char *)"zab", (char *)"raboof",
-    (char *)"10",  NULL};
-
-static MunitParameterEnum params[] = {{(char *)"msg_a", msgs},
-                                      {(char *)"msg_b", msgs},
-                                      {(char *)"type", types},
-                                      {(char *)"val", values},
-                                      {NULL, NULL}};
+static MunitParameterEnum params[] = {
+    {(char *)"msg_a", msgs}, {(char *)"msg_b", msgs}, {NULL, NULL}};
 
 // =============================================================================
 
