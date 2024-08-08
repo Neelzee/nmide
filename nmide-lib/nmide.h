@@ -1,6 +1,6 @@
 #ifndef NMIDE
 
-#include "html/html.h"
+#include "interface/cinterface.h"
 
 #define NMIDE
 

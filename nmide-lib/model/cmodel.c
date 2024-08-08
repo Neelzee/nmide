@@ -1,6 +1,6 @@
 #include "cmodel.h"
 
-CModel *init() {
+CModel *cmodel_init() {
   CMap *map = create_cmap();
   CModel *model = (CModel *)malloc(sizeof(CModel));
   model->map = map;

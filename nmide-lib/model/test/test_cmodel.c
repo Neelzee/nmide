@@ -1,7 +1,7 @@
 #include "test_cmodel.h"
 
 MunitResult test_init(const MunitParameter _[], void *__) {
-  CModel *model = init();
+  CModel *model = cmodel_init();
   munit_assert_not_null(model);
   MaybeVal *loc = cmodel_lookup(model, "location");
   munit_assert_true(loc->just);
@@ -13,7 +13,7 @@ MunitResult test_init(const MunitParameter _[], void *__) {
 }
 
 MunitResult test_insert(const MunitParameter _[], void *__) {
-  CModel *model = init();
+  CModel *model = cmodel_init();
   munit_assert_false(cmodel_insert(model, new_val(Str, "foobar"), "foo"));
   munit_assert_true(cmodel_insert(model, new_val(Str, "foobaz"), "foo"));
   drop(model);
@@ -21,7 +21,7 @@ MunitResult test_insert(const MunitParameter _[], void *__) {
 }
 
 MunitResult test_lookup(const MunitParameter _[], void *__) {
-  CModel *model = init();
+  CModel *model = cmodel_init();
   cmodel_insert(model, new_val(Str, "foobar"), "foo");
   munit_assert_true(cmodel_lookup(model, "foobar")->just);
   drop(model);
@@ -29,7 +29,7 @@ MunitResult test_lookup(const MunitParameter _[], void *__) {
 }
 
 MunitResult test_removing_keys(const MunitParameter _[], void *__) {
-  CModel *model = init();
+  CModel *model = cmodel_init();
   cmodel_insert(model, new_val(Str, "foo"), "foo");
   cmodel_insert(model, new_val(Str, "bar"), "foo");
   munit_assert_true(cmodel_remove(model, "foo")->just);
