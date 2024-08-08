@@ -13,7 +13,7 @@ typedef struct CModel {
 /**
  * Creates std CModel used in Nmide
  */
-CModel *init();
+CModel *cmodel_init();
 
 void drop(CModel *model);
 
