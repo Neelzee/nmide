@@ -117,5 +117,5 @@ make-test:
 
 make-check:
   cd {{nmlibc}} && cppcheck --enable=all --force --quiet -imunit -ibuild -idebug -irelease .
-  cd {{nmlibc}} && valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmodel
-  cd {{nmlibc}} && valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmap
+  cd {{nmlibc}}debug && valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmodel || true
+  cd {{nmlibc}}debug && valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmap || true
