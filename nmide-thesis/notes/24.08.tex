@@ -12,3 +12,17 @@ I think I should pivot towards lifetime of an application. Since, this new way, 
 since any shitty plugin I make, is \textit{easy} to make better, in what ever language they want.
 
 To do this, I need C, and when developing in C, I need tests.
+
+
+\section{24.08.08}
+
+I've finished a lot of tests for the C library, they suck, and don't have proper documentation nor cover all the edge cases,
+but, they exist, and are in the pipelines. I also kinda finished the types in the C library. I am working on the wrapper, but
+it's hard, mostly because I don't know if what I am doing will work, and it seems like a waste coding without knowing if it's
+useful.
+
+So, instead of doing that, I moved on to the core-functionality, plugin management. Well, a basic form, since all it should do,
+is load plugins, and call them. That's what I will start with, but eventually, I need some form of API/ABI/Interface so that a
+\textit{manager} plugin can call other plugins, or at least decide what happens when.
+
+I also need some integration tests, but I am currently unsure on how to do that. Or what the best practice is.
