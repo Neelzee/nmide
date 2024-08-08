@@ -64,6 +64,7 @@ c-test:
     - ls
     - ./test_cmap
     - ./test_cmodel
+    - ./test_cmsg
   needs:
   - job: c-test-build
     artifacts: true
@@ -87,9 +88,11 @@ c-check-report:
     - ls
     - valgrind --xml=yes --xml-file=valgrind_test_cmap.xml --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmap || true
     - valgrind --xml=yes --xml-file=valgrind_test_cmodel.xml --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmodel || true
+    - valgrind --xml=yes --xml-file=valgrind_test_cmsg.xml --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmsg || true
     - ls
     - mv valgrind_test_cmap.xml ../valgrind_"$(date -I)"_test_cmap.xml
     - mv valgrind_test_cmodel.xml ../valgrind_"$(date -I)"_test_cmodel.xml
+    - mv valgrind_test_cmsg.xml ../valgrind_"$(date -I)"_test_cmsg.xml
   needs:
   - job: c-test-build
     artifacts: true
@@ -99,6 +102,7 @@ c-check-report:
       - nmide-lib/report-*.xml
       - nmide-lib/valgrind_*_test_cmap.xml
       - nmide-lib/valgrind_*_test_cmodel.xml
+      - nmide-lib/valgrind_*_test_cmsg.xml
 
 c-check-cppcheck:
   image: neelzee/nmide-c:latest
@@ -110,7 +114,24 @@ c-check-cppcheck:
     - pwd
     - ls
     - cppcheck --enable=all --error-exitcode=1 --force --quiet -imunit -ibuild -irelease -idebug .
-   
+
+c-check-valgrind-cmsg:
+  image: neelzee/nmide-c:latest
+  stage: test
+  dependencies:
+    - c-test-build
+  script:
+    - gcc --version
+    - valgrind --version
+    - cd nmide-lib
+    - ls
+    - cd debug
+    - ls
+    - valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmsg
+  needs:
+  - job: c-test-build
+    artifacts: true
+
 c-check-valgrind-cmap:
   image: neelzee/nmide-c:latest
   stage: test

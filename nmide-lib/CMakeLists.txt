@@ -29,6 +29,7 @@ if(CMAKE_BUILD_TYPE STREQUAL Debug)
   map/test/test_cmap
   map/test/test_cval
   map/test/test_maybe
+  msg/test
   )
 
   add_executable(
@@ -53,6 +54,14 @@ if(CMAKE_BUILD_TYPE STREQUAL Debug)
     munit/munit.c
     map/cmap.c
   )
+
+  add_executable(
+    test_cmsg
+    msg/test/test_cmsg.c
+    msg/cmsg.c
+    munit/munit.c
+    map/cmap.c
+  )
 endif()
 
 # Create the static library
@@ -61,12 +70,12 @@ if(CMAKE_BUILD_TYPE STREQUAL Release)
   html
   model
   map
+  msg
   )
 
   add_library(nmide STATIC
   nmide.c
   html/html.c
-  html/css.c
   model/cmodel.c
   map/cmap.c
   )
