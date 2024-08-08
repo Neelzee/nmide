@@ -158,164 +158,10 @@ pub const _THREAD_MUTEX_INTERNAL_H: u32 = 1;
 pub const __PTHREAD_MUTEX_HAVE_PREV: u32 = 1;
 pub const __have_pthread_attr_t: u32 = 1;
 pub const _ALLOCA_H: u32 = 1;
-pub const CAttribute_Style: CAttribute = 0;
-pub const CAttribute_Alt: CAttribute = 1;
-pub const CAttribute_Src: CAttribute = 2;
-pub const CAttribute_Href: CAttribute = 3;
-pub const CAttribute_OnClick: CAttribute = 4;
-pub const CAttribute_OnHover: CAttribute = 5;
-pub const CAttribute_OnLeave: CAttribute = 6;
-pub const CAttribute_OnEnter: CAttribute = 7;
-#[doc = " Enumeration of different HTML Attributes"]
-pub type CAttribute = ::std::os::raw::c_uint;
-pub const CStyle_Width: CStyle = 0;
-pub const CStyle_Height: CStyle = 1;
-pub const CStyle_Padding: CStyle = 2;
-pub const CStyle_PaddingTop: CStyle = 3;
-pub const CStyle_PaddingBottom: CStyle = 4;
-pub const CStyle_PaddingRight: CStyle = 5;
-pub const CStyle_PaddingLeft: CStyle = 6;
-pub const CStyle_Margin: CStyle = 7;
-pub const CStyle_MarginTop: CStyle = 8;
-pub const CStyle_MarginBottom: CStyle = 9;
-pub const CStyle_MarginRight: CStyle = 10;
-pub const CStyle_MarginLeft: CStyle = 11;
-pub const CStyle_BackgroundColor: CStyle = 12;
-pub type CStyle = ::std::os::raw::c_uint;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct CColor {
-    pub R: ::std::os::raw::c_uchar,
-    pub G: ::std::os::raw::c_uchar,
-    pub B: ::std::os::raw::c_uchar,
-}
-#[test]
-fn bindgen_test_layout_CColor() {
-    const UNINIT: ::std::mem::MaybeUninit<CColor> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<CColor>(),
-        3usize,
-        concat!("Size of: ", stringify!(CColor))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<CColor>(),
-        1usize,
-        concat!("Alignment of ", stringify!(CColor))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).R) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(CColor), "::", stringify!(R))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).G) as usize - ptr as usize },
-        1usize,
-        concat!("Offset of field: ", stringify!(CColor), "::", stringify!(G))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).B) as usize - ptr as usize },
-        2usize,
-        concat!("Offset of field: ", stringify!(CColor), "::", stringify!(B))
-    );
-}
-extern "C" {
-    #[doc = " Creates a new CColor, with capped RGB values"]
-    pub fn CColorNew(
-        r: ::std::os::raw::c_int,
-        g: ::std::os::raw::c_int,
-        b: ::std::os::raw::c_int,
-    ) -> CColor;
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct CAttr {
-    pub key: CAttribute,
-    pub value: *mut ::std::os::raw::c_char,
-}
-#[test]
-fn bindgen_test_layout_CAttr() {
-    const UNINIT: ::std::mem::MaybeUninit<CAttr> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<CAttr>(),
-        16usize,
-        concat!("Size of: ", stringify!(CAttr))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<CAttr>(),
-        8usize,
-        concat!("Alignment of ", stringify!(CAttr))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).key) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(CAttr),
-            "::",
-            stringify!(key)
-        )
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).value) as usize - ptr as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(CAttr),
-            "::",
-            stringify!(value)
-        )
-    );
-}
-pub const CStyleUnit_Pixel: CStyleUnit = 0;
-pub const CStyleUnit_REM: CStyleUnit = 1;
-pub const CStyleUnit_Percent: CStyleUnit = 2;
-pub type CStyleUnit = ::std::os::raw::c_uint;
-#[doc = " CBoxProperty are all styles pertaining to spacing of CSS elements.\n\n Example: Width, Height, Padding-*, Margin-*"]
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct CBoxProperty {
-    pub unit: CStyleUnit,
-    pub value: f64,
-}
-#[test]
-fn bindgen_test_layout_CBoxProperty() {
-    const UNINIT: ::std::mem::MaybeUninit<CBoxProperty> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<CBoxProperty>(),
-        16usize,
-        concat!("Size of: ", stringify!(CBoxProperty))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<CBoxProperty>(),
-        8usize,
-        concat!("Alignment of ", stringify!(CBoxProperty))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).unit) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(CBoxProperty),
-            "::",
-            stringify!(unit)
-        )
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).value) as usize - ptr as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(CBoxProperty),
-            "::",
-            stringify!(value)
-        )
-    );
-}
-#[doc = " CBoxProperty are all styles pertaining to spacing of CSS elements.\n\n Example: Width, Height, Padding-*, Margin-*"]
-pub type CWidth = CBoxProperty;
+pub const _STRING_H: u32 = 1;
+pub const _BITS_TYPES_LOCALE_T_H: u32 = 1;
+pub const _BITS_TYPES___LOCALE_T_H: u32 = 1;
+pub const _STRINGS_H: u32 = 1;
 pub type wchar_t = ::std::os::raw::c_int;
 #[repr(C)]
 #[repr(align(16))]
@@ -3570,6 +3416,47 @@ fn bindgen_test_layout_CHtml() {
         )
     );
 }
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct CHtmlLocation {
+    pub html: CHtml,
+    pub location: *mut ::std::os::raw::c_char,
+}
+#[test]
+fn bindgen_test_layout_CHtmlLocation() {
+    const UNINIT: ::std::mem::MaybeUninit<CHtmlLocation> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<CHtmlLocation>(),
+        24usize,
+        concat!("Size of: ", stringify!(CHtmlLocation))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<CHtmlLocation>(),
+        8usize,
+        concat!("Alignment of ", stringify!(CHtmlLocation))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).html) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(CHtmlLocation),
+            "::",
+            stringify!(html)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).location) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(CHtmlLocation),
+            "::",
+            stringify!(location)
+        )
+    );
+}
 extern "C" {
     #[doc = " Creates empty CHtmlElement Div"]
     pub fn e_div() -> *mut CHtmlElement;
@@ -3588,6 +3475,840 @@ extern "C" {
 extern "C" {
     #[doc = " Recursively frees the given html node\n TODO: Find out if this works."]
     pub fn free_chtml(chtml: *mut CHtml);
+}
+extern "C" {
+    pub fn memcpy(
+        __dest: *mut ::std::os::raw::c_void,
+        __src: *const ::std::os::raw::c_void,
+        __n: ::std::os::raw::c_ulong,
+    ) -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
+    pub fn memmove(
+        __dest: *mut ::std::os::raw::c_void,
+        __src: *const ::std::os::raw::c_void,
+        __n: ::std::os::raw::c_ulong,
+    ) -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
+    pub fn memccpy(
+        __dest: *mut ::std::os::raw::c_void,
+        __src: *const ::std::os::raw::c_void,
+        __c: ::std::os::raw::c_int,
+        __n: ::std::os::raw::c_ulong,
+    ) -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
+    pub fn memset(
+        __s: *mut ::std::os::raw::c_void,
+        __c: ::std::os::raw::c_int,
+        __n: ::std::os::raw::c_ulong,
+    ) -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
+    pub fn memcmp(
+        __s1: *const ::std::os::raw::c_void,
+        __s2: *const ::std::os::raw::c_void,
+        __n: ::std::os::raw::c_ulong,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn __memcmpeq(
+        __s1: *const ::std::os::raw::c_void,
+        __s2: *const ::std::os::raw::c_void,
+        __n: usize,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn memchr(
+        __s: *const ::std::os::raw::c_void,
+        __c: ::std::os::raw::c_int,
+        __n: ::std::os::raw::c_ulong,
+    ) -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
+    pub fn strcpy(
+        __dest: *mut ::std::os::raw::c_char,
+        __src: *const ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn strncpy(
+        __dest: *mut ::std::os::raw::c_char,
+        __src: *const ::std::os::raw::c_char,
+        __n: ::std::os::raw::c_ulong,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn strcat(
+        __dest: *mut ::std::os::raw::c_char,
+        __src: *const ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn strncat(
+        __dest: *mut ::std::os::raw::c_char,
+        __src: *const ::std::os::raw::c_char,
+        __n: ::std::os::raw::c_ulong,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn strcmp(
+        __s1: *const ::std::os::raw::c_char,
+        __s2: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn strncmp(
+        __s1: *const ::std::os::raw::c_char,
+        __s2: *const ::std::os::raw::c_char,
+        __n: ::std::os::raw::c_ulong,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn strcoll(
+        __s1: *const ::std::os::raw::c_char,
+        __s2: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn strxfrm(
+        __dest: *mut ::std::os::raw::c_char,
+        __src: *const ::std::os::raw::c_char,
+        __n: ::std::os::raw::c_ulong,
+    ) -> ::std::os::raw::c_ulong;
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct __locale_struct {
+    pub __locales: [*mut __locale_data; 13usize],
+    pub __ctype_b: *const ::std::os::raw::c_ushort,
+    pub __ctype_tolower: *const ::std::os::raw::c_int,
+    pub __ctype_toupper: *const ::std::os::raw::c_int,
+    pub __names: [*const ::std::os::raw::c_char; 13usize],
+}
+#[test]
+fn bindgen_test_layout___locale_struct() {
+    const UNINIT: ::std::mem::MaybeUninit<__locale_struct> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<__locale_struct>(),
+        232usize,
+        concat!("Size of: ", stringify!(__locale_struct))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<__locale_struct>(),
+        8usize,
+        concat!("Alignment of ", stringify!(__locale_struct))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).__locales) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(__locale_struct),
+            "::",
+            stringify!(__locales)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).__ctype_b) as usize - ptr as usize },
+        104usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(__locale_struct),
+            "::",
+            stringify!(__ctype_b)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).__ctype_tolower) as usize - ptr as usize },
+        112usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(__locale_struct),
+            "::",
+            stringify!(__ctype_tolower)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).__ctype_toupper) as usize - ptr as usize },
+        120usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(__locale_struct),
+            "::",
+            stringify!(__ctype_toupper)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).__names) as usize - ptr as usize },
+        128usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(__locale_struct),
+            "::",
+            stringify!(__names)
+        )
+    );
+}
+pub type __locale_t = *mut __locale_struct;
+pub type locale_t = __locale_t;
+extern "C" {
+    pub fn strcoll_l(
+        __s1: *const ::std::os::raw::c_char,
+        __s2: *const ::std::os::raw::c_char,
+        __l: locale_t,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn strxfrm_l(
+        __dest: *mut ::std::os::raw::c_char,
+        __src: *const ::std::os::raw::c_char,
+        __n: usize,
+        __l: locale_t,
+    ) -> usize;
+}
+extern "C" {
+    pub fn strdup(__s: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn strndup(
+        __string: *const ::std::os::raw::c_char,
+        __n: ::std::os::raw::c_ulong,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn strchr(
+        __s: *const ::std::os::raw::c_char,
+        __c: ::std::os::raw::c_int,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn strrchr(
+        __s: *const ::std::os::raw::c_char,
+        __c: ::std::os::raw::c_int,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn strcspn(
+        __s: *const ::std::os::raw::c_char,
+        __reject: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_ulong;
+}
+extern "C" {
+    pub fn strspn(
+        __s: *const ::std::os::raw::c_char,
+        __accept: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_ulong;
+}
+extern "C" {
+    pub fn strpbrk(
+        __s: *const ::std::os::raw::c_char,
+        __accept: *const ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn strstr(
+        __haystack: *const ::std::os::raw::c_char,
+        __needle: *const ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn strtok(
+        __s: *mut ::std::os::raw::c_char,
+        __delim: *const ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn __strtok_r(
+        __s: *mut ::std::os::raw::c_char,
+        __delim: *const ::std::os::raw::c_char,
+        __save_ptr: *mut *mut ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn strtok_r(
+        __s: *mut ::std::os::raw::c_char,
+        __delim: *const ::std::os::raw::c_char,
+        __save_ptr: *mut *mut ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn strlen(__s: *const ::std::os::raw::c_char) -> ::std::os::raw::c_ulong;
+}
+extern "C" {
+    pub fn strnlen(__string: *const ::std::os::raw::c_char, __maxlen: usize) -> usize;
+}
+extern "C" {
+    pub fn strerror(__errnum: ::std::os::raw::c_int) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    #[link_name = "\u{1}__xpg_strerror_r"]
+    pub fn strerror_r(
+        __errnum: ::std::os::raw::c_int,
+        __buf: *mut ::std::os::raw::c_char,
+        __buflen: usize,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn strerror_l(
+        __errnum: ::std::os::raw::c_int,
+        __l: locale_t,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn bcmp(
+        __s1: *const ::std::os::raw::c_void,
+        __s2: *const ::std::os::raw::c_void,
+        __n: ::std::os::raw::c_ulong,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn bcopy(
+        __src: *const ::std::os::raw::c_void,
+        __dest: *mut ::std::os::raw::c_void,
+        __n: usize,
+    );
+}
+extern "C" {
+    pub fn bzero(__s: *mut ::std::os::raw::c_void, __n: ::std::os::raw::c_ulong);
+}
+extern "C" {
+    pub fn index(
+        __s: *const ::std::os::raw::c_char,
+        __c: ::std::os::raw::c_int,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn rindex(
+        __s: *const ::std::os::raw::c_char,
+        __c: ::std::os::raw::c_int,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn ffs(__i: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn ffsl(__l: ::std::os::raw::c_long) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn ffsll(__ll: ::std::os::raw::c_longlong) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn strcasecmp(
+        __s1: *const ::std::os::raw::c_char,
+        __s2: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn strncasecmp(
+        __s1: *const ::std::os::raw::c_char,
+        __s2: *const ::std::os::raw::c_char,
+        __n: ::std::os::raw::c_ulong,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn strcasecmp_l(
+        __s1: *const ::std::os::raw::c_char,
+        __s2: *const ::std::os::raw::c_char,
+        __loc: locale_t,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn strncasecmp_l(
+        __s1: *const ::std::os::raw::c_char,
+        __s2: *const ::std::os::raw::c_char,
+        __n: usize,
+        __loc: locale_t,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn explicit_bzero(__s: *mut ::std::os::raw::c_void, __n: usize);
+}
+extern "C" {
+    pub fn strsep(
+        __stringp: *mut *mut ::std::os::raw::c_char,
+        __delim: *const ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn strsignal(__sig: ::std::os::raw::c_int) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn __stpcpy(
+        __dest: *mut ::std::os::raw::c_char,
+        __src: *const ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn stpcpy(
+        __dest: *mut ::std::os::raw::c_char,
+        __src: *const ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn __stpncpy(
+        __dest: *mut ::std::os::raw::c_char,
+        __src: *const ::std::os::raw::c_char,
+        __n: usize,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn stpncpy(
+        __dest: *mut ::std::os::raw::c_char,
+        __src: *const ::std::os::raw::c_char,
+        __n: ::std::os::raw::c_ulong,
+    ) -> *mut ::std::os::raw::c_char;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union CValUnion {
+    pub str_: *mut ::std::os::raw::c_char,
+    pub _int: ::std::os::raw::c_int,
+    pub arr: *mut CArr,
+    pub obj: *mut CMap,
+}
+#[test]
+fn bindgen_test_layout_CValUnion() {
+    const UNINIT: ::std::mem::MaybeUninit<CValUnion> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<CValUnion>(),
+        8usize,
+        concat!("Size of: ", stringify!(CValUnion))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<CValUnion>(),
+        8usize,
+        concat!("Alignment of ", stringify!(CValUnion))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).str_) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(CValUnion),
+            "::",
+            stringify!(str_)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr)._int) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(CValUnion),
+            "::",
+            stringify!(_int)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).arr) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(CValUnion),
+            "::",
+            stringify!(arr)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).obj) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(CValUnion),
+            "::",
+            stringify!(obj)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct CArr {
+    pub elements: *mut *mut CVal,
+}
+#[test]
+fn bindgen_test_layout_CArr() {
+    const UNINIT: ::std::mem::MaybeUninit<CArr> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<CArr>(),
+        8usize,
+        concat!("Size of: ", stringify!(CArr))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<CArr>(),
+        8usize,
+        concat!("Alignment of ", stringify!(CArr))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).elements) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(CArr),
+            "::",
+            stringify!(elements)
+        )
+    );
+}
+pub const CValType_Str: CValType = 0;
+pub const CValType_Int: CValType = 1;
+pub const CValType_Arr: CValType = 2;
+pub const CValType_Obj: CValType = 3;
+pub type CValType = ::std::os::raw::c_uint;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct CVal {
+    pub type_: CValType,
+    pub val: *mut CValUnion,
+}
+#[test]
+fn bindgen_test_layout_CVal() {
+    const UNINIT: ::std::mem::MaybeUninit<CVal> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<CVal>(),
+        16usize,
+        concat!("Size of: ", stringify!(CVal))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<CVal>(),
+        8usize,
+        concat!("Alignment of ", stringify!(CVal))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).type_) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(CVal),
+            "::",
+            stringify!(type_)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).val) as usize - ptr as usize },
+        8usize,
+        concat!("Offset of field: ", stringify!(CVal), "::", stringify!(val))
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct MaybeVal {
+    pub just: bool,
+    pub val: *mut CVal,
+}
+#[test]
+fn bindgen_test_layout_MaybeVal() {
+    const UNINIT: ::std::mem::MaybeUninit<MaybeVal> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<MaybeVal>(),
+        16usize,
+        concat!("Size of: ", stringify!(MaybeVal))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<MaybeVal>(),
+        8usize,
+        concat!("Alignment of ", stringify!(MaybeVal))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).just) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(MaybeVal),
+            "::",
+            stringify!(just)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).val) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(MaybeVal),
+            "::",
+            stringify!(val)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct CKey {
+    pub key: *mut ::std::os::raw::c_char,
+    pub len: usize,
+}
+#[test]
+fn bindgen_test_layout_CKey() {
+    const UNINIT: ::std::mem::MaybeUninit<CKey> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<CKey>(),
+        16usize,
+        concat!("Size of: ", stringify!(CKey))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<CKey>(),
+        8usize,
+        concat!("Alignment of ", stringify!(CKey))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).key) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(CKey), "::", stringify!(key))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize },
+        8usize,
+        concat!("Offset of field: ", stringify!(CKey), "::", stringify!(len))
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct CKeyPair {
+    pub key: *mut CKey,
+    pub val: *mut CVal,
+}
+#[test]
+fn bindgen_test_layout_CKeyPair() {
+    const UNINIT: ::std::mem::MaybeUninit<CKeyPair> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<CKeyPair>(),
+        16usize,
+        concat!("Size of: ", stringify!(CKeyPair))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<CKeyPair>(),
+        8usize,
+        concat!("Alignment of ", stringify!(CKeyPair))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).key) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(CKeyPair),
+            "::",
+            stringify!(key)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).val) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(CKeyPair),
+            "::",
+            stringify!(val)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct CMap {
+    pub values: *mut *mut CKeyPair,
+}
+#[test]
+fn bindgen_test_layout_CMap() {
+    const UNINIT: ::std::mem::MaybeUninit<CMap> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<CMap>(),
+        8usize,
+        concat!("Size of: ", stringify!(CMap))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<CMap>(),
+        8usize,
+        concat!("Alignment of ", stringify!(CMap))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).values) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(CMap),
+            "::",
+            stringify!(values)
+        )
+    );
+}
+extern "C" {
+    pub fn map_size(self_: *mut CMap) -> usize;
+}
+extern "C" {
+    pub fn arr_size(self_: *mut CArr) -> usize;
+}
+extern "C" {
+    pub fn insert_arr(self_: *mut CArr, val: *mut CVal);
+}
+extern "C" {
+    pub fn free_cval(val: *mut CVal);
+}
+extern "C" {
+    pub fn free_maybe(val: *mut MaybeVal);
+}
+extern "C" {
+    pub fn free_key(key: *mut CKey);
+}
+extern "C" {
+    pub fn free_keypair(pair: *mut CKeyPair);
+}
+extern "C" {
+    pub fn free_map(map: *mut CMap);
+}
+extern "C" {
+    pub fn free_arr(arr: *mut CArr);
+}
+extern "C" {
+    pub fn maybe(val: *mut CVal) -> *mut MaybeVal;
+}
+extern "C" {
+    pub fn new_val(type_: CValType, val: *mut ::std::os::raw::c_void) -> *mut CVal;
+}
+extern "C" {
+    pub fn new_arr(elements: *mut *mut CVal) -> *mut CArr;
+}
+extern "C" {
+    pub fn key(key: *mut ::std::os::raw::c_char) -> *mut CKey;
+}
+extern "C" {
+    pub fn key_pair(key: *mut ::std::os::raw::c_char, val: *mut CVal) -> *mut CKeyPair;
+}
+extern "C" {
+    pub fn carr_get(self_: *mut CArr, i: usize) -> *mut CVal;
+}
+extern "C" {
+    pub fn carr_remove(self_: *mut CArr, i: usize) -> *mut CVal;
+}
+extern "C" {
+    #[doc = " Creates an empty cmap"]
+    pub fn create_cmap() -> *mut CMap;
+}
+extern "C" {
+    #[doc = " Inserts the given element to the map\n Returning true if the key already existed"]
+    pub fn cmap_insert(self_: *mut CMap, val: *mut CVal, key: *mut ::std::os::raw::c_char) -> bool;
+}
+extern "C" {
+    #[doc = " Returns the given element, if it exists"]
+    pub fn cmap_lookup(self_: *mut CMap, key: *mut ::std::os::raw::c_char) -> *mut MaybeVal;
+}
+extern "C" {
+    #[doc = " Removes the given element\n Returns the element, if it exists"]
+    pub fn cmap_remove(self_: *mut CMap, key: *mut ::std::os::raw::c_char) -> *mut MaybeVal;
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct CModel {
+    pub map: *mut CMap,
+}
+#[test]
+fn bindgen_test_layout_CModel() {
+    const UNINIT: ::std::mem::MaybeUninit<CModel> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<CModel>(),
+        8usize,
+        concat!("Size of: ", stringify!(CModel))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<CModel>(),
+        8usize,
+        concat!("Alignment of ", stringify!(CModel))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).map) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(CModel),
+            "::",
+            stringify!(map)
+        )
+    );
+}
+extern "C" {
+    #[doc = " Creates std CModel used in Nmide"]
+    pub fn cmodel_init() -> *mut CModel;
+}
+extern "C" {
+    pub fn drop(model: *mut CModel);
+}
+extern "C" {
+    #[doc = " Inserts the given element to the map\n Returning true if the key already existed"]
+    pub fn cmodel_insert(
+        self_: *mut CModel,
+        val: *mut CVal,
+        key: *mut ::std::os::raw::c_char,
+    ) -> bool;
+}
+extern "C" {
+    #[doc = " Returns the given element, if it exists"]
+    pub fn cmodel_lookup(self_: *mut CModel, key: *mut ::std::os::raw::c_char) -> *mut MaybeVal;
+}
+extern "C" {
+    #[doc = " Removes the given element\n Returns the element, if it exists"]
+    pub fn cmodel_remove(self_: *mut CModel, key: *mut ::std::os::raw::c_char) -> *mut MaybeVal;
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct CMsg {
+    pub msg: *mut ::std::os::raw::c_char,
+    pub len: usize,
+    pub opt: *mut MaybeVal,
+}
+#[test]
+fn bindgen_test_layout_CMsg() {
+    const UNINIT: ::std::mem::MaybeUninit<CMsg> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<CMsg>(),
+        24usize,
+        concat!("Size of: ", stringify!(CMsg))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<CMsg>(),
+        8usize,
+        concat!("Alignment of ", stringify!(CMsg))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).msg) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(CMsg), "::", stringify!(msg))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize },
+        8usize,
+        concat!("Offset of field: ", stringify!(CMsg), "::", stringify!(len))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).opt) as usize - ptr as usize },
+        16usize,
+        concat!("Offset of field: ", stringify!(CMsg), "::", stringify!(opt))
+    );
+}
+extern "C" {
+    pub fn new_cmsg(msg: *mut ::std::os::raw::c_char, val: *mut CVal) -> *mut CMsg;
+}
+extern "C" {
+    pub fn cmsg_kind_cmp(a: *mut CMsg, b: *mut CMsg) -> bool;
+}
+extern "C" {
+    pub fn drop_cmsg(msg: *mut CMsg);
+}
+extern "C" {
+    pub fn init() -> CModel;
+}
+extern "C" {
+    pub fn update(msg: CMsg, model: CModel) -> CModel;
+}
+extern "C" {
+    pub fn view(model: CModel) -> CHtmlLocation;
 }
 pub type __builtin_va_list = [__va_list_tag; 1usize];
 #[repr(C)]
@@ -3652,4 +4373,9 @@ fn bindgen_test_layout___va_list_tag() {
             stringify!(reg_save_area)
         )
     );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct __locale_data {
+    pub _address: u8,
 }

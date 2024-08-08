@@ -71,6 +71,7 @@ if(CMAKE_BUILD_TYPE STREQUAL Release)
   model
   map
   msg
+  interface
   )
 
   add_library(nmide STATIC
