@@ -2,7 +2,7 @@
 
 #define CMSG
 
-#include "../map/cmap.h"
+#include "../cmap/cmap.h"
 
 typedef struct CMsg {
   char *msg;

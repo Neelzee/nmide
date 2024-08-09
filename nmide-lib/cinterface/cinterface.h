@@ -2,9 +2,9 @@
 
 #define CINTERFACE
 
-#include "../html/html.h"
-#include "../model/cmodel.h"
-#include "../msg/cmsg.h"
+#include "../chtml/chtml.h"
+#include "../cmodel/cmodel.h"
+#include "../cmsg/cmsg.h"
 
 CModel init();
 
