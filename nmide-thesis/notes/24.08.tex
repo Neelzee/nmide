@@ -26,3 +26,62 @@ is load plugins, and call them. That's what I will start with, but eventually, I
 \textit{manager} plugin can call other plugins, or at least decide what happens when.
 
 I also need some integration tests, but I am currently unsure on how to do that. Or what the best practice is.
+
+Technical debt is a bitch and a half. I can feel myself rapidly ageing due to the choices I have, and am making. I have no idea
+why I did what I did (basically yesterday), but it was, and I am stupid for it (I probably made that decision because I did not
+know better). I don't feel like fixing it right now, but it will suck to refactor later, I think I am reaching the end of my (6 days)
+work sprint. To be fair, I have been working on this, basically as a day job in what is supposed to be my vacation, but alas,
+I have nothing better to do (other than walk the dog, or drink). It is mostly a pain, because it is a small change, changing a C
+struct to use a pointer in one field. But that requires this workplan:
+
+\begin{\begin{itemize}
+  \item Change the C code
+  \item Ensure memory safety (I have ignored this for all other functionalities in my C code, thus far)
+  \item Compile the code
+  \item Test it (it will probably work; the same test that have failed will continue to fail)
+  \item Copy over the new library, and changed header(s)
+  \item Rebuild the Rust-C-Bindings file
+  \item Change the Rust code to work with *mut Struct, instead of Struct
+\end{itemize}}
+
+And knowing me, I will suddenly find other not necessary for the v0.1.0 release to do, like:
+
+\begin{itemize}
+  \item Find a way to automatically build my notes into one pdf
+  \item Refactor the pipelines
+  \item Create a Rust macro so that I can write all my Html-Enums like this: Div, P, \dots
+  with the added #[HtmlNode] macro-attribute, so that it expands to: Div { kids: Vec<Html> }, P { kids: Vec<Html> }, \dots.
+  \item Create a Rust macro so that I can create Html the same way Elm-Lang does
+  \item Finally fix push-to-svn
+  \item Find a way to visualize my architecture so that I can create a figure to use in my thesis
+  \item Tidy up the repo
+  \item Write notes
+  \item Sleep
+\end{itemize}
+
+Too many things that can be wrong to be able to develop this application any further, I need to do some serious maintenance on the entire
+\textit{stack}, I need some integration testing, a simple test-case scenario, before I try to integrate everything.  A lot of half-assed
+functionality going around.
+
+
+\section{24.08.09}
+
+I need integration tests. And I need them to be good. To achieve this, I should design a specification document for the test integration, from
+the simplesest case, to the more complex one. It should be scalable, in the sense of adding another module to integrate with, should not
+require a large rewrite of the tests. Now, how the fuck do I do this? I don't know, so time to do research.
+
+After doing a lot of research, (enough to finish one cup of coffee), from a wide variety of sources (one wikipedia article called
+\textit{Integration Testing}, one \textit{How-To} article, and one StackOverFlow Question (it had no satisfying answers because it was a bad question)),
+I found what I need, I think. There are several tools for integration testing, but most of them are aimed at microservices, or seem to
+\textit{beefy} for this case. I think I will just have to create some bash-scripts and tests myself. But first, I will try to draw some figures
+of what test-cases I need, because 1. I need them for my thesis, 2. it will make it easier to get an overview over my tests, and, 3. it seems
+like fun.
+
+\include{figures/integration-tests}
+
+So, I got some general plans (or drawings, atleast), but I have encountered another problem, or imagined it. I should really try to modularize
+my modular IDE. Currently, it is not modular enough for my liking, I should almost have each feature as it's own module, so that I can test it
+alone, and therefore have better integration testing. So, I could make proper integration tests for what I have  now, and then have to rewrite
+them when I eventually refactor the core IDE, or I can refactor the core IDE. Right now, I don't wanna do nothing. But I think refactoring the
+core is the best plan, since a lot of the code should be refactored, and split up more. For example, the C-Library, should be split up into one
+library for all the types, and another one for the functions.
