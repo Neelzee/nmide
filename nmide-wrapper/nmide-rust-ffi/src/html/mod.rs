@@ -1,20 +1,34 @@
 use core::str;
-use std::ffi::{CStr, CString};
+use std::{
+    ffi::{CStr, CString},
+    ptr::{null, null_mut},
+};
 
-use anyhow::{Context, Result};
-use c_vec::CVec;
+use anyhow::{anyhow, Context, Result};
 use safer_ffi::{c_char, prelude::AsOut};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 use crate::{
-    CHtml, CHtmlContent, CHtmlElement, CHtmlTag, CHtmlTag_A, CHtmlTag_Aside, CHtmlTag_Button,
-    CHtmlTag_Div, CHtmlTag_Input, CHtmlTag_Nav, CHtmlTag_None, CHtmlTag_P, CHtmlTag_Script,
-    CHtmlTag_Section, CHtmlTag_Select, CHtmlTag_Span, CHtmlText,
+    CHtml, CHtmlContent, CHtmlElement, CHtmlLocation, CHtmlTag, CHtmlTag_A, CHtmlTag_Aside,
+    CHtmlTag_Button, CHtmlTag_Div, CHtmlTag_Input, CHtmlTag_Nav, CHtmlTag_None, CHtmlTag_P,
+    CHtmlTag_Script, CHtmlTag_Section, CHtmlTag_Select, CHtmlTag_Span, CHtmlText,
 };
 
 #[cfg(test)]
 mod tests;
+
+impl From<CHtml> for Html {
+    fn from(value: CHtml) -> Self {
+        Self::from_c(value).unwrap_or_default()
+    }
+}
+
+impl From<Html> for CHtml {
+    fn from(value: Html) -> Self {
+        value.to_c().unwrap_or_default()
+    }
+}
 
 #[derive(Debug, TS, Serialize, Deserialize, PartialEq, Eq)]
 #[ts(export)]
@@ -32,6 +46,13 @@ pub enum Element {
     Nav,
     A,
     None,
+}
+
+pub fn chtml_location(cl_ptr: *mut CHtmlLocation) -> Result<(String, Html)> {
+    let cl = unsafe { cl_ptr.as_ref() }.with_context(|| "CHtmlLocation is NULL")?;
+    let loc = from_char(cl.location)?;
+    let html = Html::from_c(cl.html);
+    Ok((loc, html?))
 }
 
 impl Element {
@@ -75,6 +96,7 @@ impl Element {
 pub enum Html {
     Div { kids: Vec<Html> },
     Text(String),
+    None,
 }
 
 impl Html {
@@ -145,6 +167,32 @@ impl Html {
                     isElement: true,
                 })
             }
+            _ => Err(anyhow!("Can't convert `{:?}`", self)),
+        }
+    }
+}
+
+impl Default for Html {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
+impl Default for CHtml {
+    fn default() -> Self {
+        CHtml {
+            content: CHtmlContent {
+                element: CHtmlElement {
+                    tag: CHtmlTag_None,
+                    children: null_mut(),
+                    len: 0,
+                }
+                .as_out()
+                .as_mut_ptr(),
+            }
+            .as_out()
+            .as_mut_ptr(),
+            isElement: true,
         }
     }
 }

@@ -4,3 +4,9 @@
 include!("bindings.rs");
 
 pub mod html;
+
+pub mod model;
+
+pub mod map;
+
+pub mod interface;
