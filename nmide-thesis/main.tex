@@ -6,7 +6,10 @@
 
 \usepackage{newclude}
 
-\begin{document}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,positioning,shapes.symbols}
+
 
 \title{Modular IDE}
 
@@ -22,6 +25,7 @@ University of Bergen\\
 \email{nfi005@uib.no}
 }
 
+\begin{document}
 \maketitle
 \begin{abstract}
 This paper introduces a modular Integrated Development Environment (IDE) for experimental programming languages,
@@ -50,5 +54,7 @@ modularized IDE's functionality, with a focus on the ASR Transformation module.
 \include*{sections/004_implementation}
 
 \include*{sections/005_architecture}
+
+\include{figures/integration-tests}
 
 \end{document}
