@@ -2,54 +2,55 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use anyhow::Result;
-use nmide_rust_ffi::html::Html;
+use nmide_rust_ffi::{html::Html, model::Model};
 use once_cell::sync::Lazy;
-use plugload::{Nmlugin, NmluginType};
-use tauri::Window;
 use tauri_plugin_log::LogTarget;
 use tokio::sync::Mutex;
 
-mod plugload;
-
-#[derive(Clone, serde::Serialize)]
-struct Payload;
+use nmide_plugin_manager::Nmlugin;
 
 #[tauri::command]
-fn greet(window: Window) {
-    let _ = window.emit("nmide", Payload);
-}
-
-#[tauri::command]
-fn test() -> Html {
-    match NMLUG.try_lock() {
-        Ok(nmlug) => nmlug.view().unwrap(),
-        Err(err) => panic!("{err}"),
+async fn init_html() -> Html {
+    Html::Div {
+        kids: NMLUGS
+            .try_lock()
+            .expect("Could not get lock on mutex")
+            .iter()
+            .filter_map(|nl| nl.view(Model {}).ok())
+            .map(|v| v.1)
+            .collect::<Vec<_>>(),
     }
 }
 
-static NMLUG: Lazy<Mutex<Nmlugin>> = Lazy::new(|| {
-    Mutex::new(
-        Nmlugin::new(
-            "nmide-framework",
-            NmluginType::Worker,
-            "/home/nmf/Documents/uib/nmide/nmide-core/src-tauri/plugin-libs/libnmide_framework.so",
-        )
-        .unwrap(),
+static NMLUGS: Lazy<Mutex<Vec<Nmlugin>>> = Lazy::new(|| {
+    Mutex::new(vec![Nmlugin::new(
+        "nmide-framework",
+        "./plugin-libs/framework.so",
     )
+    .unwrap()])
 });
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    println!("Testing");
-    println!("{:?}", test());
-    println!("Testing!");
+    let r = Html::Div {
+        kids: NMLUGS
+            .try_lock()
+            .expect("Could not get lock on mutex")
+            .iter()
+            .filter_map(|nl| nl.view(Model {}).ok())
+            .map(|v| v.1)
+            .collect::<Vec<_>>(),
+    };
+
+    println!("{r:?}");
+
     tauri::Builder::default()
         .plugin(
             tauri_plugin_log::Builder::default()
                 .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
                 .build(),
         )
-        .invoke_handler(tauri::generate_handler![greet, test])
+        .invoke_handler(tauri::generate_handler![init_html])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
     Ok(())
