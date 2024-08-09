@@ -2,7 +2,7 @@
 
 #define CMODEL
 
-#include "../map/cmap.h"
+#include "../cmap/cmap.h"
 #include <stdbool.h>
 #include <stdlib.h>
 

@@ -1,6 +1,6 @@
-#ifndef HTML_LIB
+#ifndef CHTML_LIB
 
-#define HTML_LIB
+#define CHTML_LIB
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -103,4 +103,4 @@ CHtml *simple_test();
  */
 void free_chtml(CHtml *chtml);
 
-#endif // !HTML_LIB
+#endif // !CHTML_LIB

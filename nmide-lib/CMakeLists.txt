@@ -17,68 +17,68 @@ endif()
 # Testing add_executables
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
   include_directories(
-  html
-  model
-  model/test
-  map
-  map/test
-  map/test/test_carr
-  map/test/test_cfree
-  map/test/test_ckey
-  map/test/test_ckeypair
-  map/test/test_cmap
-  map/test/test_cval
-  map/test/test_maybe
-  msg/test
+  chtml
+  cmodel
+  cmodel/test
+  cmap
+  cmap/test
+  cmap/test/test_carr
+  cmap/test/test_cfree
+  cmap/test/test_ckey
+  cmap/test/test_ckeypair
+  cmap/test/test_cmap
+  cmap/test/test_cval
+  cmap/test/test_maybe
+  cmsg/test
   )
 
   add_executable(
     test_cmap
-    map/test/cmap_test_suite.c
-    map/test/test_carr/test_carr.c
-    map/test/test_cfree/test_cfree.c
-    map/test/test_ckey/test_ckey.c
-    map/test/test_ckeypair/test_ckeypair.c
-    map/test/test_cmap/test_cmap.c
-    map/test/test_cval/test_cval.c
-    map/test/test_maybe/test_maybe.c
+    cmap/test/cmap_test_suite.c
+    cmap/test/test_carr/test_carr.c
+    cmap/test/test_cfree/test_cfree.c
+    cmap/test/test_ckey/test_ckey.c
+    cmap/test/test_ckeypair/test_ckeypair.c
+    cmap/test/test_cmap/test_cmap.c
+    cmap/test/test_cval/test_cval.c
+    cmap/test/test_maybe/test_maybe.c
     munit/munit.c
-    model/cmodel.c
-    map/cmap.c
+    cmodel/cmodel.c
+    cmap/cmap.c
   )
 
   add_executable(
     test_cmodel
-    model/test/test_cmodel.c
-    model/cmodel.c
+    cmodel/test/test_cmodel.c
+    cmodel/cmodel.c
     munit/munit.c
-    map/cmap.c
+    cmap/cmap.c
   )
 
   add_executable(
     test_cmsg
-    msg/test/test_cmsg.c
-    msg/cmsg.c
+    cmsg/test/test_cmsg.c
+    cmsg/cmsg.c
     munit/munit.c
-    map/cmap.c
+    cmap/cmap.c
   )
 endif()
 
 # Create the static library
 if(CMAKE_BUILD_TYPE STREQUAL Release)
   include_directories(
-  html
-  model
-  map
-  msg
-  interface
+  chtml
+  cmodel
+  cmap
+  cmsg
+  cinterface
   )
 
   add_library(nmide STATIC
   nmide.c
-  html/html.c
-  model/cmodel.c
-  map/cmap.c
+  chtml/chtml.c
+  cmodel/cmodel.c
+  cmap/cmap.c
   )
 
   install(TARGETS nmide DESTINATION .)
