@@ -1,3 +1,6 @@
+[workspace]
+members = ["nmide-plugin-manager"]
+
 [package]
 name = "nmide-core"
 version = "0.1.2-alpha"
@@ -6,7 +9,6 @@ authors = ["Nils Michael Fitjar <nfi005@uib.no>"]
 license = ""
 repository = "https://git.app.uib.no/Nils.Fitjar/nmide"
 edition = "2021"
-default-run = "nmide"
 
 [build-dependencies]
 tauri-build = { version = "1.5", features = [] }
@@ -22,7 +24,10 @@ tokio = { version = "1.36.0", features = ["full"] }
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 anyhow = "1.0.86"
 nmide-rust-ffi.path = "../../nmide-wrapper/nmide-rust-ffi"
+nmide-plugin-manager.path = "./nmide-plugin-manager"
 libloading = "0.8.5"
+uuid = "1.10.0"
+safer-ffi = "0.1.12"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
