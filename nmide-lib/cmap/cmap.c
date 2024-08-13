@@ -205,7 +205,7 @@ void free_cval(CVal *val) {
     if (val->val != NULL) {
       switch (val->type) {
       case Str:
-        free(val->val->str);
+        free((void *)val->val->str);
         val->val->str = NULL;
         break;
       case Int:
