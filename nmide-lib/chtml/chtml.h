@@ -32,7 +32,7 @@ typedef struct CHtmlText {
   /**
    * Text field
    */
-  char *text;
+  const char *text;
   /**
    * Amount of characters.
    * TODO: Ensure this is safe with UTF-8
@@ -74,8 +74,8 @@ typedef struct CHtml {
 } CHtml;
 
 typedef struct CHtmlLocation {
-  CHtml html;
-  char *location;
+  CHtml *html;
+  const char *location;
 } CHtmlLocation;
 
 /**
