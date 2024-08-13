@@ -20,6 +20,7 @@ CMap *create_cmap() {
   CKeyPair **values = (CKeyPair **)malloc(sizeof(CKeyPair *));
   values[0] = NULL;
   map->values = values;
+  map->len = 0;
   return map;
 }
 

@@ -52,6 +52,7 @@ typedef struct CKeyPair {
 
 struct CMap {
   CKeyPair **values;
+  size_t len;
 };
 
 // TODO: Add doc-strings
