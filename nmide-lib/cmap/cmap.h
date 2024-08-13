@@ -13,7 +13,7 @@ typedef struct CArr CArr;
 typedef struct CMap CMap;
 
 typedef union CValUnion {
-  char *str;
+  const char *str;
   int _int;
   CArr *arr;
   CMap *obj;
@@ -41,7 +41,7 @@ typedef struct MaybeVal {
 } MaybeVal;
 
 typedef struct CKey {
-  char *key;
+  const char *key;
   size_t len;
 } CKey;
 
