@@ -1,7 +1,9 @@
 #ifndef NMIDE
 
-#include "interface/cinterface.h"
+#include "cinterface/cinterface.h"
 
 #define NMIDE
+
+char *greetings();
 
 #endif // !NMIDE
