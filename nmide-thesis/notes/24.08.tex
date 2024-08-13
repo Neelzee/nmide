@@ -85,3 +85,55 @@ alone, and therefore have better integration testing. So, I could make proper in
 them when I eventually refactor the core IDE, or I can refactor the core IDE. Right now, I don't wanna do nothing. But I think refactoring the
 core is the best plan, since a lot of the code should be refactored, and split up more. For example, the C-Library, should be split up into one
 library for all the types, and another one for the functions.
+
+\section{24.08.12}
+
+I haven't done anything since last time. I took a break over the weekend. Still need to work on modularing the application and creating
+integration tests.
+
+After trying to write one test, I can already tell this will suck. A lot of stuff to keep track of, I need to pay careful attention to the error
+messages I get.
+
+I am stupid, this is known. I need to figure out memory stuff. When I call an external function, I receive a pointer to some memory of that
+library. Do I need to also free this, as the caller, or send it back to be free'd? If it is the first scenario, I need to figure out if I can
+clone the bytes in the memory I have a pointer to, so that the caller can manage the memory instead.
+
+I need to fix my wrapper library, I need to go back to use bindgen in the build.rs, so that I can specify types to be used. An example of this,
+is that currently, the C-type char, is translated to *mut i8, in Rust, but it should be *const i8, meaning the String can only be read from,
+not written too.
+
+A lot of pain is coming from C-Strings, and Rust-Strings. Or, converting to char. I am working on this, because I am working on integration
+testing, and the easiest test, is to see if a String from C and Rust are the same. Maybe I would save a lot of time if I just create my own
+C-String, that works similar to a Rust String? In C, a char is just an integer, signed or unsigned, depending on the platform. While a String is
+just an array of Char (integers), ending with \0.
+
+This might help doubly, since I don't care about Strings in C space, only the Rust space. All I need, is the type, which is just a struct with
+some unsigned integers, and size of the integers.
+
+
+\section{24.08.13}
+
+I am pretty sure I am finished with the refactor of the wrapper, got no tests to verify it, however.
+For some reason, my way of converting String into char* is destructive. I have no clue why. But atleast my build.rs works.
+
+The \textit{smart} developer in me, keeps mentioning unit tests. I, as an intern, do not know this fancy word, and I would rather die than write
+one. (This will create a tremendous workload for me in the future).
+
+Offcourse my code doesn't work, I am creating pointers in functions, which are dropped as soon as the function returns. I love Rust.
+I need to change my function to take in the ptr I am writing too, so that I can be sure my ptr points to valid memory.
+
+But does it need to? I don't need to verify that it works this way: C -> RS -> C, or RS -> C -> RS, I just need this: C -> RS.
+I'll see what I can do for the wrapper part, and then just continue on C -> RS tests.
+
+Memory management will be the end of me. I want to go back to higher languages. Like Haskell. Maybe I should give Ocaml a real try? Anyway,
+I'ver had a lot of issues with pointers, in Rust. Which ChatGPT actually helped with. Kinda. It did say I should use std::mem:.forget, which
+takes ownership of a value, and doesn't run it's destructor. Basically \textit{leaking} it. Which is a solution to my problem, where the pointer
+to the value I have created, is dropped immediately. (because the function returns). But the documentation states that ManuallyDrop is
+typically preferred. So, I am not sure if I should count this as a ChatGPT win. It usually wins on easier problems (which is probably why it's
+so popular among certain \textit{tech}bros). Either way, I should really simplify my tests, before continuing to work on the wrapper. I need
+some more C to Rust tests.
+I don't know why, but it feels like doing FFI should be way easier than it is. I guess Rust is one of the harder languages to do that kind of
+interop with, it can't even do it with itself. Or, it's harder in Rust, because I know \textit{normal} Rust, ie. safe Rust. But now I need
+Rust to behave in a manner in which I am not used to, for Rust, or any language.
+Either way, I have a self-made deadline, for the 15th, to release v0.1.0 of Nmide. And to fulfill that, I want to be able to render text on
+the screen, from a Plugin. Currently, I cannot do that. (I think, I have not properly tested anything).
