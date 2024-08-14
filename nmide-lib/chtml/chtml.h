@@ -58,11 +58,6 @@ typedef struct CHtml {
   bool isElement;
 } CHtml;
 
-typedef struct CHtmlLocation {
-  CHtml html;
-  const char location;
-} CHtmlLocation;
-
 /**
  * Creates empty CHtmlElement Div
  */

@@ -10,6 +10,6 @@ CModel init();
 
 CModel update(CMsg msg, CModel model);
 
-CHtmlLocation view(CModel model);
+CHtml view(CModel model);
 
 #endif // !CINTERFACE
