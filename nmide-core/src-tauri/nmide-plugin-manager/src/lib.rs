@@ -36,10 +36,10 @@ impl Nmlugin {
     }
 
     pub fn init(&self) -> Result<Model> {
-        let _init: Symbol<Init> =
+        let _init: Symbol<unsafe extern "Rust" fn() -> Model> =
             unsafe { self.lib.get(b"init") }.context("Failed getting `init`")?;
 
-        unsafe { Model::from_c(_init()) }
+        Ok(unsafe { _init() })
     }
 
     pub fn view(&self, model: Model) -> Result<Html> {
@@ -50,10 +50,10 @@ impl Nmlugin {
     }
 
     pub fn update(&self, msg: Msg, model: Model) -> Result<Model> {
-        let _update: Symbol<unsafe extern "C" fn(CMsg, CModel) -> CModel> =
+        let _update: Symbol<unsafe extern "Rust" fn(Msg, Model) -> Model> =
             unsafe { self.lib.get(b"update") }.context("Failed getting `update`")?;
 
-        unsafe { Model::from_c(_update(msg.to_c()?, model.to_c()?)) }
+        Ok(unsafe { _update(msg, model) })
     }
 
     pub fn manifest(&self) -> &Model {

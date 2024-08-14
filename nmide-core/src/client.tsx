@@ -1,5 +1,6 @@
 import { Html } from "./bindings/Html"
 import { invoke } from "@tauri-apps/api/tauri";
+import { Msg } from "./bindings/Msg";
 
 export default function TauriClient<K extends keyof TauriCommands>
   (
@@ -13,5 +14,11 @@ interface TauriCommands {
   "init_html": {
     args: {},
     ret: Html
+  },
+  "process_msg": {
+    args: {
+      msg: Msg
+    },
+    ret: void,
   }
 }

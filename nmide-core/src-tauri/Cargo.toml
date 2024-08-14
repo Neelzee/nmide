@@ -28,6 +28,7 @@ nmide-plugin-manager.path = "./nmide-plugin-manager"
 libloading = "0.8.5"
 uuid = "1.10.0"
 safer-ffi = "0.1.12"
+anyhow-tauri = "1.0.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
