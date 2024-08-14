@@ -3,6 +3,7 @@ import "./App.css";
 import { Html } from "./bindings/Html";
 import RenderHtml from "./components/Html";
 import TauriClient from "./client";
+import { listen } from '@tauri-apps/api/event'
 
 function App() {
   const [html, setHtml] = useState<Html>("None");
@@ -14,6 +15,20 @@ function App() {
     }).catch((err) => {
       console.error(err);
     }).finally(() => { })
+  }, []);
+
+  useEffect(() => {
+    listen("init_html", (event) => {
+      console.log(event);
+      TauriClient("init_html", {}).then(html => {
+        console.log(html);
+        setHtml(html);
+      }).catch((err) => {
+        console.error(err);
+      }).finally(() => { })
+
+    }).then(un => un)
+      .catch(err => console.error(err));
   }, []);
 
   return (

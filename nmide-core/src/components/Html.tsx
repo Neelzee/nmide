@@ -3,7 +3,7 @@ import { Html } from "../bindings/Html";
 import { v4 as uuidv4 } from "uuid";
 import { Attr } from "src/bindings/Attr";
 import { Msg } from "src/bindings/Msg";
-import { emit } from "@tauri-apps/api/event";
+import TauriClient from "../client";
 
 export default function RenderHtml({ html }: { html: Html }) {
   if (typeof html !== "object") {
@@ -21,7 +21,7 @@ export default function RenderHtml({ html }: { html: Html }) {
           if (msg === "undefined" || typeof msg === "string") {
             return;
           }
-          emit(`${msg}`, {}).catch(err => console.error(err));
+          TauriClient("process_msg", { msg: msg as Msg }).catch(err => console.error(err));
         }}
       >
         {html.Div.kids.map(k => {
@@ -30,7 +30,27 @@ export default function RenderHtml({ html }: { html: Html }) {
         )}
       </div>
     );
-
+  } else if ("Btn" in html) {
+    const attrs = ToAttrObj(html.Btn);
+    return (
+      <button
+        key={uuidv4()}
+        className={attrs["Class"] === undefined ? undefined : `${attrs["Class"]}`}
+        id={attrs["Id"] === undefined ? undefined : `${attrs["Id"]}`}
+        onClick={() => {
+          const msg = attrs["OnClick"];
+          if (msg === "undefined" || typeof msg === "string") {
+            return;
+          }
+          TauriClient("process_msg", { msg: msg as Msg }).catch(err => console.error(err));
+        }}
+      >
+        {html.Btn.kids.map(k => {
+          return <RenderHtml html={k} />
+        }
+        )}
+      </button>
+    );
   }
 
   return <Fragment key={uuidv4()}>{html.Text}</Fragment>
