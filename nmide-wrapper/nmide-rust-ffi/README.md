@@ -22,3 +22,5 @@ To generate bindings:
 ```shell
 bindgen ../../nmide-lib/nmide.h -o src/bindings.rs
 ```
+
+cargo build --features test-lib --release
