@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 typedef struct CModel {
-  CMap *map;
+  CMap map;
 } CModel;
 
 /**

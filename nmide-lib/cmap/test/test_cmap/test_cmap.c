@@ -11,9 +11,9 @@ static CValType get_type_from_str(char *str) {
 static void get_val_from_str(CVal *val, char *str) {
   switch (val->type) {
   case Str:
-    val->val->str = str;
+    val->val.str = str;
   case Int:
-    val->val->_int = atoi(str);
+    val->val._int = atoi(str);
   case Arr:
   case Obj:
     break;
@@ -119,7 +119,7 @@ static MunitResult test_map_size_empty(const MunitParameter _[], void *__) {
   if (map == NULL) {
     return MUNIT_FAIL;
   }
-  size_t result = map_size(map);
+  size_t result = map->len;
   size_t expected = 0;
   munit_assert_int(result, ==, expected);
   return MUNIT_OK;

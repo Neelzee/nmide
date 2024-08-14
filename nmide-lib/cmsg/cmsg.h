@@ -7,7 +7,7 @@
 typedef struct CMsg {
   char *msg;
   size_t len;
-  MaybeVal *opt;
+  MaybeVal opt;
 } CMsg;
 
 CMsg *new_cmsg(char *msg, CVal *val);

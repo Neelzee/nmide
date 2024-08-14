@@ -9,19 +9,25 @@
 #include <string.h>
 
 typedef struct CVal CVal;
-typedef struct CArr CArr;
 typedef struct CMap CMap;
+typedef struct CKeyPair CKeyPair;
+
+typedef struct CArr {
+  CVal *elements;
+  size_t len;
+} CArr;
+
+struct CMap {
+  CKeyPair *values;
+  size_t len;
+};
 
 typedef union CValUnion {
   const char *str;
   int _int;
-  CArr *arr;
-  CMap *obj;
+  CArr arr;
+  CMap obj;
 } CValUnion;
-
-struct CArr {
-  CVal **elements;
-};
 
 typedef enum CValType {
   Str,
@@ -32,39 +38,26 @@ typedef enum CValType {
 
 struct CVal {
   CValType type;
-  CValUnion *val;
+  CValUnion val;
 };
 
 typedef struct MaybeVal {
   bool just;
-  CVal *val;
+  CVal val;
 } MaybeVal;
 
-typedef struct CKey {
+struct CKeyPair {
   const char *key;
-  size_t len;
-} CKey;
-
-typedef struct CKeyPair {
-  CKey *key;
-  CVal *val;
-} CKeyPair;
-
-struct CMap {
-  CKeyPair **values;
-  size_t len;
+  CVal val;
 };
 
 // TODO: Add doc-strings
-size_t map_size(CMap *self);
-size_t arr_size(CArr *self);
 void insert_arr(CArr *self, CVal *val);
 
 // TODO: Add doc-strings
 // TODO: Implement
 void free_cval(CVal *val);
 void free_maybe(MaybeVal *val);
-void free_key(CKey *key);
 void free_keypair(CKeyPair *pair);
 void free_map(CMap *map);
 void free_arr(CArr *arr);
@@ -74,8 +67,6 @@ MaybeVal *maybe(CVal *val);
 CVal *new_val(CValType type, void *val);
 
 CArr *new_arr(CVal **elements);
-
-CKey *key(char *key);
 
 CKeyPair *key_pair(char *key, CVal *val);
 
