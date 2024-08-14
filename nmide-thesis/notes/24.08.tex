@@ -163,3 +163,9 @@ main-tag, and eventually figure out where a Plugin can interject, or how it can 
 
 So, all my issues has been with C stuff. I should really look into why this did not work. But, atleast I can make plugins in Rust now. And
 actually render them.
+
+Holy Shit, I have a state (model), that is updated by a Msg, through a plugin! Shit works!!!!
+It still all in Rust, but hey! It's going forward! I can actually release something tomorrow! Now I need to figure out how to do plugin-management
+in a smart-ish way. Because, I could do it the easy way, where I create a master plugin that loads all other plugins. That would work, but it
+feels like cheating. I think the cooler/more complex way would be to have some ABI at the Nmide-Level, so that plugins can manage other plugins
+but I don't really know how. I should really send an email to my supervisors and get some help. Hopefully we can meet some time next week.
