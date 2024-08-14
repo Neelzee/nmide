@@ -199,8 +199,6 @@ pts:
     - echo "TODO"
 
 pdf-build:
-  rules:
-    - if: $ENABLED
   image: neelzee/nmide-thesis:latest
   stage: build
   when: manual
@@ -245,8 +243,6 @@ nmide-lib-build:
       - nmide-lib/release/libnmide.*
 
 windows-build:
-  rules:
-    - if: $ENABLED
   stage: build
   dependencies:
     - "pts"
@@ -262,8 +258,6 @@ windows-build:
       - $CORE_OUT_DIR
 
 debian-build:
-  rules:
-    - if: $ENABLED
   stage: build
   dependencies:
     - "pts"
@@ -279,8 +273,6 @@ debian-build:
       - $CORE_OUT_DIR
 
 mac-build:
-  rules:
-    - if: $ENABLED
   stage: build
   dependencies:
     - "pts"
