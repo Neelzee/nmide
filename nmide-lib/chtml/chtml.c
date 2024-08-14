@@ -10,14 +10,7 @@ CHtmlElement *element(CHtmlTag tag) {
 
 CHtmlElement *e_div() { return element(Div); }
 
-CHtmlText *e_text() {
-  CHtmlText *e = (CHtmlText *)malloc(sizeof(CHtmlText));
-  e->text = "";
-  e->len = 1;
-  return e;
-}
-
-CHtmlContent *unionize(CHtmlElement *element, CHtmlText *text) {
+CHtmlContent *unionize(CHtmlElement *element, char *text) {
   CHtmlContent *e = (CHtmlContent *)malloc(sizeof(CHtmlContent));
 
   if (element == NULL && text == NULL) {
@@ -31,7 +24,8 @@ CHtmlContent *unionize(CHtmlElement *element, CHtmlText *text) {
   }
 
   if (element != NULL) {
-    e->element = element;
+    e->element = *element;
+    free(element);
   }
 
   if (text != NULL) {
@@ -41,22 +35,21 @@ CHtmlContent *unionize(CHtmlElement *element, CHtmlText *text) {
   return e;
 }
 
-CHtml *simple_test() {
+CHtml simple_test() {
   CHtmlElement *p_e_div = e_div();
-  CHtmlText *p_e_text = e_text();
 
-  p_e_text->text = "Hello, world!";
-  p_e_text->len = sizeof(p_e_text->text);
-
-  CHtmlContent *c_text = unionize(NULL, p_e_text);
+  CHtmlContent *c_text = unionize(NULL, "Hello, world!");
 
   CHtml *html_text = (CHtml *)malloc(sizeof(CHtml));
 
   html_text->isElement = false;
 
-  html_text->content = c_text;
+  html_text->content = *c_text;
+  free(c_text);
 
-  p_e_div->children = &html_text;
+  p_e_div->children = (CHtml *)malloc(sizeof(CHtml));
+  p_e_div->children[0] = *html_text;
+  free(html_text);
   p_e_div->len++;
 
   CHtmlContent *c_div = unionize(p_e_div, NULL);
@@ -64,24 +57,19 @@ CHtml *simple_test() {
   CHtml *html_div = (CHtml *)malloc(sizeof(CHtml));
 
   html_div->isElement = true;
-  html_div->content = c_div;
-
-  return html_div;
+  html_div->content = *c_div;
+  CHtml obj = *html_div;
+  free_chtml(html_div);
+  return obj;
 }
 
 void free_chtml(CHtml *chtml) {
   if (chtml != NULL) {
 
     if (chtml->isElement) {
-      CHtmlElement *element = chtml->content->element;
-
-      while (element->len > 0) {
-        CHtml *child = element->children[0];
-        free_chtml(child);
-        element->len--;
-      }
+      CHtmlElement element = chtml->content.element;
+      free(element.children);
     }
-    free(chtml->content);
     free(chtml);
   }
 }

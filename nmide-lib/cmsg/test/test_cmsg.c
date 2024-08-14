@@ -4,13 +4,12 @@
 
 static CVal *get_cval_from_str(char *val, char *type) {
   CVal *v = (CVal *)malloc(sizeof(CVal));
-  v->val = (CValUnion *)malloc(sizeof(CValUnion));
   if (strcmp(type, "Int")) {
     v->type = Int;
-    v->val->_int = atoi(val);
+    v->val._int = atoi(val);
   } else {
     v->type = Str;
-    v->val->str = val;
+    v->val.str = val;
   }
   return v;
 }

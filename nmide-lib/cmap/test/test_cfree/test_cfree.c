@@ -18,14 +18,6 @@ static MunitResult test_free_maybe(const MunitParameter _[], void *__) {
   return MUNIT_OK;
 }
 
-static MunitResult test_free_key(const MunitParameter _[], void *__) {
-  CKey *k = key("foo");
-  munit_assert_not_null(k);
-  free_key(k);
-  munit_assert_null(k);
-  return MUNIT_OK;
-}
-
 static MunitResult test_free_keypair(const MunitParameter _[], void *__) {
   CKeyPair *k = key_pair("foo", new_val(Str, (void *)"str"));
   munit_assert_not_null(k);
@@ -62,14 +54,6 @@ static MunitTest free_tests[] = {
     {
         (char *)"/maybe",       /* name */
         test_free_maybe,        /* test */
-        NULL,                   /* setup */
-        NULL,                   /* tear_down */
-        MUNIT_TEST_OPTION_NONE, /* options */
-        NULL                    /* parameters */
-    },
-    {
-        (char *)"/ckey",        /* name */
-        test_free_key,          /* test */
         NULL,                   /* setup */
         NULL,                   /* tear_down */
         MUNIT_TEST_OPTION_NONE, /* options */

@@ -24,7 +24,6 @@ if(CMAKE_BUILD_TYPE STREQUAL Debug)
   cmap/test
   cmap/test/test_carr
   cmap/test/test_cfree
-  cmap/test/test_ckey
   cmap/test/test_ckeypair
   cmap/test/test_cmap
   cmap/test/test_cval
@@ -37,7 +36,6 @@ if(CMAKE_BUILD_TYPE STREQUAL Debug)
     cmap/test/cmap_test_suite.c
     cmap/test/test_carr/test_carr.c
     cmap/test/test_cfree/test_cfree.c
-    cmap/test/test_ckey/test_ckey.c
     cmap/test/test_ckeypair/test_ckeypair.c
     cmap/test/test_cmap/test_cmap.c
     cmap/test/test_cval/test_cval.c

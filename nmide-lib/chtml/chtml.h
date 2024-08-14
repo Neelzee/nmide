@@ -26,21 +26,6 @@ typedef enum CHtmlTag {
 } CHtmlTag;
 
 /**
- * Raw text, used if you want a raw string in another node.
- */
-typedef struct CHtmlText {
-  /**
-   * Text field
-   */
-  const char *text;
-  /**
-   * Amount of characters.
-   * TODO: Ensure this is safe with UTF-8
-   */
-  size_t len;
-} CHtmlText;
-
-/**
  * Standard Html Element Representation.
  *
  * Represents any Html-tag, along with their subsequent children.
@@ -53,7 +38,7 @@ typedef struct CHtmlElement {
   /**
    * Array of children
    */
-  struct CHtml **children;
+  struct CHtml *children;
   /**
    * Amount of children
    */
@@ -64,18 +49,18 @@ typedef struct CHtmlElement {
  * Union of a Html Element, and Raw text.
  */
 typedef union CHtmlContent {
-  CHtmlElement *element;
-  CHtmlText *text;
+  CHtmlElement element;
+  const char *text;
 } CHtmlContent;
 
 typedef struct CHtml {
-  CHtmlContent *content;
+  CHtmlContent content;
   bool isElement;
 } CHtml;
 
 typedef struct CHtmlLocation {
-  CHtml *html;
-  const char *location;
+  CHtml html;
+  const char location;
 } CHtmlLocation;
 
 /**
@@ -83,19 +68,14 @@ typedef struct CHtmlLocation {
  */
 CHtmlElement *e_div();
 
-/**
- * Creates empty CHtmlText text
- */
-CHtmlText *e_text();
-
-CHtmlContent *unionize(CHtmlElement *element, CHtmlText *text);
+CHtmlContent *unionize(CHtmlElement *element, char *text);
 
 /**
  * <div>
  *  <p>Hello, World!</p>
  * </div>
  */
-CHtml *simple_test();
+CHtml simple_test();
 
 /**
  * Recursively frees the given html node

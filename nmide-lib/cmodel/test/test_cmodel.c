@@ -5,8 +5,7 @@ MunitResult test_init(const MunitParameter _[], void *__) {
   munit_assert_not_null(model);
   MaybeVal *loc = cmodel_lookup(model, "location");
   munit_assert_true(loc->just);
-  munit_assert_not_null(loc->val);
-  munit_assert_null(carr_get(loc->val->val->arr, 0));
+  munit_assert_null(carr_get(&loc->val.val.arr, 0));
   drop(model);
   free_maybe(loc);
   return MUNIT_OK;

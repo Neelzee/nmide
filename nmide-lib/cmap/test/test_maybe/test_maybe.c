@@ -6,7 +6,6 @@ static MunitResult test_maybe_nothing(const MunitParameter _[], void *__) {
   MaybeVal *m = maybe(NULL);
   munit_assert_not_null(m);
   munit_assert_false(m->just);
-  munit_assert_null(m->val);
   free_maybe(m);
   return MUNIT_OK;
 }
@@ -15,7 +14,6 @@ static MunitResult test_maybe(const MunitParameter _[], void *__) {
   MaybeVal *m = maybe(new_val(Str, "foobar"));
   munit_assert_not_null(m);
   munit_assert(m->just);
-  munit_assert_not_null(m->val);
   free_maybe(m);
   return MUNIT_OK;
 }

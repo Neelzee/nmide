@@ -4,7 +4,9 @@ CMsg *new_cmsg(char *msg, CVal *val) {
   CMsg *m = (CMsg *)malloc(sizeof(CMsg));
   m->msg = msg;
   m->len = strlen(msg);
-  m->opt = maybe(val);
+  MaybeVal *v = maybe(val);
+  m->opt = *v;
+  free(v);
   return m;
 }
 
