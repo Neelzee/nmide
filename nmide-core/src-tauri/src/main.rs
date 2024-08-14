@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use anyhow::Result;
-use nmide_rust_ffi::{html::Html, model::Model};
+use nmide_rust_ffi::{attr::Attr, html::Html, model::Model};
 use once_cell::sync::Lazy;
 use tauri_plugin_log::LogTarget;
 use tokio::sync::Mutex;
@@ -11,39 +11,29 @@ use nmide_plugin_manager::Nmlugin;
 
 #[tauri::command]
 async fn init_html() -> Html {
+    let lock = NMLUGS.try_lock().expect("Could not get lock on mutex");
+    let kids = lock
+        .iter()
+        .filter_map(|nl| nl.view(Model::new()).ok())
+        .collect::<Vec<_>>();
     Html::Div {
-        kids: NMLUGS
-            .try_lock()
-            .expect("Could not get lock on mutex")
-            .iter()
-            .filter_map(|nl| nl.view(Model {}).ok())
-            .map(|v| v.1)
-            .collect::<Vec<_>>(),
+        kids,
+        attrs: vec![Attr::Id("main".to_string())],
     }
 }
 
 static NMLUGS: Lazy<Mutex<Vec<Nmlugin>>> = Lazy::new(|| {
     Mutex::new(vec![Nmlugin::new(
         "nmide-framework",
-        "./plugin-libs/framework.so",
+        "./plugin-libs/libnmide_framework.so",
     )
     .unwrap()])
 });
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let r = Html::Div {
-        kids: NMLUGS
-            .try_lock()
-            .expect("Could not get lock on mutex")
-            .iter()
-            .filter_map(|nl| nl.view(Model {}).ok())
-            .map(|v| v.1)
-            .collect::<Vec<_>>(),
-    };
-
-    println!("{r:?}");
-
+    let l = NMLUGS.try_lock()?;
+    drop(l);
     tauri::Builder::default()
         .plugin(
             tauri_plugin_log::Builder::default()
