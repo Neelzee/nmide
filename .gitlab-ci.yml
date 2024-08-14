@@ -12,7 +12,7 @@ variables:
 
 rust-test-core:
   rules:
-    - if: $ENABLED
+    - if: '$ENABLED == "true"'
   image: neelzee/nmide-rust:latest
   stage: test
   script:
@@ -22,7 +22,7 @@ rust-test-core:
 
 rust-test-ffi:
   rules:
-    - if: $ENABLED
+    - if: '$ENABLED == "true"'
   image: neelzee/nmide-rust:latest
   stage: test
   script:
@@ -32,7 +32,7 @@ rust-test-ffi:
 
 js-test:
   rules:
-    - if: $ENABLED
+    - if: '$ENABLED == "true"'
   image: neelzee/nmide-node:latest
   stage: test
   script:
@@ -44,7 +44,7 @@ js-test:
 
 c-test-build:
   rules:
-    - if: $ENABLED
+    - if: '$ENABLED == "true"'
   image: neelzee/nmide-c:latest
   stage: test
   script:
@@ -65,7 +65,7 @@ c-test-build:
 
 c-test:
   rules:
-    - if: $ENABLED
+    - if: '$ENABLED == "true"'
   dependencies:
     - c-test-build
   image: neelzee/nmide-c:latest
@@ -82,7 +82,7 @@ c-test:
 
 c-check-report:
   rules:
-    - if: $ENABLED
+    - if: '$ENABLED == "true"'
   dependencies:
     - c-test-build
   image: neelzee/nmide-c:latest
@@ -119,7 +119,7 @@ c-check-report:
 
 c-check-cppcheck:
   rules:
-    - if: $ENABLED
+    - if: '$ENABLED == "true"'
   image: neelzee/nmide-c:latest
   stage: test
   script:
@@ -132,7 +132,7 @@ c-check-cppcheck:
 
 c-check-valgrind-cmsg:
   rules:
-    - if: $ENABLED
+    - if: '$ENABLED == "true"'
   image: neelzee/nmide-c:latest
   stage: test
   dependencies:
@@ -151,7 +151,7 @@ c-check-valgrind-cmsg:
 
 c-check-valgrind-cmap:
   rules:
-    - if: $ENABLED
+    - if: '$ENABLED == "true"'
   image: neelzee/nmide-c:latest
   stage: test
   dependencies:
@@ -170,7 +170,7 @@ c-check-valgrind-cmap:
 
 c-check-valgrind-cmodel:
   rules:
-    - if: $ENABLED
+    - if: '$ENABLED == "true"'
   image: neelzee/nmide-c:latest
   stage: test
   dependencies:
@@ -189,7 +189,7 @@ c-check-valgrind-cmodel:
 pts:
   stage: svn
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $ENABLED'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && '$ENABLED == "true"''
       when: always
   dependencies:
     - js-test
@@ -215,7 +215,7 @@ pdf-build:
 
 nmide-lib-build:
   rules:
-    - if: $ENABLED
+    - if: '$ENABLED == "true"'
   stage: build
   dependencies:
     - pts
