@@ -1,4 +1,7 @@
-use std::ffi::{CStr, CString};
+use std::{
+    collections::HashMap,
+    ffi::{CStr, CString},
+};
 
 use anyhow::{Context, Result};
 use safer_ffi::prelude::AsOut;
@@ -97,6 +100,62 @@ where
 impl Map {
     pub fn new() -> Self {
         Self { map: Vec::new() }
+    }
+
+    pub fn insert(self, key: String, val: Value) -> Self {
+        let map = self.map;
+
+        fn insert_helper(m: &[(String, Value)], k: String, v: Value) -> Vec<(String, Value)> {
+            match m {
+                [] => [(k, v)].to_vec(),
+                [(x, _), xs @ ..] if *x == k => {
+                    let mut vec = xs.to_vec();
+                    vec.push((k, v));
+                    vec
+                }
+                [x, xs @ ..] => {
+                    let mut vec = insert_helper(xs, k, v);
+                    vec.push(x.clone());
+                    vec
+                }
+            }
+        }
+
+        Self {
+            map: insert_helper(&map, key, val),
+        }
+    }
+
+    pub fn remove(self, key: String) -> Self {
+        let map = self.map;
+
+        fn remove_helper(m: &[(String, Value)], k: String) -> Vec<(String, Value)> {
+            match m {
+                [] => Vec::new(),
+                [(x, _), xs @ ..] if *x == k => xs.to_vec(),
+                [x, xs @ ..] => {
+                    let mut vec = remove_helper(xs, k);
+                    vec.push(x.clone());
+                    vec
+                }
+            }
+        }
+
+        Self {
+            map: remove_helper(&map, key),
+        }
+    }
+
+    pub fn lookup(&self, key: String) -> Option<Value> {
+        fn lookup_helper(m: &[(String, Value)], k: String) -> Option<Value> {
+            match m {
+                [] => None,
+                [(x, v), ..] if *x == k => Some(v.clone()),
+                [_, xs @ ..] => lookup_helper(xs, k),
+            }
+        }
+
+        lookup_helper(&self.map, key)
     }
 
     /// .

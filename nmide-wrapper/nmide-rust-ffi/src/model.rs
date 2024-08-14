@@ -72,6 +72,22 @@ impl Model {
         Self { map: self.map }
     }
 
+    pub fn lookup<S>(&self, k: S) -> Option<Value>
+    where
+        S: ToString,
+    {
+        self.map.lookup(k.to_string())
+    }
+
+    pub fn insert<S>(self, key: S, val: Value) -> Self
+    where
+        S: ToString,
+    {
+        Self {
+            map: self.map.insert(key.to_string(), val),
+        }
+    }
+
     /// .
     ///
     /// # Errors

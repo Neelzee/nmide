@@ -11,6 +11,7 @@ use ts_rs::TS;
 #[ts(export)]
 pub enum Html {
     Div { kids: Vec<Html>, attrs: Vec<Attr> },
+    Btn { kids: Vec<Html>, attrs: Vec<Attr> },
     Text(String),
     None,
 }
@@ -79,7 +80,7 @@ impl Html {
                 },
                 isElement: false,
             }),
-            Html::None => Ok(CHtml {
+            _ => Ok(CHtml {
                 content: CHtmlContent {
                     element: CHtmlElement {
                         tag: CHtmlTag_None,
@@ -95,6 +96,7 @@ impl Html {
     pub fn get_text(&self) -> String {
         match self {
             Html::Div { kids, .. } => kids.iter().map(Self::get_text).collect::<String>(),
+            Html::Btn { kids, .. } => kids.iter().map(Self::get_text).collect::<String>(),
             Html::Text(s) => s.clone(),
             Html::None => String::new(),
         }
