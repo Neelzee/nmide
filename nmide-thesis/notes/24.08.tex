@@ -137,3 +137,29 @@ interop with, it can't even do it with itself. Or, it's harder in Rust, because 
 Rust to behave in a manner in which I am not used to, for Rust, or any language.
 Either way, I have a self-made deadline, for the 15th, to release v0.1.0 of Nmide. And to fulfill that, I want to be able to render text on
 the screen, from a Plugin. Currently, I cannot do that. (I think, I have not properly tested anything).
+
+
+\section{24.08.14}
+
+Doing stuff fancy is hard. Not only is the conversion between C and Rust harder, because I wanted \textit{complex} structures, but I also struggle
+with the cooperation between \textit{proper} C and \textit{proper} Rust. Working with C for example, you usually use pointers, to ease the
+overhead on copying values, while in Rust, you work with values, which also occupy some space in memory, you don't think about it being a
+pointer. In Rust, if you are using pointers, explicitly, you are probably doing something wrong.
+This has led me to believe I have made a mistake when designing my C-Library. It should not be C, in the sense it should not made with C in mind,
+rather, it should be made with FFI in mind. And in other languages than C, pointers are difficult to work with. So I should pass everything as
+values instead.
+
+I don't know how long it took me, but I did it, it is simpler to test things, but I am still struggling with strings. For some reason it won't
+do what I want it to do. Maybe I should create my own String-Struct, that acts like an opaque struct, since I am not inspecting strings on the C
+level. (Or, I am not doing it now, atleast). Also, sidenote, my brain is so rotten that instead of using \{.\} to end my sentences, I use
+semicolons.
+
+I can avoid C. Or, I can delay creating a good C-interface, until later, and still hit my self-made deadline of the 15th. I can specify that
+an extern function is Rust, and everything is good. There might be some memory issues, I don't know, we'll see.
+
+I can make it more modular. I was thinking about having view be like view :: Model -> (String, Html), so that I know where to place the Html, but
+instead, I'll make the placing of the Html a plugin in itself. How? I don't know! But I will refactor the IDE to just dump html inside of the
+main-tag, and eventually figure out where a Plugin can interject, or how it can interject.
+
+So, all my issues has been with C stuff. I should really look into why this did not work. But, atleast I can make plugins in Rust now. And
+actually render them.
