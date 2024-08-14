@@ -189,7 +189,7 @@ c-check-valgrind-cmodel:
 pts:
   stage: svn
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && '$ENABLED == "true"''
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $ENABLED == "true"'
       when: always
   dependencies:
     - js-test
