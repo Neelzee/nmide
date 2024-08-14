@@ -7,15 +7,16 @@ build = "build.rs"
 [dependencies]
 anyhow = "1.0.86"
 c_vec = "2.0.0"
-safer-ffi.features = ["alloc"]
-safer-ffi.version = "0.1.9"
-serde.features = ["derive"]
-serde.version = "1.0.204"
+rstest = "0.22.0"
+safer-ffi = { version = "0.1.9", features = ["alloc"] }
+serde = { version = "1.0.204", features = ["derive"] }
 serde_json = "1.0.121"
 ts-rs = "9.0.1"
 
 [build-dependencies]
-cmake = "0.1.31"
+bindgen = "0.69.4"
+anyhow = "1.0.86"
 
-[features]
-test-lib = []
+[lib]
+name = "nmide_rust_ffi"
+crate-type = ["rlib", "staticlib"]
