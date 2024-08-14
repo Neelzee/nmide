@@ -1,0 +1,11 @@
+[package]
+name = "rust-test"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+
+[dependencies]
+anyhow = "1.0.86"
+nmide-rust-ffi.path = "../../nmide-wrapper/nmide-rust-ffi"
+rstest = "0.22.0"
+safer-ffi = "0.1.12"
