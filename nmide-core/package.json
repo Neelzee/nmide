@@ -1,7 +1,7 @@
 {
   "name": "nmide-core",
   "private": true,
-  "version": "0.1.0-alpha",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -15,6 +15,7 @@
     "jsdom": "^24.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1",
     "uuid": "^10.0.0"
   },
   "devDependencies": {

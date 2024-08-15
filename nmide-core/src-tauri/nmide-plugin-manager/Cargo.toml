@@ -9,5 +9,5 @@ anyhow = "1.0.86"
 libloading = "0.8.5"
 nmide-rust-ffi.path = "../../../nmide-wrapper/nmide-rust-ffi"
 safer-ffi = "0.1.12"
-uuid.version = "1.10.0"
-uuid.features = ["v4"]
+either = { version = "1.13.0", features = ["serde"] }
+log = "0.4.22"
