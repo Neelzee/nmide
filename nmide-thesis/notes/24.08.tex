@@ -185,5 +185,13 @@ heavily in my PMP, allowing for higher ordered plugins (sounds fancy, probably n
   \item PMP could ensure that view is only called if the Model has changed
 \end{itemize}
 
-I found it better to follow my favourite development slogan: KISS. Keep It Stupid, Stupid. IE. Your application should be stupid/simple. So instead
-of overcomplicating the Nmide-Core-Plugin-ABI, I can keep it simple, and then overcomplicate my plugins instead.
+I found it better to follow my favourite development slogan: KISS. Keep It Stupid, Stupid. IE. Your application should be stupid/simple. So
+instead of overcomplicating the Nmide-Core-Plugin-ABI, I can keep it simple, and then overcomplicate my plugins instead.
+
+Now, what am I supposed to do?
+
+I am still in need of a good pipeline, which needs good integration tests. Other than that, I need a better C-Rust-Wrapper, and C-Library.
+I also need more plugins. Nmide-Rust-FFI could probably be split into some standard nmide-rust-library, and a Rust-C-Wrapper. I also need to
+actual research. I could also make a Haskell plugin, having it only be a framework plugin, since CHtml to Html works, it's just char to str
+that doesn't work. So, it wouldn't really work, since the id's I set in Haskell, will be gibberish in Rust, and therefore no other Plugin can
+use them.
