@@ -169,3 +169,21 @@ It still all in Rust, but hey! It's going forward! I can actually release someth
 in a smart-ish way. Because, I could do it the easy way, where I create a master plugin that loads all other plugins. That would work, but it
 feels like cheating. I think the cooler/more complex way would be to have some ABI at the Nmide-Level, so that plugins can manage other plugins
 but I don't really know how. I should really send an email to my supervisors and get some help. Hopefully we can meet some time next week.
+
+
+\section{24.08.15}
+
+Working on a plugin-manager-plugin (PMP). Fun, but also not, since I have no plugins to manage, except one. the Nmide-Core-Stuff is finished, ish.
+I have a state that is updated, and it even worked if I had the same plugin twice (two plugins consuming the same plugin). All that happened was
+that I had two texts, two buttons, and two counters, all incrementing at the same pace. Because I designed the Model the way I did, I can use it
+heavily in my PMP, allowing for higher ordered plugins (sounds fancy, probably not the correct terminology). An example of what my PMP could do:
+
+\begin{itemize}
+  \item Instead of all messages being sent to all plugins, a plugin could \textit{subscribe} to a Msg
+  \item Plugins could choose if they want to expose their messages or not, ensuring msg collisions wont happen
+  \item Plugins could add a location-attribute to their html, which the PMP could use to \textit{place} the Html
+  \item PMP could ensure that view is only called if the Model has changed
+\end{itemize}
+
+I found it better to follow my favourite development slogan: KISS. Keep It Stupid, Stupid. IE. Your application should be stupid/simple. So instead
+of overcomplicating the Nmide-Core-Plugin-ABI, I can keep it simple, and then overcomplicate my plugins instead.
