@@ -17,45 +17,66 @@ endif()
 # Testing add_executables
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
   include_directories(
-  html
-  model
-  map
-  )
-
-  add_executable(
-    nmide_test
-    test/test_nmide.c
-    test/test_util.c
-    html/html.c
-    html/css.c
+  chtml
+  cmodel
+  cmodel/test
+  cmap
+  cmap/test
+  cmap/test/test_carr
+  cmap/test/test_cfree
+  cmap/test/test_ckeypair
+  cmap/test/test_cmap
+  cmap/test/test_cval
+  cmap/test/test_maybe
+  cmsg/test
   )
 
   add_executable(
     test_cmap
-    map/test/test_cmap.c
+    cmap/test/cmap_test_suite.c
+    cmap/test/test_carr/test_carr.c
+    cmap/test/test_cfree/test_cfree.c
+    cmap/test/test_ckeypair/test_ckeypair.c
+    cmap/test/test_cmap/test_cmap.c
+    cmap/test/test_cval/test_cval.c
+    cmap/test/test_maybe/test_maybe.c
     munit/munit.c
-    model/cmodel.c
-    map/cmap.c
+    cmodel/cmodel.c
+    cmap/cmap.c
+  )
+
+  add_executable(
+    test_cmodel
+    cmodel/test/test_cmodel.c
+    cmodel/cmodel.c
+    munit/munit.c
+    cmap/cmap.c
+  )
+
+  add_executable(
+    test_cmsg
+    cmsg/test/test_cmsg.c
+    cmsg/cmsg.c
+    munit/munit.c
+    cmap/cmap.c
   )
 endif()
 
 # Create the static library
 if(CMAKE_BUILD_TYPE STREQUAL Release)
   include_directories(
-  html
-  model
-  munit
-  test
-  map
-  map/test
+  chtml
+  cmodel
+  cmap
+  cmsg
+  cinterface
   )
 
   add_library(nmide STATIC
   nmide.c
-  html/html.c
-  html/css.c
-  model/cmodel.c
-  map/cmap.c
+  chtml/chtml.c
+  cmodel/cmodel.c
+  cmap/cmap.c
   )
 
   install(TARGETS nmide DESTINATION .)

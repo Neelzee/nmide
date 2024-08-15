@@ -1,0 +1,10 @@
+[package]
+name = "plugin-tests"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.86"
+libloading = "0.8.5"
+rstest = "0.22.0"
+nmide-rust-ffi = { path = "../../nmide-wrapper/nmide-rust-ffi" }

@@ -1,0 +1,7 @@
+[workspace]
+members = ["plugin-tests", "rust-test"]
+
+[package]
+name = "nmide-tests"
+version = "0.1.0"
+edition = "2021"

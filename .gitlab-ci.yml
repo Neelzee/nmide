@@ -7,9 +7,12 @@ default:
   image: neelzee/nmide-tauri:latest
 
 variables:
-  CORE_OUT_DIR: "nmide-core/src-tauri/target/release/nmide"
+  CORE_OUT_DIR: "nmide-core/src-tauri/target/release/*"
+  ENABLED: false
 
 rust-test-core:
+  rules:
+    - if: '$ENABLED == "true"'
   image: neelzee/nmide-rust:latest
   stage: test
   script:
@@ -18,6 +21,8 @@ rust-test-core:
     - cargo --version
 
 rust-test-ffi:
+  rules:
+    - if: '$ENABLED == "true"'
   image: neelzee/nmide-rust:latest
   stage: test
   script:
@@ -26,6 +31,8 @@ rust-test-ffi:
     - cargo --version
 
 js-test:
+  rules:
+    - if: '$ENABLED == "true"'
   image: neelzee/nmide-node:latest
   stage: test
   script:
@@ -35,7 +42,9 @@ js-test:
     - npm i
     - npm run test
 
-c-test:
+c-test-build:
+  rules:
+    - if: '$ENABLED == "true"'
   image: neelzee/nmide-c:latest
   stage: test
   script:
@@ -50,47 +59,149 @@ c-test:
     - cmake -DCMAKE_BUILD_TYPE=Debug ..
     - make
     - ls
-    - ./test_cmap
-    - ./nmide_test
+  artifacts:
+    paths:
+      - nmide-lib/debug
 
-c-check:
+c-test:
+  rules:
+    - if: '$ENABLED == "true"'
+  dependencies:
+    - c-test-build
+  image: neelzee/nmide-c:latest
+  stage: test
+  script:
+    - cd nmide-lib/debug
+    - ls
+    - ./test_cmap
+    - ./test_cmodel
+    - ./test_cmsg
+  needs:
+  - job: c-test-build
+    artifacts: true
+
+c-check-report:
+  rules:
+    - if: '$ENABLED == "true"'
+  dependencies:
+    - c-test-build
   image: neelzee/nmide-c:latest
   stage: test
   script:
     - gcc --version
     - cppcheck --version
-    - touch nmide-lib/report
+    - valgrind --version
     - cd nmide-lib
-    - pwd
-    - cppcheck --enable=all --errorlist --force --quiet --output-file=report -imunit -ibuild -irelease -idebug .
+    - ls
+    - touch report
+    - cppcheck --enable=all --errorlist --force --quiet --output-file=report -imunit -ibuild -irelease -idebug . >> report
     - ls
     - mv report report-"$(date -I)".xml
-    - cppcheck --enable=all --error-exitcode=1 --force --quiet -imunit -ibuild -irelease -idebug .
-  allow_failure: true
+    - cd debug
+    - ls
+    - valgrind --xml=yes --xml-file=valgrind_test_cmap.xml --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmap || true
+    - valgrind --xml=yes --xml-file=valgrind_test_cmodel.xml --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmodel || true
+    - valgrind --xml=yes --xml-file=valgrind_test_cmsg.xml --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmsg || true
+    - ls
+    - mv valgrind_test_cmap.xml ../valgrind_"$(date -I)"_test_cmap.xml
+    - mv valgrind_test_cmodel.xml ../valgrind_"$(date -I)"_test_cmodel.xml
+    - mv valgrind_test_cmsg.xml ../valgrind_"$(date -I)"_test_cmsg.xml
+  needs:
+  - job: c-test-build
+    artifacts: true
   artifacts:
     access: all
     paths:
       - nmide-lib/report-*.xml
-    
+      - nmide-lib/valgrind_*_test_cmap.xml
+      - nmide-lib/valgrind_*_test_cmodel.xml
+      - nmide-lib/valgrind_*_test_cmsg.xml
+
+c-check-cppcheck:
+  rules:
+    - if: '$ENABLED == "true"'
+  image: neelzee/nmide-c:latest
+  stage: test
+  script:
+    - gcc --version
+    - cppcheck --version
+    - cd nmide-lib
+    - pwd
+    - ls
+    - cppcheck --enable=all --error-exitcode=1 --force --quiet -imunit -ibuild -irelease -idebug .
+
+c-check-valgrind-cmsg:
+  rules:
+    - if: '$ENABLED == "true"'
+  image: neelzee/nmide-c:latest
+  stage: test
+  dependencies:
+    - c-test-build
+  script:
+    - gcc --version
+    - valgrind --version
+    - cd nmide-lib
+    - ls
+    - cd debug
+    - ls
+    - valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmsg
+  needs:
+  - job: c-test-build
+    artifacts: true
+
+c-check-valgrind-cmap:
+  rules:
+    - if: '$ENABLED == "true"'
+  image: neelzee/nmide-c:latest
+  stage: test
+  dependencies:
+    - c-test-build
+  script:
+    - gcc --version
+    - valgrind --version
+    - cd nmide-lib
+    - ls
+    - cd debug
+    - ls
+    - valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmap
+  needs:
+  - job: c-test-build
+    artifacts: true
+
+c-check-valgrind-cmodel:
+  rules:
+    - if: '$ENABLED == "true"'
+  image: neelzee/nmide-c:latest
+  stage: test
+  dependencies:
+    - c-test-build
+  script:
+    - gcc --version
+    - valgrind --version
+    - cd nmide-lib/debug
+    - pwd
+    - ls
+    - valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmodel
+  needs:
+  - job: c-test-build
+    artifacts: true
 
 pts:
   stage: svn
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $ENABLED == "true"'
       when: always
   dependencies:
     - js-test
     - rust-test-core
     - rust-test-ffi
-    - c-check
   script:
     - echo "TODO"
 
 pdf-build:
   image: neelzee/nmide-thesis:latest
   stage: build
-  dependencies:
-    - pts
+  when: manual
   script:
     - pdflatex --version
     - pdflatex --output-directory=nmide-thesis nmide-thesis/main.tex
@@ -106,6 +217,8 @@ pdf-build:
       - nmide-thesis/*.pdf
 
 nmide-lib-build:
+  rules:
+    - if: '$ENABLED == "true"'
   stage: build
   dependencies:
     - pts

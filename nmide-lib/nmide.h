@@ -1,8 +1,9 @@
 #ifndef NMIDE
 
-#include "html/css.h"
-#include "html/html.h"
+#include "cinterface/cinterface.h"
 
 #define NMIDE
+
+char *greetings();
 
 #endif // !NMIDE

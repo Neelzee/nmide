@@ -1,41 +1,35 @@
 import { useEffect, useState } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
 import "./App.css";
-import { listen } from "@tauri-apps/api/event";
+import { Html } from "./bindings/Html";
+import RenderHtml from "./components/Html";
+import TauriClient from "./client";
+import { listen } from '@tauri-apps/api/event'
 
 function App() {
-  const [events, setEvents] = useState<string[]>([]);
+  const [html, setHtml] = useState<Html>("None");
 
   useEffect(() => {
-    listen("nils", (e) => {
-      setEvents(prev => {
-        prev.push(e.event);
-        return prev;
-      })
-    }).then(un => {
-      return () => un();
+    TauriClient("init_html", {}).then(html => {
+      setHtml(html);
     }).catch((err) => {
       console.error(err);
-      return () => { };
-    })
+    }).finally(() => { })
   }, []);
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    await invoke("greet", {})
-  }
+  useEffect(() => {
+    listen("refresh_html", (_) => {
+      TauriClient("init_html", {}).then(html => {
+        setHtml(html);
+      }).catch((err) => {
+        console.error(err);
+      }).finally(() => { })
 
-  async function test() {
-    await invoke("test", {})
-  }
+    }).then(un => un)
+      .catch(err => console.error(err));
+  }, []);
 
   return (
-    <div>
-      <p>Hello, World!</p>
-      <button onClick={greet} />
-      <p>{events.map((e) => { return <>{e}</> })}</p>
-      <button onClick={test} />
-    </div>
+    <RenderHtml html={html} />
   );
 }
 

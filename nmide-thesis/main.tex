@@ -4,7 +4,12 @@
 
 \usepackage{graphicx}
 
-\begin{document}
+\usepackage{newclude}
+
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,positioning,shapes.symbols}
+
 
 \title{Modular IDE}
 
@@ -20,6 +25,7 @@ University of Bergen\\
 \email{nfi005@uib.no}
 }
 
+\begin{document}
 \maketitle
 \begin{abstract}
 This paper introduces a modular Integrated Development Environment (IDE) for experimental programming languages,
@@ -35,18 +41,20 @@ and Syntactic Theory Functor (STF), are outlined. These plugins will be implemen
 modularized IDE's functionality, with a focus on the ASR Transformation module.
 
 \keywords{Modularization \and IDE \and Magnolia.}
-\end{abstract} 
+\end{abstract}
 
-\include{sections/000_introduction}
+\include*{sections/000_introduction}
 
-\include{sections/001_background}
+\include*{sections/001_background}
 
-\include{sections/002_research_question}
+\include*{sections/002_research_question}
 
-\include{sections/003_plugins}
+\include*{sections/003_plugins}
 
-\include{sections/004_implementation}
+\include*{sections/004_implementation}
 
-\include{sections/005_architecture}
+\include*{sections/005_architecture}
+
+\include{figures/integration-tests}
 
 \end{document}
