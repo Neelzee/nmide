@@ -1,0 +1,109 @@
+\documentclass{beamer}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{graphicx}
+
+\usepackage[normalem]{ulem}
+
+\usepackage{newclude}
+
+% Haskell
+\usepackage[cache=false]{minted}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,positioning,shapes.symbols}
+
+
+\usetheme{Madrid}
+
+\title{Modular IDE}
+\author{Nils Michael}
+\date{\today}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section{Plan}
+\begin{frame}{Plan}
+    \begin{itemize}
+        \item Create an IDE
+        \item Create Plugins
+        \item ...
+        \item Profit
+    \end{itemize}
+\end{frame}
+
+\section{Create an IDE}
+\begin{frame}{Create an IDE}
+  So, here is my IDE:
+\end{frame}
+
+\begin{frame}{Example IDE}
+\end{frame}
+
+\begin{frame}{What does it have?}
+  \begin{itemize}
+    \item Loading of Plugins
+    \item Unloading of Plugins?
+    \item \sout{Optomizations}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Loading of Plugins}
+  A Plugin, is a library, that is dynamically loaded,
+  checked for a \textit{manifest}, which tells the IDE
+  what functions this Plugin has.
+
+  I have taken inspiration from Elm-Lang
+\end{frame}
+
+\begin{frame}{Plugin Architecture}
+    \begin{figure}
+        \centering
+        \include{../../figures/plugin-architecture}
+        \caption{Plugin Architecture}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Plugin Example}
+  \include{../../code/plugin-architecture}
+\end{frame}
+
+\section{Remaining Work}
+\begin{frame}{Plugins}
+\begin{itemize}
+  \item Make useful plugins
+  \item Expand Plugin Language Landscape
+\end{itemize}
+\end{frame}
+
+\section{Remaining Work}
+\begin{frame}{Tests}
+\begin{itemize}
+  \item Unit Tests
+  \item Integration Tests
+  \item Platform Tests
+\end{itemize}
+\end{frame}
+
+\section{Remaining Work}
+\begin{frame}{Cross Platform}
+\begin{itemize}
+  \item Figure out all necessary dependencies
+  \item Ensure users can build for \textit{all} platforms
+  \item Create installer?
+\end{itemize}
+\end{frame}
+
+\section{Main Content}
+\begin{frame}{A Section Title}
+    Here is some text and a figure.
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.7\textwidth]{../../pics/grindset.png}
+        \caption{A figure caption}
+    \end{figure}
+\end{frame}
+\end{document}

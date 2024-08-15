@@ -1,0 +1,18 @@
+\begin{minted}{haskell}
+-- Manifest :: Model
+init :: Model
+init :: [("counter", ValInt 0)]
+
+update :: Msg -> Model -> Model
+update (PluginMsg "counter") model =
+  case lookup "counter" model of
+    Just (ValInt i) -> insert "counter" (ValInt (i + 1)) model
+    Nothing -> insert "counter" (ValInt 0) model
+
+view :: Model -> Html
+view model = Div [] [Text "Hello, World!"
+  , Btn [OnClick (PluginMsg "counter")] []
+  , Text (putStrLn (lookupOrDefault "counter" model))
+\end{minted}
+
+
