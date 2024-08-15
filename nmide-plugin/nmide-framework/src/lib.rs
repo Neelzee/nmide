@@ -21,13 +21,14 @@ pub extern "Rust" fn view(model: Model) -> Html {
                 attrs: vec![Attr::OnClick(Msg::PluginMsg("counter".to_string()))],
             },
         ],
-        attrs: Vec::new(),
+        attrs: vec![Attr::Id("foobar".to_string())],
     }
 }
 
 #[no_mangle]
 pub extern "Rust" fn init() -> Model {
-    vec![("counter", 0)].into()
+    let r: Model = vec![("counter", 0)].into();
+    r.merge(vec![("nmide-plugin-framework", vec!["foobar"])].into())
 }
 
 #[no_mangle]
@@ -36,7 +37,8 @@ pub extern "Rust" fn update(msg: Msg, model: Model) -> Model {
         Msg::PluginMsg(s) => match s.as_str() {
             "counter" => match model.lookup("counter") {
                 Some(Value::Int(x)) => model.insert("counter", Value::Int(x + 1)),
-                _ => model,
+                Some(_) => model.insert("counter", 1.into()),
+                None => model,
             },
 
             _ => model,
@@ -46,6 +48,6 @@ pub extern "Rust" fn update(msg: Msg, model: Model) -> Model {
 
 #[no_mangle]
 pub extern "Rust" fn manifest() -> Model {
-    let funcs: Model = vec![("functions", vec!["view", "update", "init"])].into();
-    funcs.merge(vec![("rust", 1)].into())
+    let funcs: Model = vec![("nmide-functions", vec!["view", "update", "init"])].into();
+    funcs.merge(vec![("nmide-plugin-type", "rust")].into())
 }
