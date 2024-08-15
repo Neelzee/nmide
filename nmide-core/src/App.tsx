@@ -10,7 +10,6 @@ function App() {
 
   useEffect(() => {
     TauriClient("init_html", {}).then(html => {
-      console.log(html);
       setHtml(html);
     }).catch((err) => {
       console.error(err);
@@ -18,10 +17,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    listen("init_html", (event) => {
-      console.log(event);
+    listen("refresh_html", (_) => {
       TauriClient("init_html", {}).then(html => {
-        console.log(html);
         setHtml(html);
       }).catch((err) => {
         console.error(err);

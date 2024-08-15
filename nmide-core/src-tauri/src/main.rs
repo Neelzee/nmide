@@ -3,6 +3,7 @@
 
 use anyhow::Result;
 use anyhow_tauri::{IntoTAResult, TAResult};
+use log::info;
 use nmide_rust_ffi::{
     attr::Attr,
     html::Html,
@@ -18,10 +19,9 @@ use nmide_plugin_manager::Nmlugin;
 
 #[tauri::command]
 async fn init_html() -> Html {
-    let lock = NMLUGS.try_lock().expect("Could not get lock on mutex");
-    let model_lock = MODEL
-        .try_lock()
-        .expect("Could not get a lock on Mutex<Model>");
+    info!("init_html");
+    let lock = NMLUGS.lock().await;
+    let model_lock = MODEL.lock().await;
     let kids = lock
         .iter()
         .filter_map(|nl| nl.view(model_lock.clone()).ok())
@@ -34,25 +34,25 @@ async fn init_html() -> Html {
 
 #[tauri::command]
 async fn process_msg(window: Window, msg: Msg) -> TAResult<()> {
-    let mut model_lock = MODEL.try_lock().into_ta_result()?;
-    let nmlugin_lock = NMLUGS.try_lock().into_ta_result()?;
-    let model = nmlugin_lock
-        .iter()
-        .filter_map(|nl| nl.update(msg.clone(), model_lock.clone()).ok())
-        .fold(Model::new(), |acc, m| acc.merge(m));
+    info!("process_msg: `{msg:?}`");
+    let mut model_lock = MODEL.lock().await;
+    let nmlugin_lock = NMLUGS.lock().await;
+    let model = nmlugin_lock.iter().fold(model_lock.clone(), |model, nl| {
+        nl.update(msg.clone(), model.clone()).unwrap_or(model)
+    });
     *model_lock = model;
-    window.emit("init_html", EmptyObj).into_ta_result()
+    drop(nmlugin_lock);
+    drop(model_lock);
+    window.emit("refresh_html", EmptyObj).into_ta_result()
 }
 
 #[derive(Clone, Serialize)]
 struct EmptyObj;
 
 static NMLUGS: Lazy<Mutex<Vec<Nmlugin>>> = Lazy::new(|| {
-    Mutex::new(vec![Nmlugin::new(
-        "nmide-framework",
-        "./plugin-libs/libnmide_framework.so",
-    )
-    .unwrap()])
+    Mutex::new(vec![
+        Nmlugin::new("./plugin-libs/libnmide_manager.so").unwrap()
+    ])
 });
 
 static MODEL: Lazy<Mutex<Model>> = Lazy::new(|| Mutex::new(Model::new()));
@@ -63,8 +63,14 @@ async fn main() -> Result<()> {
     let mut og_model = MODEL.try_lock()?;
     let model = nmlugings
         .iter()
-        .filter_map(|nl| nl.init().ok())
+        .filter_map(|nl| {
+            println!("{:?}", nl.manifest());
+            let res = nl.init();
+            println!("{res:?}");
+            res.ok()
+        })
         .fold(Model::new(), |acc, m| acc.merge(m));
+    println!("Model:\n{model:?}");
     *og_model = model.merge(og_model.clone());
     drop(nmlugings);
     drop(og_model);
