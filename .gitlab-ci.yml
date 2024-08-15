@@ -202,8 +202,6 @@ pdf-build:
   image: neelzee/nmide-thesis:latest
   stage: build
   when: manual
-  only:
-    - main
   script:
     - pdflatex --version
     - pdflatex --output-directory=nmide-thesis nmide-thesis/main.tex
