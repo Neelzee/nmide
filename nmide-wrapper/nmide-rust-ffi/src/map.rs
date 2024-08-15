@@ -25,6 +25,34 @@ pub enum Value {
 }
 
 impl Value {
+    pub fn to_int(self) -> Option<i32> {
+        match self {
+            Self::Int(i) => Some(i),
+            _ => None,
+        }
+    }
+
+    pub fn to_str(self) -> Option<String> {
+        match self {
+            Self::Str(s) => Some(s),
+            _ => None,
+        }
+    }
+
+    pub fn to_arr(self) -> Option<Vec<Value>> {
+        match self {
+            Self::Arr(v) => Some(v),
+            _ => None,
+        }
+    }
+
+    pub fn to_obj(self) -> Option<Map> {
+        match self {
+            Self::Obj(m) => Some(m),
+            _ => None,
+        }
+    }
+
     /// .
     ///
     /// # Errors
@@ -67,6 +95,12 @@ impl Value {
             Value::Arr(_v) => todo!(),
             Value::Obj(_v) => todo!(),
         }
+    }
+}
+
+impl Default for Value {
+    fn default() -> Self {
+        Self::Int(-1)
     }
 }
 
