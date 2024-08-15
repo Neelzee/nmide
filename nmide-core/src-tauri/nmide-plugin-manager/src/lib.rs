@@ -2,9 +2,8 @@ use anyhow::{Context, Result};
 use libloading::{self, Library, Symbol};
 use nmide_rust_ffi::{
     html::Html,
-    interface::functions::{Init, View},
+    interface::rfunctions::{RInit, RManifest, RUpdate, RView},
     model::{Model, Msg},
-    CModel, CMsg,
 };
 use std::ffi::OsStr;
 use uuid::Uuid;
@@ -22,7 +21,7 @@ impl Nmlugin {
         P: AsRef<OsStr>,
     {
         let lib = unsafe { Library::new(&path) }.context("Failed loading plugin")?;
-        let _manifest: Symbol<unsafe extern "Rust" fn() -> Model> = unsafe {
+        let _manifest: Symbol<RManifest> = unsafe {
             lib.get(b"manifest")
                 .context("Failed loading plugin, no manifest")
         }?;
@@ -36,21 +35,21 @@ impl Nmlugin {
     }
 
     pub fn init(&self) -> Result<Model> {
-        let _init: Symbol<unsafe extern "Rust" fn() -> Model> =
+        let _init: Symbol<RInit> =
             unsafe { self.lib.get(b"init") }.context("Failed getting `init`")?;
 
         Ok(unsafe { _init() })
     }
 
     pub fn view(&self, model: Model) -> Result<Html> {
-        let _view: Symbol<unsafe extern "Rust" fn(Model) -> Html> =
+        let _view: Symbol<RView> =
             unsafe { self.lib.get(b"view") }.context("Failed getting `view`")?;
 
         Ok(unsafe { _view(model) })
     }
 
     pub fn update(&self, msg: Msg, model: Model) -> Result<Model> {
-        let _update: Symbol<unsafe extern "Rust" fn(Msg, Model) -> Model> =
+        let _update: Symbol<RUpdate> =
             unsafe { self.lib.get(b"update") }.context("Failed getting `update`")?;
 
         Ok(unsafe { _update(msg, model) })
