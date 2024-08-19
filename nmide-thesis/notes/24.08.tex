@@ -195,3 +195,11 @@ I also need more plugins. Nmide-Rust-FFI could probably be split into some stand
 actual research. I could also make a Haskell plugin, having it only be a framework plugin, since CHtml to Html works, it's just char to str
 that doesn't work. So, it wouldn't really work, since the id's I set in Haskell, will be gibberish in Rust, and therefore no other Plugin can
 use them.
+
+
+\section{24.08.16}
+
+I found a \textit{fun} problem. I have this Tree structure (Html Nodes), and I have a predicate f, and if f is true, I want to apply g to that node.
+g should only be applied once, and traverasal of the Tree structure should be BFS. I can't use map, because if two siblings fulfill the predicate,
+g will be applied twice. I can use fold, because then the fold closure could include some kind of state, ie. the accumilator is atuple, where
+fst is the list of kids, and snd is if g has been applied.

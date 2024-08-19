@@ -1,5 +1,5 @@
 [workspace]
-members = ["nmide-plugin-manager"]
+members = ["nmide-plugin-manager", "nmide-std-lib"]
 
 [package]
 name = "nmide-core"
