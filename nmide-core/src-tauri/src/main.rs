@@ -4,11 +4,7 @@
 use anyhow::Result;
 use anyhow_tauri::{IntoTAResult, TAResult};
 use log::info;
-use nmide_rust_ffi::{
-    attr::Attr,
-    html::Html,
-    model::{Model, Msg},
-};
+use nmide_std_lib::{attr::Attr, html::Html, map::Map, msg::Msg};
 use once_cell::sync::Lazy;
 use serde::Serialize;
 use tauri::Window;
@@ -55,7 +51,7 @@ static NMLUGS: Lazy<Mutex<Vec<Nmlugin>>> = Lazy::new(|| {
     ])
 });
 
-static MODEL: Lazy<Mutex<Model>> = Lazy::new(|| Mutex::new(Model::new()));
+static MODEL: Lazy<Mutex<Map>> = Lazy::new(|| Mutex::new(Map::new()));
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -69,7 +65,7 @@ async fn main() -> Result<()> {
             println!("{res:?}");
             res.ok()
         })
-        .fold(Model::new(), |acc, m| acc.merge(m));
+        .fold(Map::new(), |acc, m| acc.merge(m));
     println!("Model:\n{model:?}");
     *og_model = model.merge(og_model.clone());
     drop(nmlugings);

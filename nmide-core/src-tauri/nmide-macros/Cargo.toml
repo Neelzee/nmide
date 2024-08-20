@@ -1,9 +1,7 @@
 [package]
-name = "nmide-std-lib"
+name = "nmide-macros"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-nmide-macros = { path = "../nmide-macros/" }
-rstest = "0.22.0"
 serde = { version = "1.0.208", features = ["derive"] }

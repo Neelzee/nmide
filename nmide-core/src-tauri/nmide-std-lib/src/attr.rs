@@ -1,7 +1,7 @@
-use crate::css::Css;
+use crate::{css::Css, msg::Msg};
+use serde::{Deserialize, Serialize};
 
-
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Attr {
     Id(String),
     Class(String),
@@ -9,6 +9,7 @@ pub enum Attr {
     Src(String),
     For(String),
     Location(String),
+    OnClick(Msg),
     Style(Vec<Css>),
     Unknown(String, String),
 }

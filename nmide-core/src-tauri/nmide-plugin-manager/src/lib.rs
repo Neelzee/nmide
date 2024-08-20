@@ -1,15 +1,11 @@
 use anyhow::{anyhow, Context, Result};
 use either::Either;
 use libloading::{self, Library, Symbol};
-use log::info;
-use nmide_rust_ffi::{
+use nmide_std_lib::{
     html::Html,
-    interface::{
-        cfunctions::{CInit, CUpdate, CView},
-        rfunctions::{RInit, RManifest, RUpdate, RView},
-    },
-    map::Value,
-    model::{Model, Msg},
+    interface::rfunctions::{RInit, RManifest, RUpdate, RView},
+    map::{value::Value, Map},
+    msg::Msg,
 };
 use std::ffi::OsStr;
 
@@ -18,7 +14,7 @@ pub struct Nmlugin {
     init_fn: Option<Either<(), ()>>,
     view_fn: Option<Either<(), ()>>,
     update_fn: Option<Either<(), ()>>,
-    manifest: Model,
+    manifest: Map,
 }
 
 impl Nmlugin {
@@ -38,14 +34,14 @@ impl Nmlugin {
         let is_rust = manifest
             .lookup("nmide-plugin-type")
             .is_some_and(|a| match a {
-                Value::Str(x) if x.to_lowercase() == "rust" => true,
+                Value::String(x) if x.to_lowercase() == "rust" => true,
                 _ => false,
             });
         match manifest.lookup("nmide-functions") {
-            Some(Value::Arr(funcs)) => {
+            Some(Value::List(funcs)) => {
                 for func in funcs {
                     match func {
-                        Value::Str(x) => match x.to_lowercase().as_str() {
+                        Value::String(x) => match x.to_lowercase().as_str() {
                             "init" => {
                                 if is_rust {
                                     init_fn = Some(Either::Right(()));
@@ -84,12 +80,10 @@ impl Nmlugin {
         })
     }
 
-    pub fn init(&self) -> Result<Model> {
+    pub fn init(&self) -> Result<Map> {
         match self.init_fn {
             Some(Either::Left(_)) => {
-                let _init: Symbol<CInit> =
-                    unsafe { self.lib.get(b"init") }.context("Failed getting C `init`")?;
-                unsafe { Model::from_c(_init()) }
+                unimplemented!()
             }
             Some(Either::Right(_)) => {
                 let _init: Symbol<RInit> =
@@ -100,12 +94,10 @@ impl Nmlugin {
         }
     }
 
-    pub fn view(&self, model: Model) -> Result<Html> {
+    pub fn view(&self, model: Map) -> Result<Html> {
         match self.view_fn {
             Some(Either::Left(_)) => {
-                let _view: Symbol<CView> =
-                    unsafe { self.lib.get(b"view") }.context("Failed getting C `view`")?;
-                unsafe { Html::from_c(_view(model.to_c()?)) }
+                unimplemented!()
             }
             Some(Either::Right(_)) => {
                 let _view: Symbol<RView> =
@@ -117,12 +109,10 @@ impl Nmlugin {
         }
     }
 
-    pub fn update(&self, msg: Msg, model: Model) -> Result<Model> {
+    pub fn update(&self, msg: Msg, model: Map) -> Result<Map> {
         match self.update_fn {
             Some(Either::Left(_)) => {
-                let _update: Symbol<CUpdate> =
-                    unsafe { self.lib.get(b"update") }.context("Failed getting C `update`")?;
-                unsafe { Model::from_c(_update(msg.to_c()?, model.to_c()?)) }
+                unimplemented!()
             }
             Some(Either::Right(_)) => {
                 let _update: Symbol<RUpdate> =
@@ -134,7 +124,7 @@ impl Nmlugin {
         }
     }
 
-    pub fn manifest(&self) -> &Model {
+    pub fn manifest(&self) -> &Map {
         &self.manifest
     }
 }

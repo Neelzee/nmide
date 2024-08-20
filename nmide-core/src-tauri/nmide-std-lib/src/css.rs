@@ -1,48 +1,49 @@
-use crate::html::Element;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Style {
-    Width(f32),
-    Height(f32),
-    Padding(f32),
-    PaddingTop(f32),
-    PaddingBottom(f32),
-    PaddingLeft(f32),
-    PaddingRight(f32),
-    Margin(f32),
-    MarginTop(f32),
-    MarginBottom(f32),
-    MarginLeft(f32),
-    MarginRight(f32),
+    Width(f32, Unit),
+    Height(f32, Unit),
+    Padding(f32, Unit),
+    PaddingTop(f32, Unit),
+    PaddingBottom(f32, Unit),
+    PaddingLeft(f32, Unit),
+    PaddingRight(f32, Unit),
+    Margin(f32, Unit),
+    MarginTop(f32, Unit),
+    MarginBottom(f32, Unit),
+    MarginLeft(f32, Unit),
+    MarginRight(f32, Unit),
     Color(Color),
     BackgroundColor(Color),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum StyleCondition {
     Class(String),
     Id(String),
     Kids,
     Siblings,
     Parent,
-    Element(Element),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Css {
     pub styles: Vec<(StyleCondition, Style)>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Color {
     pub r: u8,
     pub b: u8,
     pub g: u8,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Unit {
-    Pixel,
+    Px,
+    Em,
     Rem,
-    Percentage,
+    Per,
+    Ø,
 }

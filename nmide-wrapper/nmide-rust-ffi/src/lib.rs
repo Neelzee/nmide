@@ -6,12 +6,6 @@ include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
 pub mod html;
 
-pub mod attr;
-
-pub mod model;
-
-pub mod map;
-
 pub mod interface;
 
 pub(crate) mod util {
