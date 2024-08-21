@@ -4,19 +4,14 @@ use crate::{
     attr::Attr,
     css::{Style, Unit},
     html::Html::Text,
-    utils::{fst, snd},
+    utils::{fst, grab_first, snd},
 };
 use nmide_macros::{css, define_html};
-
-pub fn foo() {
-    let pad: Vec<_> = css!(Padding 32; Ø, Width 1.0; Px);
-    println!("{pad:?}");
-}
 
 define_html!(
     Div, P, H1, H2, H3, H4, H5, H6, Span, Section, Article, Aside, Audio, B, Br, Button, Code, Em,
     Fieldset, Form, Img, Input, Label, Link, Li, Menu, Nav, Ol, Option, Select, Style, Svg, Table,
-    Td, Th, Ul, Video
+    Td, Th, Ul, Video, Frag
 );
 
 impl Html {
@@ -25,6 +20,23 @@ impl Html {
             |k| k.attrs().iter().any(|a| a.to_id().is_some_and(|i| i == id)),
             |h| h.adopt(other),
         )
+    }
+
+    pub fn get_attr<S>(&self, attr: S) -> Option<Attr>
+    where
+        S: ToString,
+    {
+        grab_first(self.kids_dfs().as_slice(), |k| {
+            k.attrs().iter().any(|a| a.to_string() == attr.to_string())
+        })
+        .and_then(|k| {
+            k.attrs()
+                .iter()
+                .filter(|a| a.to_string() == attr.to_string())
+                .collect::<Vec<_>>()
+                .pop()
+                .cloned()
+        })
     }
 
     /// Applies the given function G, if the given predicate F evaluates to true

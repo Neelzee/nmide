@@ -54,6 +54,12 @@ impl Value {
     }
 }
 
+impl Default for Value {
+    fn default() -> Self {
+        Self::Int(0)
+    }
+}
+
 impl From<i32> for Value {
     fn from(value: i32) -> Self {
         Self::Int(value)

@@ -8,10 +8,9 @@ pub enum Attr {
     Alt(String),
     Src(String),
     For(String),
-    Location(String),
     OnClick(Msg),
     Style(Vec<Css>),
-    Unknown(String, String),
+    Attr(String, String),
 }
 
 impl Attr {
@@ -19,6 +18,19 @@ impl Attr {
         match self {
             Attr::Id(s) => Some(s),
             _ => None,
+        }
+    }
+
+    pub fn to_string(&self) -> String {
+        match self {
+            Attr::Id(_) => "id".to_string(),
+            Attr::Class(_) => "class".to_string(),
+            Attr::Alt(_) => "alt".to_string(),
+            Attr::Src(_) => "src".to_string(),
+            Attr::For(_) => "for".to_string(),
+            Attr::OnClick(_) => "onclick".to_string(),
+            Attr::Style(_) => "style".to_string(),
+            Attr::Attr(a, _) => a.to_string(),
         }
     }
 }

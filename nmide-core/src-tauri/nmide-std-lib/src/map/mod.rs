@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 pub mod value;
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct Map(Vec<(String, Value)>);
 
 impl Map {
@@ -29,7 +29,7 @@ impl Map {
     where
         S: ToString,
     {
-        lookup(self.0.as_slice(), s.to_string()).cloned()
+        lookup::<String, Value>(self.0.as_slice(), s.to_string()).cloned()
     }
 
     pub fn insert<K, V>(self, k: K, v: V) -> Self
