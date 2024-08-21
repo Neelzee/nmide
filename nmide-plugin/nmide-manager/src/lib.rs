@@ -2,11 +2,11 @@ use std::{collections::HashMap, path::PathBuf, str::FromStr};
 
 use anyhow::Result;
 use nmide_plugin_manager::Nmlugin;
-use nmide_rust_ffi::{
+use nmide_std_lib::{
     attr::Attr,
     html::Html,
-    map::Value,
-    model::{Model, Msg},
+    map::{value::Value, Map},
+    msg::Msg,
 };
 use once_cell::sync::Lazy;
 use tokio::sync::Mutex;
@@ -31,7 +31,7 @@ impl Plugin {
 struct PluginManager {
     plugins_names: HashMap<String, Vec<Uuid>>,
     plugins: HashMap<Uuid, Plugin>,
-    model: Model,
+    model: Map,
 }
 
 impl PluginManager {
@@ -46,21 +46,21 @@ impl PluginManager {
         }
     }
 
-    pub fn init(&mut self) -> Model {
+    pub fn init(&mut self) -> Map {
         self.plugins
             .values()
             .into_iter()
-            .fold(Model::new(), |model, p| {
+            .fold(Map::new(), |model, p| {
                 let plugin_model = p.nmlugin.init().unwrap_or_default();
                 match plugin_model.lookup("nmide-plugin-framework") {
-                    Some(Value::Str(s)) if s == "true" => {
+                    Some(Value::String(s)) if s == "true" => {
                         match self.model.lookup("nmide-plugin-framework") {
-                            Some(Value::Arr(mut xs)) => {
-                                xs.push(Value::Str(p.id.to_string()));
+                            Some(Value::List(mut xs)) => {
+                                xs.push(Value::String(p.id.to_string()));
                                 self.model = self
                                     .model
                                     .clone()
-                                    .insert("nmide-plugin-framework", xs.into());
+                                    .insert("nmide-plugin-framework", Value::List(xs));
                             }
                             _ => (),
                         }
@@ -72,7 +72,7 @@ impl PluginManager {
             })
     }
 
-    pub fn view(&self, model: Model) -> Vec<Html> {
+    pub fn view(&self, model: Map) -> Vec<Html> {
         self.plugins
             .values()
             .into_iter()
@@ -80,7 +80,7 @@ impl PluginManager {
             .collect()
     }
 
-    pub fn update(&self, msg: Msg, model: Model) -> Model {
+    pub fn update(&self, msg: Msg, model: Map) -> Map {
         self.plugins.values().into_iter().fold(model, |m, p| {
             p.nmlugin.update(msg.clone(), m.clone()).unwrap_or(m)
         })
@@ -91,7 +91,7 @@ static MANAGER: Lazy<Mutex<PluginManager>> = Lazy::new(|| {
     Mutex::new(PluginManager {
         plugins_names: HashMap::new(),
         plugins: HashMap::new(),
-        model: Model::new(),
+        model: Map::new(),
     })
 });
 
@@ -124,23 +124,23 @@ fn get_all_plugins() -> Result<Vec<(String, Uuid, PathBuf)>> {
 }
 
 #[no_mangle]
-pub extern "Rust" fn init() -> Model {
+pub extern "Rust" fn init() -> Map {
     let mut manager_lock = MANAGER.try_lock().unwrap();
     manager_lock.add_plugins(get_all_plugins().unwrap_or_default());
     manager_lock.init()
 }
 
 #[no_mangle]
-pub extern "Rust" fn view(model: Model) -> Html {
+pub extern "Rust" fn view(model: Map) -> Html {
     let manager_lock = MANAGER.try_lock().unwrap();
     let frameworks = manager_lock
         .model
         .lookup("nmide-plugin-framework")
         .unwrap_or_default()
-        .to_arr()
+        .to_list()
         .unwrap_or_default()
         .into_iter()
-        .filter_map(|v| v.to_str())
+        .filter_map(|v| v.to_string())
         .filter_map(|s| Uuid::from_str(&s).ok())
         .filter_map(|id| manager_lock.plugins.get(&id))
         .collect::<Vec<_>>();
@@ -164,35 +164,18 @@ pub extern "Rust" fn view(model: Model) -> Html {
         kids: framework_html,
         attrs: Vec::new(),
     };
-    for h in all_other_html {
-        if let Some(location) = h.get_attr("location") {
-            match location {
-                Attr::Attr(_, loc) => frag.apply_if(
-                    |html| match html.get_attr("id") {
-                        Some(Attr::Id(ids))
-                            if ids.split_whitespace().take_while(|k| k == &loc).count() > 0 =>
-                        {
-                            true
-                        }
-                        _ => false,
-                    },
-                    |html| html.adopt(h),
-                ),
-                _ => frag.adopt(h),
-            }
-        }
-    }
+
     return frag;
 }
 
 #[no_mangle]
-pub extern "Rust" fn update(msg: Msg, model: Model) -> Model {
+pub extern "Rust" fn update(msg: Msg, model: Map) -> Map {
     let manager_lock = MANAGER.try_lock().unwrap();
     manager_lock.update(msg, model)
 }
 
 #[no_mangle]
-pub extern "Rust" fn manifest() -> Model {
-    let funcs: Model = vec![("nmide-functions", vec!["init", "view", "update"])].into();
+pub extern "Rust" fn manifest() -> Map {
+    let funcs: Map = vec![("nmide-functions", vec!["init", "view", "update"])].into();
     funcs.merge(vec![("nmide-plugin-type", "rust")].into())
 }

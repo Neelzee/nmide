@@ -7,4 +7,4 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-nmide-rust-ffi.path = "../../nmide-wrapper/nmide-rust-ffi/"
+nmide-std-lib = { path = "../../nmide-core/src-tauri/nmide-std-lib" }

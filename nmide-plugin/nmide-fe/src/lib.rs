@@ -1,9 +1,9 @@
-use nmide_rust_ffi::{attr::Attr, html::Html, model::Model};
+use nmide_std_lib::{attr::Attr, html::Html, map::Map, msg::Msg};
 
 #[no_mangle]
-pub extern "Rust" fn view(_: Model) -> Html {
+pub extern "Rust" fn view(_: Msg) -> Html {
     Html::Div {
-        kids: vec![Html::Btn {
+        kids: vec![Html::Button {
             kids: vec![Html::Text("FOOBAR".to_string())],
             attrs: Vec::new(),
         }],
@@ -12,7 +12,7 @@ pub extern "Rust" fn view(_: Model) -> Html {
 }
 
 #[no_mangle]
-pub extern "Rust" fn manifest() -> Model {
-    let funcs: Model = vec![("nmide-functions", vec!["view"])].into();
+pub extern "Rust" fn manifest() -> Map {
+    let funcs: Map = vec![("nmide-functions", vec!["view"])].into();
     funcs.merge(vec![("nmide-plugin-type", "rust")].into())
 }
