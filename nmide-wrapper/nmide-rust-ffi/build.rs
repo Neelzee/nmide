@@ -22,6 +22,18 @@ fn main() -> Result<()> {
         return Err(anyhow!("Could not create release"));
     }
 
+    if !std::process::Command::new("cmake")
+        .arg("-DCMAKE_BUILD_TYPE=Release")
+        .arg("..")
+        .current_dir(&lib_release_path)
+        .output()
+        .context("could not spawn `cmake`")?
+        .status
+        .success()
+    {
+        return Err(anyhow!("Could not compile library"));
+    }
+
     if !std::process::Command::new("make")
         .arg("-C")
         .arg(&lib_release_path)
