@@ -73,16 +73,19 @@ pub mod utils {
     /// Takes the first element (if any) where the predicate P, is true
     ///
     /// # Example
+    ///
     /// ```rust
-    /// let slice = [1, 1, 2, 3];
-    /// let first = grab_first(&slice, |e| e % 2 == 0);
-    /// assert_eq!(first, Some(2));
+    /// use nmide_std_lib::utils::grab_first;
+    ///
+    /// let slice = vec![1, 1, 2, 3];
+    /// let first = grab_first(slice.as_slice(), |e| e % 2 == 0);
+    /// assert_eq!(first, Some(2).as_ref());
     ///
     /// let slice_2 = [1, 1, 1, 3];
-    /// let none = grab_first(&slice, |e| e % 2 == 0);
+    /// let none = grab_first(slice_2.as_slice(), |e| e % 2 == 0);
     /// assert_eq!(none, None);
     /// ```
-    pub(crate) fn grab_first<K, P>(xs: &[K], p: P) -> Option<&K>
+    pub fn grab_first<K, P>(xs: &[K], p: P) -> Option<&K>
     where
         P: Fn(&K) -> bool,
     {

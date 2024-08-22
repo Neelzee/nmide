@@ -44,6 +44,9 @@ impl Html {
     ///
     /// # Example
     /// ```rust
+    /// use nmide_std_lib::{html::Html, attr::Attr};
+    /// use nmide_macros::{attrs, attr};
+    ///
     /// let html = Html::Div {
     ///         kids: vec![
     ///                 Html::P(),
@@ -59,9 +62,10 @@ impl Html {
     /// println!(
     ///     "{:?}",
     ///     html.apply_if(
-    ///         |n| n.attrs().contains(attr!(Id "foobar")),
-    ///         |h| h.adopt(Html::Text("Hello, World!"))
-    ///     );
+    ///         |n| n.attrs().contains(&attr!(Id "foobar")),
+    ///         |h| h.adopt(Html::Text("Hello, World!".to_string()))
+    ///     )
+    /// );
     /// /*
     ///     Html::Div {
     ///         kids: vec![
