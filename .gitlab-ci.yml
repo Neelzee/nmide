@@ -20,6 +20,7 @@ test-nmide-core:
     - npm --version
     - cd nmide-core
     - pwd
+    - npm i
     - npm run test
     - cd src-tauri
     - pwd
