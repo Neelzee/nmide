@@ -6,12 +6,23 @@ use serde::{Deserialize, Serialize};
 
 pub mod value;
 
-#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Map(Vec<(String, Value)>);
 
 impl Map {
     pub fn new() -> Self {
         return Map(Vec::new());
+    }
+
+    pub fn contains_key<S>(&self, key: S) -> bool
+    where
+        S: ToString,
+    {
+        self.0.iter().any(|(k, _)| k.to_string() == key.to_string())
+    }
+
+    pub fn overlap(&self, other: &Self) -> bool {
+        self.0.iter().any(|(k, _)| other.contains_key(k))
     }
 
     // Duplicate fields will be ignored

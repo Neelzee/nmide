@@ -7,14 +7,16 @@ use nmide_std_lib::{
     map::{value::Value, Map},
     msg::Msg,
 };
-use std::ffi::OsStr;
+use std::{ffi::OsStr, path::PathBuf};
 
+#[derive(Debug)]
 pub struct Nmlugin {
     lib: Library,
     init_fn: Option<Either<(), ()>>,
     view_fn: Option<Either<(), ()>>,
     update_fn: Option<Either<(), ()>>,
     manifest: Map,
+    path: PathBuf,
 }
 
 impl Nmlugin {
@@ -77,6 +79,7 @@ impl Nmlugin {
             view_fn,
             update_fn,
             manifest,
+            path: PathBuf::from(&path),
         })
     }
 
@@ -126,5 +129,9 @@ impl Nmlugin {
 
     pub fn manifest(&self) -> &Map {
         &self.manifest
+    }
+
+    pub fn path(&self) -> &PathBuf {
+        &self.path
     }
 }

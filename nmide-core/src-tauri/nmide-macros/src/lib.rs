@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! define_html {
     ( $( $name:ident ),* ) => {
-        #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+        #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord)]
         pub enum Html {
             $(
                 $name { kids: Vec<Html>, attrs: Vec<Attr> },
@@ -66,7 +66,7 @@ macro_rules! define_html {
 #[macro_export]
 macro_rules! css {
     ($( $style:ident $e:expr $(; $unit:ident)? ),*) => {
-         vec![$(Style::$style($e as f32, $(Unit::$unit)?)),*]
+         vec![$(Style::$style($e.to_string(), $(Unit::$unit)?)),*]
     };
 }
 

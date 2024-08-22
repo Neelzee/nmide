@@ -10,7 +10,11 @@ pub mod map;
 
 pub mod interface;
 
-pub(crate) mod utils {
+pub mod utils {
+    pub mod consts {
+        pub const NMIDE_PLUGIN_LIST_KEY: &str = "nmide-functions";
+    }
+
     pub(crate) fn lookup<K, V>(xs: &[(K, V)], x: K) -> Option<&V>
     where
         K: Eq,

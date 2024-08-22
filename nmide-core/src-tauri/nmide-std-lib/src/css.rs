@@ -1,24 +1,24 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Style {
-    Width(f32, Unit),
-    Height(f32, Unit),
-    Padding(f32, Unit),
-    PaddingTop(f32, Unit),
-    PaddingBottom(f32, Unit),
-    PaddingLeft(f32, Unit),
-    PaddingRight(f32, Unit),
-    Margin(f32, Unit),
-    MarginTop(f32, Unit),
-    MarginBottom(f32, Unit),
-    MarginLeft(f32, Unit),
-    MarginRight(f32, Unit),
+    Width(String, Unit),
+    Height(String, Unit),
+    Padding(String, Unit),
+    PaddingTop(String, Unit),
+    PaddingLeft(String, Unit),
+    PaddingBottom(String, Unit),
+    PaddingRight(String, Unit),
+    Margin(String, Unit),
+    MarginTop(String, Unit),
+    MarginBottom(String, Unit),
+    MarginRight(String, Unit),
+    MarginLeft(String, Unit),
     Color(Color),
     BackgroundColor(Color),
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum StyleCondition {
     Class(String),
     Id(String),
@@ -27,19 +27,19 @@ pub enum StyleCondition {
     Parent,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Css {
     pub styles: Vec<(StyleCondition, Style)>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Color {
     pub r: u8,
     pub b: u8,
     pub g: u8,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Unit {
     Px,
     Em,
