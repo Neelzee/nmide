@@ -1,5 +1,5 @@
 [workspace]
-members = ["plugin-tests", "rust-test"]
+members = ["rust-test"]
 
 [package]
 name = "nmide-tests"
