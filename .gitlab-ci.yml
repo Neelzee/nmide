@@ -1,5 +1,6 @@
 stages:
-  - test
+  - unit test
+  - integration test
   - svn
   - build
 
@@ -8,45 +9,57 @@ default:
 
 variables:
   CORE_OUT_DIR: "nmide-core/src-tauri/target/release/*"
-  ENABLED: false
+  ENABLED: true
 
-rust-test-core:
+test-nmide-core:
   rules:
     - if: '$ENABLED == "true"'
-  image: neelzee/nmide-rust:latest
-  stage: test
+  stage: unit test
   script:
-    - cd nmide-core
-    - pwd
     - cargo --version
-
-rust-test-ffi:
-  rules:
-    - if: '$ENABLED == "true"'
-  image: neelzee/nmide-rust:latest
-  stage: test
-  script:
-    - cd nmide-wrapper/nmide-rust-ffi
-    - pwd
-    - cargo --version
-
-js-test:
-  rules:
-    - if: '$ENABLED == "true"'
-  image: neelzee/nmide-node:latest
-  stage: test
-  script:
-    - cd nmide-core
-    - pwd
     - npm --version
-    - npm i
+    - cd nmide-core
+    - pwd
     - npm run test
+    - cd src-tauri
+    - pwd
+    - cargo test
+
+test-nmide-std-lib:
+  rules:
+    - if: '$ENABLED == "true"'
+  stage: unit test
+  script:
+    - cargo --version
+    - cd nmide-core/src-tauri/nmide-std-lib
+    - pwd
+    - cargo test
+
+test-nmide-macros:
+  rules:
+    - if: '$ENABLED == "true"'
+  stage: unit test
+  script:
+    - cargo --version
+    - cd nmide-core/src-tauri/nmide-macros
+    - pwd
+    - cargo test
+
+test-nmide-plugin-manager:
+  rules:
+    - if: '$ENABLED == "true"'
+  stage: unit test
+  script:
+    - cargo --version
+    - cd nmide-core/src-tauri/nmide-plugin-manager
+    - pwd
+    - cargo test
 
 c-test-build:
   rules:
     - if: '$ENABLED == "true"'
   image: neelzee/nmide-c:latest
-  stage: test
+  stage: unit test
   script:
     - gcc --version
     - cmake --version
@@ -69,7 +82,7 @@ c-test:
   dependencies:
     - c-test-build
   image: neelzee/nmide-c:latest
-  stage: test
+  stage: unit test
   script:
     - cd nmide-lib/debug
     - ls
@@ -80,13 +93,33 @@ c-test:
   - job: c-test-build
     artifacts: true
 
+test-nmide-plugins:
+  rules:
+    - if: '$ENABLED == "true"'
+  stage: unit test
+  script:
+    - cargo --version
+    - cd nmide-plugin
+    - pwd
+    - for dir in */; do if [ -f "$dir/Cargo.toml" ]; then echo "Running tests in $dir"; (cd "$dir" && cargo test); else echo "Skipping $dir (no Cargo.toml found)"; fi; done
+
+test-nmide-wrapper:
+  rules:
+    - if: '$ENABLED == "true"'
+  stage: unit test
+  script:
+    - cargo --version
+    - cd nmide-wrapper/nmide-rust-ffi
+    - pwd
+    - cargo test
+
 c-check-report:
   rules:
     - if: '$ENABLED == "true"'
   dependencies:
     - c-test-build
   image: neelzee/nmide-c:latest
-  stage: test
+  stage: unit test
   script:
     - gcc --version
     - cppcheck --version
@@ -121,7 +154,7 @@ c-check-cppcheck:
   rules:
     - if: '$ENABLED == "true"'
   image: neelzee/nmide-c:latest
-  stage: test
+  stage: unit test
   script:
     - gcc --version
     - cppcheck --version
@@ -134,7 +167,7 @@ c-check-valgrind-cmsg:
   rules:
     - if: '$ENABLED == "true"'
   image: neelzee/nmide-c:latest
-  stage: test
+  stage: unit test
   dependencies:
     - c-test-build
   script:
@@ -153,7 +186,7 @@ c-check-valgrind-cmap:
   rules:
     - if: '$ENABLED == "true"'
   image: neelzee/nmide-c:latest
-  stage: test
+  stage: unit test
   dependencies:
     - c-test-build
   script:
@@ -172,7 +205,7 @@ c-check-valgrind-cmodel:
   rules:
     - if: '$ENABLED == "true"'
   image: neelzee/nmide-c:latest
-  stage: test
+  stage: unit test
   dependencies:
     - c-test-build
   script:
@@ -186,17 +219,33 @@ c-check-valgrind-cmodel:
   - job: c-test-build
     artifacts: true
 
+integration-tests-nmide:
+  rules:
+    - if: '$ENABLED == "true"'
+  stage: integration test
+  script:
+    - cargo --version
+    - cd nmide-tests
+    - pwd
+    - cargo test
+
+integration-tests-nmide-rust-plugins:
+  rules:
+    - if: '$ENABLED == "true"'
+  stage: integration test
+  script:
+    - cargo --version
+    - cd nmide-tests/rust-test
+    - pwd
+    - cargo test
+
 pts:
   stage: svn
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $ENABLED == "true"'
       when: always
-  dependencies:
-    - js-test
-    - rust-test-core
-    - rust-test-ffi
   script:
-    - echo "TODO"
+    - just svn
 
 pdf-build:
   image: neelzee/nmide-thesis:latest
@@ -220,8 +269,6 @@ nmide-lib-build:
   rules:
     - if: '$ENABLED == "true"'
   stage: build
-  dependencies:
-    - pts
   when: manual
   script:
     - gcc --version
@@ -242,8 +289,6 @@ nmide-lib-build:
 
 windows-build:
   stage: build
-  dependencies:
-    - "pts"
   when: manual
   only:
     - main
@@ -257,8 +302,6 @@ windows-build:
 
 debian-build:
   stage: build
-  dependencies:
-    - "pts"
   when: manual
   only:
     - main
@@ -272,8 +315,6 @@ debian-build:
 
 mac-build:
   stage: build
-  dependencies:
-    - "pts"
   when: manual
   only:
     - main
