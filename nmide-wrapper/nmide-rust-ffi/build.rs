@@ -11,15 +11,6 @@ fn main() -> Result<()> {
     let header_path_str = header_path.to_str().context("path is not valid String")?;
     let lib_release_path = nmide_lib_path.join("release");
 
-    println!(
-        "cargo:rustc-link-search={}",
-        lib_release_path
-            .to_str()
-            .context("lib path is not valid String")?
-    );
-
-    println!("cargo:rustc-link-lib=nmide");
-
     if !std::process::Command::new("mkdir")
         .arg("-p")
         .arg("../../nmide-lib/release")
@@ -33,7 +24,7 @@ fn main() -> Result<()> {
 
     if !std::process::Command::new("make")
         .arg("-C")
-        .arg(lib_release_path)
+        .arg(&lib_release_path)
         .output()
         .context("could not spawn `make`")?
         .status
@@ -41,6 +32,15 @@ fn main() -> Result<()> {
     {
         return Err(anyhow!("Could not compile library"));
     }
+
+    println!(
+        "cargo:rustc-link-search={}",
+        lib_release_path
+            .to_str()
+            .context("lib path is not valid String")?
+    );
+
+    println!("cargo:rustc-link-lib=nmide");
 
     let bindings = bindgen::Builder::default()
         // The input header we would like to generate
