@@ -40,8 +40,7 @@ pub extern "Rust" fn update(msg: Msg, model: Map) -> Map {
         Msg::PluginMsg(s, _) => match s.as_str() {
             "counter" => match model.lookup("counter") {
                 Some(Value::Int(x)) => model.insert("counter", Value::Int(x + 1)),
-                Some(_) => model.insert("counter", Value::Int(1)),
-                None => model,
+                _ => model.insert("counter", Value::Int(1)),
             },
 
             _ => model,
