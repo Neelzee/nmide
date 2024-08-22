@@ -20,6 +20,17 @@ fn main() -> Result<()> {
 
     println!("cargo:rustc-link-lib=nmide");
 
+    if !std::process::Command::new("mkdir")
+        .arg("-p")
+        .arg("../../nmide-lib/release")
+        .output()
+        .context("could not spawn `mkdir`")?
+        .status
+        .success()
+    {
+        return Err(anyhow!("Could not create release"));
+    }
+
     if !std::process::Command::new("make")
         .arg("-C")
         .arg(lib_release_path)
