@@ -133,39 +133,10 @@ pub extern "Rust" fn init() -> Map {
 #[no_mangle]
 pub extern "Rust" fn view(model: Map) -> Html {
     let manager_lock = MANAGER.try_lock().unwrap();
-    let frameworks = manager_lock
-        .model
-        .lookup("nmide-plugin-framework")
-        .unwrap_or_default()
-        .to_list()
-        .unwrap_or_default()
-        .into_iter()
-        .filter_map(|v| v.to_string())
-        .filter_map(|s| Uuid::from_str(&s).ok())
-        .filter_map(|id| manager_lock.plugins.get(&id))
-        .collect::<Vec<_>>();
-    let frameworks_id = frameworks.iter().map(|pl| pl.id).collect::<Vec<_>>();
-    let framework_html: Vec<Html> = frameworks
-        .into_iter()
-        .filter_map(|pl| pl.nmlugin.view(model.clone()).ok())
-        .collect();
-    let all_other_html = manager_lock
-        .plugins
-        .iter()
-        .filter_map(|(k, v)| {
-            if frameworks_id.contains(&k) {
-                None
-            } else {
-                v.nmlugin.view(model.clone()).ok()
-            }
-        })
-        .collect::<Vec<_>>();
-    let mut frag = Html::Frag {
-        kids: framework_html,
+    Html::Frag {
+        kids: manager_lock.view(model),
         attrs: Vec::new(),
-    };
-
-    return frag;
+    }
 }
 
 #[no_mangle]
