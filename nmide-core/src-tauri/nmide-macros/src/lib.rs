@@ -1,7 +1,8 @@
 #[macro_export]
 macro_rules! define_html {
     ( $( $name:ident ),* ) => {
-        #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+        #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord, TS)]
+        #[ts(export)]
         pub enum Html {
             $(
                 $name { kids: Vec<Html>, attrs: Vec<Attr> },
@@ -10,6 +11,31 @@ macro_rules! define_html {
         }
 
         impl Html {
+
+            pub fn cast_html(self, target: Self) -> Self {
+                match self {
+                    // Match each variant and cast to the target variant if possible
+                    $(
+                        Html::$name { kids, attrs } => {
+                            match target {
+                                Html::$name { .. } => Html::$name { kids, attrs }, // Cast to the same type
+                                _ => target._cast_html(kids, attrs), // Cast to the target type
+                            }
+                        },
+                    )*
+                    Html::Text(text) => Html::Text(text), // Text remains Text
+                }
+            }
+
+            // Helper method to create a target variant
+            fn _cast_html(self, kids: Vec<Html>, attrs: Vec<Attr>) -> Self {
+                match self {
+                    $(
+                        Html::$name { .. } => Html::$name { kids, attrs },
+                    )*
+                    Html::Text(text) => Html::Text(text), // Text remains Text
+                }
+            }
 
             $(
             #[allow(non_snake_case)]
@@ -24,7 +50,7 @@ macro_rules! define_html {
                 $(
                     Self::$name { kids, attrs } => kids.clone(),
                 )*
-                    Text(_) => Vec::new(),
+                    Self::Text(_) => Vec::new(),
                 }
             }
 
@@ -32,9 +58,9 @@ macro_rules! define_html {
             pub fn attrs(&self) -> Vec<Attr> {
                 match self {
                 $(
-                    Self::$name { kids, attrs } => attrs.clone(),
+                    Self::$name { kids: _, attrs } => attrs.clone(),
                 )*
-                    Text(_) => Vec::new(),
+                    Self::Text(_) => Vec::new(),
                 }
             }
 
