@@ -1,7 +1,9 @@
 use crate::{css::Css, msg::Msg};
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, TS)]
+#[ts(export)]
 pub enum Attr {
     Id(String),
     Class(String),

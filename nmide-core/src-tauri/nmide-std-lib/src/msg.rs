@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, TS)]
+#[ts(export)]
 pub enum Msg {
     PluginMsg(String, String),
 }
@@ -15,7 +17,7 @@ impl Msg {
             s => {
                 let mut parts = s.splitn(2, char::is_whitespace);
                 match (parts.next(), parts.next()) {
-                    (Some(a), None) => Self::PluginMsg(s.to_string(), String::new()),
+                    (Some(a), None) => Self::PluginMsg(a.to_string(), String::new()),
                     (Some(l), Some(r)) => Self::PluginMsg(l.to_string(), r.to_string()),
                     _ => unreachable!("Empty string case should be covered already"),
                 }

@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, TS)]
+#[ts(export)]
 pub enum Style {
     Width(String, Unit),
     Height(String, Unit),
@@ -18,7 +20,8 @@ pub enum Style {
     BackgroundColor(Color),
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, TS)]
+#[ts(export)]
 pub enum StyleCondition {
     Class(String),
     Id(String),
@@ -27,19 +30,22 @@ pub enum StyleCondition {
     Parent,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, TS)]
+#[ts(export)]
 pub struct Css {
     pub styles: Vec<(StyleCondition, Style)>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, TS)]
+#[ts(export)]
 pub struct Color {
     pub r: u8,
     pub b: u8,
     pub g: u8,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, TS)]
+#[ts(export)]
 pub enum Unit {
     Px,
     Em,

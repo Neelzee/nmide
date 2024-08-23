@@ -1,12 +1,10 @@
-use std::collections::VecDeque;
-
 use crate::{
     attr::Attr,
-    css::{Style, Unit},
-    html::Html::Text,
     utils::{fst, grab_first, snd},
 };
-use nmide_macros::{css, define_html};
+use nmide_macros::define_html;
+use std::collections::VecDeque;
+use ts_rs::TS;
 
 define_html!(
     Div, P, H1, H2, H3, H4, H5, H6, Span, Section, Article, Aside, Audio, B, Br, Button, Code, Em,

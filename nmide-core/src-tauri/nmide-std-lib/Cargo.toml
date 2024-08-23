@@ -7,3 +7,4 @@ edition = "2021"
 nmide-macros = { path = "../nmide-macros/" }
 rstest = "0.22.0"
 serde = { version = "1.0.208", features = ["derive"] }
+ts-rs = "9.0.1"
