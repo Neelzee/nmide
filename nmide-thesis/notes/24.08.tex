@@ -209,3 +209,25 @@ fst is the list of kids, and snd is if g has been applied.
 
 I need to create a plan for what's next for Nmide. I need more plugins, unit tests, integration tests, and a C-Rust-Wrapper, that is working
 and testable. I should also do cleanup in my repo, adding CHANGELOG's and other chores. But I also don't want to do anything.
+
+
+\section{24.08.23}
+
+I have rewritten stuff. the Rust-C-Wrapper no longer specified the types. The C-Lib now has more types. I have some form of unit and integration
+testing, and the pipelines are up and running again. I still need a proper Rust-C-Wrapper test, to test that the calling works, and I should
+also use valgrind on this, to ensure that I atleast know about the memory leaks I have. (I know I have a lot). Also, stuff doesn't work. I get
+crashes on plugin loads now. I'll check if my v0.1.0 works.
+
+\dots
+
+v0.1.0 works, in the sense that it creates a div, but I don't want to only show this on Tuesday. I should work on a \textit{std} plugin, and get
+nmide to dynamically load plugins on startup, instead of having the path hardcoded.
+
+\dots
+
+Fixed! I forgot to add the auto-TS-from-Rust step to the new nmide-std-lib. This, along with the revised plugin loading, makes nmide-core
+pretty cool. (ie. I can show it to my supervisors).
+
+\dots
+
+I should be better on committing when I am done with work. Instead of having to spend a lot of time figuring out what I did, before committing.
