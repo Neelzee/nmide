@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Attr } from "src/bindings/Attr";
 import { Msg } from "src/bindings/Msg";
 import TauriClient from "../client";
+import { Css } from "src/bindings/Css";
 
 export default function RenderHtml({ html }: { html: Html }) {
   if (typeof html !== "object") {
@@ -30,8 +31,8 @@ export default function RenderHtml({ html }: { html: Html }) {
         )}
       </div>
     );
-  } else if ("Btn" in html) {
-    const attrs = ToAttrObj(html.Btn);
+  } else if ("Button" in html) {
+    const attrs = ToAttrObj(html.Button);
     return (
       <button
         key={uuidv4()}
@@ -45,7 +46,7 @@ export default function RenderHtml({ html }: { html: Html }) {
           TauriClient("process_msg", { msg: msg as Msg }).catch(err => console.error(err));
         }}
       >
-        {html.Btn.kids.map(k => {
+        {html.Button.kids.map(k => {
           return <RenderHtml html={k} />
         }
         )}
@@ -53,14 +54,19 @@ export default function RenderHtml({ html }: { html: Html }) {
     );
   }
 
-  return <Fragment key={uuidv4()}>{html.Text}</Fragment>
+  if ("Text" in html) {
+    return <Fragment key={uuidv4()}>{html["Text"]}</Fragment>;
+  }
+
+  return <Fragment key={uuidv4()} />;
 }
 
 type ExtractKeys<T> = T extends { [K in keyof T]: any } ? keyof T : never;
 type AttrKeys = ExtractKeys<Attr>;
+type AttrObj = Record<AttrKeys | string, string | Css[] | Msg>;
 
-export function ToAttrObj({ attrs }: { attrs: Array<Attr> }): Record<AttrKeys | string, string | Msg | undefined> {
-  const map: Record<AttrKeys | string, string | Msg> = {};
+export function ToAttrObj({ attrs }: { attrs: Array<Attr> }): AttrObj {
+  const map: AttrObj = {};
   attrs.forEach(attr => {
     if ("Id" in attr) {
       map["Id"] = attr.Id;
@@ -72,6 +78,10 @@ export function ToAttrObj({ attrs }: { attrs: Array<Attr> }): Record<AttrKeys | 
       map["Alt"] = attr.Alt;
     } else if ("OnClick" in attr) {
       map["OnClick"] = attr.OnClick;
+    } else if ("For" in attr) {
+      map["For"] = attr.For;
+    } else if ("Style" in attr) {
+      map["Style"] = attr.Style;
     } else {
       map[attr.Attr[0]] = attr.Attr[1];
     }

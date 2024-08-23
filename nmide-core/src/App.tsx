@@ -6,7 +6,7 @@ import TauriClient from "./client";
 import { listen } from '@tauri-apps/api/event'
 
 function App() {
-  const [html, setHtml] = useState<Html>("None");
+  const [html, setHtml] = useState<Html>({ "Text": "" });
 
   useEffect(() => {
     TauriClient("init_html", {}).then(html => {

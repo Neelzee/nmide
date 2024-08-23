@@ -1,6 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::path::PathBuf;
+
 use anyhow::Result;
 use anyhow_tauri::{IntoTAResult, TAResult};
 use log::info;
@@ -46,9 +48,33 @@ async fn process_msg(window: Window, msg: Msg) -> TAResult<()> {
 struct EmptyObj;
 
 static NMLUGS: Lazy<Mutex<Vec<Nmlugin>>> = Lazy::new(|| {
-    Mutex::new(vec![
-        Nmlugin::new("./plugin-libs/libnmide_manager.so").unwrap()
-    ])
+    Mutex::new(
+        PathBuf::from("./plugin-libs")
+            .canonicalize()
+            .expect("couldnt canonicalize path")
+            .read_dir()
+            .expect("couldnt read nmide-plugin dir")
+            .into_iter()
+            .filter_map(|dir| match dir {
+                Ok(d)
+                    if d.path().is_file()
+                        && d.path()
+                            .extension()
+                            .is_some_and(|e| e.to_string_lossy() == "so") =>
+                {
+                    Some(d.path())
+                }
+                Err(err) => {
+                    eprintln!("Failed to get plugin path: `{err:?}`");
+                    None
+                }
+                _ => None,
+            })
+            .map(|pth| {
+                Nmlugin::new(&pth).expect(&format!("couldnt create plugin on path: {pth:?}"))
+            })
+            .collect(),
+    )
 });
 
 static MODEL: Lazy<Mutex<Map>> = Lazy::new(|| Mutex::new(Map::new()));
