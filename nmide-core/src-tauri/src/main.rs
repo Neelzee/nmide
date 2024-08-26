@@ -85,14 +85,8 @@ async fn main() -> Result<()> {
     let mut og_model = MODEL.try_lock()?;
     let model = nmlugings
         .iter()
-        .filter_map(|nl| {
-            println!("{:?}", nl.manifest());
-            let res = nl.init();
-            println!("{res:?}");
-            res.ok()
-        })
+        .filter_map(|nl| nl.init().ok())
         .fold(Map::new(), |acc, m| acc.merge(m));
-    println!("Model:\n{model:?}");
     *og_model = model.merge(og_model.clone());
     drop(nmlugings);
     drop(og_model);
