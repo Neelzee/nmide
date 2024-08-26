@@ -1,5 +1,5 @@
 [workspace]
-members = ["rust-test"]
+members = [ "c-test","rust-test"]
 
 [package]
 name = "nmide-tests"

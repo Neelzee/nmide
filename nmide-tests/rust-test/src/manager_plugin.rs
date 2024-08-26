@@ -28,7 +28,7 @@ async fn manager_view_test() {
 #[tokio::test]
 async fn manager_update_test() {
     let plugin = PLUGIN.lock().await;
-    let model = plugin.update(Msg::PluginMsg(String::new(), String::new()), Map::new());
+    let model = plugin.update(Msg::PluginMsg(String::new(), Value::Int(0)), Map::new());
     assert!(model.is_ok());
 }
 

@@ -35,7 +35,7 @@ async fn framework_view_test() {
                 kids: vec![Html::Text("Click".to_string())],
                 attrs: vec![Attr::OnClick(Msg::PluginMsg(
                     "counter".to_string(),
-                    "".to_string(),
+                    Value::Int(0),
                 ))],
             },
         ],
@@ -48,7 +48,7 @@ async fn framework_view_test() {
 async fn framework_update_test() {
     let plugin = PLUGIN.lock().await;
     let model = plugin.update(
-        Msg::PluginMsg("counter".to_string(), String::new()),
+        Msg::PluginMsg("counter".to_string(), Value::Int(0)),
         Map::new(),
     );
     assert!(model.is_ok());
