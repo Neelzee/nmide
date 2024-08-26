@@ -2,7 +2,7 @@
 macro_rules! define_html {
     ( $( $name:ident ),* ) => {
         #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord, TS)]
-        #[ts(export)]
+        #[ts(export, export_to = "../../../src/bindings/Html.ts")]
         pub enum Html {
             $(
                 $name { kids: Vec<Html>, attrs: Vec<Attr> },

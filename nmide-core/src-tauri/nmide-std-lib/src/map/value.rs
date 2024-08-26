@@ -1,8 +1,10 @@
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 const FLOAT_COMP: f32 = 0.01f32;
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialOrd, PartialEq, TS)]
+#[ts(export, export_to = "../../../src/bindings/Value.ts")]
 pub enum Value {
     Int(i32),
     Float(f32),
@@ -52,6 +54,41 @@ impl Value {
         match self {
             Self::Object(map) => Some(map.clone()),
             _ => None,
+        }
+    }
+
+    pub fn is_string(&self) -> bool {
+        match self {
+            Self::String(_) => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_list(&self) -> bool {
+        match self {
+            Self::List(_) => true,
+            _ => false,
+        }
+    }
+
+    pub fn push(self, x: Value) -> Self {
+        match self {
+            Self::List(mut xs) => Self::List({
+                xs.push(x);
+                xs
+            }),
+            _ => self,
+        }
+    }
+
+    pub fn push_start(self, x: Value) -> Self {
+        match self {
+            Self::List(mut xs) => Self::List({
+                let mut ys = vec![x];
+                ys.append(&mut xs);
+                ys
+            }),
+            _ => self,
         }
     }
 }

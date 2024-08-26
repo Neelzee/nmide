@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, TS)]
-#[ts(export)]
+#[ts(export, export_to = "../../../src/bindings/Style.ts")]
 pub enum Style {
     Width(String, Unit),
     Height(String, Unit),
@@ -21,7 +21,7 @@ pub enum Style {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, TS)]
-#[ts(export)]
+#[ts(export, export_to = "../../../src/bindings/StyleCondition.ts")]
 pub enum StyleCondition {
     Class(String),
     Id(String),
@@ -31,13 +31,13 @@ pub enum StyleCondition {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, TS)]
-#[ts(export)]
+#[ts(export, export_to = "../../../src/bindings/Css.ts")]
 pub struct Css {
     pub styles: Vec<(StyleCondition, Style)>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, TS)]
-#[ts(export)]
+#[ts(export, export_to = "../../../src/bindings/Color.ts")]
 pub struct Color {
     pub r: u8,
     pub b: u8,
@@ -45,7 +45,7 @@ pub struct Color {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, TS)]
-#[ts(export)]
+#[ts(export, export_to = "../../../src/bindings/Unit.ts")]
 pub enum Unit {
     Px,
     Em,
