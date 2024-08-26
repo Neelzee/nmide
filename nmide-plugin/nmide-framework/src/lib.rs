@@ -20,7 +20,7 @@ pub extern "Rust" fn view(model: Map) -> Html {
                 kids: vec![Html::Text("Click".to_string())],
                 attrs: vec![Attr::OnClick(Msg::PluginMsg(
                     "counter".to_string(),
-                    "".to_string(),
+                    Value::Int(0),
                 ))],
             },
         ],
@@ -45,6 +45,7 @@ pub extern "Rust" fn update(msg: Msg, model: Map) -> Map {
 
             _ => model,
         },
+        _ => model,
     }
 }
 
