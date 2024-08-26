@@ -12,6 +12,7 @@ safer-ffi = "0.1.12"
 tokio = { version = "1.39.3", features = ["full"] }
 nmide-plugin-manager = { path = "../../nmide-core/src-tauri/nmide-plugin-manager" }
 nmide-std-lib = { path = "../../nmide-core/src-tauri/nmide-std-lib" }
+libloading = "0.8.5"
 
 [build-dependencies]
 anyhow = "1.0.86"

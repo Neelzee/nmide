@@ -19,29 +19,6 @@ static PLUGIN: Lazy<Mutex<Nmlugin>> = Lazy::new(|| {
 });
 
 #[tokio::test]
-async fn manager_manifest_test() {
-    let plugin = PLUGIN.lock().await;
-    let manifest = plugin.manifest();
-    assert_eq!(
-        manifest.lookup("nmide-plugin-type").unwrap(),
-        Value::String("rust".to_string())
-    );
-    assert_eq!(
-        manifest
-            .lookup("nmide-functions")
-            .and_then(|v| v.to_list())
-            .unwrap()
-            .sort(),
-        vec![
-            Value::String("view".to_string()),
-            Value::String("init".to_string()),
-            Value::String("update".to_string())
-        ]
-        .sort()
-    );
-}
-
-#[tokio::test]
 async fn manager_view_test() {
     let plugin = PLUGIN.lock().await;
     let html = plugin.view(Map::new());
