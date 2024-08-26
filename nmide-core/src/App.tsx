@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import "./App.css";
 import { Html } from "./bindings/Html";
 import RenderHtml from "./components/Html";
 import TauriClient from "./client";
