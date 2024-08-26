@@ -52,6 +52,27 @@ export default function RenderHtml({ html }: { html: Html }) {
         )}
       </button>
     );
+  } else if ("P" in html) {
+    const attrs = ToAttrObj(html.P);
+    return (
+      <p
+        key={uuidv4()}
+        className={attrs["Class"] === undefined ? undefined : `${attrs["Class"]}`}
+        id={attrs["Id"] === undefined ? undefined : `${attrs["Id"]}`}
+        onClick={() => {
+          const msg = attrs["OnClick"];
+          if (msg === "undefined" || typeof msg === "string") {
+            return;
+          }
+          TauriClient("process_msg", { msg: msg as Msg }).catch(err => console.error(err));
+        }}
+      >
+        {html.P.kids.map(k => {
+          return <RenderHtml html={k} />
+        }
+        )}
+      </p>
+    );
   }
 
   if ("Text" in html) {
