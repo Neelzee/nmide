@@ -10,6 +10,17 @@ pub mod map;
 
 pub mod interface;
 
+pub mod payloads {
+    use serde::{Deserialize, Serialize};
+    use ts_rs::TS;
+
+    use crate::msg::Msg;
+
+    #[derive(Clone, Serialize, Deserialize, TS)]
+    #[ts(export, export_to = "../../../src/bindings/EmitMsgPayload.ts")]
+    pub struct EmitMsgPayload(pub Msg);
+}
+
 pub mod utils {
     pub mod consts {
         pub const NMIDE_PLUGIN_LIST_KEY: &str = "nmide-functions";

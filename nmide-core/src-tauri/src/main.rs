@@ -6,15 +6,15 @@ use anyhow_tauri::{IntoTAResult, TAResult};
 use log::info;
 use nmide_plugin_manager::Nmlugin;
 use nmide_std_lib::map::value::Value;
+use nmide_std_lib::payloads::EmitMsgPayload;
 use nmide_std_lib::{attr::Attr, html::Html, map::Map, msg::Msg};
 use once_cell::sync::Lazy;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use std::path::PathBuf;
 use tauri::api::dialog::blocking::FileDialogBuilder;
 use tauri::Window;
 use tauri_plugin_log::LogTarget;
 use tokio::sync::Mutex;
-use ts_rs::TS;
 
 #[tauri::command]
 async fn init_html() -> Html {
@@ -30,10 +30,6 @@ async fn init_html() -> Html {
         attrs: vec![Attr::Id("main".to_string())],
     }
 }
-
-#[derive(Clone, Serialize, TS)]
-#[ts(export, export_to = "../../src/bindings/EmitMsgPayload.ts")]
-struct EmitMsgPayload(Msg);
 
 #[tauri::command]
 async fn process_msg(window: Window, msg: Msg) -> TAResult<()> {

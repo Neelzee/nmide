@@ -29,7 +29,6 @@ uuid = "1.10.0"
 safer-ffi = "0.1.12"
 anyhow-tauri = "1.0.0"
 log = "0.4.22"
-ts-rs = "9.0.1"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
