@@ -24,7 +24,7 @@ pub extern "Rust" fn view(model: Map) -> Html {
         kids: vec![
             Html::Button {
                 kids: vec![Html::Text("Open Folder".to_string())],
-                attrs: vec![Attr::OnClick(Msg::PluginMsg(
+                attrs: vec![Attr::OnClick(Msg::OpenFolderDialog(
                     OPEN_MSG.to_string(),
                     Value::String("/home/nmf/Documents/nmide".to_string()),
                 ))],
