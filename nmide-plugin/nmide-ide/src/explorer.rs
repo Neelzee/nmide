@@ -2,11 +2,12 @@ use nmide_std_lib::{
     attr::Attr,
     html::Html,
     map::{value::Value, Map},
+    msg::Msg,
 };
 
-use crate::PATH_KEY;
+use crate::{OPEN_FILE_MSG, PATH_KEY};
 
-pub(crate) fn explorer(model: Map) -> Html {
+pub(crate) fn explorer(model: &Map) -> Html {
     match model.lookup(PATH_KEY) {
         Some(Value::String(s)) if !s.is_empty() => Html::Div {
             kids: vec![Html::Text(format!("Error: {s}"))],
@@ -26,8 +27,11 @@ pub(crate) fn explorer(model: Map) -> Html {
 fn render_files(v: Value) -> Html {
     match v {
         Value::String(s) => Html::P {
-            kids: vec![Html::Text(s)],
-            attrs: Vec::new(),
+            kids: vec![Html::Text(s.clone())],
+            attrs: vec![Attr::OnClick(Msg::PluginMsg(
+                OPEN_FILE_MSG.to_string(),
+                Value::String(s),
+            ))],
         },
         Value::List(mut xs) => Html::Div {
             kids: {
