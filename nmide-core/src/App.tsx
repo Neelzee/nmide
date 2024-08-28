@@ -3,6 +3,7 @@ import { Html } from "./bindings/Html";
 import RenderHtml from "./components/Html";
 import TauriClient from "./client";
 import { listen } from '@tauri-apps/api/event'
+import { EmitMsgPayload } from "./bindings/EmitMsgPayload";
 
 function App() {
   const [html, setHtml] = useState<Html>({ "Text": "" });
@@ -23,6 +24,16 @@ function App() {
         console.error(err);
       }).finally(() => { })
 
+    }).then(un => un)
+      .catch(err => console.error(err));
+  }, []);
+
+  useEffect(() => {
+    listen<EmitMsgPayload>("emit_msg", ({ payload }) => {
+      TauriClient("process_msg", { msg: payload })
+        .catch((err) => {
+          console.error(err);
+        }).finally(() => { })
     }).then(un => un)
       .catch(err => console.error(err));
   }, []);
