@@ -8,18 +8,19 @@ use nmide_plugin_manager::Nmlugin;
 use nmide_std_lib::map::value::Value;
 use nmide_std_lib::payloads::EmitMsgPayload;
 use nmide_std_lib::{attr::Attr, html::Html, map::Map, msg::Msg};
-use once_cell::sync::Lazy;
+use once_cell::sync::{Lazy, OnceCell};
 use serde::Serialize;
+use std::fs;
 use std::path::PathBuf;
 use tauri::api::dialog::blocking::FileDialogBuilder;
 use tauri::Window;
 use tauri_plugin_log::LogTarget;
-use tokio::sync::Mutex;
+use tokio::sync::{Mutex, RwLock};
 
 #[tauri::command]
 async fn init_html() -> Html {
     info!("init_html");
-    let lock = NMLUGS.lock().await;
+    let lock = NMLUGS.get().unwrap().lock().await;
     let model_lock = MODEL.lock().await;
     let kids = lock
         .iter()
@@ -53,7 +54,7 @@ async fn process_msg(window: Window, msg: Msg) -> TAResult<()> {
 
         _ => {
             let mut model_lock = MODEL.lock().await;
-            let nmlugin_lock = NMLUGS.lock().await;
+            let nmlugin_lock = NMLUGS.get().unwrap().lock().await;
             let model = nmlugin_lock.iter().fold(model_lock.clone(), |model, nl| {
                 nl.update(msg.clone(), model.clone()).unwrap_or(model)
             });
@@ -68,50 +69,18 @@ async fn process_msg(window: Window, msg: Msg) -> TAResult<()> {
 #[derive(Clone, Serialize)]
 struct EmptyObj;
 
-static NMLUGS: Lazy<Mutex<Vec<Nmlugin>>> = Lazy::new(|| {
-    Mutex::new(
-        PathBuf::from("./plugin-libs")
-            .canonicalize()
-            .expect("couldnt canonicalize path")
-            .read_dir()
-            .expect("couldnt read nmide-plugin dir")
-            .into_iter()
-            .filter_map(|dir| match dir {
-                Ok(d)
-                    if d.path().is_file()
-                        && d.path()
-                            .extension()
-                            .is_some_and(|e| e.to_string_lossy() == "so") =>
-                {
-                    Some(d.path())
-                }
-                Err(err) => {
-                    eprintln!("Failed to get plugin path: `{err:?}`");
-                    None
-                }
-                _ => None,
-            })
-            .map(|pth| {
-                Nmlugin::new(&pth).expect(&format!("couldnt create plugin on path: {pth:?}"))
-            })
-            .collect(),
-    )
-});
+static NMLUGS: tokio::sync::OnceCell<Mutex<Vec<Nmlugin>>> = tokio::sync::OnceCell::const_new();
 
 static MODEL: Lazy<Mutex<Map>> = Lazy::new(|| Mutex::new(Map::new()));
+static APP_DATA_DIR: OnceCell<RwLock<PathBuf>> = OnceCell::new();
+static APP_CACHE_DIR: OnceCell<RwLock<PathBuf>> = OnceCell::new();
+
+const NMIDE_PLUGIN_DIR: &str = "plugins";
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let nmlugings = NMLUGS.try_lock()?;
-    let mut og_model = MODEL.try_lock()?;
-    let model = nmlugings
-        .iter()
-        .filter_map(|nl| nl.init().ok())
-        .fold(Map::new(), |acc, m| acc.merge(m));
-    *og_model = model.merge(og_model.clone());
-    drop(nmlugings);
-    drop(og_model);
     tauri::Builder::default()
+        .setup(setup_handler)
         .plugin(
             tauri_plugin_log::Builder::default()
                 .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
@@ -120,5 +89,89 @@ async fn main() -> Result<()> {
         .invoke_handler(tauri::generate_handler![init_html, process_msg,])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+    Ok(())
+}
+
+fn plugin_setup() -> Result<()> {
+    let nmlugings = NMLUGS.get().unwrap().try_lock()?;
+    let mut og_model = MODEL.try_lock()?;
+    let model = nmlugings
+        .iter()
+        .filter_map(|nl| nl.init().ok())
+        .fold(Map::new(), |acc, m| acc.merge(m));
+    *og_model = model.merge(og_model.clone());
+
+    Ok(())
+}
+
+fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error + 'static>> {
+    let app_handle = app.handle();
+
+    APP_DATA_DIR
+        .set(RwLock::new(
+            app_handle.path_resolver().app_data_dir().unwrap(),
+        ))
+        .unwrap();
+
+    APP_CACHE_DIR
+        .set(RwLock::new(
+            app_handle.path_resolver().app_config_dir().unwrap(),
+        ))
+        .unwrap();
+
+    if !app_handle
+        .path_resolver()
+        .app_data_dir()
+        .unwrap()
+        .join(NMIDE_PLUGIN_DIR)
+        .exists()
+    {
+        fs::create_dir(
+            app_handle
+                .path_resolver()
+                .app_data_dir()
+                .unwrap()
+                .join(NMIDE_PLUGIN_DIR),
+        )
+        .unwrap();
+    }
+
+    NMLUGS.set({
+        Mutex::new(
+            app_handle
+                .path_resolver()
+                .app_data_dir()
+                .unwrap()
+                .join(NMIDE_PLUGIN_DIR)
+                .read_dir()
+                .expect("couldnt read nmide-plugin dir")
+                .into_iter()
+                .filter_map(|dir| match dir {
+                    Ok(d)
+                        if d.path().is_file()
+                            && d.path()
+                                .extension()
+                                .is_some_and(|e| e.to_string_lossy() == "so") =>
+                    {
+                        Some(d.path())
+                    }
+                    Err(err) => {
+                        eprintln!("Failed to get plugin path: `{err:?}`");
+                        None
+                    }
+                    _ => None,
+                })
+                .map(|pth| {
+                    Nmlugin::new(&pth).expect(&format!("couldnt create plugin on path: {pth:?}"))
+                })
+                .collect(),
+        )
+    })?;
+
+    println!("{:?}", app_handle.path_resolver().app_log_dir());
+    println!("{:?}", app_handle.path_resolver().app_cache_dir());
+
+    plugin_setup().unwrap();
+
     Ok(())
 }
