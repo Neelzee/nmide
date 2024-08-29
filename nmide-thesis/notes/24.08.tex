@@ -213,10 +213,10 @@ and testable. I should also do cleanup in my repo, adding CHANGELOG's and other 
 
 \section{24.08.23}
 
-I have rewritten stuff. the Rust-C-Wrapper no longer specified the types. The C-Lib now has more types. I have some form of unit and integration
-testing, and the pipelines are up and running again. I still need a proper Rust-C-Wrapper test, to test that the calling works, and I should
-also use valgrind on this, to ensure that I atleast know about the memory leaks I have. (I know I have a lot). Also, stuff doesn't work. I get
-crashes on plugin loads now. I'll check if my v0.1.0 works.
+I have rewritten stuff. the Rust-C-Wrapper no longer specified the types. The C-Lib now has more types. I have some form of unit and
+integration testing, and the pipelines are up and running again. I still need a proper Rust-C-Wrapper test, to test that the calling
+works, and I should also use valgrind on this, to ensure that I atleast know about the memory leaks I have. (I know I have a lot).
+Also, stuff doesn't work. I get crashes on plugin loads now. I'll check if my v0.1.0 works.
 
 \dots
 
@@ -230,9 +230,56 @@ pretty cool. (ie. I can show it to my supervisors).
 
 \dots
 
-I should be better on committing when I am done with work. Instead of having to spend a lot of time figuring out what I did, before committing.
+I should be better on committing when I am done with work. Instead of having to spend a lot of time figuring out what I did, before
+committing.
 
 
-\section{24.08.28}
+\section{24.08.29}
 
-I should just do stuff in the backend.
+It's a shared-object file, not a C-Library.
+
+I had the first meeting with my supervisors, + a lot of new students. (like 5). Who all had to watch my progress. I think it went okay,
+got some notes. I need to analyze what can and cannot be done with the Msg-ing system, to see what limits it may impose on eventual
+future plugins.
+I mentioned it was difficult to find littrature about plugin architecture, and they said I could read Eclipse Plugins, which is about
+how Eclipse designed their plugin system, in which apparently, they were among the first to develop.
+I figured myself, that I could write something about plugin security, since executing arbitrary code at runtime is not entirely safe.
+
+\dots
+
+I got two days left of August, so I should try to plan the coming months, with features and releases. I know I have a lot to do:
+
+\begin{itemize}
+  \item Nmide Std. Lib.
+  \begin{itemize}
+    \item Improve Styling
+    \item Improve Rs-Ts bindings
+  \end{itemize}
+  \item Plugin IDE
+  \begin{itemize}
+    \item Workspace Creation
+    \item File Explorer
+    \item Text Editor
+  \end{itemize}
+  \item Plugin Managers Example
+  \item Expand Plugin Language Landscape
+    \begin{itemize}
+      \item TypeScript Example
+      \item C Example
+      \item Haskell Example
+    \end{itemize}
+  \item Tests
+  \begin{itemize}
+    \item Unit Tests
+    \item Memory Leak Tests
+    \item Integration Tests
+    \item Platform Tests
+  \end{itemize}
+  \item Building of Nmide
+\end{itemize}
+
+I have one task, which blocks, refactoring of the stdlib blocks development of plugins. But I could still work on
+tests, building of Nmide and the stdlib refactoring, at the same time, jumping between them, to ensure I am not
+too bored. Incase the work is boring, that is. So I think a good plan is to have the release of Nmide v1.0.0 be
+for the end of September. I think this will work. These tasks are technical, there are some chores, like
+CHANGELOG's, wiki-writing, and general docs to be written, but I think this will be doable.
