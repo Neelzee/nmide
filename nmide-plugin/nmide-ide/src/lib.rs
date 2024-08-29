@@ -2,6 +2,7 @@ use crate::{editor::editor, error_log::error_log, explorer::explorer};
 use anyhow::Result;
 use nmide_std_lib::{
     attr::Attr,
+    css::{Color, Css, Style, StyleCondition},
     html::Html,
     map::{value::Value, Map},
     msg::Msg,
@@ -61,7 +62,16 @@ pub extern "Rust" fn view(model: Map) -> Html {
             editor(&model),
             explorer(&model),
         ],
-        attrs: Vec::new(),
+        attrs: vec![Attr::Style(vec![Css {
+            styles: vec![(
+                StyleCondition::Kids,
+                Style::BackgroundColor(Color {
+                    r: 240,
+                    b: 0,
+                    g: 240,
+                }),
+            )],
+        }])],
     }
 }
 

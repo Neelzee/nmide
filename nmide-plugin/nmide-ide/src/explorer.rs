@@ -1,5 +1,6 @@
 use nmide_std_lib::{
     attr::Attr,
+    css::{Color, Css, Style, StyleCondition, Unit},
     html::Html,
     map::{value::Value, Map},
     msg::Msg,
@@ -28,10 +29,15 @@ fn render_files(v: Value) -> Html {
     match v {
         Value::String(s) => Html::P {
             kids: vec![Html::Text(s.clone())],
-            attrs: vec![Attr::OnClick(Msg::PluginMsg(
-                OPEN_FILE_MSG.to_string(),
-                Value::String(s),
-            ))],
+            attrs: vec![
+                Attr::OnClick(Msg::PluginMsg(OPEN_FILE_MSG.to_string(), Value::String(s))),
+                Attr::Style(vec![Css {
+                    styles: vec![(
+                        StyleCondition::Kids,
+                        Style::PaddingLeft("10".to_string(), Unit::Px),
+                    )],
+                }]),
+            ],
         },
         Value::List(mut xs) => Html::Div {
             kids: {
@@ -47,7 +53,12 @@ fn render_files(v: Value) -> Html {
                     },
                 )
             },
-            attrs: Vec::new(),
+            attrs: vec![Attr::Style(vec![Css {
+                styles: vec![(
+                    StyleCondition::Kids,
+                    Style::PaddingLeft("20".to_string(), Unit::Px),
+                )],
+            }])],
         },
         _ => Html::Frag {
             kids: Vec::new(),
