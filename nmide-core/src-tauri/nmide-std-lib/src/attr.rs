@@ -1,4 +1,4 @@
-use crate::{css::Css, msg::Msg};
+use crate::{css::TSStyle, msg::Msg};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
@@ -11,7 +11,7 @@ pub enum Attr {
     Src(String),
     For(String),
     OnClick(Msg),
-    Style(Vec<Css>),
+    Style(TSStyle),
     Attr(String, String),
 }
 

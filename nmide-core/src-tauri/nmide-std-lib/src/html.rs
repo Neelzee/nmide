@@ -248,3 +248,28 @@ impl Iterator for HtmlDFSIter {
         pre
     }
 }
+
+#[derive(
+    Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord, TS,
+)]
+#[ts(export, export_to = "../../../src/bindings/TSHtml.ts")]
+pub struct TSHtml {
+    pub kind: TSHtmlKind,
+    pub kids: Vec<TSHtml>,
+    pub text: Option<String>,
+    pub attrs: Vec<Attr>,
+}
+
+impl From<Html> for TSHtml {
+    fn from(value: Html) -> Self {
+        Self {
+            kind: value.to_ts_html_kind(),
+            kids: value.kids().into_iter().map(|h| h.into()).collect(),
+            text: match &value {
+                Html::Text(s) => Some(s.to_string()),
+                _ => None,
+            },
+            attrs: value.attrs(),
+        }
+    }
+}

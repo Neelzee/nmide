@@ -1,70 +1,108 @@
 import { Fragment } from "react/jsx-runtime";
-import { Html } from "../bindings/Html";
+import { TSHtml } from "../bindings/TSHtml";
 import { v4 as uuidv4 } from "uuid";
-import { Attr } from "src/bindings/Attr";
 import { Msg } from "src/bindings/Msg";
 import TauriClient from "../client";
-import { Css } from "src/bindings/Css";
+import { TSStyle } from "src/bindings/TSStyle";
 
-export default function RenderHtml({ html }: { html: Html }) {
-  if (typeof html !== "object") {
-    return <></>
+export default function RenderHtml({ kind, kids, attrs, text }: TSHtml) {
+  const key = uuidv4();
+  if (attrs === undefined) {
+    attrs = [];
   }
-  if ("Div" in html) {
-    const attrs = ToAttrObj(html.Div);
-    return (
-      <div
-        key={uuidv4()}
-        className={attrs.Class}
-        id={attrs.Id}
-        style={RsStyleToReactCSSProperties(attrs.Style)}
-        onClick={OnClickParse(attrs.OnClick)}
-      >
-        {html.Div.kids.map(k => {
-          return <RenderHtml html={k} />
-        }
-        )}
-      </div>
-    );
-  } else if ("Button" in html) {
-    const attrs = ToAttrObj(html.Button);
-    return (
-      <button
-        key={uuidv4()}
-        className={attrs.Class}
-        id={attrs.Id}
-        onClick={OnClickParse(attrs.OnClick)}
-        style={RsStyleToReactCSSProperties(attrs.Style)}
-      >
-        {html.Button.kids.map(k => {
-          return <RenderHtml html={k} />
-        }
-        )}
-      </button>
-    );
-  } else if ("P" in html) {
-    const attrs = ToAttrObj(html.P);
-    return (
-      <p
-        key={uuidv4()}
-        className={attrs.Class}
-        id={attrs.Id}
-        onClick={OnClickParse(attrs.OnClick)}
-        style={RsStyleToReactCSSProperties(attrs.Style)}
-      >
-        {html.P.kids.map(k => {
-          return <RenderHtml html={k} />
-        }
-        )}
-      </p>
-    );
+  const txt = text === null ? undefined : text;
+  const className = attrs.find(el => "Class" in el)?.Class;
+  const id = attrs.find(el => "Id" in el)?.Id;
+  const style = attrs.find(el => "Style" in el)?.Style;
+  const onClick = attrs.find(el => "OnClick" in el)?.OnClick;
+  switch (kind) {
+    case "Div":
+      return (
+        <div
+          key={key}
+          className={className}
+          id={id}
+          style={RsStyleToReactCSSProperties(style)}
+          onClick={OnClickParse(onClick)}
+        >
+          {txt}
+          {kids.map(RenderHtml)}
+        </div>
+      );
+    case "P":
+      return (
+        <p
+          key={key}
+          className={className}
+          id={id}
+          style={RsStyleToReactCSSProperties(style)}
+          onClick={OnClickParse(onClick)}
+        >
+          {txt}
+          {kids.map(RenderHtml)}
+        </p>
+      );
+    case "Button":
+      return (
+        <button
+          key={key}
+          className={className}
+          id={id}
+          style={RsStyleToReactCSSProperties(style)}
+          onClick={OnClickParse(onClick)}
+        >
+          {txt}
+          {kids.map(RenderHtml)}
+        </button>
+      );
+    case "Frag":
+      return (
+        <Fragment
+          key={key}
+        >
+          {txt}
+          {kids.map(RenderHtml)}
+        </Fragment>
+      );
+    case "Text":
+      return (<>{txt}</>);
+    case "H1":
+    case "H2":
+    case "H3":
+    case "H4":
+    case "H5":
+    case "H6":
+    case "Span":
+    case "Section":
+    case "Article":
+    case "Aside":
+    case "Audio":
+    case "B":
+    case "Br":
+    case "Code":
+    case "Em":
+    case "Fieldset":
+    case "Form":
+    case "Img":
+    case "Input":
+    case "Label":
+    case "Link":
+    case "Li":
+    case "Menu":
+    case "Nav":
+    case "Ol":
+    case "Option":
+    case "Select":
+    case "Style":
+    case "Svg":
+    case "Table":
+    case "Td":
+    case "Th":
+    case "Ul":
+    case "Video":
+    default:
+      return <></>
   }
-
-  if ("Text" in html) {
-    return <Fragment key={uuidv4()}>{html["Text"]}</Fragment>;
-  }
-
-  return <Fragment key={uuidv4()} />;
 }
 
 function OnClickParse(msg: Msg | undefined): () => void {
@@ -76,64 +114,10 @@ function OnClickParse(msg: Msg | undefined): () => void {
   };
 }
 
-type StdAttr = {
-  OnClick?: Msg,
-  Style?: Css[],
-  For?: string,
-  Id?: string,
-  Class?: string,
-  Src?: string,
-  Alt?: string,
-};
 
-type CstmAttr = {
-  [key: string]: string | undefined,
-};
-
-type AttrObj = StdAttr & CstmAttr;
-
-export function ToAttrObj({ attrs }: { attrs: Array<Attr> }): AttrObj {
-  const map: AttrObj = {};
-  attrs.forEach(attr => {
-    if ("Id" in attr) {
-      map.Id = attr.Id;
-    } else if ("Class" in attr) {
-      map.Class = attr.Class;
-    } else if ("Src" in attr) {
-      map.Src = attr.Src;
-    } else if ("Alt" in attr) {
-      map.Alt = attr.Alt;
-    } else if ("OnClick" in attr) {
-      map.OnClick = attr.OnClick;
-    } else if ("For" in attr) {
-      map.For = attr.For;
-    } else if ("Style" in attr) {
-      map.Style = attr.Style;
-    } else {
-      const [key, val] = attr.Attr;
-      map[key] = val;
-    }
-  });
-  return map;
-}
-
-function RsStyleToReactCSSProperties(css: Css[] | undefined): React.CSSProperties {
-  if (css === undefined) {
+function RsStyleToReactCSSProperties(style: TSStyle | undefined): React.CSSProperties {
+  if (style === undefined) {
     return {};
   }
-  const props: React.CSSProperties = {};
-
-  css.forEach(({ styles }) => {
-    styles.forEach(([_, style]) => {
-      if ("Width" in style) {
-        props.width = `${style.Width[0]}${style.Width[1]}`.toLowerCase();
-      } else if ("PaddingLeft" in style) {
-        props.paddingLeft = `${style.PaddingLeft[0]}${style.PaddingLeft[1]}`.toLowerCase();
-      } else if ("BackgroundColor" in style) {
-        props.backgroundColor = `rgb(${style.BackgroundColor.r} ${style.BackgroundColor.g} ${style.BackgroundColor.b})`;
-      }
-    });
-  });
-
-  return props;
+  return style as React.CSSProperties;
 }

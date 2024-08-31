@@ -1,8 +1,7 @@
 #[macro_export]
 macro_rules! define_html {
     ( $( $name:ident ),* ) => {
-        #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord, TS)]
-        #[ts(export, export_to = "../../../src/bindings/Html.ts")]
+        #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord)]
         pub enum Html {
             $(
                 $name { kids: Vec<Html>, attrs: Vec<Attr> },
@@ -83,6 +82,37 @@ macro_rules! define_html {
                     Self::$name { kids: _, attrs } => Self::$name { kids: new_kids, attrs },
                 )*
                     html @ _ => html,
+                }
+            }
+
+            pub fn to_ts_html_kind(&self) -> TSHtmlKind {
+                match self {
+                    $(
+                        Self::$name { .. } => TSHtmlKind::$name,
+                    )*
+                        Self::Text(_) => TSHtmlKind::Text,
+                }
+            }
+        }
+
+        #[derive(
+            Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord, TS,
+        )]
+        #[ts(export, export_to = "../../../src/bindings/TSHtmlKind.ts")]
+        pub enum TSHtmlKind {
+            $(
+                $name,
+            )*
+            Text,
+        }
+
+        impl TSHtmlKind {
+            pub fn to_html(&self) -> Html {
+                match self {
+                    $(
+                        Self::$name => Html::$name(),
+                    )*
+                        Self::Text => Html::Text(String::new()),
                 }
             }
         }

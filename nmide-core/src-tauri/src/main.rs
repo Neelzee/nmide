@@ -5,6 +5,7 @@ use anyhow::{Context, Result};
 use anyhow_tauri::{IntoTAResult, TAResult};
 use log::info;
 use nmide_plugin_manager::Nmlugin;
+use nmide_std_lib::html::TSHtml;
 use nmide_std_lib::map::value::Value;
 use nmide_std_lib::payloads::EmitMsgPayload;
 use nmide_std_lib::{attr::Attr, html::Html, map::Map, msg::Msg};
@@ -18,7 +19,7 @@ use tauri_plugin_log::LogTarget;
 use tokio::sync::{Mutex, RwLock};
 
 #[tauri::command]
-async fn init_html() -> Html {
+async fn init_html() -> TSHtml {
     info!("init_html");
     let lock = NMLUGS.get().unwrap().lock().await;
     let model_lock = MODEL.lock().await;
@@ -30,6 +31,7 @@ async fn init_html() -> Html {
         kids,
         attrs: vec![Attr::Id("main".to_string())],
     }
+    .into()
 }
 
 #[tauri::command]
@@ -134,6 +136,9 @@ fn plugin_setup() -> Result<()> {
         .iter()
         .filter_map(|nl| nl.init().ok())
         .fold(Map::new(), |acc, m| acc.merge(m));
+    for p in nmlugings.iter() {
+        println!("{:?}", p.path());
+    }
     *og_model = model.merge(og_model.clone());
 
     Ok(())

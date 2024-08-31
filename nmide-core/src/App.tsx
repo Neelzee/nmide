@@ -1,12 +1,19 @@
 import { useEffect, useState } from "react";
-import { Html } from "./bindings/Html";
 import RenderHtml from "./components/Html";
 import TauriClient from "./client";
 import { listen } from '@tauri-apps/api/event'
 import { EmitMsgPayload } from "./bindings/EmitMsgPayload";
+import { TSHtml } from "./bindings/TSHtml";
 
 function App() {
-  const [html, setHtml] = useState<Html>({ "Text": "" });
+  const [html, setHtml] = useState<TSHtml>(
+    {
+      kind: "Text",
+      kids: [],
+      text: null,
+      attrs: []
+    }
+  );
 
   useEffect(() => {
     TauriClient("init_html", {}).then(html => {
@@ -39,7 +46,7 @@ function App() {
   }, []);
 
   return (
-    <RenderHtml html={html} />
+    <RenderHtml kind={html.kind} kids={html.kids} text={html.text} attrs={html.attrs} />
   );
 }
 
