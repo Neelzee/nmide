@@ -5,6 +5,61 @@ All notable changes to the Nmide project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project tries to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2024-08-31
+
+### Added
+
+- Added cast_html method to Html
+- Added ts-auto-gen for Html
+- Added new CHtmlElement types
+- Added integration test for c plugins
+- Added P-tag rendering
+- Added open file dialog
+- Added dev plugin test support
+- Added changelogs
+
+### Changed
+
+- Created presentation plan
+- Created code example
+- Update git
+- Updated presentations
+- Added Ord, Eq in Value and Map
+- Corrected code in doc-string
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Updated notes
+- Created simple showcase plugin
+- Client is now ts
+- Updated slides
+- Updated notes
+- Can now open/close files
+- Added some basic css
+- Last fix to presentation
+- Updated daily notes
+- Updated daily notes
+- Re-added cliff
+
+### Fixed
+
+- Corrected update fn
+- Corrected build.rs
+- Corrected build.rs
+- Corrected build.rs
+- Simplified nmide-manager
+- Created C plugin for testing
+- Updated plugins
+- Corrected ts-export for types
+- Corrected Msg
+- Corrected RS-TS export path
+- Improved Css-Typing
+
+### Removed
+
+- Removed cliff
+- Removed logging
+- Removed css
+
 ## [0.1.0] - 2024-08-15
 
 ### Added
