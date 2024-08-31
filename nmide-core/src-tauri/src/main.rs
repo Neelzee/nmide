@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use anyhow_tauri::{IntoTAResult, TAResult};
 use log::info;
 use nmide_plugin_manager::Nmlugin;
@@ -92,6 +92,41 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
+fn development_setup(app: &mut tauri::App) -> Result<()> {
+    let dev_plugin_folder = PathBuf::new()
+        .join("../plugins/")
+        .canonicalize()
+        .context("cant canonicalize path")?;
+    println!("{:?}", &dev_plugin_folder);
+
+    let plugin_paths: Vec<PathBuf> = dev_plugin_folder
+        .read_dir()
+        .context(format!("Can't find path: {:?}", dev_plugin_folder))?
+        .filter_map(|p| p.ok())
+        .filter(|p| p.path().is_file())
+        .filter(|p| p.file_name() != ".gitignore")
+        .map(|p| p.path())
+        .collect();
+
+    let plugin_folder = app
+        .path_resolver()
+        .app_data_dir()
+        .context("Failed to get app_data_dir")
+        .unwrap()
+        .join("plugins");
+
+    fs::remove_dir_all(&plugin_folder)?;
+    fs::create_dir(&plugin_folder)?;
+
+    for pp in plugin_paths {
+        let _ = fs::remove_file(&plugin_folder.join(pp.file_name().unwrap()));
+        let dest = plugin_folder.join(pp.file_name().unwrap());
+        fs::copy(&pp, &dest).context(format!("Can't copy: {pp:?}, {dest:?}"))?;
+    }
+
+    Ok(())
+}
+
 fn plugin_setup() -> Result<()> {
     let nmlugings = NMLUGS.get().unwrap().try_lock()?;
     let mut og_model = MODEL.try_lock()?;
@@ -149,9 +184,9 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
                 .filter_map(|dir| match dir {
                     Ok(d)
                         if d.path().is_file()
-                            && d.path()
-                                .extension()
-                                .is_some_and(|e| e.to_string_lossy() == "so") =>
+                            && d.path().extension().is_some_and(|e| {
+                                e.to_string_lossy() == "so" || e.to_string_lossy() == "dll"
+                            }) =>
                     {
                         Some(d.path())
                     }
@@ -170,6 +205,12 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
 
     println!("{:?}", app_handle.path_resolver().app_log_dir());
     println!("{:?}", app_handle.path_resolver().app_cache_dir());
+
+    #[cfg(debug_assertions)]
+    {
+        let res = development_setup(app);
+        let _ = res.unwrap();
+    }
 
     plugin_setup().unwrap();
 

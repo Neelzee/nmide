@@ -11,12 +11,14 @@ version = "0.1.0"
 [tauri.allowlist]
 all = false
 
-  [tauri.allowlist.shell]
-  all = false
-  open = true
+[tauri.allowlist.shell]
+all = false
+open = true
 
-  [tauri.allowlist.fs]
-  scope = [ "$APPCONFIG/*", "$APPDATA/*", "$APPLOG/*", "$APPCACHE/*" ]
+[tauri.allowlist.fs]
+scope = [ "$APPCONFIG/*", "$APPDATA/*", "$APPLOG/*", "$APPCACHE/*" ]
+readFile = true
+readDir = true
 
 [[tauri.windows]]
 title = "nmide"
