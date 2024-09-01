@@ -1,6 +1,7 @@
 stages:
   - unit test
   - integration test
+  - rapport
   - svn
   - build
 
@@ -120,7 +121,7 @@ c-check-report:
   dependencies:
     - c-test-build
   image: neelzee/nmide-c:latest
-  stage: unit test
+  stage: rapport
   script:
     - gcc --version
     - cppcheck --version
@@ -155,7 +156,7 @@ c-check-cppcheck:
   rules:
     - if: '$ENABLED == "true"'
   image: neelzee/nmide-c:latest
-  stage: unit test
+  stage: rapport
   script:
     - gcc --version
     - cppcheck --version
@@ -168,7 +169,7 @@ c-check-valgrind-cmsg:
   rules:
     - if: '$ENABLED == "true"'
   image: neelzee/nmide-c:latest
-  stage: unit test
+  stage: rapport
   dependencies:
     - c-test-build
   script:
@@ -187,7 +188,7 @@ c-check-valgrind-cmap:
   rules:
     - if: '$ENABLED == "true"'
   image: neelzee/nmide-c:latest
-  stage: unit test
+  stage: rapport
   dependencies:
     - c-test-build
   script:
@@ -206,7 +207,7 @@ c-check-valgrind-cmodel:
   rules:
     - if: '$ENABLED == "true"'
   image: neelzee/nmide-c:latest
-  stage: unit test
+  stage: rapport
   dependencies:
     - c-test-build
   script:
@@ -259,7 +260,7 @@ pdf-build:
     - if: $CI_COMMIT_BRANCH == "main"
       changes:
         - nmide-thesis/main.tex
-      when: manual
+      when: always
   artifacts:
     when: on_success
     access: all
@@ -307,7 +308,11 @@ debian-build:
   only:
     - main
   script:
-    - just build-release
+    - npm --version
+    - cd nmide-core
+    - pwd
+    - npm i
+    - npm run tauri dev
   artifacts:
     when: on_success
     access: all
