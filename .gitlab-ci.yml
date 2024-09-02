@@ -160,7 +160,7 @@ nmide-core-coverage-report:
     RUSTFLAGS: "-Cinstrument-coverage"
   rules:
     - if: '$ENABLED == "true"'
-  image: neelzee/nmide-rust:latest
+  image: neelzee/nmide-tauri:latest
   stage: rapport
   script:
     - cargo --version
