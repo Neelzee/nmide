@@ -154,6 +154,35 @@ c-check-report:
       - nmide-lib/valgrind_*_test_cmodel.xml
       - nmide-lib/valgrind_*_test_cmsg.xml
 
+nmide-core-coverage-report:
+  variables:
+    LLVM_PROFILE_FILE: "target/coverage/nmide-%p-%m.profraw"
+    RUSTFLAGS: "-Cinstrument-coverage"
+  rules:
+    - if: '$ENABLED == "true"'
+  image: neelzee/nmide-rust:latest
+  stage: rapport
+  script:
+    - cargo --version
+    - cd nmide-core/src-tauri
+    - cargo test --workspace
+    - mkdir ./target/coverage
+    - |
+        grcov
+        target/coverage
+        --binary-path target/debug
+        -s .
+        - o target/coverage
+        --keep-only 'src/*'
+        --output-types html,cobertura
+  artifacts:
+    paths:
+      - target/coverage/
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: target/coverage.xml
+
 c-check-cppcheck:
   rules:
     - if: '$ENABLED == "true"'
