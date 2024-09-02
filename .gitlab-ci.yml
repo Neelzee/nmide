@@ -263,10 +263,10 @@ pdf-build:
     - pdflatex --version
     - pdflatex --output-directory=nmide-thesis nmide-thesis/main.tex
   rules:
-    - if: $CI_COMMIT_BRANCH == "main"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $ENABLED == "true"'
+      when: always
       changes:
         - nmide-thesis/main.tex
-      when: always
   artifacts:
     when: on_success
     access: all
@@ -275,7 +275,8 @@ pdf-build:
 
 nmide-lib-build:
   rules:
-    - if: '$ENABLED == "true"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $ENABLED == "true"'
+      when: always
   stage: build
   when: manual
   script:
@@ -298,8 +299,8 @@ nmide-lib-build:
 windows-build:
   stage: build
   when: manual
-  only:
-    - main
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $ENABLED == "true"'
   script:
     - echo "Needs a windows image"
   artifacts:
@@ -311,8 +312,8 @@ windows-build:
 debian-build:
   stage: build
   when: manual
-  only:
-    - main
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $ENABLED == "true"'
   script:
     - npm --version
     - cd nmide-core
@@ -328,8 +329,8 @@ debian-build:
 mac-build:
   stage: build
   when: manual
-  only:
-    - main
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $ENABLED == "true"'
   script:
     - echo "TODO"
   artifacts:
