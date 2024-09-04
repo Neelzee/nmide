@@ -85,9 +85,14 @@ test-nmide-plugins:
 
 test-nmide-wrapper:
   image: neelzee/nmide-wrapper:latest
+  dependencies:
+    - c-test-build
   stage: test
   script:
     - cmake --version
     - cargo --version
     - cd nmide-wrapper/nmide-rust-ffi
     - cargo test
+  needs:
+    - job: c-test-build
+      artifacts: true

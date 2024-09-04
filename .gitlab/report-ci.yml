@@ -37,17 +37,16 @@ c-check-report:
 
 nmide-core-coverage-report:
   dependencies:
-    - c-test-build
+    - nmide-core-test-build
   variables:
     LLVM_PROFILE_FILE: "target/coverage/nmide-%p-%m.profraw"
     RUSTFLAGS: "-Cinstrument-coverage"
-  image: neelzee/nmide-tauri:latest
   stage: rapport
   script:
     - cargo --version
     - cd nmide-core/src-tauri
     - cargo test --workspace
-    - grcov . -s . --binary-path ./target/debug/ -t cobertura --branch --ignore-not-existing -o ./target/debug/coverage/
+    - /usr/local/cargo/bin/grcov . -s . --binary-path ./target/debug/ -t cobertura --branch --ignore-not-existing -o ./target/debug/coverage/
   artifacts:
     expire_in: 1 week
     paths:
@@ -57,5 +56,5 @@ nmide-core-coverage-report:
         coverage_format: cobertura
         path: nmide/nmide-core/src-tauri/target/coverage/cobertura.xml
   needs:
-    - job: c-test-build
+    - job: nmide-core-test-build
       artifacts: true
