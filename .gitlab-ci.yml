@@ -111,13 +111,15 @@ test-nmide-plugins:
     - for dir in */; do if [ -f "$dir/Cargo.toml" ]; then echo "Running tests in $dir"; (cd "$dir" && cargo test); else echo "Skipping $dir (no Cargo.toml found)"; fi; done
 
 test-nmide-wrapper:
+  image: neelzee/nmide-rust:latest
   rules:
     - if: '$ENABLED == "true"'
   stage: test
   script:
+    - apt-get install cmake
+    - cmake --version
     - cargo --version
     - cd nmide-wrapper/nmide-rust-ffi
-    - pwd
     - cargo test
 
 c-check-report:
