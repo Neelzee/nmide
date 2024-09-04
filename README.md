@@ -4,6 +4,13 @@ A *simple* IDE.
 
 ## Development
 
+![latest release](https://git.app.uib.no/Nils.Fitjar/nmide/-/badges/release.svg)
+
+### CI
+
+Pipeline-main: ![main pipeline status](https://git.app.uib.no/Nils.Fitjar/nmide/badges/dev/pipeline.svg)
+Pipeline-dev: ![dev pipeline status](https://git.app.uib.no/Nils.Fitjar/nmide/badges/dev/pipeline.svg)
+
 ### Git Commit Convention
 
 Follow [this](https://www.conventionalcommits.org/en/v1.0.0/#summary)
