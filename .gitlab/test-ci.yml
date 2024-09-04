@@ -1,6 +1,8 @@
 # Builds for tests
 nmide-core-test-build:
   stage: test
+  tags:
+    - nmide-core
   script:
     - cargo --version
     - npm --version
@@ -37,6 +39,8 @@ test-nmide-core-backend:
   dependencies:
     - nmide-core-test-build
   stage: test
+  tags:
+    - nmide-core
   script:
     - cargo --version
     - cd nmide-core/src-tauri
@@ -48,6 +52,8 @@ test-nmide-core-backend:
 test-nmide-core-frontend:
   dependencies:
     - nmide-core-test-build
+  tags:
+    - nmide-core
   stage: test
   script:
     - npm --version
@@ -77,6 +83,8 @@ c-test:
 test-nmide-plugins:
   image: neelzee/nmide-rust:latest
   stage: test
+  tags:
+    - nmide-core
   script:
     - cargo --version
     - cd nmide-plugin

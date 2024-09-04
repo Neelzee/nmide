@@ -1,6 +1,8 @@
 integration-tests-nmide:
   image: neelzee/nmide-rust:latest
   stage: integration
+  tags:
+    - nmide-core
   script:
     - cargo --version
     - cd nmide-tests
@@ -9,6 +11,8 @@ integration-tests-nmide:
 integration-tests-nmide-rust-plugins:
   image: neelzee/nmide-rust:latest
   stage: integration
+  tags:
+    - nmide-core
   script:
     - cargo --version
     - cd nmide-tests/rust-test

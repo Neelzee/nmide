@@ -42,6 +42,8 @@ nmide-core-coverage-report:
     LLVM_PROFILE_FILE: "target/coverage/nmide-%p-%m.profraw"
     RUSTFLAGS: "-Cinstrument-coverage"
   stage: rapport
+  tags:
+    - nmide-core
   script:
     - rustup component add llvm-tools-preview
     - cargo install grcov

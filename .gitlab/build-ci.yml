@@ -43,6 +43,8 @@ windows-build:
   when: manual
   script:
     - echo "Needs a windows image"
+  tags:
+    - nmide-core
   artifacts:
     when: on_success
     access: all
@@ -52,6 +54,8 @@ windows-build:
 debian-build:
   stage: build
   when: manual
+  tags:
+    - nmide-core
   script:
     - npm --version
     - cd nmide-core
@@ -67,6 +71,8 @@ debian-build:
 mac-build:
   stage: build
   when: manual
+  tags:
+    - nmide-core
   script:
     - echo "TODO"
   artifacts:
