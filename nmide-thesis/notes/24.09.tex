@@ -1,0 +1,26 @@
+\section{24.09.04}
+
+Created my own Gitlab runner. Out of an old laptop. It did not work out of the box, but I hope
+I can get it work by the end of today.
+
+(1 minute later)
+
+I dont know why, but my runner is disabled for 1 hour. Cool beans.
+
+\dots
+
+I re-installed debian on the old laptop, and registered the runner on the laptop, instead of
+through SSH, but this did not work either. I also added a runner on my current laptop, and
+this worked, somehow. But it was a flakey process. I saw on some forums that I should run
+gitlab-runner with sudo, but this did not work on my machine, neither did without, it was
+just stuck, it seemed. I finally ran it with the --debug flag, and then it worked.
+
+I can now see that downloading 2G might be slower than just building it.
+
+The pipelines take a ridicolus amount of time to run, so I should look into splitting them up
+there is no need to run them for every little commit. This is a tomorrow me's problem, however.
+I am also noticing that my desktop is lagging when being used as a runner, so I should enable
+the shared runners for those jobs that it can run (by using tags).
+
+I also need to check out the test coverage being created for nmide-core, it is not working for
+some reason.
