@@ -43,10 +43,12 @@ nmide-core-coverage-report:
     RUSTFLAGS: "-Cinstrument-coverage"
   stage: rapport
   script:
+    - rustup component add llvm-tools-preview
+    - cargo install grcov
     - cargo --version
     - cd nmide-core/src-tauri
     - cargo test --workspace
-    - /usr/local/cargo/bin/grcov . -s . --binary-path ./target/debug/ -t cobertura --branch --ignore-not-existing -o ./target/debug/coverage/
+    - grcov . -s . --binary-path ./target/debug/ -t cobertura --branch --ignore-not-existing -o ./target/debug/coverage/
   artifacts:
     expire_in: 1 week
     paths:
