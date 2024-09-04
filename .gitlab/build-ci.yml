@@ -1,0 +1,76 @@
+pdf-build:
+  image: neelzee/nmide-thesis:latest
+  stage: build
+  when: always
+  script:
+    - pdflatex --version
+    - pdflatex --output-directory=nmide-thesis nmide-thesis/main.tex
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      when: always
+      changes:
+        - nmide-thesis/**
+  artifacts:
+    when: on_success
+    access: all
+    paths:
+      - nmide-thesis/*.pdf
+
+nmide-lib-build:
+  image: neelzee/nmide-c:latest
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      when: always
+  stage: build
+  when: manual
+  script:
+    - gcc --version
+    - cmake --version
+    - make --version
+    - mkdir nmide-lib/release
+    - cd nmide-lib/release
+    - cmake -DCMAKE_BUILD_TYPE=Release ..
+    - make
+    - ls
+  artifacts:
+    when: on_success
+    access: all
+    paths:
+      - nmide-lib/release/libnmide.*
+
+windows-build:
+  stage: build
+  when: manual
+  script:
+    - echo "Needs a windows image"
+  artifacts:
+    when: on_success
+    access: all
+    paths:
+      - $CORE_OUT_DIR
+
+debian-build:
+  stage: build
+  when: manual
+  script:
+    - npm --version
+    - cd nmide-core
+    - pwd
+    - npm i
+    - npm run tauri dev
+  artifacts:
+    when: on_success
+    access: all
+    paths:
+      - $CORE_OUT_DIR
+
+mac-build:
+  stage: build
+  when: manual
+  script:
+    - echo "TODO"
+  artifacts:
+    when: on_success
+    access: all
+    paths:
+      - $CORE_OUT_DIR
