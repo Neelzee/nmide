@@ -4,6 +4,7 @@ stages:
   - rapport
   - svn
   - build
+  - release
 
 default:
   image: neelzee/nmide-tauri:latest
