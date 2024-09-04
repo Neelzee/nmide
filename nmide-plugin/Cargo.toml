@@ -1,0 +1,9 @@
+[workspace]
+members = ["nmide-fe", "nmide-framework", "nmide-ide", "nmide-manager"]
+
+[package]
+name = "nmide-plugin"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
