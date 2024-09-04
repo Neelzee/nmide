@@ -1,6 +1,6 @@
 stages:
-  - unit test
-  - integration test
+  - test
+  - integration
   - rapport
   - svn
   - build
@@ -12,10 +12,14 @@ variables:
   CORE_OUT_DIR: "nmide-core/src-tauri/target/release/*"
   ENABLED: true
 
+#
+include:
+   - template: Jobs/Code-Quality.gitlab-ci.yml
+
 test-nmide-core:
   rules:
     - if: '$ENABLED == "true"'
-  stage: unit test
+  stage: test
   script:
     - cargo --version
     - npm --version
@@ -30,7 +34,7 @@ test-nmide-core:
 test-nmide-std-lib:
   rules:
     - if: '$ENABLED == "true"'
-  stage: unit test
+  stage: test
   script:
     - cargo --version
     - cd nmide-core/src-tauri/nmide-std-lib
@@ -40,7 +44,7 @@ test-nmide-std-lib:
 test-nmide-macros:
   rules:
     - if: '$ENABLED == "true"'
-  stage: unit test
+  stage: test
   script:
     - cargo --version
     - cd nmide-core/src-tauri/nmide-macros
@@ -50,7 +54,7 @@ test-nmide-macros:
 test-nmide-plugin-manager:
   rules:
     - if: '$ENABLED == "true"'
-  stage: unit test
+  stage: test
   script:
     - cargo --version
     - cd nmide-core/src-tauri/nmide-plugin-manager
@@ -61,7 +65,7 @@ c-test-build:
   rules:
     - if: '$ENABLED == "true"'
   image: neelzee/nmide-c:latest
-  stage: unit test
+  stage: test
   script:
     - gcc --version
     - cmake --version
@@ -85,7 +89,7 @@ c-test:
     - c-test-build
   allow_failure: true
   image: neelzee/nmide-c:latest
-  stage: unit test
+  stage: test
   script:
     - cd nmide-lib/debug
     - ls
@@ -99,7 +103,7 @@ c-test:
 test-nmide-plugins:
   rules:
     - if: '$ENABLED == "true"'
-  stage: unit test
+  stage: test
   script:
     - cargo --version
     - cd nmide-plugin
@@ -109,7 +113,7 @@ test-nmide-plugins:
 test-nmide-wrapper:
   rules:
     - if: '$ENABLED == "true"'
-  stage: unit test
+  stage: test
   script:
     - cargo --version
     - cd nmide-wrapper/nmide-rust-ffi
@@ -259,7 +263,7 @@ c-check-valgrind-cmodel:
 integration-tests-nmide:
   rules:
     - if: '$ENABLED == "true"'
-  stage: integration test
+  stage: integration
   script:
     - cargo --version
     - cd nmide-tests
@@ -269,7 +273,7 @@ integration-tests-nmide:
 integration-tests-nmide-rust-plugins:
   rules:
     - if: '$ENABLED == "true"'
-  stage: integration test
+  stage: integration
   script:
     - cargo --version
     - cd nmide-tests/rust-test
@@ -287,7 +291,7 @@ pts:
 pdf-build:
   image: neelzee/nmide-thesis:latest
   stage: build
-  when: manual
+  when: always
   script:
     - pdflatex --version
     - pdflatex --output-directory=nmide-thesis nmide-thesis/main.tex
@@ -330,6 +334,7 @@ windows-build:
   when: manual
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $ENABLED == "true"'
+      when: always
   script:
     - echo "Needs a windows image"
   artifacts:
@@ -343,6 +348,7 @@ debian-build:
   when: manual
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $ENABLED == "true"'
+      when: always
   script:
     - npm --version
     - cd nmide-core
@@ -360,6 +366,7 @@ mac-build:
   when: manual
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $ENABLED == "true"'
+      when: always
   script:
     - echo "TODO"
   artifacts:
