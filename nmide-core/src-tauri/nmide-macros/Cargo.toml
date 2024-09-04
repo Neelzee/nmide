@@ -3,5 +3,8 @@ name = "nmide-macros"
 version = "0.1.0"
 edition = "2021"
 
+[build]
+profiler = true
+
 [dependencies]
 serde = { version = "1.0.208", features = ["derive"] }

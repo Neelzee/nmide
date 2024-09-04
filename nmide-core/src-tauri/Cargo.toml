@@ -10,6 +10,9 @@ license = ""
 repository = "https://git.app.uib.no/Nils.Fitjar/nmide"
 edition = "2021"
 
+[build]
+profiler = true
+
 [build-dependencies]
 tauri-build = { version = "1.5", features = [] }
 dotenv = "0.15.0"

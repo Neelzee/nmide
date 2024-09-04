@@ -3,6 +3,9 @@ name = "nmide-std-lib"
 version = "0.1.0"
 edition = "2021"
 
+[build]
+profiler = true
+
 [dependencies]
 nmide-macros = { path = "../nmide-macros/" }
 rstest = "0.22.0"
