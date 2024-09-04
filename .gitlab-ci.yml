@@ -32,6 +32,7 @@ test-nmide-core:
     - cargo test
 
 test-nmide-std-lib:
+  image: neelzee/nmide-rust:latest
   rules:
     - if: '$ENABLED == "true"'
   stage: test
@@ -42,6 +43,7 @@ test-nmide-std-lib:
     - cargo test
 
 test-nmide-macros:
+  image: neelzee/nmide-rust:latest
   rules:
     - if: '$ENABLED == "true"'
   stage: test
@@ -52,6 +54,7 @@ test-nmide-macros:
     - cargo test
 
 test-nmide-plugin-manager:
+  image: neelzee/nmide-rust:latest
   rules:
     - if: '$ENABLED == "true"'
   stage: test
@@ -101,6 +104,7 @@ c-test:
     artifacts: true
 
 test-nmide-plugins:
+  image: neelzee/nmide-rust:latest
   rules:
     - if: '$ENABLED == "true"'
   stage: test
@@ -263,6 +267,7 @@ c-check-valgrind-cmodel:
     artifacts: true
 
 integration-tests-nmide:
+  image: neelzee/nmide-rust:latest
   rules:
     - if: '$ENABLED == "true"'
   stage: integration
@@ -273,6 +278,7 @@ integration-tests-nmide:
     - cargo test
 
 integration-tests-nmide-rust-plugins:
+  image: neelzee/nmide-rust:latest
   rules:
     - if: '$ENABLED == "true"'
   stage: integration
@@ -283,11 +289,14 @@ integration-tests-nmide-rust-plugins:
     - cargo test
 
 pts:
+  image: neelzee/nmide-rust:latest
   stage: svn
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $ENABLED == "true"'
       when: always
   script:
+    - cargo --version
+    - cargo install just
     - just svn
 
 pdf-build:
@@ -309,6 +318,7 @@ pdf-build:
       - nmide-thesis/*.pdf
 
 nmide-lib-build:
+  image: neelzee/nmide-c:latest
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $ENABLED == "true"'
       when: always
