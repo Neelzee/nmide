@@ -18,12 +18,6 @@ RUN apt-get install -y libwebkit2gtk-4.0-dev \
   libayatana-appindicator3-dev \
   librsvg2-dev
 
-# nmide-specific
-RUN apt-get install -y cmake
-
-# Rust-Nmide-FFI
-RUN apt-get install -y libclang-dev
-
 RUN rm -rf /var/lib/apt/lists/*
 
 # Rust
@@ -31,8 +25,5 @@ RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 
 # Adds cargo to path
 ENV PATH="/root/.cargo/bin:${PATH}"
-
-# Installs just
-RUN cargo install just
 
 CMD ["/bin/bash"]
