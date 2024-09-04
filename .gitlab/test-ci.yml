@@ -1,13 +1,15 @@
-test-nmide-core:
+# Builds for tests
+nmide-core-test-build:
   stage: test
   script:
     - cargo --version
     - npm --version
-    - cd nmide-core
-    - npm i
-    - npm run test
-    - cd src-tauri
-    - cargo test --workspace
+    - cd nmide-core/src-tauri
+    - cargo build
+  artifacts:
+    expire_in: 1 hrs
+    paths:
+      - nmide-core/src-tauri/target
 
 c-test-build:
   image: neelzee/nmide-c:latest
@@ -25,8 +27,36 @@ c-test-build:
     - make
     - ls
   artifacts:
+    expire_in: 1 hrs
     paths:
       - nmide-lib/debug
+
+# Tests
+
+test-nmide-core-backend:
+  dependencies:
+    - nmide-core-test-build
+  stage: test
+  script:
+    - cargo --version
+    - cd nmide-core/src-tauri
+    - cargo test --workspace
+  needs:
+    - job: nmide-core-test-build
+      artifacts: true
+
+test-nmide-core-frontend:
+  dependencies:
+    - nmide-core-test-build
+  stage: test
+  script:
+    - npm --version
+    - cd nmide-core
+    - npm i
+    - npm run test
+  needs:
+    - job: nmide-core-test-build
+      artifacts: true
 
 c-test:
   dependencies:
@@ -54,10 +84,9 @@ test-nmide-plugins:
     - for dir in */; do if [ -f "$dir/Cargo.toml" ]; then echo "Running tests in $dir"; (cd "$dir" && cargo test); else echo "Skipping $dir (no Cargo.toml found)"; fi; done
 
 test-nmide-wrapper:
-  image: neelzee/nmide-rust:latest
+  image: neelzee/nmide-wrapper:latest
   stage: test
   script:
-    - apt-get install cmake
     - cmake --version
     - cargo --version
     - cd nmide-wrapper/nmide-rust-ffi

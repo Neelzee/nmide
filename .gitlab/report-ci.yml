@@ -27,6 +27,7 @@ c-check-report:
     - job: c-test-build
       artifacts: true
   artifacts:
+    expire_in: 1 week
     access: all
     paths:
       - nmide-lib/report-*.xml
@@ -35,6 +36,8 @@ c-check-report:
       - nmide-lib/valgrind_*_test_cmsg.xml
 
 nmide-core-coverage-report:
+  dependencies:
+    - c-test-build
   variables:
     LLVM_PROFILE_FILE: "target/coverage/nmide-%p-%m.profraw"
     RUSTFLAGS: "-Cinstrument-coverage"
@@ -46,9 +49,13 @@ nmide-core-coverage-report:
     - cargo test --workspace
     - grcov . -s . --binary-path ./target/debug/ -t cobertura --branch --ignore-not-existing -o ./target/debug/coverage/
   artifacts:
+    expire_in: 1 week
     paths:
       - nmide/nmide-core/src-tauri/target/coverage/
     reports:
       coverage_report:
         coverage_format: cobertura
         path: nmide/nmide-core/src-tauri/target/coverage/cobertura.xml
+  needs:
+    - job: c-test-build
+      artifacts: true
