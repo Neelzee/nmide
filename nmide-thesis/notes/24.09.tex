@@ -24,3 +24,28 @@ the shared runners for those jobs that it can run (by using tags).
 
 I also need to check out the test coverage being created for nmide-core, it is not working for
 some reason.
+
+
+\section{24.09.05}
+
+I forgot to turn on my gitlab-runner before going to JAFU, so now I can't build unless I create
+a new gitlab-runner. I also can't ssh into my old laptop, because I don't know the ip, nor if
+that port is open on our network.
+
+So no ci work today.
+
+I know of other problems I can/should work on, like the Rust ABI. It is not stable. Which is a
+major problem. The Rust Compiler does a lot of optimalizations on data-types, which means across
+different semver's, the same struct can have different orientation in memory, which leads to
+undefined behavior. There are crates that can fix this, like stabby, but this will severely change
+the nmide-std-lib API. But this will make Plugin development a real pain, which means I would have
+to include more tests for memory leakage, functions for html-element creation/manipulation and
+possibly macros.
+
+So, I have an idea! I'll keep the same general structure on the "old" Html stuff, but use
+ManuallyDrop wrapper on the fields that are used across the ABI, kids, attrs, and text. That way I
+can ensure that the value that I read exists, and basically run a garbage collector every now and
+then.
+
+I need to do a deep-dive into crates like stabby and safer_ffi, to make my Rust ABI development life
+easier.
