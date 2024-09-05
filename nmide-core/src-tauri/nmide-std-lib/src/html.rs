@@ -3,7 +3,7 @@ use crate::{
     utils::{fst, grab_first, snd},
 };
 use nmide_macros::define_html;
-use std::collections::VecDeque;
+use std::{collections::VecDeque, mem::ManuallyDrop};
 use ts_rs::TS;
 
 define_html!(
@@ -13,6 +13,13 @@ define_html!(
 );
 
 impl Html {
+    pub fn text(&self) -> String {
+        match self {
+            Html::Text(s) => s.clone(),
+            _ => String::new(),
+        }
+    }
+
     pub fn insert_id(self, other: Html, id: &str) -> Self {
         self.apply_if(
             |k| k.attrs().iter().any(|a| a.to_id().is_some_and(|i| i == id)),

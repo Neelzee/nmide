@@ -1,3 +1,5 @@
+pub mod chtml;
+
 pub mod html;
 
 pub mod css;

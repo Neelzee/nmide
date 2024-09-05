@@ -10,6 +10,14 @@ macro_rules! define_html {
         }
 
         impl Html {
+            pub fn shallow_clone(&self) -> Self {
+                match self {
+                    $(
+                        Html::$name { .. } => Html::$name(),
+                    )*
+                    Html::Text(_) => Html::Text(String::new()),
+                }
+            }
 
             pub fn cast_html(self, target: Self) -> Self {
                 match self {
