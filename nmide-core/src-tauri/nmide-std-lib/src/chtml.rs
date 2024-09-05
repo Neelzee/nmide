@@ -1,3 +1,5 @@
+use std::{mem::ManuallyDrop, ptr::null};
+
 use crate::html::Html;
 
 macro_rules! chtmlkind {
@@ -33,6 +35,20 @@ chtmlkind!(
 #[stabby::stabby]
 pub struct CHtml {
     kind: CHtmlKind,
-    kids: *const CHtml,
+    kids: *const ManuallyDrop<CHtml>,
     text: *const u8,
+}
+
+impl CHtml {
+    pub fn new(
+        kind: CHtmlKind,
+        kids: ManuallyDrop<Vec<ManuallyDrop<CHtml>>>,
+        text: ManuallyDrop<String>,
+    ) -> Self {
+        Self {
+            kind,
+            kids: kids.as_ptr(),
+            text: text.as_bytes().as_ptr(),
+        }
+    }
 }
