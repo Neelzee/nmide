@@ -49,3 +49,19 @@ then.
 
 I need to do a deep-dive into crates like stabby and safer_ffi, to make my Rust ABI development life
 easier.
+
+
+\section{24.09.06}
+
+I need a CLI-tool for creating plugins. Because I need a lot of boilerplate code for it too work,
+safely and stably, in the Nmide environment. If I do not do this, I risk of creating Magnolia IDE
+2, Electric Boogaloo. Which, now that I think about it, I risk either way. If I don't use crates to
+make the Rust ABI stable across compiler versions, the application is kinda future safe, because for
+every major/minor compiler update, you only need to recompile the IDE and Plugins you are using, and
+any future compiler update will likely not break the ABI, or make it anymore unstable on the same
+compiler version. While, on the other hand if I rely on crates ensuring ABI safety, a future Rust
+version could break it, (insert the 1.82.0 to 1.81.0 minor update that broke a lot of crates). I
+think with the crate way, I or other people could eventually fix that which is broken, but I can't
+guarantee it. Working with ABI/FFI's is a pain.
+
+I think I should work on something else for a while.
