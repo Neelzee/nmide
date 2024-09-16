@@ -4,7 +4,7 @@ use ts_rs::TS;
 const FLOAT_COMP: f32 = 0.01f32;
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialOrd, PartialEq, TS)]
-#[ts(export, export_to = "../../../src/bindings/Value.ts")]
+#[ts(export, export_to = "../../../app/bindings/Value.ts")]
 pub enum Value {
     Int(i32),
     Float(f32),

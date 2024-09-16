@@ -106,7 +106,7 @@ macro_rules! define_html {
         #[derive(
             Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord, TS,
         )]
-        #[ts(export, export_to = "../../../src/bindings/TSHtmlKind.ts")]
+        #[ts(export, export_to = "../../../app/bindings/TSHtmlKind.ts")]
         pub enum TSHtmlKind {
             $(
                 $name,

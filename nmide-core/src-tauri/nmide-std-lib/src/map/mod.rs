@@ -3,10 +3,12 @@ use crate::{
     utils::{drop_first, grab_first, lookup, remove},
 };
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 pub mod value;
 
-#[derive(Debug, Serialize, Deserialize, Clone, Default, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default, PartialEq, Eq, PartialOrd, Ord, TS)]
+#[ts(export, export_to = "../../../app/bindings/Map.ts")]
 pub struct Map(Vec<(String, Value)>);
 
 impl Map {

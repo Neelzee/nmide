@@ -259,7 +259,7 @@ impl Iterator for HtmlDFSIter {
 #[derive(
     Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord, TS,
 )]
-#[ts(export, export_to = "../../../src/bindings/TSHtml.ts")]
+#[ts(export, export_to = "../../../app/bindings/TSHtml.ts")]
 pub struct TSHtml {
     pub kind: TSHtmlKind,
     pub kids: Vec<TSHtml>,

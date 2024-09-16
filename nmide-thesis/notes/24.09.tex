@@ -65,3 +65,96 @@ think with the crate way, I or other people could eventually fix that which is b
 guarantee it. Working with ABI/FFI's is a pain.
 
 I think I should work on something else for a while.
+
+
+\section{24.09.08}
+
+I have worked on something else for a while. I have found a way to have JavaScript functions, which is
+cool! Now I am struggling with how to coalesce the state/html between the frontend and backend. I need
+to redesign the current setup.
+
+It sucks redesigning stuff.
+
+\dots
+
+I think it's best if the frontend decides when to init and update. And view should only be called after
+update, but since the event system is fire-and-forget, it's so \textit{many} messages.
+
+\begin{itemize}
+  \item The frontend has an useEffect, that does the plugin script-tag creation.
+  \item The frontend has an useEffect, that calls init on plugins
+  \begin{itemize}
+    \item It then calls the backend init, with the frontend plugin state
+  \end{itemize}
+  \item The backend init combines the backend plugin state with the frontend
+  \begin{itemize}
+    \item It then emits a "view" msg
+  \end{itemize}
+  \item The frontend has an useEffect that listens for "view"
+  \begin{itemize}
+    \item Gets the html from the frontend plugins
+    \item Gets the html from the backend plugins by calling backend "view"
+    \item Combines the html, and sets the react state with the result
+  \end{itemize}
+  \item The frontend renders the html
+  \item The frontend has an useEffect, that listens for "Msg"
+  \begin{itemize}
+    \item It gets the state (which is stored in the backend)
+    \item It calls "update" on the frontend plugins
+    \item It calls "update", on the backend, with the frontend state and message
+  \end{itemize}
+  \item The backend "update" receives the states
+  \begin{itemize}
+    \item It mergers them
+    \item Updates the state
+    \item emits "view"
+  \end{itemize}
+\end{itemize}
+
+
+\section{24.09.11}
+
+The state should be stored in the frontend, and then the frontend should just call the backend.
+This sucks.
+
+
+\section{24.09.12}
+
+It did not work. For some reason the application tries to allocate 93837219552704 bytes of memory,
+which obviously fails. (I dont have 94\~ Terabytes of RAM, or swap, for that matter). I think I should
+go back to the original plan, having the backend do the heavy lifting. State and view should be
+coalesced in the backend, before the Html is sent to the frontend for rendering. But I want typing,
+which the Event system in Tauri doesn't support. Or, it does, kinda. But I would like it and the IPC
+to be typesafe. But oh well.
+
+I also need to figure out a fix for pipelines.
+
+I should really design a general structure of this IDE, and Plugins, (docs/wikis), I think it will help
+to visualize stuff that way, and ensure that what I am doing is actually smart. I am beginning to worry
+about delays in the IDE, especially with state and html changes. I should probably make some tests or
+some concepts about this, so that I can time it. I think the general rendering of the Html will be the
+most time consuming, so limiting re-rendering is of high importance. I hope I get this by using React,
+with it's VDOM-system, but I should probably create something similar with the state system. If I give
+the requirement for all Plugins to not have any state, (which I kinda implicitly do), I won't have to
+re-do an update-call if the state is unchanged.
+
+It's also important to find papers, articles, etc. about plugins, IDEs and similar stuff, because I think
+I am just re-inventing the wheel here. I think, if I did not have the criteria of having to design
+something with support for displaying Trees, I would move away from Tauri, to something more lower-level,
+so that I could move away from Tauri, and hopefully use something which is easier to optimalize. But, thems
+the breaks.
+
+
+\section{24.09.16}
+
+Been a few days since I've looked at this, and it doesn't suck less. I think something that would help, is
+too draw the states the IDE goes through when plugins fire-off on the frontend and backend. Because right
+now it's hard to visualize. I hope it will reveal some race-condition or why the application tried to
+allocate so much memory. I don't think it's a huge issue, (since it probably was due to some logic flaw),
+but it would be fun to figure out why.
+
+I also think there is a need to redesign the repository, again. I think utilizing the workspace feature of
+cargo will help with building, because it will then share the libraries across plugins/modules. All the C
+code will not get any benefits from this.
+
+I can't find any motivations to work on this anymore.

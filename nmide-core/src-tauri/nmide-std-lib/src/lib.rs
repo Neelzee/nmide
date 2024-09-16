@@ -19,7 +19,7 @@ pub mod payloads {
     use crate::msg::Msg;
 
     #[derive(Clone, Serialize, Deserialize, TS)]
-    #[ts(export, export_to = "../../../src/bindings/EmitMsgPayload.ts")]
+    #[ts(export, export_to = "../../../app/bindings/EmitMsgPayload.ts")]
     pub struct EmitMsgPayload(pub Msg);
 }
 

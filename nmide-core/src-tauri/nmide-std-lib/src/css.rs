@@ -20,7 +20,7 @@ pub enum Style {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, TS)]
-#[ts(export, export_to = "../../../src/bindings/TSStyle.ts")]
+#[ts(export, export_to = "../../../app/bindings/TSStyle.ts")]
 pub struct TSStyle {
     #[ts(optional = nullable)]
     width: Option<String>,
