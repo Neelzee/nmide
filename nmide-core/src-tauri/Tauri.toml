@@ -6,8 +6,8 @@ identifier = "no.nilsmf.uib"
 [build]
 beforeDevCommand = "npm run dev"
 beforeBuildCommand = "npm run build"
-frontendDist = "../out"
 devUrl = "http://localhost:3000"
+frontendDist = "../.next/server/app/"
 
 [bundle]
 active = true
