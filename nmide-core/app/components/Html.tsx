@@ -1,9 +1,9 @@
 import { Fragment } from "react/jsx-runtime";
 import { TSHtml } from "../bindings/TSHtml";
 import { v4 as uuidv4 } from "uuid";
-import { Msg } from "src/bindings/Msg";
-import TauriClient from "../client";
-import { TSStyle } from "src/bindings/TSStyle";
+import { Msg } from "app/bindings/Msg";
+import { TSStyle } from "app/bindings/TSStyle";
+import { invoke } from "@tauri-apps/api/core";
 
 export default function RenderHtml({ kind, kids, attrs, text }: TSHtml) {
   const key = uuidv4();
@@ -110,7 +110,7 @@ function OnClickParse(msg: Msg | undefined): () => void {
     if (msg === undefined) {
       return;
     }
-    TauriClient("process_msg", { msg: msg as Msg }).catch(err => console.error(err));
+    invoke("process_msg", { msg: msg as Msg }).catch(err => console.error(err));
   };
 }
 

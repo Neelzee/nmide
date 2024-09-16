@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, TS)]
-#[ts(export, export_to = "../../../src/bindings/Attr.ts")]
+#[ts(export, export_to = "../../../app/bindings/Attr.ts")]
 pub enum Attr {
     Id(String),
     Class(String),

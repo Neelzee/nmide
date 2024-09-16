@@ -4,7 +4,7 @@ use ts_rs::TS;
 use crate::map::value::Value;
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, TS)]
-#[ts(export, export_to = "../../../src/bindings/Msg.ts")]
+#[ts(export, export_to = "../../../app/bindings/Msg.ts")]
 pub enum Msg {
     Alert(String, Value),
     OpenFolderDialog(String, Value),

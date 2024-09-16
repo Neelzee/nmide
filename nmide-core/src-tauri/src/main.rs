@@ -2,78 +2,69 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use anyhow::{Context, Result};
-use anyhow_tauri::{IntoTAResult, TAResult};
 use log::info;
 use nmide_plugin_manager::Nmlugin;
 use nmide_std_lib::html::TSHtml;
-use nmide_std_lib::map::value::Value;
-use nmide_std_lib::payloads::EmitMsgPayload;
-use nmide_std_lib::{attr::Attr, html::Html, map::Map, msg::Msg};
+use nmide_std_lib::{map::Map, msg::Msg};
 use once_cell::sync::{Lazy, OnceCell};
-use serde::Serialize;
 use std::fs;
 use std::path::PathBuf;
-use tauri::api::dialog::blocking::FileDialogBuilder;
-use tauri::Window;
-use tauri_plugin_log::LogTarget;
-use tokio::sync::{Mutex, RwLock};
+use tauri::{Manager, Window};
+use tokio::sync::RwLock;
 
 #[tauri::command]
-async fn init_html() -> TSHtml {
-    info!("init_html");
-    let lock = NMLUGS.get().unwrap().lock().await;
-    let model_lock = MODEL.lock().await;
-    let kids = lock
+async fn init(models: Vec<Map>) {
+    info!("Backend: init");
+    let plugins = NMLUGS.get().unwrap().read();
+    let new_model = plugins
+        .await
         .iter()
-        .filter_map(|nl| nl.view(model_lock.clone()).ok())
-        .collect::<Vec<_>>();
-    Html::Div {
-        kids,
-        attrs: vec![Attr::Id("main".to_string())],
-    }
-    .into()
+        .filter_map(|p| p.init().ok())
+        .fold(Map::new(), |acc, m| acc.merge(m));
+    let mut model = MODEL.write().await;
+    let new_model = models.into_iter().fold(new_model, |acc, m| acc.merge(m));
+    *model = new_model.clone();
+    drop(model);
 }
 
 #[tauri::command]
-async fn process_msg(window: Window, msg: Msg) -> TAResult<()> {
-    info!("process_msg: `{msg:?}`");
-    match msg {
-        Msg::Alert(_, _) => unimplemented!(),
-        Msg::OpenFolderDialog(reply_msg, _) => window
-            .emit(
-                "emit_msg",
-                EmitMsgPayload(Msg::PluginMsg(
-                    reply_msg,
-                    Value::String(
-                        FileDialogBuilder::new()
-                            .pick_folder()
-                            .and_then(|s| Some(s.to_string_lossy().to_string()))
-                            .unwrap_or_default(),
-                    ),
-                )),
-            )
-            .into_ta_result(),
-
-        _ => {
-            let mut model_lock = MODEL.lock().await;
-            let nmlugin_lock = NMLUGS.get().unwrap().lock().await;
-            let model = nmlugin_lock.iter().fold(model_lock.clone(), |model, nl| {
-                nl.update(msg.clone(), model.clone()).unwrap_or(model)
-            });
-            *model_lock = model;
-            drop(nmlugin_lock);
-            drop(model_lock);
-            window.emit("refresh_html", EmptyObj).into_ta_result()
-        }
-    }
+async fn view(model: Map) -> Vec<TSHtml> {
+    info!("Backend: view");
+    NMLUGS
+        .get()
+        .unwrap()
+        .read()
+        .await
+        .iter()
+        .filter_map(|p| p.view(model.clone()).ok())
+        .map(|h| h.into())
+        .collect()
 }
 
-#[derive(Clone, Serialize)]
-struct EmptyObj;
+#[tauri::command]
+async fn get_state() -> Map {
+    MODEL.write().await.clone()
+}
 
-static NMLUGS: tokio::sync::OnceCell<Mutex<Vec<Nmlugin>>> = tokio::sync::OnceCell::const_new();
+#[tauri::command]
+async fn update(msg: Msg, models: Vec<Map>) {
+    info!("Backend: update");
+    let model = models
+        .into_iter()
+        .fold(MODEL.read().await.clone(), |acc, m| acc.merge(m));
+    NMLUGS
+        .get()
+        .unwrap()
+        .read()
+        .await
+        .iter()
+        .filter_map(|p| p.update(msg.clone(), model.clone()).ok())
+        .fold(model.clone(), |acc, m| acc.merge(m));
+}
 
-static MODEL: Lazy<Mutex<Map>> = Lazy::new(|| Mutex::new(Map::new()));
+static NMLUGS: tokio::sync::OnceCell<RwLock<Vec<Nmlugin>>> = tokio::sync::OnceCell::const_new();
+static MODEL: Lazy<RwLock<Map>> = Lazy::new(|| RwLock::new(Map::new()));
+
 static APP_DATA_DIR: OnceCell<RwLock<PathBuf>> = OnceCell::new();
 static APP_CACHE_DIR: OnceCell<RwLock<PathBuf>> = OnceCell::new();
 
@@ -82,13 +73,11 @@ const NMIDE_PLUGIN_DIR: &str = "plugins";
 #[tokio::main]
 async fn main() -> Result<()> {
     tauri::Builder::default()
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_fs::init())
         .setup(setup_handler)
-        .plugin(
-            tauri_plugin_log::Builder::default()
-                .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
-                .build(),
-        )
-        .invoke_handler(tauri::generate_handler![init_html, process_msg,])
+        .plugin(tauri_plugin_log::Builder::default().targets([]).build())
+        .invoke_handler(tauri::generate_handler![init, update, view, get_state])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
     Ok(())
@@ -99,7 +88,6 @@ fn development_setup(app: &mut tauri::App) -> Result<()> {
         .join("../plugins/")
         .canonicalize()
         .context("cant canonicalize path")?;
-    println!("{:?}", &dev_plugin_folder);
 
     let plugin_paths: Vec<PathBuf> = dev_plugin_folder
         .read_dir()
@@ -111,7 +99,7 @@ fn development_setup(app: &mut tauri::App) -> Result<()> {
         .collect();
 
     let plugin_folder = app
-        .path_resolver()
+        .path()
         .app_data_dir()
         .context("Failed to get app_data_dir")
         .unwrap()
@@ -129,38 +117,19 @@ fn development_setup(app: &mut tauri::App) -> Result<()> {
     Ok(())
 }
 
-fn plugin_setup() -> Result<()> {
-    let nmlugings = NMLUGS.get().unwrap().try_lock()?;
-    let mut og_model = MODEL.try_lock()?;
-    let model = nmlugings
-        .iter()
-        .filter_map(|nl| nl.init().ok())
-        .fold(Map::new(), |acc, m| acc.merge(m));
-    for p in nmlugings.iter() {
-        println!("{:?}", p.path());
-    }
-    *og_model = model.merge(og_model.clone());
-
-    Ok(())
-}
-
 fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error + 'static>> {
     let app_handle = app.handle();
 
     APP_DATA_DIR
-        .set(RwLock::new(
-            app_handle.path_resolver().app_data_dir().unwrap(),
-        ))
+        .set(RwLock::new(app_handle.path().app_data_dir().unwrap()))
         .unwrap();
 
     APP_CACHE_DIR
-        .set(RwLock::new(
-            app_handle.path_resolver().app_config_dir().unwrap(),
-        ))
+        .set(RwLock::new(app_handle.path().app_config_dir().unwrap()))
         .unwrap();
 
     if !app_handle
-        .path_resolver()
+        .path()
         .app_data_dir()
         .unwrap()
         .join(NMIDE_PLUGIN_DIR)
@@ -168,7 +137,7 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
     {
         fs::create_dir(
             app_handle
-                .path_resolver()
+                .path()
                 .app_data_dir()
                 .unwrap()
                 .join(NMIDE_PLUGIN_DIR),
@@ -177,9 +146,9 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
     }
 
     NMLUGS.set({
-        Mutex::new(
+        RwLock::new(
             app_handle
-                .path_resolver()
+                .path()
                 .app_data_dir()
                 .unwrap()
                 .join(NMIDE_PLUGIN_DIR)
@@ -208,16 +177,11 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
         )
     })?;
 
-    println!("{:?}", app_handle.path_resolver().app_log_dir());
-    println!("{:?}", app_handle.path_resolver().app_cache_dir());
-
     #[cfg(debug_assertions)]
     {
         let res = development_setup(app);
         let _ = res.unwrap();
     }
-
-    plugin_setup().unwrap();
 
     Ok(())
 }
