@@ -7,6 +7,7 @@ edition = "2021"
 profiler = true
 
 [dependencies]
+abi_stable = "0.11.3"
 nmide-macros = { path = "../nmide-macros/" }
 rstest = "0.22.0"
 serde = { version = "1.0.208", features = ["derive"] }

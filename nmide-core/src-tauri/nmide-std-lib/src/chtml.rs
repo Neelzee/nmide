@@ -1,6 +1,4 @@
-use std::{mem::ManuallyDrop, ptr::null};
-
-use crate::html::Html;
+use std::mem::ManuallyDrop;
 
 macro_rules! chtmlkind {
     ( $( $name:ident ),* ) => {
@@ -11,17 +9,6 @@ macro_rules! chtmlkind {
                 $name,
             )*
             Text,
-        }
-
-        impl CHtmlKind {
-            pub fn from_html(html: &Html) -> CHtmlKind {
-                match html {
-                    $(
-                        Html::$name { .. } => CHtmlKind::$name,
-                    )*
-                    Html::Text(_) => CHtmlKind::Text,
-                }
-            }
         }
     };
 }
