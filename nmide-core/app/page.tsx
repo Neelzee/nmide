@@ -1,11 +1,12 @@
 "use client"
 
 import { useState } from "react";
-import RenderHtml from "./components/Html";
-import { TSHtml } from "./bindings/TSHtml";
+import React from "react";
+import { THtml } from "./lib/bindings/THtml";
+import RenderHtml from "./lib/Html";
 
 export default function Page() {
-  const [htmls, _] = useState<TSHtml[]>([]);
+  const [htmls, _] = useState<THtml[]>([]);
 
   return (
     <>

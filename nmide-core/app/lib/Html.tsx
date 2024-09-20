@@ -1,19 +1,16 @@
 import { Fragment } from "react/jsx-runtime";
-import { TSHtml } from "../bindings/TSHtml";
 import { v4 as uuidv4 } from "uuid";
-import { Msg } from "app/bindings/Msg";
-import { TSStyle } from "app/bindings/TSStyle";
 import { invoke } from "@tauri-apps/api/core";
+import { THtml } from "../lib/bindings/THtml";
+import React from "react";
+import { TMsg } from "./bindings/TMsg";
 
-export default function RenderHtml({ kind, kids, attrs, text }: TSHtml) {
+export default function RenderHtml({ kind, kids, attrs, text }: THtml) {
   const key = uuidv4();
-  if (attrs === undefined) {
-    attrs = [];
-  }
   const txt = text === null ? undefined : text;
   const className = attrs.find(el => "Class" in el)?.Class;
   const id = attrs.find(el => "Id" in el)?.Id;
-  const style = attrs.find(el => "Style" in el)?.Style;
+  const style = undefined;
   const onClick = attrs.find(el => "OnClick" in el)?.OnClick;
   switch (kind) {
     case "Div":
@@ -105,19 +102,16 @@ export default function RenderHtml({ kind, kids, attrs, text }: TSHtml) {
   }
 }
 
-function OnClickParse(msg: Msg | undefined): () => void {
+function OnClickParse(msg: TMsg | undefined): () => void {
   return () => {
     if (msg === undefined) {
       return;
     }
-    invoke("process_msg", { msg: msg as Msg }).catch(err => console.error(err));
+    invoke("process_msg", { msg: msg as TMsg }).catch(err => console.error(err));
   };
 }
 
 
-function RsStyleToReactCSSProperties(style: TSStyle | undefined): React.CSSProperties {
-  if (style === undefined) {
-    return {};
-  }
-  return style as React.CSSProperties;
+function RsStyleToReactCSSProperties(_: undefined): React.CSSProperties | undefined {
+  return undefined;
 }
