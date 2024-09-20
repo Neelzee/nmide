@@ -1,4 +1,4 @@
-use crate::rmsg::RMsg;
+use crate::msg::rmsg::RMsg;
 use abi_stable::{std_types::RString, StableAbi};
 use std::mem::ManuallyDrop;
 

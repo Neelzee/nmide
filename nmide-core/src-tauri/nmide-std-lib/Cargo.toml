@@ -12,4 +12,4 @@ nmide-macros = { path = "../nmide-macros/" }
 rstest = "0.22.0"
 serde = { version = "1.0.208", features = ["derive"] }
 stabby = "36.1.1"
-ts-rs = "9.0.1"
+ts-rs = "10.0.0"
