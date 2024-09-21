@@ -1,11 +1,6 @@
 use anyhow::{Context, Result};
 use libloading::{self, Library, Symbol};
-use nmide_std_lib::{
-    html::Html,
-    interface::rfunctions::{RInit, RUpdate, RView},
-    map::Map,
-    msg::Msg,
-};
+use nmide_std_lib::{html::rhtml::RHtml, map::rmap::RMap, msg::rmsg::RMsg};
 use std::{ffi::OsStr, path::PathBuf};
 
 #[derive(Debug)]
@@ -25,21 +20,21 @@ impl Nmlugin {
         })
     }
 
-    pub fn init(&self) -> Result<Map> {
-        let _init: Symbol<RInit> =
+    pub fn init(&self) -> Result<RMap> {
+        let _init: Symbol<unsafe extern "C" fn() -> RMap> =
             unsafe { self.lib.get(b"init") }.context("Failed getting Rust `init`")?;
         Ok(unsafe { _init() })
     }
 
-    pub fn view(&self, model: Map) -> Result<Html> {
-        let _view: Symbol<RView> =
+    pub fn view(&self, model: RMap) -> Result<RHtml> {
+        let _view: Symbol<unsafe extern "C" fn(RMap) -> RHtml> =
             unsafe { self.lib.get(b"view") }.context("Failed getting Rust `view`")?;
 
         Ok(unsafe { _view(model) })
     }
 
-    pub fn update(&self, msg: Msg, model: Map) -> Result<Map> {
-        let _update: Symbol<RUpdate> =
+    pub fn update(&self, msg: RMsg, model: RMap) -> Result<RMap> {
+        let _update: Symbol<unsafe extern "C" fn(RMsg, RMap) -> RMap> =
             unsafe { self.lib.get(b"update") }.context("Failed getting Rust `update`")?;
 
         Ok(unsafe { _update(msg, model) })
