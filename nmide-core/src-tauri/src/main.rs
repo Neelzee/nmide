@@ -4,66 +4,42 @@
 use anyhow::{Context, Result};
 use log::info;
 use nmide_plugin_manager::Nmlugin;
-use nmide_std_lib::html::TSHtml;
-use nmide_std_lib::{map::Map, msg::Msg};
+use nmide_std_lib::{
+    html::thtml::THtml,
+    map::{rmap::RMap, tmap::TMap},
+    msg::tmsg::TMsg,
+};
 use once_cell::sync::{Lazy, OnceCell};
 use std::fs;
 use std::path::PathBuf;
-use tauri::{Manager, Window};
+use tauri::Manager;
 use tokio::sync::RwLock;
 
 #[tauri::command]
-async fn init(models: Vec<Map>) {
+async fn init(models: Vec<TMap>) {
     info!("Backend: init");
-    let plugins = NMLUGS.get().unwrap().read();
-    let new_model = plugins
-        .await
-        .iter()
-        .filter_map(|p| p.init().ok())
-        .fold(Map::new(), |acc, m| acc.merge(m));
-    let mut model = MODEL.write().await;
-    let new_model = models.into_iter().fold(new_model, |acc, m| acc.merge(m));
-    *model = new_model.clone();
-    drop(model);
+    unimplemented!()
 }
 
 #[tauri::command]
-async fn view(model: Map) -> Vec<TSHtml> {
+async fn view(model: TMap) -> Vec<THtml> {
     info!("Backend: view");
-    NMLUGS
-        .get()
-        .unwrap()
-        .read()
-        .await
-        .iter()
-        .filter_map(|p| p.view(model.clone()).ok())
-        .map(|h| h.into())
-        .collect()
+    unimplemented!()
 }
 
 #[tauri::command]
-async fn get_state() -> Map {
-    MODEL.write().await.clone()
+async fn get_state() -> TMap {
+    MODEL.write().await.clone().into()
 }
 
 #[tauri::command]
-async fn update(msg: Msg, models: Vec<Map>) {
+async fn update(msg: TMsg, models: Vec<TMap>) {
     info!("Backend: update");
-    let model = models
-        .into_iter()
-        .fold(MODEL.read().await.clone(), |acc, m| acc.merge(m));
-    NMLUGS
-        .get()
-        .unwrap()
-        .read()
-        .await
-        .iter()
-        .filter_map(|p| p.update(msg.clone(), model.clone()).ok())
-        .fold(model.clone(), |acc, m| acc.merge(m));
+    unimplemented!();
 }
 
 static NMLUGS: tokio::sync::OnceCell<RwLock<Vec<Nmlugin>>> = tokio::sync::OnceCell::const_new();
-static MODEL: Lazy<RwLock<Map>> = Lazy::new(|| RwLock::new(Map::new()));
+static MODEL: Lazy<RwLock<RMap>> = Lazy::new(|| RwLock::new(RMap::new()));
 
 static APP_DATA_DIR: OnceCell<RwLock<PathBuf>> = OnceCell::new();
 static APP_CACHE_DIR: OnceCell<RwLock<PathBuf>> = OnceCell::new();
