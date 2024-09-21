@@ -7,29 +7,105 @@ use std::mem::ManuallyDrop;
 #[repr(C)]
 #[derive(StableAbi)]
 pub struct RValue {
-    kind: RValKind,
-    val: ManuallyDrop<RValueUnion>,
+    pub(crate) kind: RValKind,
+    pub(crate) val: RValueUnion,
+}
+
+impl Clone for RValue {
+    fn clone(&self) -> Self {
+        match self.kind {
+            RValKind::Int => Self::new_int(self.int().unwrap()),
+            RValKind::Float => Self::new_float(self.float().unwrap()),
+            RValKind::Bool => Self::new_bool(self.bool().unwrap()),
+            RValKind::Str => Self::new_str(self.str().unwrap().to_string()),
+            RValKind::List => {
+                Self::new_listr(ManuallyDrop::into_inner(self.lst().unwrap().clone()))
+            }
+            RValKind::Obj => Self {
+                kind: RValKind::Obj,
+                val: RValueUnion {
+                    _obj: self.obj().unwrap().clone(),
+                },
+            },
+        }
+    }
 }
 
 impl RValue {
-    pub fn int(i: i32) -> Self {
+    pub fn new_int(i: i32) -> Self {
         i.into()
     }
 
-    pub fn float(f: f32) -> Self {
+    pub fn new_float(f: f32) -> Self {
         f.into()
     }
 
-    pub fn bool(b: bool) -> Self {
+    pub fn new_bool(b: bool) -> Self {
         b.into()
     }
 
-    pub fn str<S: ToString>(s: S) -> Self {
+    pub fn new_str<S: ToString>(s: S) -> Self {
         s.to_string().into()
     }
 
-    pub fn list<T: Into<RValue>>(list: Vec<T>) -> Self {
+    pub fn new_list<T: Into<RValue>>(list: Vec<T>) -> Self {
         list.into()
+    }
+
+    pub fn new_listr<T: Into<RValue>>(list: RVec<T>) -> Self {
+        list.into()
+    }
+
+    pub fn new_obj<S: ToString, T: Into<RValue>>(list: Vec<(S, T)>) -> Self {
+        list.into()
+    }
+
+    pub fn int(&self) -> Option<i32> {
+        if self.kind == RValKind::Int {
+            Some(unsafe { self.val._int })
+        } else {
+            None
+        }
+    }
+
+    pub fn float(&self) -> Option<f32> {
+        if self.kind == RValKind::Float {
+            Some(unsafe { self.val._float })
+        } else {
+            None
+        }
+    }
+
+    pub fn bool(&self) -> Option<bool> {
+        if self.kind == RValKind::Bool {
+            Some(unsafe { self.val._bool })
+        } else {
+            None
+        }
+    }
+
+    pub fn str(&self) -> Option<&ManuallyDrop<RString>> {
+        if self.kind == RValKind::Str {
+            Some(unsafe { &self.val._str })
+        } else {
+            None
+        }
+    }
+
+    pub fn lst(&self) -> Option<&ManuallyDrop<RVec<RValue>>> {
+        if self.kind == RValKind::List {
+            Some(unsafe { &self.val._lst })
+        } else {
+            None
+        }
+    }
+
+    pub fn obj(&self) -> Option<&ManuallyDrop<RVec<RKeyPair>>> {
+        if self.kind == RValKind::Obj {
+            Some(unsafe { &self.val._obj })
+        } else {
+            None
+        }
     }
 }
 
@@ -37,7 +113,7 @@ impl From<i32> for RValue {
     fn from(value: i32) -> Self {
         Self {
             kind: RValKind::Int,
-            val: ManuallyDrop::new(RValueUnion::int(value)),
+            val: RValueUnion::int(value),
         }
     }
 }
@@ -46,7 +122,7 @@ impl From<f32> for RValue {
     fn from(value: f32) -> Self {
         Self {
             kind: RValKind::Float,
-            val: ManuallyDrop::new(RValueUnion::float(value)),
+            val: RValueUnion::float(value),
         }
     }
 }
@@ -55,7 +131,7 @@ impl From<bool> for RValue {
     fn from(value: bool) -> Self {
         Self {
             kind: RValKind::Bool,
-            val: ManuallyDrop::new(RValueUnion::bool(value)),
+            val: RValueUnion::bool(value),
         }
     }
 }
@@ -64,7 +140,7 @@ impl From<String> for RValue {
     fn from(value: String) -> Self {
         Self {
             kind: RValKind::Str,
-            val: ManuallyDrop::new(RValueUnion::str(value)),
+            val: RValueUnion::str(value),
         }
     }
 }
@@ -73,7 +149,16 @@ impl From<&str> for RValue {
     fn from(value: &str) -> Self {
         Self {
             kind: RValKind::Str,
-            val: ManuallyDrop::new(RValueUnion::str(value)),
+            val: RValueUnion::str(value),
+        }
+    }
+}
+
+impl<T: Into<RValue>> From<RVec<T>> for RValue {
+    fn from(value: RVec<T>) -> Self {
+        Self {
+            kind: RValKind::List,
+            val: RValueUnion::listr(value),
         }
     }
 }
@@ -82,7 +167,16 @@ impl<T: Into<RValue>> From<Vec<T>> for RValue {
     fn from(value: Vec<T>) -> Self {
         Self {
             kind: RValKind::List,
-            val: ManuallyDrop::new(RValueUnion::list(value)),
+            val: RValueUnion::list(value),
+        }
+    }
+}
+
+impl<S: ToString, T: Into<RValue>> From<Vec<(S, T)>> for RValue {
+    fn from(value: Vec<(S, T)>) -> Self {
+        Self {
+            kind: RValKind::Obj,
+            val: RValueUnion::obj(value),
         }
     }
 }
@@ -131,6 +225,15 @@ impl RValueUnion {
         }
     }
 
+    pub fn listr<T>(lst: RVec<T>) -> Self
+    where
+        T: Into<RValue>,
+    {
+        Self {
+            _lst: ManuallyDrop::new(lst.into_iter().map(|v| v.into()).collect()),
+        }
+    }
+
     pub fn obj<S, T>(lst: Vec<(S, T)>) -> Self
     where
         S: ToString,
@@ -140,13 +243,23 @@ impl RValueUnion {
             _obj: ManuallyDrop::new(RVec::from_iter(lst.into_iter().map(|t| t.into()))),
         }
     }
+
+    pub fn objr<S, T>(lst: RVec<(S, T)>) -> Self
+    where
+        S: ToString,
+        T: Into<RValue>,
+    {
+        Self {
+            _obj: ManuallyDrop::new(lst.into_iter().map(|t| t.into()).collect()),
+        }
+    }
 }
 
 #[repr(C)]
-#[derive(StableAbi)]
+#[derive(StableAbi, Clone)]
 pub struct RKeyPair {
-    key: ManuallyDrop<RString>,
-    val: ManuallyDrop<RValue>,
+    pub(crate) key: RString,
+    pub(crate) val: RValue,
 }
 
 impl RKeyPair {
@@ -161,14 +274,14 @@ impl<S: ToString, T: Into<RValue>> From<(S, T)> for RKeyPair {
         let mut rstr = RString::new();
         rstr.push_str(s.to_string().as_str());
         Self {
-            key: ManuallyDrop::new(rstr),
-            val: ManuallyDrop::new(val.into()),
+            key: rstr,
+            val: val.into(),
         }
     }
 }
 
 #[repr(u8)]
-#[derive(StableAbi)]
+#[derive(StableAbi, Clone, PartialEq)]
 pub enum RValKind {
     Int,
     Float,
@@ -179,16 +292,18 @@ pub enum RValKind {
 }
 
 #[repr(C)]
-#[derive(StableAbi)]
+#[derive(StableAbi, Clone)]
 pub struct RMap {
-    pairs: ManuallyDrop<RVec<RKeyPair>>,
+    pub(crate) pairs: RVec<RKeyPair>,
 }
 
 impl RMap {
     pub fn new() -> RMap {
-        RMap {
-            pairs: ManuallyDrop::new(RVec::new()),
-        }
+        RMap { pairs: RVec::new() }
+    }
+
+    pub fn merge(&mut self, other: Self) {
+        todo!()
     }
 
     pub fn insert<S, T>(self, key: S, val: T) -> Self
@@ -197,19 +312,17 @@ impl RMap {
         T: Into<RValue> + Clone,
     {
         Self {
-            pairs: ManuallyDrop::new(
-                ManuallyDrop::<RVec<RKeyPair>>::into_inner(self.pairs)
-                    .into_iter()
-                    .map(|mut pair| {
-                        if pair.cmp_key(&key) {
-                            let _ = ManuallyDrop::into_inner(pair.val);
-                            pair.val = ManuallyDrop::new(val.clone().into());
-                            return pair;
-                        }
+            pairs: self
+                .pairs
+                .into_iter()
+                .map(|mut pair| {
+                    if pair.cmp_key(&key) {
+                        pair.val = val.clone().into();
                         return pair;
-                    })
-                    .collect(),
-            ),
+                    }
+                    return pair;
+                })
+                .collect(),
         }
     }
 
@@ -222,7 +335,7 @@ impl RMap {
         return ROption::RNone;
     }
 
-    pub fn remove<S: ToString>(&mut self, key: S) -> ROption<ManuallyDrop<RValue>> {
+    pub fn remove<S: ToString>(&mut self, key: S) -> ROption<RValue> {
         let mut index = 0;
         for p in self.pairs.iter() {
             if p.cmp_key(&key) {

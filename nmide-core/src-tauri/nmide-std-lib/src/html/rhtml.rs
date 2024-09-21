@@ -1,14 +1,16 @@
 use std::mem::ManuallyDrop;
 
 use abi_stable::{
-    std_types::{RString, RVec},
+    std_types::{ROption, RString, RVec},
     StableAbi,
 };
+
+use crate::attr::rattr::RAttr;
 
 macro_rules! rhtmlkind {
     ( $( $name:ident ),* ) => {
         #[repr(u8)]
-        #[derive(StableAbi)]
+        #[derive(StableAbi, Clone)]
         pub enum RHtmlKind {
             $(
                 $name,
@@ -26,17 +28,24 @@ rhtmlkind!(
 #[repr(C)]
 #[derive(StableAbi)]
 pub struct RHtml {
-    kind: RHtmlKind,
-    kids: ManuallyDrop<RVec<RHtml>>,
-    text: ManuallyDrop<RString>,
+    pub(crate) kind: RHtmlKind,
+    pub(crate) kids: ManuallyDrop<RVec<RHtml>>,
+    pub(crate) text: ROption<RString>,
+    pub(crate) attrs: ManuallyDrop<RVec<RAttr>>,
 }
 
 impl RHtml {
     pub fn new(
         kind: RHtmlKind,
         kids: ManuallyDrop<RVec<RHtml>>,
-        text: ManuallyDrop<RString>,
+        text: ROption<RString>,
+        attrs: ManuallyDrop<RVec<RAttr>>,
     ) -> Self {
-        Self { kind, kids, text }
+        Self {
+            kind,
+            kids,
+            text,
+            attrs,
+        }
     }
 }
