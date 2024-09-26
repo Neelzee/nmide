@@ -158,3 +158,25 @@ cargo will help with building, because it will then share the libraries across p
 code will not get any benefits from this.
 
 I can't find any motivations to work on this anymore.
+
+
+\section{24.09.26}
+
+Work has been hogging a lot of my time, that and an unwillingness to work, but let's do a recap of what needs to be
+done.
+
+\begin{list}
+  \item Nmide Standard Lib refactoring, check
+  \item Enable support for JavaScript plugins
+  \item CI Technical Debt
+  \item Nmide building, check
+  \item Nmide-CLI boilerplate code generation
+  \item Docs
+\end{list}
+
+Missing a lot, but I think I'll be okay, as some of them are not necessary for v1.0.0 release of Nmide. Amongst them being CI,
+Nmide-CLI and Docs. While nice-to-haves, they are not necessary.
+
+I think I'll try to tackle the JavaScript issue again, by removing the support for Rust plugins, and just having states and such in
+the frontend, and then the next step will be to somehow coalesce these states. It might be smarter to have the state-change-management in the
+frontend, since that's where the message-listening will be.
