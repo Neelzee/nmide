@@ -1,3 +1,5 @@
+"use client"
+
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { appDataDir } from "@tauri-apps/api/path";
 import { pipe } from "fp-ts/lib/function";
@@ -21,3 +23,5 @@ const PluginScript = (pluginPath: string) => {
     }
   }, [pluginPath]);
 }
+
+export default PluginScript;

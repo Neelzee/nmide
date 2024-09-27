@@ -8,6 +8,7 @@ import ModelFold from "./ModelFold";
 import { TValue } from "./bindings/TValue";
 import { pipe } from "fp-ts/lib/function";
 import { PathReporter } from "io-ts/PathReporter";
+import { Monoid } from "fp-ts/lib/Monoid";
 
 const Value: t.RecursiveType<any, TValue> = t.recursion("Value", () =>
   t.union([
@@ -25,26 +26,21 @@ const Map = t.type({
 });
 
 const Init = (plugins: Nmlugin[], setModel: React.Dispatch<React.SetStateAction<TMap>>) => {
+  const pluginMonoid: Monoid<TMap> = { concat: ModelFold, empty: { map: [] } };
+  const pluginInit = (p: Nmlugin): TMap => pipe(
+    p.init(),
+    Map.decode,
+    decoded => E.isRight(decoded)
+      ? E.right(decoded.right)
+      : E.left(new Error(`Failed to decode model: ${PathReporter.report(decoded).join("\n")}`)),
+    E.getOrElse<Error, TMap>(err => {
+      console.error(err);
+      return { map: [] };
+    })
+  );
   useEffect(() => {
-    setModel(
-      pipe(
-        plugins,
-        A.map(
-          p => pipe(
-            p.init(),
-            Map.decode,
-            decoded => E.isRight(decoded)
-              ? E.right(decoded.right)
-              : E.left(new Error(`Failed to decode model: ${PathReporter.report(decoded).join("\n")}`)),
-            E.getOrElse<Error, { map: [string, TValue][] }>(err => {
-              console.error(err);
-              return { map: [] };
-            })
-          )
-        ),
-        A.reduce({ map: [] }, ModelFold)
-      )
-    )
+    setModel(A.foldMap(pluginMonoid)(pluginInit)(plugins));
+    return () => setModel({ map: [] });
   }, [plugins]);
 };
 
