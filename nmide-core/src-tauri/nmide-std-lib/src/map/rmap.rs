@@ -4,6 +4,8 @@ use abi_stable::{
 };
 use std::mem::ManuallyDrop;
 
+use super::tmap::{TMap, TValue};
+
 #[repr(C)]
 #[derive(StableAbi)]
 pub struct RValue {
@@ -181,6 +183,37 @@ impl<S: ToString, T: Into<RValue>> From<Vec<(S, T)>> for RValue {
     }
 }
 
+impl From<TValue> for RValue {
+    fn from(value: TValue) -> Self {
+        match value {
+            TValue::Int(i) => Self {
+                kind: RValKind::Int,
+                val: RValueUnion::int(i),
+            },
+            TValue::Float(f) => Self {
+                kind: RValKind::Float,
+                val: RValueUnion::float(f),
+            },
+            TValue::Bool(b) => Self {
+                kind: RValKind::Bool,
+                val: RValueUnion::bool(b),
+            },
+            TValue::Str(s) => Self {
+                kind: RValKind::Str,
+                val: RValueUnion::str(s),
+            },
+            TValue::List(l) => Self {
+                kind: RValKind::List,
+                val: RValueUnion::list(l.into()),
+            },
+            TValue::Obj(o) => Self {
+                kind: RValKind::Obj,
+                val: RValueUnion::obj(o),
+            },
+        }
+    }
+}
+
 #[repr(C)]
 #[derive(StableAbi)]
 pub union RValueUnion {
@@ -302,8 +335,40 @@ impl RMap {
         RMap { pairs: RVec::new() }
     }
 
-    pub fn merge(&mut self, other: Self) {
-        todo!()
+    pub fn contains_key<S: ToString>(&self, key: &S) -> bool {
+        for pair in &self.pairs {
+            if pair.cmp_key(key) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    pub fn merge(self, other: Self) -> Self {
+        let mut pairs = self.pairs.clone();
+        let mut other_pairs = other
+            .pairs
+            .into_iter()
+            .filter(move |pk| self.contains_key(&pk.key))
+            .collect();
+        pairs.append(&mut other_pairs);
+        Self { pairs }
+    }
+
+    pub fn insert_mut<S, T>(&mut self, key: S, val: T)
+    where
+        S: ToString,
+        T: Into<RValue> + Clone,
+    {
+        if self.contains_key(&key) {
+            self.pairs = self
+                .pairs
+                .iter()
+                .filter(|kp| kp.cmp_key(&key))
+                .map(|k| k.clone())
+                .collect::<RVec<_>>();
+        }
+        self.pairs.push((key, val).into());
     }
 
     pub fn insert<S, T>(self, key: S, val: T) -> Self
@@ -344,5 +409,13 @@ impl RMap {
             index += 1;
         }
         return ROption::RNone;
+    }
+}
+
+impl From<TMap> for RMap {
+    fn from(value: TMap) -> Self {
+        Self {
+            pairs: value.0.into_iter().map(|t| t.into()).collect(),
+        }
     }
 }

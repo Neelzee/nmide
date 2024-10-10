@@ -13,6 +13,7 @@
   "dependencies": {
     "@tauri-apps/api": "^2.0.0-rc.0",
     "@tauri-apps/plugin-fs": "^2.0.0-rc",
+    "@tauri-apps/plugin-log": "^2.0.0-rc",
     "@tauri-apps/plugin-shell": "^2.0.0-rc",
     "fp-ts": "^2.16.9",
     "io-ts": "^2.2.21",
@@ -20,11 +21,12 @@
     "next": "^14.2.11",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "swr": "^2.2.5",
     "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.0.0-rc.15",
+    "@tauri-apps/cli": "^2.0.0-rc.18",
     "@testing-library/react": "^16.0.0",
     "@types/node": "22.5.5",
     "@types/react": "^18.2.15",

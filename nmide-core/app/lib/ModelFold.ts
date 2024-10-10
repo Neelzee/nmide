@@ -1,15 +1,13 @@
-import { TMap } from "./bindings/TMap";
+import { pipe } from "fp-ts/lib/function";
+import { NMap } from "./NMap";
+import * as S from "fp-ts/string";
+import * as M from "fp-ts/Map";
+import * as R from "fp-ts/Refinement";
 
-const ModelFold = ({ map: a }: TMap, { map: b }: TMap): TMap => {
-  return {
-    map: a.concat(
-      b.filter(
-        ([bk, _]) =>
-          a.find(([ak, _]) => ak === bk)
-          !== undefined
-      )
-    )
-  };
-};
+
+const ModelFold = (a: NMap, b: NMap): NMap => pipe(
+  M.difference(S.Eq)(a)(b),
+  M.filter(R.id())
+);
 
 export default ModelFold;
