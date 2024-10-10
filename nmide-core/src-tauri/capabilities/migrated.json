@@ -20,6 +20,8 @@
     },
     "shell:allow-open",
     "fs:default",
-    "shell:default"
+    "shell:default",
+    "log:default",
+    "log:default"
   ]
 }

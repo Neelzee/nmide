@@ -4,8 +4,8 @@ pub mod tmap {
     use serde::{Deserialize, Serialize};
     use ts_rs::TS;
 
-    #[derive(Serialize, Deserialize, TS, Clone)]
-    #[ts(export)]
+    #[derive(Debug, Serialize, Deserialize, TS, Clone)]
+    #[ts(export_to = "TMap.ts")]
     pub enum TValue {
         Int(i32),
         Float(f32),
@@ -48,15 +48,13 @@ pub mod tmap {
         }
     }
 
-    #[derive(Serialize, Deserialize, TS, Clone)]
+    #[derive(Debug, Serialize, Deserialize, TS, Clone)]
     #[ts(export)]
-    pub struct TMap {
-        map: Vec<(String, TValue)>,
-    }
+    pub struct TMap(pub(crate) Vec<(String, TValue)>);
 
     impl TMap {
         pub fn new() -> Self {
-            Self { map: Vec::new() }
+            Self(Vec::new())
         }
 
         pub fn merge(self, other: Self) -> Self {
@@ -66,9 +64,7 @@ pub mod tmap {
 
     impl From<RMap> for TMap {
         fn from(value: RMap) -> Self {
-            Self {
-                map: value.pairs.iter().map(|v| v.clone().into()).collect(),
-            }
+            Self(value.pairs.iter().map(|v| v.clone().into()).collect())
         }
     }
 }

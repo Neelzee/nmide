@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use anyhow::{Context, Result};
-use log::info;
+use log::{debug, info};
 use nmide_plugin_manager::Nmlugin;
 use nmide_std_lib::{
     html::thtml::THtml,
@@ -10,30 +10,94 @@ use nmide_std_lib::{
     msg::tmsg::TMsg,
 };
 use once_cell::sync::{Lazy, OnceCell};
+use serde::Serialize;
 use std::fs;
 use std::path::PathBuf;
-use tauri::Manager;
-use tokio::sync::RwLock;
+use tauri::{Emitter, Manager, Window};
+use tokio::{
+    fs::{read, read_dir},
+    sync::RwLock,
+};
 
 #[tauri::command]
-async fn init(models: Vec<TMap>) {
-    info!("Backend: init");
-    unimplemented!()
+async fn uninstall_plugins(window: Window) {
+    info!("Backend: uninstall_plugins");
+    let webview = window.get_webview_window("main").expect("main didnt exist");
+    let _ = webview.eval("window.plugins = [];");
 }
+
+#[tauri::command]
+async fn install_plugins(window: Window) {
+    info!("Backend: install_plugins");
+    let mut entries = read_dir(format!(
+        "{}/{NMIDE_PLUGIN_DIR}",
+        APP_DATA_DIR
+            .get()
+            .expect("Should be initialized")
+            .read()
+            .await
+            .to_string_lossy(),
+    ))
+    .await
+    .expect("couldnt read directory");
+
+    let webview = window.get_webview_window("main").expect("main didnt exist");
+    let _ = webview.eval("window.plugins = [];");
+
+    while let Ok(Some(entry)) = entries.next_entry().await {
+        info!("{:?}", entry.file_name());
+        if !entry.file_name().to_string_lossy().ends_with(".js") {
+            continue;
+        }
+        let path = entry.path();
+        let content = read(path).await.expect("couldnt read file");
+        let s = String::from_utf8(content).expect("couldnt encode file-content");
+        let _ = webview.eval(&s);
+    }
+}
+
+#[tauri::command]
+async fn init(window: Window, tmodel: TMap) {
+    info!("Backend: init");
+    debug!("Backend: {tmodel:?}");
+    let mut model = MODEL.write().await;
+    *model = NMLUGS
+        .get()
+        .unwrap() // Is already initialized at this point
+        .read()
+        .await
+        .iter()
+        .filter_map(|p| p.init().ok())
+        .fold(tmodel.into(), |acc, m| acc.merge(m));
+    let model = model.clone();
+    let _ = window.emit("update", ViewPayload(model.into()));
+}
+
+#[derive(Serialize, Clone)]
+struct ViewPayload(TMap);
 
 #[tauri::command]
 async fn view(model: TMap) -> Vec<THtml> {
     info!("Backend: view");
-    unimplemented!()
+    let rmap: RMap = model.into();
+    NMLUGS
+        .get()
+        .unwrap()
+        .read()
+        .await
+        .iter()
+        .filter_map(|p| p.view(rmap.clone()).ok())
+        .map(|h| h.into())
+        .collect::<Vec<THtml>>()
 }
 
 #[tauri::command]
 async fn get_state() -> TMap {
-    MODEL.write().await.clone().into()
+    MODEL.read().await.clone().into()
 }
 
 #[tauri::command]
-async fn update(msg: TMsg, models: Vec<TMap>) {
+async fn update(_msg: TMsg, _models: Vec<TMap>) {
     info!("Backend: update");
     unimplemented!();
 }
@@ -49,11 +113,18 @@ const NMIDE_PLUGIN_DIR: &str = "plugins";
 #[tokio::main]
 async fn main() -> Result<()> {
     tauri::Builder::default()
+        .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
         .setup(setup_handler)
-        .plugin(tauri_plugin_log::Builder::default().targets([]).build())
-        .invoke_handler(tauri::generate_handler![init, update, view, get_state])
+        .invoke_handler(tauri::generate_handler![
+            install_plugins,
+            init,
+            update,
+            view,
+            get_state,
+            uninstall_plugins,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
     Ok(())
