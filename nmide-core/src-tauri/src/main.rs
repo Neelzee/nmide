@@ -7,59 +7,18 @@ use nmide_plugin_manager::Nmlugin;
 use nmide_std_lib::{
     html::thtml::THtml,
     map::{rmap::RMap, tmap::TMap},
-    msg::tmsg::TMsg,
+    msg::{rmsg::RMsg, tmsg::TMsg},
 };
 use once_cell::sync::{Lazy, OnceCell};
 use serde::Serialize;
 use std::fs;
 use std::path::PathBuf;
 use tauri::{Emitter, Manager, Window};
-use tokio::{
-    fs::{read, read_dir},
-    sync::RwLock,
-};
+use tokio::sync::RwLock;
 
 #[tauri::command]
-async fn uninstall_plugins(window: Window) {
-    info!("Backend: uninstall_plugins");
-    let webview = window.get_webview_window("main").expect("main didnt exist");
-    let _ = webview.eval("window.plugins = [];");
-}
-
-#[tauri::command]
-async fn install_plugins(window: Window) {
-    info!("Backend: install_plugins");
-    let mut entries = read_dir(format!(
-        "{}/{NMIDE_PLUGIN_DIR}",
-        APP_DATA_DIR
-            .get()
-            .expect("Should be initialized")
-            .read()
-            .await
-            .to_string_lossy(),
-    ))
-    .await
-    .expect("couldnt read directory");
-
-    let webview = window.get_webview_window("main").expect("main didnt exist");
-    let _ = webview.eval("window.plugins = [];");
-
-    while let Ok(Some(entry)) = entries.next_entry().await {
-        info!("{:?}", entry.file_name());
-        if !entry.file_name().to_string_lossy().ends_with(".js") {
-            continue;
-        }
-        let path = entry.path();
-        let content = read(path).await.expect("couldnt read file");
-        let s = String::from_utf8(content).expect("couldnt encode file-content");
-        let _ = webview.eval(&s);
-    }
-}
-
-#[tauri::command]
-async fn init(window: Window, tmodel: TMap) {
+async fn init(window: Window) {
     info!("Backend: init");
-    debug!("Backend: {tmodel:?}");
     let mut model = MODEL.write().await;
     *model = NMLUGS
         .get()
@@ -68,38 +27,63 @@ async fn init(window: Window, tmodel: TMap) {
         .await
         .iter()
         .filter_map(|p| p.init().ok())
-        .fold(tmodel.into(), |acc, m| acc.merge(m));
-    let model = model.clone();
-    let _ = window.emit("update", ViewPayload(model.into()));
+        .fold(RMap::new(), |acc, m| acc.merge(m));
+    drop(model);
+    let _ = window.emit("view", EmptyPayload);
 }
 
 #[derive(Serialize, Clone)]
-struct ViewPayload(TMap);
+struct EmptyPayload;
 
 #[tauri::command]
-async fn view(model: TMap) -> Vec<THtml> {
+async fn view() -> Vec<THtml> {
     info!("Backend: view");
-    let rmap: RMap = model.into();
+    let model = MODEL.read().await;
     NMLUGS
         .get()
         .unwrap()
         .read()
         .await
         .iter()
-        .filter_map(|p| p.view(rmap.clone()).ok())
+        .filter_map(|p| p.view(model.clone()).ok())
         .map(|h| h.into())
         .collect::<Vec<THtml>>()
 }
 
 #[tauri::command]
-async fn get_state() -> TMap {
-    MODEL.read().await.clone().into()
+async fn update(window: Window, msg: TMsg) {
+    info!("Backend: update");
+    let mut model = MODEL.write().await;
+    let rmsg: RMsg = msg.into();
+    *model = NMLUGS
+        .get()
+        .unwrap()
+        .read()
+        .await
+        .iter()
+        .filter_map(|p| p.update(rmsg.clone(), model.clone()).ok())
+        .fold(RMap::new(), |acc, m| acc.merge(m));
+    let _ = window.emit("view", EmptyPayload);
 }
 
 #[tauri::command]
-async fn update(_msg: TMsg, _models: Vec<TMap>) {
-    info!("Backend: update");
-    unimplemented!();
+async fn msg(window: Window, msg: TMsg) {
+    info!("Backend: msg");
+    match &msg {
+        TMsg::Msg(_, _) => {
+            let mut model = MODEL.write().await;
+            let rmsg: RMsg = msg.into();
+            *model = NMLUGS
+                .get()
+                .unwrap()
+                .read()
+                .await
+                .iter()
+                .filter_map(|p| p.update(rmsg.clone(), model.clone()).ok())
+                .fold(RMap::new(), |acc, m| acc.merge(m));
+            let _ = window.emit("view", EmptyPayload);
+        }
+    }
 }
 
 static NMLUGS: tokio::sync::OnceCell<RwLock<Vec<Nmlugin>>> = tokio::sync::OnceCell::const_new();
@@ -117,14 +101,7 @@ async fn main() -> Result<()> {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
         .setup(setup_handler)
-        .invoke_handler(tauri::generate_handler![
-            install_plugins,
-            init,
-            update,
-            view,
-            get_state,
-            uninstall_plugins,
-        ])
+        .invoke_handler(tauri::generate_handler![init, update, view, msg,])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
     Ok(())

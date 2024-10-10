@@ -9,9 +9,9 @@ import { TValue } from "./bindings/TMap";
 import { pipe } from "fp-ts/lib/function";
 import { PathReporter } from "io-ts/PathReporter";
 import { Monoid } from "fp-ts/lib/Monoid";
-import NmideClient from "./NmideClient";
 import { NMap } from "./NMap";
 import { DMap } from "./Decoder";
+import { invoke } from "@tauri-apps/api/core";
 
 const pluginMonoid: Monoid<NMap> = { concat: ModelFold, empty: new Map() };
 const pluginInit = (p: Nmlugin): NMap => pipe(
@@ -26,7 +26,7 @@ const pluginInit = (p: Nmlugin): NMap => pipe(
   })
 );
 
-const Init = async (plugins: Nmlugin[]): Promise<E.Either<Error, null>> => NmideClient(
+const Init = async (plugins: Nmlugin[]): Promise<E.Either<Error, null>> => invoke(
   "init",
   {
     tmodel: pipe(
@@ -35,6 +35,7 @@ const Init = async (plugins: Nmlugin[]): Promise<E.Either<Error, null>> => Nmide
       M.toArray(S.Ord)
     )
   }
-).catch(err => E.left(err));
+).then(_ => E.right(null))
+  .catch(err => E.left(err));
 
 export default Init;

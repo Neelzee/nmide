@@ -1,5 +1,4 @@
 import { invoke, InvokeOptions } from "@tauri-apps/api/core"
-import { TMap } from "./bindings/TMap";
 import * as t from "io-ts";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/lib/function";
@@ -13,10 +12,10 @@ type Cmd = {
     arg: undefined,
   }
   "init": {
-    arg: { tmodel: TMap },
+    arg: undefined,
   },
   "view": {
-    arg: { model: TMap },
+    arg: undefined,
   },
 }
 

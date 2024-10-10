@@ -8,7 +8,7 @@ pub mod tmsg {
 
     use super::rmsg::RMsg;
 
-    #[derive(Serialize, Deserialize, TS)]
+    #[derive(Serialize, Deserialize, TS, Clone)]
     #[ts(export)]
     pub enum TMsg {
         Msg(String, TValue),

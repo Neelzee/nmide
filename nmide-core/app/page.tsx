@@ -1,17 +1,23 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import React from "react";
 import { THtml } from "./lib/bindings/THtml";
 import RenderHtml from "./lib/Html";
-import "./lib/Window";
 import { v4 as uuidv4 } from "uuid";
 import View from "./lib/View";
-
+import NmideClient from "./lib/NmideClient";
+import * as E from "fp-ts/Either";
 
 export default function Page() {
   const [htmls, setHtmls] = useState<THtml[]>([]);
 
+  NmideClient("init", undefined)
+    .then(val => {
+      if (E.isLeft(val)) {
+        console.error("Error from init: ", val.left);
+      }
+    });
   View(setHtmls);
 
   return (

@@ -528,7 +528,7 @@ function OnClickParse(msg: TMsg | undefined): () => void {
     if (msg === undefined) {
       return;
     }
-    invoke("process_msg", { msg: msg as TMsg }).catch(err => console.error(err));
+    invoke("msg", { msg }).catch(err => console.error(err));
   };
 }
 
