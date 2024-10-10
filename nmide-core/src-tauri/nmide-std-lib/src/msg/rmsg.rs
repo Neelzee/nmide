@@ -12,6 +12,25 @@ pub struct RMsg {
     pub(crate) val: RMsgUnion,
 }
 
+impl RMsg {
+    pub fn new(kind: RMsgKind, val: RMsgUnion) -> Self {
+        Self { kind, val }
+    }
+
+    pub fn kind(&self) -> &RMsgKind {
+        &self.kind
+    }
+
+    pub fn val(&self) -> &RMsgUnion {
+        &self.val
+    }
+
+    pub fn is_msg<S: ToString>(&self, key: S) -> bool {
+        let s = key.to_string();
+        return unsafe { self.val.msg.0 == s };
+    }
+}
+
 impl Clone for RMsg {
     fn clone(&self) -> Self {
         Self {
@@ -49,4 +68,12 @@ pub enum RMsgKind {
 #[derive(StableAbi)]
 pub union RMsgUnion {
     pub(crate) msg: ManuallyDrop<Tuple2<RString, RValue>>,
+}
+
+impl RMsgUnion {
+    pub fn new(l: RString, r: RValue) -> Self {
+        Self {
+            msg: ManuallyDrop::new(Tuple2::from_tuple((l, r))),
+        }
+    }
 }

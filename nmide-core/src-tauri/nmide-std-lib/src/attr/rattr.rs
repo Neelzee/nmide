@@ -25,6 +25,24 @@ impl RAttr {
             _ => None,
         }
     }
+
+    pub fn new_src(src: RString) -> Self {
+        Self {
+            kind: RAttrKind::Src,
+            val: RAttrUnion {
+                _str: ManuallyDrop::new(src),
+            },
+        }
+    }
+
+    pub fn new_click(rmsg: RMsg) -> Self {
+        Self {
+            kind: RAttrKind::OnClick,
+            val: RAttrUnion {
+                _msg: ManuallyDrop::new(rmsg),
+            },
+        }
+    }
 }
 
 #[repr(u8)]
