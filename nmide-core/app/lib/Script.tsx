@@ -6,13 +6,12 @@ import { pipe } from "fp-ts/lib/function";
 import { join } from "path";
 import { useEffect } from "react"
 
-const PluginScript = (pluginPath: string) => {
+const PluginScript = (pluginPath: string): undefined => {
   useEffect(() => {
     const script = document.createElement("script");
     appDataDir()
       .then(path => pipe(
-        path,
-        path => join(path, pluginPath),
+        join(path, pluginPath),
         convertFileSrc,
         src => script.src = src,
       ))

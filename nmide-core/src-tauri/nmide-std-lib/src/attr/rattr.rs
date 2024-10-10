@@ -34,6 +34,7 @@ pub enum RAttrKind {
     Class,
     Style,
     OnClick,
+    Src,
 }
 
 #[repr(C)]

@@ -13,26 +13,23 @@ pub mod tattr {
         Class(String),
         Style(String),
         OnClick(TMsg),
+        Src(String),
     }
 
     impl From<RAttr> for TAttr {
         fn from(value: RAttr) -> Self {
-            match value.kind {
-                RAttrKind::Id => Self::Id(value.str().unwrap().to_string()),
-                RAttrKind::Class => Self::Class(value.str().unwrap().to_string()),
-                RAttrKind::Style => Self::Style(value.str().unwrap().to_string()),
-                RAttrKind::OnClick => Self::OnClick(value.msg().unwrap().clone().into()),
-            }
+            (&value).into()
         }
     }
 
     impl From<&RAttr> for TAttr {
         fn from(value: &RAttr) -> Self {
             match value.kind {
-                RAttrKind::Id => Self::Id(value.str().unwrap().to_string()),
-                RAttrKind::Class => Self::Class(value.str().unwrap().to_string()),
-                RAttrKind::Style => Self::Style(value.str().unwrap().to_string()),
+                RAttrKind::Id => Self::Id(value.str().unwrap_or_default().to_string()),
+                RAttrKind::Class => Self::Class(value.str().unwrap_or_default().to_string()),
+                RAttrKind::Style => Self::Style(value.str().unwrap_or_default().to_string()),
                 RAttrKind::OnClick => Self::OnClick(value.msg().unwrap().clone().into()),
+                RAttrKind::Src => Self::Src(value.str().unwrap_or_default().to_string()),
             }
         }
     }

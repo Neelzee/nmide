@@ -22,7 +22,7 @@ macro_rules! rhtmlkind {
 rhtmlkind!(
     Div, P, H1, H2, H3, H4, H5, H6, Span, Section, Article, Aside, Audio, B, Br, Button, Code, Em,
     Fieldset, Form, Img, Input, Label, Link, Li, Menu, Nav, Ol, Option, Select, Style, Svg, Table,
-    Td, Th, Ul, Video, Frag, Text
+    Td, Th, Ul, Video, Frag, Text, Script
 );
 
 #[repr(C)]

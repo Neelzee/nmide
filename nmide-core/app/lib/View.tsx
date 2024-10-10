@@ -14,48 +14,22 @@ import { DHtml } from "./Decoder";
 import { PathReporter } from "io-ts/lib/PathReporter";
 import { TMap } from "./bindings/TMap";
 
-const View = (nmlugs: Nmlugin[], setHtmls: React.Dispatch<React.SetStateAction<THtml[]>>) => {
+const View = (setHtmls: React.Dispatch<React.SetStateAction<THtml[]>>) => {
   useEffect(() => {
-    //console.log("I HAVE PLUGINS!!!", nmlugs);
     listen<TMap>(
       "view",
       ({ payload: model }) => NmideClient("view", { model })
         .then(v => setHtmls(
           pipe(
-            nmlugs,
-            A.filterMap(
-              p => pipe(
-                p.view(model),
-                DHtml.decode,
-                decoded => E.isRight(decoded)
-                  ? E.right(decoded.right)
-                  : E.left(
-                    new Error(
-                      `Failed to decode html: ${PathReporter.report(decoded).join("\n")}`
-                    )
-                  ),
-                E.match(
-                  e => {
-                    console.error(e);
-                    return O.none;
-                  },
-                  h => O.some(h)
-                ),
-              )
-            ),
-            A.concat(
-              pipe(
-                v,
-                E.getOrElse<Error, THtml[]>(err => {
-                  console.error(err);
-                  return [];
-                }),
-              )
-            )
+            v,
+            E.getOrElse<Error, THtml[]>(err => {
+              console.error(err);
+              return [];
+            })
           )
         ))
     )
-  }, [nmlugs]);
+  }, []);
 }
 
 export default View;
