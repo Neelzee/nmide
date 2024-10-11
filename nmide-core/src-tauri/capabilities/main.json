@@ -1,5 +1,5 @@
 {
-  "identifier": "migrated",
+  "identifier": "nmide-capabilities",
   "description": "permissions that were migrated from v1",
   "local": true,
   "windows": [

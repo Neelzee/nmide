@@ -2283,6 +2283,7 @@ dependencies = [
 name = "nmide-core"
 version = "0.1.0"
 dependencies = [
+ "abi_stable",
  "anyhow",
  "anyhow-tauri",
  "dotenv",
@@ -2313,6 +2314,7 @@ dependencies = [
 name = "nmide-plugin-manager"
 version = "0.1.0"
 dependencies = [
+ "abi_stable",
  "anyhow",
  "libloading 0.8.5",
  "log",
