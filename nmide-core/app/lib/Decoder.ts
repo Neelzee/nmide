@@ -16,9 +16,21 @@ export const DMsg = t.type({ "Msg": t.tuple([t.string, DValue]) });
 export const DAttrs = t.union([t.type({ "Id": t.string }),
 t.type({ "Class": t.string }),
 t.type({ "Style": t.string }),
-t.type({ "OnClick": DMsg })
+t.type({ "OnClick": DMsg }),
+t.type({ "Src": t.string }),
 ]);
-export const DHtmlKind = t.union([t.literal("Div"), t.literal("P"), t.literal("H1"), t.literal("H2"), t.literal("H3"), t.literal("H4"), t.literal("H5"), t.literal("H6"), t.literal("Span"), t.literal("Section"), t.literal("Article"), t.literal("Aside"), t.literal("Audio"), t.literal("B"), t.literal("Br"), t.literal("Button"), t.literal("Code"), t.literal("Em"), t.literal("Fieldset"), t.literal("Form"), t.literal("Img"), t.literal("Input"), t.literal("Label"), t.literal("Link"), t.literal("Li"), t.literal("Menu"), t.literal("Nav"), t.literal("Ol"), t.literal("Option"), t.literal("Select"), t.literal("Style"), t.literal("Svg"), t.literal("Table"), t.literal("Td"), t.literal("Th"), t.literal("Ul"), t.literal("Video"), t.literal("Frag"), t.literal("Text")]);
+export const DHtmlKind = t.union([
+  t.literal("Div"), t.literal("P"), t.literal("H1"), t.literal("H2"),
+  t.literal("H3"), t.literal("H4"), t.literal("H5"), t.literal("H6"),
+  t.literal("Span"), t.literal("Section"), t.literal("Article"),
+  t.literal("Aside"), t.literal("Audio"), t.literal("B"), t.literal("Br"),
+  t.literal("Button"), t.literal("Code"), t.literal("Em"),
+  t.literal("Fieldset"), t.literal("Form"), t.literal("Img"),
+  t.literal("Input"), t.literal("Label"), t.literal("Link"), t.literal("Li"),
+  t.literal("Menu"), t.literal("Nav"), t.literal("Ol"), t.literal("Option"),
+  t.literal("Select"), t.literal("Style"), t.literal("Svg"), t.literal("Table"),
+  t.literal("Td"), t.literal("Th"), t.literal("Ul"), t.literal("Video"),
+  t.literal("Frag"), t.literal("Text"), t.literal("Script")]);
 export const DHtml: t.RecursiveType<any, THtml> = t.recursion("DHtml", () => t.type({
   kind: DHtmlKind,
   kids: t.array(DHtml),
@@ -26,5 +38,4 @@ export const DHtml: t.RecursiveType<any, THtml> = t.recursion("DHtml", () => t.t
   attrs: t.array(DAttrs),
 }));
 export const DMap = t.array(t.tuple([t.string, DValue]));
-
 
