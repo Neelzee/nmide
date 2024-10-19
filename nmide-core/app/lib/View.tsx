@@ -7,14 +7,11 @@ import NmideClient from "./NmideClient";
 import { listen } from "@tauri-apps/api/event";
 import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/Either";
-import { TMap } from "./bindings/TMap";
 
-const View = (setHtmls: React.Dispatch<React.SetStateAction<THtml[]>>) => {
+const View = (setHtmls: React.Dispatch<React.SetStateAction<THtml[]>>, setListening: React.Dispatch<React.SetStateAction<boolean>>) => {
   useEffect(() => {
-    console.debug("LISTENING");
-    let f = () => {
-      console.debug("UNLISTEN");
-    };
+    let f = () => { };
+    setListening(true);
     listen<void>(
       "view",
       _event => {
@@ -32,7 +29,6 @@ const View = (setHtmls: React.Dispatch<React.SetStateAction<THtml[]>>) => {
       }
     )
       .then(g => f = () => {
-        console.debug("UNLISTEN");
         g();
       })
       .catch(err => console.error("Error on view listen: ", err));

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import { THtml } from "./lib/bindings/THtml";
 import RenderHtml from "./lib/Html";
@@ -11,14 +11,18 @@ import * as E from "fp-ts/Either";
 
 export default function Page() {
   const [htmls, setHtmls] = useState<THtml[]>([]);
+  const [listening, setListening] = useState(false);
 
-  NmideClient("init", undefined)
-    .then(val => {
-      if (E.isLeft(val)) {
-        console.error("Error from init: ", val.left);
-      }
-    });
-  View(setHtmls);
+  useEffect(() => {
+    if (!listening) return;
+    NmideClient("init", undefined)
+      .then(val => {
+        if (E.isLeft(val)) {
+          console.error("Error from init: ", val.left);
+        }
+      });
+  }, [listening]);
+  View(setHtmls, setListening);
 
   return (
     <>
