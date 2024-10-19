@@ -2,70 +2,14 @@ use abi_stable::{
     std_types::{ROption, RString, RVec},
     StableAbi,
 };
-use std::mem::ManuallyDrop;
-
-use super::tmap::{TMap, TValue};
+use rstest::rstest;
+use std::{cell::LazyCell, convert::Into, mem::ManuallyDrop, sync::LazyLock};
 
 #[repr(C)]
 #[derive(StableAbi)]
 pub struct RValue {
     pub(crate) kind: RValKind,
     pub(crate) val: RValueUnion,
-}
-
-impl std::fmt::Debug for RValue {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("RValue")
-            .field("kind", &self.kind)
-            .field(
-                "val",
-                match self.kind {
-                    RValKind::Int => unsafe { &self.val._int },
-                    RValKind::Float => unsafe { &self.val._float },
-                    RValKind::Bool => unsafe { &self.val._bool },
-                    RValKind::Str => unsafe { &self.val._str },
-                    RValKind::List => unsafe { &self.val._lst },
-                    RValKind::Obj => unsafe { &self.val._obj },
-                },
-            )
-            .finish()
-    }
-}
-
-impl PartialEq for RValue {
-    fn eq(&self, other: &Self) -> bool {
-        match (&self.kind, &other.kind) {
-            (RValKind::Int, RValKind::Int) => unsafe { self.val._int.eq(&self.val._int) },
-            (RValKind::Float, RValKind::Float) => unsafe { self.val._float.eq(&self.val._float) },
-            (RValKind::Bool, RValKind::Bool) => unsafe { self.val._bool.eq(&self.val._bool) },
-            (RValKind::Str, RValKind::Str) => unsafe { self.val._str.eq(&self.val._str) },
-            (RValKind::List, RValKind::List) => unsafe { self.val._lst.eq(&self.val._lst) },
-            (RValKind::Obj, RValKind::Obj) => unsafe { self.val._obj.eq(&self.val._obj) },
-            _ => false,
-        }
-    }
-}
-
-impl Eq for RValue {}
-
-impl Clone for RValue {
-    fn clone(&self) -> Self {
-        match self.kind {
-            RValKind::Int => Self::new_int(self.int().unwrap()),
-            RValKind::Float => Self::new_float(self.float().unwrap()),
-            RValKind::Bool => Self::new_bool(self.bool().unwrap()),
-            RValKind::Str => Self::new_str(self.str().unwrap().to_string()),
-            RValKind::List => {
-                Self::new_listr(ManuallyDrop::into_inner(self.lst().unwrap().clone()))
-            }
-            RValKind::Obj => Self {
-                kind: RValKind::Obj,
-                val: RValueUnion {
-                    _obj: self.obj().unwrap().clone(),
-                },
-            },
-        }
-    }
 }
 
 impl RValue {
@@ -146,118 +90,15 @@ impl RValue {
     }
 }
 
-impl From<i32> for RValue {
-    fn from(value: i32) -> Self {
-        Self {
-            kind: RValKind::Int,
-            val: RValueUnion::int(value),
-        }
-    }
-}
-
-impl From<f32> for RValue {
-    fn from(value: f32) -> Self {
-        Self {
-            kind: RValKind::Float,
-            val: RValueUnion::float(value),
-        }
-    }
-}
-
-impl From<bool> for RValue {
-    fn from(value: bool) -> Self {
-        Self {
-            kind: RValKind::Bool,
-            val: RValueUnion::bool(value),
-        }
-    }
-}
-
-impl From<String> for RValue {
-    fn from(value: String) -> Self {
-        Self {
-            kind: RValKind::Str,
-            val: RValueUnion::str(value),
-        }
-    }
-}
-
-impl From<&str> for RValue {
-    fn from(value: &str) -> Self {
-        Self {
-            kind: RValKind::Str,
-            val: RValueUnion::str(value),
-        }
-    }
-}
-
-impl<T: Into<RValue>> From<RVec<T>> for RValue {
-    fn from(value: RVec<T>) -> Self {
-        Self {
-            kind: RValKind::List,
-            val: RValueUnion::listr(value),
-        }
-    }
-}
-
-impl<T: Into<RValue>> From<Vec<T>> for RValue {
-    fn from(value: Vec<T>) -> Self {
-        Self {
-            kind: RValKind::List,
-            val: RValueUnion::list(value),
-        }
-    }
-}
-
-impl<S: ToString, T: Into<RValue>> From<Vec<(S, T)>> for RValue {
-    fn from(value: Vec<(S, T)>) -> Self {
-        Self {
-            kind: RValKind::Obj,
-            val: RValueUnion::obj(value),
-        }
-    }
-}
-
-impl From<TValue> for RValue {
-    fn from(value: TValue) -> Self {
-        match value {
-            TValue::Int(i) => Self {
-                kind: RValKind::Int,
-                val: RValueUnion::int(i),
-            },
-            TValue::Float(f) => Self {
-                kind: RValKind::Float,
-                val: RValueUnion::float(f),
-            },
-            TValue::Bool(b) => Self {
-                kind: RValKind::Bool,
-                val: RValueUnion::bool(b),
-            },
-            TValue::Str(s) => Self {
-                kind: RValKind::Str,
-                val: RValueUnion::str(s),
-            },
-            TValue::List(l) => Self {
-                kind: RValKind::List,
-                val: RValueUnion::list(l),
-            },
-            TValue::Obj(o) => Self {
-                kind: RValKind::Obj,
-                val: RValueUnion::obj(o),
-            },
-        }
-    }
-}
-
 #[repr(C)]
 #[derive(StableAbi)]
 pub union RValueUnion {
-    _int: i32,
-    _float: f32,
-    _bool: bool,
-    _str: ManuallyDrop<RString>,
-    _lst: ManuallyDrop<RVec<RValue>>,
-    _obj: ManuallyDrop<RVec<RKeyPair>>,
+    pub(crate) _int: i32,
+    pub(crate) _float: f32,
+    pub(crate) _bool: bool,
+    pub(crate) _str: ManuallyDrop<RString>,
+    pub(crate) _lst: ManuallyDrop<RVec<RValue>>,
+    pub(crate) _obj: ManuallyDrop<RVec<RKeyPair>>,
 }
 
 impl RValueUnion {
@@ -367,16 +208,40 @@ impl RKeyPair {
     }
 }
 
-impl<S: ToString, T: Into<RValue>> From<(S, T)> for RKeyPair {
-    fn from(value: (S, T)) -> Self {
-        let (s, val) = value;
-        let mut rstr = RString::new();
-        rstr.push_str(s.to_string().as_str());
-        Self {
-            key: rstr,
-            val: val.into(),
-        }
-    }
+#[rstest]
+#[case("foo", "bar", "foo", "Comparing 'foo' and 'foo' should be true")]
+#[case(1, 1, 1, "Comparing '1' and '1' should be true")]
+#[case(
+    "fooBAR",
+    1,
+    "foobar",
+    "Comparison between keys should be case-insensitive"
+)]
+fn rkey_pair_cmp_key_success_test<K, V>(
+    #[case] key: K,
+    #[case] val: V,
+    #[case] cmp_key: K,
+    #[case] desc: &str,
+) where
+    K: ToString,
+    V: Into<RValue> + Clone,
+{
+    assert!(RKeyPair::new(key, val).cmp_key(&cmp_key), "{desc}");
+}
+
+#[rstest]
+#[case("foo", "foo", "bar", "Comparing 'foo' and 'bar' should be false")]
+#[case(1, 1, 2, "Comparing '1' and '2' should be false")]
+fn rkey_pair_cmp_key_failure_test<K, V>(
+    #[case] key: K,
+    #[case] val: V,
+    #[case] cmp_key: K,
+    #[case] desc: &str,
+) where
+    K: ToString,
+    V: Into<RValue> + Clone,
+{
+    assert!(!RKeyPair::new(key, val).cmp_key(&cmp_key), "{desc}");
 }
 
 #[repr(u8)]
@@ -491,7 +356,7 @@ impl RMap {
     /// ```
     pub fn insert<S, T>(self, key: &S, val: T) -> Self
     where
-        S: ToString + std::fmt::Display + ?Sized,
+        S: ToString + ?Sized,
         T: Into<RValue> + Clone,
     {
         Self {
@@ -509,7 +374,7 @@ impl RMap {
                     .collect()
             } else {
                 let mut pairs = self.pairs;
-                pairs.push((key, val).into());
+                pairs.push(RKeyPair::new(key.to_string(), val));
                 pairs
             },
         }
@@ -579,16 +444,33 @@ impl RMap {
     }
 }
 
-impl Default for RMap {
-    fn default() -> Self {
-        Self::new()
-    }
+#[cfg(test)]
+static EMPTY_VEC: &[(String, RValue); 0] = &[];
+
+#[cfg(test)]
+fn rvalue_test_vec() -> Vec<(&'static str, RValue)> {
+    vec![
+        ("foo", "bar".into()),
+        ("foobar", 1.into()),
+        ("foobaz", (0..10).collect::<Vec<_>>().into()),
+        ("bazfoo", vec![("foo", "bar")].into()),
+    ]
 }
 
-impl From<TMap> for RMap {
-    fn from(value: TMap) -> Self {
-        Self {
-            pairs: value.0.into_iter().map(|t| t.into()).collect(),
-        }
+#[rstest]
+#[case(EMPTY_VEC.to_vec())]
+#[case(vec![("foo", "bar".into())])]
+#[case(vec![("foo", 1.into())])]
+#[case(rvalue_test_vec())]
+fn building_rmap_test<K>(#[case] keyvals: Vec<(K, RValue)>)
+where
+    K: ToString,
+{
+    let mut map = RMap::new();
+    for (k, v) in keyvals.iter() {
+        map = map.insert(k, v.clone());
+        assert!(map.lookup(k).is_some());
+        assert!(map.lookup(k).into_option().map(|val| val.eq(v)).unwrap());
     }
+    assert!(keyvals.iter().all(|(k, _)| map.lookup(k).is_some()));
 }
