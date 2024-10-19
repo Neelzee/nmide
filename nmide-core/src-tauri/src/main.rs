@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use abi_stable::library::{LibraryPath, RootModule};
 use anyhow::{Context, Result};
 use log::{debug, info};
 use nmide_plugin_manager::Nmlugin;
@@ -8,6 +9,7 @@ use nmide_std_lib::{
     html::thtml::THtml,
     map::{rmap::RMap, tmap::TMap},
     msg::{rmsg::RMsg, tmsg::TMsg},
+    NmideStandardLibrary_Ref,
 };
 use once_cell::sync::{Lazy, OnceCell};
 use serde::Serialize;
@@ -26,10 +28,16 @@ async fn init(window: Window) {
         .read()
         .await
         .iter()
-        .filter_map(|p| p.init().ok())
+        .map(|p| {
+            debug!("Plugin: {p:?}");
+            let m = p.init();
+            let tm: TMap = m.clone().into();
+            debug!("Model: {tm:?}");
+            m
+        })
         .fold(RMap::new(), |acc, m| acc.merge(m));
     drop(model);
-    let _ = window.emit("view", EmptyPayload);
+    window.emit("view", EmptyPayload).unwrap();
 }
 
 #[derive(Serialize, Clone)]
@@ -45,7 +53,7 @@ async fn view() -> Vec<THtml> {
         .read()
         .await
         .iter()
-        .filter_map(|p| p.view(model.clone()).ok())
+        .map(|p| p.view(model.clone()))
         .map(|h| h.into())
         .collect::<Vec<THtml>>()
 }
@@ -61,9 +69,9 @@ async fn update(window: Window, msg: TMsg) {
         .read()
         .await
         .iter()
-        .filter_map(|p| p.update(rmsg.clone(), model.clone()).ok())
+        .map(|p| p.update(rmsg.clone(), model.clone()))
         .fold(RMap::new(), |acc, m| acc.merge(m));
-    let _ = window.emit("view", EmptyPayload);
+    window.emit("view", EmptyPayload).unwrap();
 }
 
 #[tauri::command]
@@ -79,9 +87,9 @@ async fn msg(window: Window, msg: TMsg) {
                 .read()
                 .await
                 .iter()
-                .filter_map(|p| p.update(rmsg.clone(), model.clone()).ok())
+                .map(|p| p.update(rmsg.clone(), model.clone()))
                 .fold(RMap::new(), |acc, m| acc.merge(m));
-            let _ = window.emit("view", EmptyPayload);
+            window.emit("view", EmptyPayload).unwrap();
         }
     }
 }
@@ -96,6 +104,16 @@ const NMIDE_PLUGIN_DIR: &str = "plugins";
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    let path = PathBuf::from("/home/nmf/.local/share/no.nilsmf.uib/plugins/libnmide_plugin.so");
+    let pp = LibraryPath::FullPath(path.as_path());
+    let plugin = NmideStandardLibrary_Ref::load_from(pp)?;
+    let model = plugin.init()();
+    let t = RMap::new().insert("counter", 0);
+    println!(
+        "{:?}",
+        t.lookup("counter").map(|v| v.int().unwrap_or_default())
+    );
+
     tauri::Builder::default()
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
@@ -125,15 +143,14 @@ fn development_setup(app: &mut tauri::App) -> Result<()> {
     let plugin_folder = app
         .path()
         .app_data_dir()
-        .context("Failed to get app_data_dir")
-        .unwrap()
+        .context("Failed to get app_data_dir")?
         .join("plugins");
 
     fs::remove_dir_all(&plugin_folder)?;
     fs::create_dir(&plugin_folder)?;
 
     for pp in plugin_paths {
-        let _ = fs::remove_file(&plugin_folder.join(pp.file_name().unwrap()));
+        let _ = fs::remove_file(plugin_folder.join(pp.file_name().unwrap()));
         let dest = plugin_folder.join(pp.file_name().unwrap());
         fs::copy(&pp, &dest).context(format!("Can't copy: {pp:?}, {dest:?}"))?;
     }
@@ -178,7 +195,6 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
                 .join(NMIDE_PLUGIN_DIR)
                 .read_dir()
                 .expect("couldnt read nmide-plugin dir")
-                .into_iter()
                 .filter_map(|dir| match dir {
                     Ok(d)
                         if d.path().is_file()
@@ -186,6 +202,7 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
                                 e.to_string_lossy() == "so" || e.to_string_lossy() == "dll"
                             }) =>
                     {
+                        println!("{:?}", d.path());
                         Some(d.path())
                     }
                     Err(err) => {
@@ -195,7 +212,9 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
                     _ => None,
                 })
                 .map(|pth| {
-                    Nmlugin::new(&pth).expect(&format!("couldnt create plugin on path: {pth:?}"))
+                    Nmlugin::new(pth.as_path()).unwrap_or_else(|err| {
+                        panic!("Couldnt create plugin on path: {pth:?}, due too {err:?}")
+                    })
                 })
                 .collect(),
         )
@@ -203,8 +222,7 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
 
     #[cfg(debug_assertions)]
     {
-        let res = development_setup(app);
-        let _ = res.unwrap();
+        development_setup(app).unwrap();
     }
 
     Ok(())

@@ -11,19 +11,32 @@ import { TMap } from "./bindings/TMap";
 
 const View = (setHtmls: React.Dispatch<React.SetStateAction<THtml[]>>) => {
   useEffect(() => {
-    listen<TMap>(
+    console.debug("LISTENING");
+    let f = () => {
+      console.debug("UNLISTEN");
+    };
+    listen<void>(
       "view",
-      _ => NmideClient("view", undefined)
-        .then(v => setHtmls(
-          pipe(
-            v,
-            E.getOrElse<Error, THtml[]>(err => {
-              console.error(err);
-              return [];
-            })
-          )
-        ))
+      _event => {
+        console.debug("Event: ", _event);
+        NmideClient("view", undefined)
+          .then(v => setHtmls(
+            pipe(
+              v,
+              E.getOrElse<Error, THtml[]>(err => {
+                console.error(err);
+                return [];
+              })
+            )
+          ));
+      }
     )
+      .then(g => f = () => {
+        console.debug("UNLISTEN");
+        g();
+      })
+      .catch(err => console.error("Error on view listen: ", err));
+    return f;
   }, []);
 }
 

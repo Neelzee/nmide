@@ -57,8 +57,14 @@ pub mod tmap {
             Self(Vec::new())
         }
 
-        pub fn merge(self, other: Self) -> Self {
-            unimplemented!()
+        pub fn merge(self, _other: Self) -> Self {
+            unimplemented!("Not implementation for TMap.merge yet")
+        }
+    }
+
+    impl Default for TMap {
+        fn default() -> Self {
+            Self::new()
         }
     }
 

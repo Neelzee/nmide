@@ -27,7 +27,7 @@ impl RMsg {
 
     pub fn is_msg<S: ToString>(&self, key: S) -> bool {
         let s = key.to_string();
-        return unsafe { self.val.msg.0 == s };
+        unsafe { self.val.msg.0 == s }
     }
 }
 
