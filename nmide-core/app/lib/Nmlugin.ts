@@ -1,4 +1,4 @@
-import { TMap, TValue } from "./bindings/TMap";
+import { TMap } from "./bindings/TMap";
 import { TMsg } from "./bindings/TMsg";
 
 interface Nmlugin {

@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use crate::handlers::{init, update, view};
+use crate::handlers::{init, install, update, view};
 use crate::setup::{development_setup, setup};
 use anyhow::Result;
 
@@ -25,7 +25,7 @@ async fn main() -> Result<()> {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![init, update, view])
+        .invoke_handler(tauri::generate_handler![init, update, view, install])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
     Ok(())

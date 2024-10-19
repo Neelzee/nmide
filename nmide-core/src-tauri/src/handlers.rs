@@ -1,15 +1,17 @@
-// Prevents additional console window on Windows in release, DO NOT REMOVE!!
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
-use crate::statics::{MODEL, NMLUGS};
-use log::info;
+use crate::{
+    statics::{MODEL, NMLUGS},
+    NMIDE_PLUGIN_DIR,
+};
+use anyhow_tauri::{IntoTAResult, TAResult};
+use log::{debug, error, info};
 use nmide_std_lib::{
     html::thtml::THtml,
     map::{rmap::RMap, tmap::TMap},
     msg::{rmsg::RMsg, tmsg::TMsg},
 };
 use serde::Serialize;
-use tauri::{Emitter, Window};
+use tauri::{Emitter, Manager, Window};
+use tauri_plugin_fs::FsExt;
 
 #[derive(Serialize, Clone)]
 struct EmptyPayload;
@@ -64,4 +66,50 @@ pub async fn update(window: Window, msg: TMsg, model: Option<TMap>) {
             window.emit("view", EmptyPayload).unwrap();
         }
     }
+}
+
+#[tauri::command]
+pub async fn install(window: Window) -> TAResult<()> {
+    info!("Backend: install");
+    let webview = window
+        .get_webview_window("main")
+        .expect("Main window should exist");
+    webview.eval("window.plugins = []").into_ta_result()?;
+    std::fs::read_dir(
+        webview
+            .app_handle()
+            .path()
+            .app_data_dir()
+            .into_ta_result()?
+            .join(NMIDE_PLUGIN_DIR),
+    )
+    .into_ta_result()?
+    .for_each(|dir| {
+        if let Ok(dir_entry) = dir {
+            if !dir_entry.path().is_file()
+                || dir_entry
+                    .path()
+                    .file_name()
+                    .is_some_and(|p| !p.to_str().unwrap_or_default().ends_with(".js"))
+            {
+                return;
+            }
+            match &webview.fs().read_to_string(dir_entry.path()) {
+                Ok(js) => {
+                    let err = webview.eval(js);
+                    if err.is_ok() {
+                        return;
+                    }
+                    error!(
+                        "Failed to eval plugin: {:?} {:?}",
+                        dir_entry.path(),
+                        err.unwrap_err()
+                    );
+                }
+                Err(err) => error!("Failed to eval plugin: {:?} {err:?}", dir_entry.path()),
+            }
+        }
+    });
+
+    Ok(())
 }
