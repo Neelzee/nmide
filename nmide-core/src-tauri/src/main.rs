@@ -13,16 +13,6 @@ const NMIDE_PLUGIN_DIR: &str = "plugins";
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let path = PathBuf::from("/home/nmf/.local/share/no.nilsmf.uib/plugins/libnmide_plugin.so");
-    let pp = LibraryPath::FullPath(path.as_path());
-    let plugin = NmideStandardLibrary_Ref::load_from(pp)?;
-    let model = plugin.init()();
-    let t = RMap::new().insert("counter", 0);
-    println!(
-        "{:?}",
-        t.lookup("counter").map(|v| v.int().unwrap_or_default())
-    );
-
     tauri::Builder::default()
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_shell::init())

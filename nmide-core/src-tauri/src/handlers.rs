@@ -2,10 +2,10 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use crate::statics::{MODEL, NMLUGS};
-use log::{debug, info};
+use log::info;
 use nmide_std_lib::{
     html::thtml::THtml,
-    map::{rmap::RMap, tmap::TMap},
+    map::rmap::RMap,
     msg::{rmsg::RMsg, tmsg::TMsg},
 };
 use serde::Serialize;
@@ -24,13 +24,7 @@ pub async fn init(window: Window) {
         .read()
         .await
         .iter()
-        .map(|p| {
-            debug!("Plugin: {p:?}");
-            let m = p.init();
-            let tm: TMap = m.clone().into();
-            debug!("Model: {tm:?}");
-            m
-        })
+        .map(|p| p.init())
         .fold(RMap::new(), |acc, m| acc.merge(m));
     drop(model);
     window.emit("view", EmptyPayload).unwrap();
