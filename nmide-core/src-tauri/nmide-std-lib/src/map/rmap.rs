@@ -13,6 +13,41 @@ pub struct RValue {
     pub(crate) val: RValueUnion,
 }
 
+impl std::fmt::Debug for RValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("RValue")
+            .field("kind", &self.kind)
+            .field(
+                "val",
+                match self.kind {
+                    RValKind::Int => unsafe { &self.val._int },
+                    RValKind::Float => unsafe { &self.val._float },
+                    RValKind::Bool => unsafe { &self.val._bool },
+                    RValKind::Str => unsafe { &self.val._str },
+                    RValKind::List => unsafe { &self.val._lst },
+                    RValKind::Obj => unsafe { &self.val._obj },
+                },
+            )
+            .finish()
+    }
+}
+
+impl PartialEq for RValue {
+    fn eq(&self, other: &Self) -> bool {
+        match (&self.kind, &other.kind) {
+            (RValKind::Int, RValKind::Int) => unsafe { self.val._int.eq(&self.val._int) },
+            (RValKind::Float, RValKind::Float) => unsafe { self.val._float.eq(&self.val._float) },
+            (RValKind::Bool, RValKind::Bool) => unsafe { self.val._bool.eq(&self.val._bool) },
+            (RValKind::Str, RValKind::Str) => unsafe { self.val._str.eq(&self.val._str) },
+            (RValKind::List, RValKind::List) => unsafe { self.val._lst.eq(&self.val._lst) },
+            (RValKind::Obj, RValKind::Obj) => unsafe { self.val._obj.eq(&self.val._obj) },
+            _ => false,
+        }
+    }
+}
+
+impl Eq for RValue {}
+
 impl Clone for RValue {
     fn clone(&self) -> Self {
         match self.kind {
@@ -204,7 +239,7 @@ impl From<TValue> for RValue {
             },
             TValue::List(l) => Self {
                 kind: RValKind::List,
-                val: RValueUnion::list(l.into()),
+                val: RValueUnion::list(l),
             },
             TValue::Obj(o) => Self {
                 kind: RValKind::Obj,
@@ -289,15 +324,46 @@ impl RValueUnion {
 }
 
 #[repr(C)]
-#[derive(StableAbi, Clone)]
+#[derive(StableAbi, Clone, PartialEq, Eq, Debug)]
 pub struct RKeyPair {
     pub(crate) key: RString,
     pub(crate) val: RValue,
 }
 
 impl RKeyPair {
-    pub fn cmp_key<S: ToString>(&self, key: &S) -> bool {
-        *self.key == key.to_string()
+    pub fn new<K: ToString, V: Into<RValue>>(key: K, val: V) -> Self {
+        let mut rstr = RString::new();
+        rstr.push_str(&key.to_string().to_lowercase());
+
+        Self {
+            key: rstr,
+            val: val.into(),
+        }
+    }
+
+    /// Returns true if the given string is equal to the key.
+    ///
+    /// ```rust
+    /// use nmide_std_lib::map::rmap::RKeyPair;
+    /// let key = String::from("foo");
+    /// let other_key = "bar";
+    /// assert!(
+    ///     RKeyPair::new(&key, 1).cmp_key(&key),
+    ///     "keypair contains key foo"
+    /// );
+    /// assert!(
+    ///     !RKeyPair::new(&key, 1).cmp_key(&other_key),
+    ///     "keypair does not contain key bar"
+    /// );
+    /// ```
+    pub fn cmp_key<S>(&self, key: &S) -> bool
+    where
+        S: ToString + ?Sized,
+    {
+        self.key
+            .clone()
+            .to_string()
+            .eq_ignore_ascii_case(&key.to_string())
     }
 }
 
@@ -314,7 +380,7 @@ impl<S: ToString, T: Into<RValue>> From<(S, T)> for RKeyPair {
 }
 
 #[repr(u8)]
-#[derive(StableAbi, Clone, PartialEq)]
+#[derive(StableAbi, Clone, PartialEq, Eq, Debug)]
 pub enum RValKind {
     Int,
     Float,
@@ -325,7 +391,7 @@ pub enum RValKind {
 }
 
 #[repr(C)]
-#[derive(StableAbi, Clone)]
+#[derive(StableAbi, Clone, PartialEq, Eq, Debug)]
 pub struct RMap {
     pub(crate) pairs: RVec<RKeyPair>,
 }
@@ -335,80 +401,187 @@ impl RMap {
         RMap { pairs: RVec::new() }
     }
 
-    pub fn contains_key<S: ToString>(&self, key: &S) -> bool {
-        for pair in &self.pairs {
-            if pair.cmp_key(key) {
-                return true;
-            }
-        }
-        return false;
+    /// Returns if the given key is in the map.
+    /// Only checks the first-level.
+    ///
+    /// ```rust
+    /// use nmide_std_lib::map::rmap::RMap;
+    /// let key = String::from("foo");
+    /// assert!(RMap::new().insert(&key, 0).contains_key(&key));
+    /// assert!(!RMap::new().contains_key(&key));
+    /// ```
+    pub fn contains_key<S>(&self, key: &S) -> bool
+    where
+        S: ToString + ?Sized,
+    {
+        self.pairs.iter().any(|kp| kp.cmp_key(key))
     }
 
+    /// Merges self with other map, if other has same fields, they are
+    /// overwritten with values from self.
+    ///
+    /// For a set of all maps, MAPS, this monoid holds:
+    /// (Map::merge, MAPS, Map::new)
+    ///
+    /// ```rust
+    /// use nmide_std_lib::map::rmap::RMap;
+    /// let key = String::from("foo");
+    /// assert_eq!(RMap::new().merge(RMap::new()), RMap::new());
+    /// assert_eq!(
+    ///     RMap::new().merge(RMap::new().insert(&key, 0)),
+    ///     RMap::new().insert(&key, 0)
+    /// );
+    /// assert_eq!(
+    ///     RMap::new().insert(&key, 0).merge(RMap::new()),
+    ///     RMap::new().insert(&key, 0)
+    /// );
+    /// ```
     pub fn merge(self, other: Self) -> Self {
         let mut pairs = self.pairs.clone();
         let mut other_pairs = other
             .pairs
             .into_iter()
-            .filter(move |pk| self.contains_key(&pk.key))
+            .filter(move |pk| !self.contains_key(&pk.key))
             .collect();
         pairs.append(&mut other_pairs);
         Self { pairs }
     }
 
-    pub fn insert_mut<S, T>(&mut self, key: S, val: T)
+    /// Inserts the given value to the given key.
+    /// If it already exists in the map, updates the value instead.
+    ///
+    /// ```rust
+    /// use nmide_std_lib::map::rmap::RMap;
+    /// let key = String::from("foo");
+    /// let other_key = String::from("foobar");
+    /// let mut a = RMap::new();
+    /// a.insert_mut(&key, 1);
+    /// let mut b = RMap::new();
+    /// b.insert_mut(&key, 1);
+    /// assert_eq!(a, b);
+    /// assert!(a.lookup(&key).is_some());
+    /// assert!(a.lookup(&other_key).is_none());
+    /// ```
+    pub fn insert_mut<S, T>(&mut self, key: &S, val: T)
     where
-        S: ToString,
+        S: ToString + ?Sized + std::fmt::Display,
         T: Into<RValue> + Clone,
     {
-        if self.contains_key(&key) {
+        if self.contains_key(key) {
             self.pairs = self
                 .pairs
                 .iter()
-                .filter(|kp| kp.cmp_key(&key))
-                .map(|k| k.clone())
+                .filter(|kp| kp.cmp_key(key))
+                .cloned()
                 .collect::<RVec<_>>();
         }
         self.pairs.push((key, val).into());
     }
 
-    pub fn insert<S, T>(self, key: S, val: T) -> Self
+    /// Inserts the given value to the given key.
+    /// If it already exists in the map, updates the value instead.
+    ///
+    /// ```rust
+    /// use nmide_std_lib::map::rmap::RMap;
+    /// let key = String::from("foo");
+    /// let other_key = String::from("foobar");
+    /// assert_eq!(RMap::new().insert(&key, 1), RMap::new().insert(&key, 1));
+    /// assert!(RMap::new().insert(&key, 1).lookup(&key).is_some());
+    /// assert!(RMap::new().insert(&key, 1).lookup(&other_key).is_none());
+    /// ```
+    pub fn insert<S, T>(self, key: &S, val: T) -> Self
     where
-        S: ToString,
+        S: ToString + std::fmt::Display + ?Sized,
         T: Into<RValue> + Clone,
     {
         Self {
-            pairs: self
-                .pairs
-                .into_iter()
-                .map(|mut pair| {
-                    if pair.cmp_key(&key) {
-                        pair.val = val.clone().into();
-                        return pair;
-                    }
-                    return pair;
-                })
-                .collect(),
+            pairs: if self.contains_key(key) {
+                self.pairs
+                    .into_iter()
+                    .map(|mut pair| {
+                        if pair.cmp_key(key) {
+                            pair.val = val.clone().into();
+                            return pair;
+                        }
+
+                        pair
+                    })
+                    .collect()
+            } else {
+                let mut pairs = self.pairs;
+                pairs.push((key, val).into());
+                pairs
+            },
         }
     }
 
-    pub fn lookup<S: ToString>(&self, key: S) -> ROption<&RValue> {
+    /// Checks the map for the given key, if it exists, returns the value. If
+    /// it doesn't exist, returns none.
+    ///
+    /// ```rust
+    /// use nmide_std_lib::map::rmap::RMap;
+    /// let key = String::from("foo");
+    /// let other_key = String::from("foobar");
+    /// assert!(RMap::new().insert(&key, 1).lookup(&key).is_some());
+    /// assert!(RMap::new().insert(&key, 1).lookup(&other_key).is_none());
+    /// ```
+    pub fn lookup<S>(&self, key: &S) -> ROption<&RValue>
+    where
+        S: ToString + ?Sized,
+    {
         for p in self.pairs.iter() {
-            if p.cmp_key(&key) {
+            if p.cmp_key(key) {
                 return ROption::RSome(&p.val);
             }
         }
-        return ROption::RNone;
+        ROption::RNone
     }
 
-    pub fn remove<S: ToString>(&mut self, key: S) -> ROption<RValue> {
-        let mut index = 0;
-        for p in self.pairs.iter() {
-            if p.cmp_key(&key) {
+    /// Removes the given value, by the given key, returning it if it exists.
+    ///
+    /// ```rust
+    /// use nmide_std_lib::map::rmap::RMap;
+    /// let key = String::from("foo");
+    /// let mut map = RMap::new().insert(&key, 1);
+    /// assert!(map.lookup(&key).is_some());
+    /// assert!(map.remove_mut(&key).is_some());
+    /// assert!(RMap::new().remove_mut(&key).is_none());
+    /// ```
+    pub fn remove_mut<S>(&mut self, key: &S) -> ROption<RValue>
+    where
+        S: ToString,
+    {
+        for (index, p) in self.pairs.iter().enumerate() {
+            if p.cmp_key(key) {
                 return ROption::RSome(self.pairs.swap_remove(index).val);
             }
-            index += 1;
         }
-        return ROption::RNone;
+        ROption::RNone
+    }
+
+    /// Removes the given value, by the given key.
+    ///
+    /// ```rust
+    /// use nmide_std_lib::map::rmap::RMap;
+    /// let key = String::from("foo");
+    /// let mut map = RMap::new().insert(&key, 1);
+    /// assert!(map.lookup(&key).is_some());
+    /// assert!(map.remove(&key).lookup(&key).is_none());
+    /// assert!(RMap::new().remove(&key).lookup(&key).is_none());
+    /// ```
+    pub fn remove<S>(self, key: &S) -> Self
+    where
+        S: ToString,
+    {
+        Self {
+            pairs: self.pairs.into_iter().filter(|p| !p.cmp_key(key)).collect(),
+        }
+    }
+}
+
+impl Default for RMap {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
