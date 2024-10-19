@@ -5,7 +5,7 @@ use crate::statics::{MODEL, NMLUGS};
 use log::info;
 use nmide_std_lib::{
     html::thtml::THtml,
-    map::rmap::RMap,
+    map::{rmap::RMap, tmap::TMap},
     msg::{rmsg::RMsg, tmsg::TMsg},
 };
 use serde::Serialize;
@@ -46,27 +46,12 @@ pub async fn view() -> Vec<THtml> {
 }
 
 #[tauri::command]
-pub async fn update(window: Window, msg: TMsg) {
+pub async fn update(window: Window, msg: TMsg, model: Option<TMap>) {
     info!("Backend: update");
+    let fmap: RMap = model.unwrap_or_default().into();
     let mut model = MODEL.write().await;
-    let rmsg: RMsg = msg.into();
-    *model = NMLUGS
-        .get()
-        .unwrap()
-        .read()
-        .await
-        .iter()
-        .map(|p| p.update(rmsg.clone(), model.clone()))
-        .fold(RMap::new(), |acc, m| acc.merge(m));
-    window.emit("view", EmptyPayload).unwrap();
-}
-
-#[tauri::command]
-pub async fn msg(window: Window, msg: TMsg) {
-    info!("Backend: msg");
     match &msg {
         TMsg::Msg(_, _) => {
-            let mut model = MODEL.write().await;
             let rmsg: RMsg = msg.into();
             *model = NMLUGS
                 .get()
@@ -75,7 +60,7 @@ pub async fn msg(window: Window, msg: TMsg) {
                 .await
                 .iter()
                 .map(|p| p.update(rmsg.clone(), model.clone()))
-                .fold(RMap::new(), |acc, m| acc.merge(m));
+                .fold(fmap, |acc, m| acc.merge(m));
             window.emit("view", EmptyPayload).unwrap();
         }
     }

@@ -8,14 +8,16 @@ import { listen } from "@tauri-apps/api/event";
 import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/Either";
 
-const View = (setHtmls: React.Dispatch<React.SetStateAction<THtml[]>>, setListening: React.Dispatch<React.SetStateAction<boolean>>) => {
+const View = (
+  setHtmls: React.Dispatch<React.SetStateAction<THtml[]>>,
+  setListening: React.Dispatch<React.SetStateAction<boolean>>
+) => {
   useEffect(() => {
     let f = () => { };
     setListening(true);
     listen<void>(
       "view",
       _event => {
-        console.debug("Event: ", _event);
         NmideClient("view", undefined)
           .then(v => setHtmls(
             pipe(
