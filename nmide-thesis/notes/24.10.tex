@@ -43,6 +43,24 @@ write about this, but I should probably create more diagrams to display, to pad
 my thesis, both with the diagrams, and also paragraphs explaining the diagrams
 and the general idea behind them.
 
-I think I can get this to work. I have successfully \textit{installed} a
+I think I can get this to work, I have successfully \textit{installed} a
 JS-Plugin, now I need to call init on it, and merge the states. Hopefully this
 will be easier.
+
+
+\section{24.10.20}
+
+I have a new problem. Well, kinda and also not really. With the JSPS support, I
+have introduced race-conditions to my state change. I feel like it's more of a
+problem I can drag out in writing, than an actual problem to solve with code.
+Practically, it should not be a problem, just use FIFO. If, for some reason, two
+Msg are arriving at the same time, we have two cases. It's either A: a
+coincidence, due to the \textit{pureness} of plugins, it should not matter to
+the state if one of them comes in first. Or B: the plugin-developer has made a
+\textit{mistake}, as two different Msg being sent at the same time, which does
+have an overlapping effect on the state, should probably not happen.
+But we'll see if this is actually the case when I actually begin developing
+plugins.
+
+I have issues with race-conditions, regardless. I have a lot of different
+effects that need to run synchronously, but run asynchronously.
