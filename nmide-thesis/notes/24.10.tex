@@ -64,3 +64,30 @@ plugins.
 
 I have issues with race-conditions, regardless. I have a lot of different
 effects that need to run synchronously, but run asynchronously.
+
+
+\section{24.10.24}
+
+I think I can solve JSPS stuff by using promises. Insane concept, I know, but I
+think my issue has been with how React re-renders stuff. Maybe it doesn't
+\textit{kill} the asynchronous function that is in the useEffect, when it
+re-renders the component, I do not really know.
+
+I like the way Promise-chaining looks, but I can't get it to work, I need to
+redesign the way my architecture looks, to allow this, which probably means
+more frontend control. Is it bad that I spend most of the time designing the
+architecture? Hopefully not, because a good foundation should facilitate quick
+development.
+
+I've also thought about how to use these notes, I think I can feed them to the
+garbage machine creator, (AI), since it's always garbage out, it's no problem
+feeding it garbage. It might summarize my notes for me better than I could.
+
+
+\section{24.10.30}
+
+Magnolia Workshop. What is most relevant to me, is compiler-IDE-communication.
+Can we use some LSP from the compiler? For compiling the code, CLI is the
+standard.
+
+Plugins should be installed by the backend.
