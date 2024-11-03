@@ -1,13 +1,28 @@
 import { pipe } from "fp-ts/lib/function";
-import { NMap } from "./NMap";
 import * as S from "fp-ts/string";
-import * as M from "fp-ts/Map";
-import * as R from "fp-ts/Refinement";
+import * as A from "fp-ts/Array";
+import * as T from "fp-ts/Tuple";
+import { TMap } from "./bindings/TMap";
+import { Eq, fromEquals } from "fp-ts/Eq";
+import { Ord } from "fp-ts/lib/Ord";
 
+export const MapEq: Eq<[string, any]> =
+  fromEquals(([x, _], [y, __]) => S.Eq.equals(x, y))
 
-const ModelFold = (a: NMap, b: NMap): NMap => pipe(
-  M.difference(S.Eq)(a)(b),
-  M.filter(R.id())
+export const MapOrd: Ord<[string, any]> =
+{
+  compare: (x, y) => S.Ord.compare(T.fst(x), T.fst(y)),
+  equals: (x, y) => S.Ord.equals(T.fst(x), T.fst(y))
+};
+
+const ModelFold = (xs: TMap, ys: TMap): TMap => pipe(
+  A.difference(MapEq)(xs)(ys),
+  A.union(MapEq)(ys),
+)
+
+export const ModelFoldPrev = (prevMap: TMap, newMap: TMap) => pipe(
+  A.difference(MapEq)(prevMap)(newMap),
+  A.concat(newMap)
 );
 
 export default ModelFold;

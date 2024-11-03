@@ -1,10 +1,9 @@
 import { Fragment } from "react/jsx-runtime";
 import { v4 as uuidv4 } from "uuid";
-import { invoke } from "@tauri-apps/api/core";
 import { THtml } from "../lib/bindings/THtml";
 import React from "react";
 import { TMsg } from "./bindings/TMsg";
-import PluginScript from "./Script";
+import { emit } from "@tauri-apps/api/event";
 
 export default function RenderHtml({ kind, kids, attrs, text }: THtml) {
   const key = uuidv4();
@@ -15,14 +14,6 @@ export default function RenderHtml({ kind, kids, attrs, text }: THtml) {
   const onClick = attrs.find(el => "OnClick" in el)?.OnClick;
   const src = attrs.find(el => "Src" in el)?.Src;
   switch (kind) {
-    case "Script":
-      return (
-        <Fragment
-          key={key}
-        >
-          {src !== undefined ? PluginScript(src) : src}
-        </Fragment>
-      );
     case "Div":
       return (
         <div
@@ -528,7 +519,7 @@ function OnClickParse(msg: TMsg | undefined): () => void {
     if (msg === undefined) {
       return;
     }
-    invoke("update", { msg }).catch(err => console.error(err));
+    emit("msg", msg).catch(err => console.error("Error form OnClickParse emit:", err));
   };
 }
 

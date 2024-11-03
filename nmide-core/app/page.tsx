@@ -1,34 +1,32 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import React from "react";
 import { THtml } from "./lib/bindings/THtml";
 import RenderHtml from "./lib/Html";
 import { v4 as uuidv4 } from "uuid";
 import View from "./lib/View";
-import NmideClient from "./lib/NmideClient";
-import * as E from "fp-ts/Either";
+import Init from "./lib/Init";
 import Nmlugin from "./lib/Nmlugin";
-import InstallPlugins from "./lib/InstallPlugins";
+import MsgListener from "./lib/MsgListener";
+import { TMap } from "./lib/bindings/TMap";
+import { InstallPlugins, LoadPlugins } from "./lib/InstallPlugins"
+import { TMsg } from "./lib/bindings/TMsg";
+import Update from "./lib/Update";
 
 export default function Page() {
   const [htmls, setHtmls] = useState<THtml[]>([]);
-  const [listening, setListening] = useState(false);
-  const [installed, setInstalled] = useState(false);
   const [plugins, setPlugins] = useState<Nmlugin[]>([]);
+  const [model, setModel] = useState<TMap>([]);
+  const [installed, setInstalled] = useState(false);
+  const [msg, setMsg] = useState<TMsg | undefined>()
 
-  useEffect(() => {
-    if (!listening || !installed) return;
-    NmideClient("init", undefined)
-      .then(val => {
-        if (E.isLeft(val)) {
-          console.error("Error from init: ", val.left);
-        }
-      });
-  }, [listening, installed]);
-  View(setHtmls, setListening);
-  InstallPlugins(setInstalled, setPlugins);
-
+  MsgListener(setMsg);
+  InstallPlugins(setInstalled);
+  LoadPlugins(setPlugins, installed);
+  Init(plugins, setModel);
+  View(setHtmls, plugins, model);
+  Update(model, setModel, msg, plugins);
 
   return (
     <>

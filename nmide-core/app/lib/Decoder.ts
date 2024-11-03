@@ -37,5 +37,6 @@ export const DHtml: t.RecursiveType<any, THtml> = t.recursion("DHtml", () => t.t
   text: t.union([t.string, t.null]),
   attrs: t.array(DAttrs),
 }));
-export const DMap = t.array(t.tuple([t.string, DValue]));
-
+export const DMapArr = t.array(t.tuple([t.string, DValue]));
+export const DHtmlArr = t.array(DHtml);
+export const DViewDecoder = t.tuple([DHtmlArr, DMapArr]);

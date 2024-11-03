@@ -1,48 +1,65 @@
-import { invoke, InvokeOptions } from "@tauri-apps/api/core"
+import { invoke, InvokeArgs, InvokeOptions } from "@tauri-apps/api/core"
 import * as t from "io-ts";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/lib/function";
-import { DHtml } from "./Decoder";
+import { DHtmlArr, DMapArr } from "./Decoder";
+import { PathReporter } from "io-ts/PathReporter";
+import { TMap } from "./bindings/TMap";
+import { TMsg } from "./bindings/TMsg";
 
-type Cmd = {
-  "install_plugins": {
-    arg: undefined,
-  },
-  "uninstall_plugins": {
-    arg: undefined,
+type NmideArgs = {
+  "install": {
+    args: undefined,
   }
   "init": {
-    arg: undefined,
+    args: undefined,
   },
   "view": {
-    arg: undefined,
+    args: { tmodel: TMap },
+  },
+  "update": {
+    args: { tmsg: TMsg, tmodel: TMap, },
   },
 }
 
-const DHtmlArr = t.array(DHtml);
-
-const NmideDecoder = {
-  "install_plugins": t.null,
-  "uninstall_plugins": t.null,
-  "init": t.null,
+const NmideDecoderTest = {
+  "install": t.null,
+  "init": DMapArr,
   "view": DHtmlArr,
-};
+  "update": DMapArr,
+}
 
-const NmideClient = async <K extends keyof Cmd>(
+type NmideDecodedType<
+  K extends keyof NmideArgs
+  & keyof typeof NmideDecoderTest
+> = t.TypeOf<typeof NmideDecoderTest[K]>
+
+const NmideClient = async <
+  K extends keyof NmideArgs & keyof typeof NmideDecoderTest,
+  A extends InvokeArgs & NmideArgs[K]["args"]
+>(
   cmd: K,
-  args: Cmd[K]["arg"],
+  args?: A,
   options?: InvokeOptions,
-): Promise<E.Either<Error, t.TypeOf<typeof NmideDecoder[K]>>> => {
+): Promise<E.Either<Error, NmideDecodedType<K>>> => {
   try {
-    const u = await invoke(cmd, args, options);
     return pipe(
-      NmideDecoder[cmd].decode(u),
-      E.mapLeft(errs => new Error(
-        `Failed parsing response from backend: ${errs.join("\n")}`
-      )));
-  } catch (err) {
-    return E.left<Error, t.TypeOf<(typeof NmideDecoder)[K]>>(new Error(`${err}`));
+      await invoke(cmd, args, options),
+      u => NmideDecoderTest[cmd].decode(u),
+      decoded =>
+        E.isLeft(decoded)
+          ? E.left(
+            new Error(
+              "Failed validating data from backend: " +
+              `${PathReporter.report(decoded).join("\n")}`
+            )
+          )
+          : E.right(decoded.right),
+    )
+  } catch (error) {
+    return E.left(new Error(`Got error from backend: ${error}`))
   }
 }
+
 
 export default NmideClient;
