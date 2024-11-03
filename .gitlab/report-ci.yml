@@ -3,7 +3,7 @@ c-check-report:
     - c-test-build
   image: neelzee/nmide-c:latest
   allow_failure: true
-  stage: rapport
+  stage: report
   script:
     - gcc --version
     - cppcheck --version
@@ -41,7 +41,7 @@ nmide-core-coverage-report:
   variables:
     LLVM_PROFILE_FILE: "target/coverage/nmide-%p-%m.profraw"
     RUSTFLAGS: "-Cinstrument-coverage"
-  stage: rapport
+  stage: report
   tags:
     - nmide-core
   script:

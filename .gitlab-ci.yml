@@ -1,15 +1,14 @@
 stages:
+<<<<<<< HEAD
   - test
   - integration
-  - rapport
+  - report
+  - unit test
+  - integration test
   - svn
   - build
-  - release
+  - release-ci
 
-default:
-  image: neelzee/nmide-tauri:latest
-
-#
 include:
   - template: Jobs/Code-Quality.gitlab-ci.yml
   - ".gitlab/test-ci.yml"
@@ -18,14 +17,3 @@ include:
   - ".gitlab/report-ci.yml"
   - ".gitlab/build-ci.yml"
   - ".gitlab/variables-ci.yml"
-
-pts:
-  image: neelzee/nmide-rust:latest
-  stage: svn
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
-      when: always
-  script:
-    - cargo --version
-    - cargo install just
-    - just svn
