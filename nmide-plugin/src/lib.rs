@@ -33,7 +33,7 @@ pub fn view(model: RMap) -> RHtml {
         rvec![
             RHtml::text(RString::from_str(&format!("Count: {count}")).unwrap_or_default()),
             RHtml::Button(
-                RVec::new(),
+                rvec![RHtml::text(RString::from_str("Click").unwrap_or_default())],
                 rvec![RAttr::new_click(RMsg::new(
                     RMsgKind::Msg,
                     RMsgUnion::new(RString::from_str("increment").unwrap_or_default(), 1.into())
@@ -52,6 +52,6 @@ pub fn update(msg: RMsg, model: RMap) -> RMap {
     let count = model
         .lookup("counter")
         .map(|v| v.int().unwrap_or_default())
-        .unwrap();
+        .unwrap_or_default();
     model.insert("counter", count + 1)
 }
