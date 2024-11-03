@@ -306,10 +306,20 @@ impl RMap {
         let mut other_pairs = other
             .pairs
             .into_iter()
-            .filter(move |pk| !self.contains_key(&pk.key))
+            .filter(|pk| !self.contains_key(&pk.key))
             .collect();
         pairs.append(&mut other_pairs);
         Self { pairs }
+    }
+
+    pub fn merge_mut(&mut self, other: Self) {
+        self.pairs.append(
+            &mut other
+                .pairs
+                .into_iter()
+                .filter(|pk| !self.contains_key(&pk.key))
+                .collect(),
+        )
     }
 
     /// Inserts the given value to the given key.
