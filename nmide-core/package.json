@@ -4,29 +4,34 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "tauri": "tauri",
-    "test": "vitest"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "tauri": "tauri"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1",
+    "@tauri-apps/api": "^2.0.0",
+    "@tauri-apps/plugin-fs": "^2.0.0",
+    "@tauri-apps/plugin-log": "^2.0.0",
+    "@tauri-apps/plugin-shell": "^2.0.0",
+    "fp-ts": "^2.16.9",
+    "io-ts": "^2.2.21",
     "jsdom": "^24.1.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "next": "^14.2.11",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "swr": "^2.2.5",
     "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1",
+    "@tauri-apps/cli": "^2.0.0-rc.18",
     "@testing-library/react": "^16.0.0",
+    "@types/node": "22.5.5",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@types/uuid": "^10.0.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "typescript": "^5.2.2",
-    "vite": "^5.3.1",
-    "vitest": "^2.0.5"
+    "typescript": "^5.2.2"
   }
 }

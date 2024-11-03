@@ -1,74 +1,215 @@
 # Changelog
 
-All notable changes to the Nmide-Core project will be documented in this file.
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project tries to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.2.0] - 2024-08-31
+
+### Added
+
+- Added cast_html method to Html
+- Added ts-auto-gen for Html
+- Added new CHtmlElement types
+- Added integration test for c plugins
+- Added P-tag rendering
+- Added open file dialog
+- Added dev plugin test support
+- Added changelogs
+
+### Changed
+
+- Created presentation plan
+- Created code example
+- Update git
+- Updated presentations
+- Added Ord, Eq in Value and Map
+- Corrected code in doc-string
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Updated notes
+- Created simple showcase plugin
+- Client is now ts
+- Updated slides
+- Updated notes
+- Can now open/close files
+- Added some basic css
+- Last fix to presentation
+- Updated daily notes
+- Updated daily notes
+- Re-added cliff
+
+### Fixed
+
+- Corrected update fn
+- Corrected build.rs
+- Corrected build.rs
+- Corrected build.rs
+- Simplified nmide-manager
+- Created C plugin for testing
+- Updated plugins
+- Corrected ts-export for types
+- Corrected Msg
+- Corrected RS-TS export path
+- Improved Css-Typing
+
+### Removed
+
+- Removed cliff
+- Removed logging
+- Removed css
 
 ## [0.1.0] - 2024-08-15
 
-### 🚀 Features
+### Added
 
-- *(justfile)* Added command to build thesis pdf
-- *(Dockerfile)* Added possibility to use svn in pipelines
-- *(Docker)* Created Images for each job in the pipeline
-- *(justfile)* Added cmd to build, tag and push
-- *(nmide-lib)* Added munit
-- *(nmide-lib)* Added tests
-- *(C)* Added c-tests and checks
-- *(nmide-lib)* Implemented cmap
-- *(nmide-core)* Added testing
-- *(justfile)* New build release cmd nmide-lib
-- *(.gitlab-ci.yml)* C-check fails on errors
-- *(nmide-lib)* Added cmsg
-- *(nmide-framework)* Added counter example
-- *(nmide-lib)* Added cmsg
-- *(nmide-framework)* Added counter example
+- Added gitignore file
+- Added thesis
+- Added command to build thesis pdf
+- Added job to build pdf
+- Added just and pdflatex to img
+- Added missing libraries to tauri-img
+- Added docker build cmd, corrected build-release cmd
+- Added unrelevant CMakeFiles to gitignore
+- Added cmd to build, tag and push
+- Added js and rs test images
+- Added munit
+- Added tests
+- Added images for testing
+- Added static code analysis
+- Added init cmd to build-release
+- Added c-tests and checks
+- Added cmake
+- Added key-props to rendering
+- Added testing
+- Added install to js-test
+- Added libc
+- Added notes
+- Added cmsg
+- Added more DOM tests
+- Added docs for code-gen
+- Added new notes
+- Added c-affix
+- Added more notes
+- Added greetings function for testing
+- Added casting to free
+- Added $ENABLED to disable jobs
+- Added counter example
+- Added notes
+- Added cmsg
+- Added more DOM tests
+- Added docs for code-gen
+- Added new notes
+- Added c-affix
+- Added more notes
+- Added greetings function for testing
+- Added casting to free
+- Added $ENABLED to disable jobs
+- Added counter example
 
-### 🐛 Bug Fixes
+### Changed
 
-- *(nmide-core)* Corrected usage of ffi-wrapper in nmide-core
-- *(justfile)* Corrected just-commands paths
-- *(justfile)* Corrected pathing
-- *(nmide-thesis)* Corrected invalid json-obj
-- *(Dockerfile)* Added missing libraries to tauri-img
-- *(justfile)* Added docker build cmd, corrected build-release cmd
-- *(nmide-rust-ffi)* Can now call function from C, they just dont work
-- *(just)* Corrected cmd, added cmd to push to svn
-- *(nmide-rust-ffi)* Fixed issue with building crate
-- *(ci)* Corrected pdf-build script
+- Updated README.md
+- Added CHANGELOG.md
+- Reorganized the repo
+- Attempt to correct building
+- Refactored Makefile
+- Refactored pipelines
+- Moved from overleaf
+- Corrected pdf-job
+- Updated svn
+- Now using CMakeLists instead of Make
+- Added possibility to use svn in pipelines
+- Created Images for each job in the pipeline
+- Change artifact directory
+- Only builds pdf on change
+- Changed Dockerfile.* to *.Dockerfile
+- V0.1.0 release
+- Updated readme to nmide-lib
+- Implemented cmap
+- Moved from `&&` to multiline script
+- New build release cmd nmide-lib
+- Corrected tests
+- Corrected tests
+- C-check fails on errors
+- Bugfixing
+- Corrected report filename
+- Allows failure on c-check job
+- Corrected dependency name
+- Corrected c-* jobs
+- Bugfix
+- Bugfix
+- Bugfix
+- Bugfid
+- Corrected exit code
+- Corrected correction of exit code
+- Bugfix
+- Bugfix?
+- Bugfix.
+- Corrected report path
+- Updated notes
+- Updated notes
+- Corrected rules
+- Corrected job
+- Updated notes
+- Updated notes
+- Corrected dependency name
+- Corrected c-* jobs
+- Bugfix
+- Bugfix
+- Bugfix
+- Bugfid
+- Corrected exit code
+- Corrected correction of exit code
+- Bugfix
+- Bugfix?
+- Bugfix.
+- Corrected report path
+- Updated notes
+- Updated notes
+- Corrected rules
+- Corrected job
+- Updated notes
+- Updated notes
+- Corrected job
+
+### Fixed
+
+- Corrected usage of ffi-wrapper in nmide-core
+- Corrected just-commands paths
+- Corrected pathing
+- Corrected invalid json-obj
+- Can now call function from C, they just dont work
+- Corrected cmd, added cmd to push to svn
+- Fixed issue with building crate
+- Corrected pdf-build script
 - Corrected pdf-build job
 - Pdf-build fix
-- *(Docker)* Added js and rs test images
-- *(nmide-rust-ffi)* Fixed issue with building
-- *(justfile)* Corrected cmd
-- *(c.Dockerfile)* Added cmake
-- *(.gitlab-ci)* Corrected build script on c-test
-- *(.gitlab-ci)* Corrected path in jobs, added pwd
-- *(.gitlab-ci)* Corrected invalid git-clone path
-- *(nmide-framework)* Corrected pathing to wrapper
-- *(.gitlab-ci.yml)* Corrected exec name
-- *(RenderHtml)* Added key-props to rendering
-- *(Nmide-Lib)* Corrected munit integration
-- *(c.Dockerfile)* Added libc
-- *(nmide-lib)* Corrected CMAKE_C_STANDARD
-- *(nmide-lib)* Corrected source-files for library
-- *(nmide-lib)* Added casting to free
-- *(.gitlab-ci.yml)* Corrected rule
-- *(nmide-core)* Updated wrapper imports
-- *(nmide-lib)* Added casting to free
-- *(.gitlab-ci.yml)* Corrected rule
-- *(nmide-core)* Updated wrapper imports
+- Fixed issue with building
+- Corrected cmd
+- Corrected build script on c-test
+- Corrected path in jobs, added pwd
+- Corrected invalid git-clone path
+- Corrected pathing to wrapper
+- Corrected exec name
+- Corrected munit integration
+- Corrected CMAKE_C_STANDARD
+- Corrected source-files for library
+- Corrected rule
+- Updated wrapper imports
+- Corrected rule
+- Updated wrapper imports
 
-### 🚜 Refactor
+### Removed
 
-- *(project)* Reorganized the repo
-- *(nmide-lib)* Refactored Makefile
-- *(nmide-lib)* Now using CMakeLists instead of Make
-- Changed Dockerfile.* to *.Dockerfile
-- *(.gitlab-ci.yml)* Moved from `&&` to multiline script
-- *(nmide-lib)* Added c-affix
-- *(nmide-lib)* Added c-affix
+- Removed unconventional commits
+- Removed linting job
+- Removed static code analysis
+- Removed vals in cmsg
+- Removed vals in cmsg
 
-### 📚 Documentation
-
+- *(README)* Updated README.md
 - *(README)* Updated README.md
 - *(CHANGELOG)* Added CHANGELOG.md
 - *(nmide-thesis)* Added thesis
@@ -159,5 +300,4 @@ All notable changes to the Nmide-Core project will be documented in this file.
 ### Build
 
 - *(nmide-rust-ffi)* Attempt to correct building
-
 

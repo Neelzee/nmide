@@ -1,0 +1,46 @@
+\section{24.11.02}
+
+I have done it, I don't really know what I have done differently, but it works.
+There is still the issue with Msg not being registered correctly, but I think
+that's an easy fix.
+
+We had a Magnolia Workshop this week, learned \textit{some} stuff, like, the
+IDE and Compiler should communicate using LSP, (insane!). But more interesting
+stuff, I have a lot of UX I need to consider, my supervisors expect IDE
+functionality, and I should make a wishlist of Plugins to develop.
+
+\begin{itemize}
+  \item Plugin Debugger
+  \begin{itemize}
+    \item Display State
+    \item Display Msg's being sent
+    \item Check if there are state collisions
+    \item Check if there are Msg collisions
+  \end{itemize}
+  \item Dependency Viewer
+  \begin{itemize}
+    \item Showcase JS
+  \end{itemize}
+  \item File Explorer
+  \item Text Editor
+  \begin{itemize}
+    \item Use existing JS
+  \end{itemize}
+  \item Rendering Framework
+  \begin{itemize}
+    \item Facilitate ease of pre-DOM-manipulation
+  \end{itemize}
+  \item Mini-LSP-Client
+  \begin{itemize}
+    \item Hover functionality
+    \item GOTO Declaration
+  \end{itemize}
+\end{itemize}
+
+In state changes, plugins should only return \textit{what} they change, not the
+entire state. I think this will be a good change, since not only will it ensure
+that overrides are easier to detect, (since we can compare states), states from
+plugins are smaller, and there will be less unnecessary duplications.
+
+Again, unit tests should've been made ages ago, my state coalescing in the
+frontend should've had unit tests. I'll make some next time.

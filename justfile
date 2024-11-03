@@ -12,45 +12,8 @@ docker_user := "neelzee"
 run:
   npm run tauri dev
 
-clean:
-  cd nmide-wrapper/nmide-rust-ffi && cargo clean && rm -f *.h ./html/*.h
-  cd nmide-core/src-tauri && cargo clean
-  rm -rf nmide-core/dist
-  rm -rf nmide-core/node_modules
-  rm -rf nmide-core/src-tauri/target
-  rm -rf nmide-plugin/*/target
-  rm -rf nmide-wrapper/nmide-rust-ffi/target
-  rm -f nmide-thesis/**.aux
-  rm -f nmide-thesis/**.log
-  rm -f nmide-thesis/**.pdf
-  rm -f nmide-wrapper/nmide-rust-ffi/bindings/*.ts
-
-build:
-  just make
-  -cd nmide-wrapper/nmide-rust-ffi &&  cargo build --release
-  -cp nmide-wrapper/nmide-rust-ffi/bindings/*.ts nmide-core/src/bindings/
-
-build-plugins:
-  cd nmide-plugin/nmide-framework && cargo build --release
-  cp nmide-plugin/nmide-framework/target/release/libnmide_framework.so {{nmcdir}}plugin-libs/
-
-build-release:
-  just init
-  just make
-  cd nmide-core && npm i && npm run tauri build
-
-make:
-  cd {{nmlibc}}build && make
-  cp {{nmlibc}}*.h nmide-wrapper/nmide-rust-ffi/
-  cp {{nmlibc}}html/*.h nmide-wrapper/nmide-rust-ffi/html
-  cp {{nmlibc}}build/*.a  nmide-wrapper/nmide-rust-ffi/
-
 pdf:
-  pdflatex --output-directory={{thesis}} {{thesis}}/main.tex
-
-test-all:
-  cd {{nmcdir}} && cargo test
-  ./{{nmlibc}}/nmide_test
+  pdflatex -shell-escape --output-directory={{thesis}} {{thesis}}/main.tex
 
 # Builds Docker Images
 docker-build:
@@ -86,35 +49,36 @@ docker-full:
   just docker-push
 
 svn:
-  just clean
+  git clean -x
   svn add . --force
   svn commit -m "Push changes to SVN Repo" --username ${SVN_USERNAME} --password ${SVN_PASSWORD} --non-interactive
 
-init:
+# Initialized C Dev. Env.
+make-init:
   -cd {{nmlibc}} && git clone https://github.com/nemequ/munit.git
-  -mkdir {{nmlibc}}build
-  -cd {{nmlibc}}build && export CC=gcc && cmake ..
+  @cd {{nmlibc}}release && pwd
+  cd {{nmlibc}}release && cmake -DCMAKE_BUILD_TYPE=Release ..
 
+# Removes all unused C files
 make-clean:
   rm -rf {{nmlibc}}build
+  rm -rf {{nmlibc}}release
+  rm -rf {{nmlibc}}debug
   rm -rf {{nmlibc}}munit
 
-check:
-  cd {{nmlibc}} && cppcheck --enable=all --force --quiet -imunit -ibuild .
-
-c-test:
-  cd {{nmlibc}}debug && make && ./nmide_test
-
+# Creates release
 make-release:
   mkdir -p {{nmlibc}}release
   @cd {{nmlibc}}release && pwd
   cd {{nmlibc}}release && cmake -DCMAKE_BUILD_TYPE=Release ..
   cd {{nmlibc}}release && make
 
+# Runs c-lib tests
 make-test:
   cd {{nmlibc}}debug && make && ./test_cmap
   cd {{nmlibc}}debug && make && ./test_cmodel
 
+# Runs leak checks
 make-check:
   cd {{nmlibc}} && cppcheck --enable=all --force --quiet -imunit -ibuild -idebug -irelease .
   cd {{nmlibc}}debug && valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmodel || true

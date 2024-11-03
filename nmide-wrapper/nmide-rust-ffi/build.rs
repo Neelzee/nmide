@@ -11,6 +11,40 @@ fn main() -> Result<()> {
     let header_path_str = header_path.to_str().context("path is not valid String")?;
     let lib_release_path = nmide_lib_path.join("release");
 
+    if !std::process::Command::new("mkdir")
+        .arg("-p")
+        .arg("../../nmide-lib/release")
+        .output()
+        .context("could not spawn `mkdir`")?
+        .status
+        .success()
+    {
+        return Err(anyhow!("Could not create release"));
+    }
+
+    if !std::process::Command::new("cmake")
+        .arg("-DCMAKE_BUILD_TYPE=Release")
+        .arg("..")
+        .current_dir(&lib_release_path)
+        .output()
+        .context("could not spawn `cmake`")?
+        .status
+        .success()
+    {
+        return Err(anyhow!("Could not compile library"));
+    }
+
+    if !std::process::Command::new("make")
+        .arg("-C")
+        .arg(&lib_release_path)
+        .output()
+        .context("could not spawn `make`")?
+        .status
+        .success()
+    {
+        return Err(anyhow!("Could not compile library"));
+    }
+
     println!(
         "cargo:rustc-link-search={}",
         lib_release_path
@@ -19,17 +53,6 @@ fn main() -> Result<()> {
     );
 
     println!("cargo:rustc-link-lib=nmide");
-
-    if !std::process::Command::new("make")
-        .arg("-C")
-        .arg(lib_release_path)
-        .output()
-        .context("could not spawn `make`")?
-        .status
-        .success()
-    {
-        return Err(anyhow!("Could not compile library"));
-    }
 
     let bindings = bindgen::Builder::default()
         // The input header we would like to generate

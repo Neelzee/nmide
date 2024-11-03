@@ -1,0 +1,4 @@
+variables:
+  CORE_OUT_DIR: "nmide-core/src-tauri/target/release/*"
+  ENABLED: true
+  CC: "gcc"

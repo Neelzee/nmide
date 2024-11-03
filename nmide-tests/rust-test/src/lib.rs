@@ -1,16 +1,11 @@
-//#[cfg(test)]
-//mod rs_c;
-
+/// Tests the Fe Plugin
 #[cfg(test)]
-mod rs_wrapper {
-    use nmide_rust_ffi::html::Html;
+mod fe_plugin;
 
-    #[test]
-    fn name() {
-        extern "Rust" {
-            fn foobar() -> Html;
-        }
-        let res = unsafe { foobar() };
-        println!("{res:?}");
-    }
-}
+/// Tests the Framework Plugin
+#[cfg(test)]
+mod framework_plugin;
+
+/// Tests the Manager Plugin
+#[cfg(test)]
+mod manager_plugin;

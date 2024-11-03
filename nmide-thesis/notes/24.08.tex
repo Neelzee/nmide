@@ -185,5 +185,112 @@ heavily in my PMP, allowing for higher ordered plugins (sounds fancy, probably n
   \item PMP could ensure that view is only called if the Model has changed
 \end{itemize}
 
-I found it better to follow my favourite development slogan: KISS. Keep It Stupid, Stupid. IE. Your application should be stupid/simple. So instead
-of overcomplicating the Nmide-Core-Plugin-ABI, I can keep it simple, and then overcomplicate my plugins instead.
+I found it better to follow my favourite development slogan: KISS. Keep It Stupid, Stupid. IE. Your application should be stupid/simple. So
+instead of overcomplicating the Nmide-Core-Plugin-ABI, I can keep it simple, and then overcomplicate my plugins instead.
+
+Now, what am I supposed to do?
+
+I am still in need of a good pipeline, which needs good integration tests. Other than that, I need a better C-Rust-Wrapper, and C-Library.
+I also need more plugins. Nmide-Rust-FFI could probably be split into some standard nmide-rust-library, and a Rust-C-Wrapper. I also need to
+actual research. I could also make a Haskell plugin, having it only be a framework plugin, since CHtml to Html works, it's just char to str
+that doesn't work. So, it wouldn't really work, since the id's I set in Haskell, will be gibberish in Rust, and therefore no other Plugin can
+use them.
+
+
+\section{24.08.16}
+
+I found a \textit{fun} problem. I have this Tree structure (Html Nodes), and I have a predicate f, and if f is true, I want to apply g to that node.
+g should only be applied once, and traverasal of the Tree structure should be BFS. I can't use map, because if two siblings fulfill the predicate,
+g will be applied twice. I can use fold, because then the fold closure could include some kind of state, ie. the accumilator is atuple, where
+fst is the list of kids, and snd is if g has been applied.
+
+
+\section{24.08.21}
+
+I need to create a plan for what's next for Nmide. I need more plugins, unit tests, integration tests, and a C-Rust-Wrapper, that is working
+and testable. I should also do cleanup in my repo, adding CHANGELOG's and other chores. But I also don't want to do anything.
+
+
+\section{24.08.23}
+
+I have rewritten stuff. the Rust-C-Wrapper no longer specified the types. The C-Lib now has more types. I have some form of unit and
+integration testing, and the pipelines are up and running again. I still need a proper Rust-C-Wrapper test, to test that the calling
+works, and I should also use valgrind on this, to ensure that I atleast know about the memory leaks I have. (I know I have a lot).
+Also, stuff doesn't work. I get crashes on plugin loads now. I'll check if my v0.1.0 works.
+
+\dots
+
+v0.1.0 works, in the sense that it creates a div, but I don't want to only show this on Tuesday. I should work on a \textit{std} plugin, and get
+nmide to dynamically load plugins on startup, instead of having the path hardcoded.
+
+\dots
+
+Fixed! I forgot to add the auto-TS-from-Rust step to the new nmide-std-lib. This, along with the revised plugin loading, makes nmide-core
+pretty cool. (ie. I can show it to my supervisors).
+
+\dots
+
+I should be better on committing when I am done with work. Instead of having to spend a lot of time figuring out what I did, before
+committing.
+
+
+\section{24.08.29}
+
+It's a shared-object file, not a C-Library.
+
+I had the first meeting with my supervisors, + a lot of new students. (like 5). Who all had to watch my progress. I think it went okay,
+got some notes. I need to analyze what can and cannot be done with the Msg-ing system, to see what limits it may impose on eventual
+future plugins.
+I mentioned it was difficult to find littrature about plugin architecture, and they said I could read Eclipse Plugins, which is about
+how Eclipse designed their plugin system, in which apparently, they were among the first to develop.
+I figured myself, that I could write something about plugin security, since executing arbitrary code at runtime is not entirely safe.
+
+\dots
+
+I got two days left of August, so I should try to plan the coming months, with features and releases. I know I have a lot to do:
+
+\begin{itemize}
+  \item Nmide Std. Lib.
+  \begin{itemize}
+    \item Improve Styling
+    \item Improve Rs-Ts bindings
+  \end{itemize}
+  \item Plugin IDE
+  \begin{itemize}
+    \item Workspace Creation
+    \item File Explorer
+    \item Text Editor
+  \end{itemize}
+  \item Plugin Managers Example
+  \item Expand Plugin Language Landscape
+    \begin{itemize}
+      \item TypeScript Example
+      \item C Example
+      \item Haskell Example
+    \end{itemize}
+  \item Tests
+  \begin{itemize}
+    \item Unit Tests
+    \item Memory Leak Tests
+    \item Integration Tests
+    \item Platform Tests
+  \end{itemize}
+  \item Building of Nmide
+\end{itemize}
+
+I have one task, which blocks, refactoring of the stdlib blocks development of plugins. But I could still work on
+tests, building of Nmide and the stdlib refactoring, at the same time, jumping between them, to ensure I am not
+too bored. Incase the work is boring, that is. So I think a good plan is to have the release of Nmide v1.0.0 be
+for the end of September. I think this will work. These tasks are technical, there are some chores, like
+CHANGELOG's, wiki-writing, and general docs to be written, but I think this will be doable.
+
+
+\section{24.08.31}
+
+I can now bundle/build the app. I also fixed it so that Nmide uses the builtin Tauri-pathing, so there is no
+disconnect between development and production.
+
+I also looked into the possibility of TypeScript plugins. Looks like there is no good support for it, without
+using eval, which is not good. It would be better if a TypeScript plugin had even thighter connection to the
+Html of the IDE, but that is how it is.
+
