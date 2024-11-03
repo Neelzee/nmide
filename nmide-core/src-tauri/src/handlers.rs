@@ -1,46 +1,74 @@
-use crate::{
-    statics::{MODEL, NMLUGS},
-    NMIDE_PLUGIN_DIR,
-};
-use anyhow_tauri::{IntoTAResult, TAResult};
-use log::{debug, error, info};
+use std::fs;
+
+use crate::statics::{NMIDE_PLUGIN_DIR, NMLUGS};
+use log::info;
 use nmide_std_lib::{
     html::thtml::THtml,
     map::{rmap::RMap, tmap::TMap},
     msg::{rmsg::RMsg, tmsg::TMsg},
 };
-use serde::Serialize;
-use tauri::{Emitter, Manager, Window};
-use tauri_plugin_fs::FsExt;
-
-#[derive(Serialize, Clone)]
-struct EmptyPayload;
+use tauri::{Manager, Window};
 
 #[tauri::command]
-pub async fn init(window: Window) {
-    info!("Backend: init");
-    let mut model = MODEL.write().await;
-    *model = NMLUGS
-        .get()
-        .unwrap() // Is already initialized at this point
-        .read()
-        .await
-        .iter()
-        .map(|p| p.init())
-        .fold(RMap::new(), |acc, m| acc.merge(m));
-    drop(model);
-    window.emit("view", EmptyPayload).unwrap();
+pub async fn install(window: Window) {
+    info!("Backend: install");
+    let webview = window
+        .get_webview_window("main")
+        .expect("Webviewcalled main should exist");
+    webview
+        .eval("window.plugins = new Map();")
+        .expect("Evaluation should be successful");
+    // TODO: This can be done before the webview is ready,
+    // i.e. file paths can be gotten and read asynchronously
+    fs::read_dir(
+        NMIDE_PLUGIN_DIR
+            .get()
+            .expect("Plugin directory path should already be initialized"),
+    )
+    .expect("Should be able to read plugin directory")
+    .filter_map(|p| match p {
+        Ok(file)
+            if file.path().is_file()
+                && file
+                    .path()
+                    .extension()
+                    .is_some_and(|ext| ext.to_string_lossy().ends_with("js")) =>
+        {
+            Some(file.path())
+        }
+        Ok(_) => None,
+        Err(err) => {
+            eprintln!("Could not read plugin: ${err:?}");
+            None
+        }
+    })
+    .for_each(|path| {
+        webview
+            .eval(&fs::read_to_string(path).expect("Should be able to read JS-Plugin"))
+            .expect("Should be able to eval on webview");
+    });
 }
 
 #[tauri::command]
-pub async fn view() -> Vec<THtml> {
+pub async fn init() -> TMap {
+    info!("Backend: init");
+    let model = NMLUGS
+        .get()
+        .expect("Plugins are already initialized at this point")
+        .iter()
+        .map(|p| p.init())
+        .fold(RMap::new(), |acc, m| acc.merge(m))
+        .into();
+    model
+}
+
+#[tauri::command]
+pub async fn view(tmodel: TMap) -> Vec<THtml> {
     info!("Backend: view");
-    let model = MODEL.read().await;
+    let model: RMap = tmodel.into();
     NMLUGS
         .get()
         .unwrap()
-        .read()
-        .await
         .iter()
         .map(|p| p.view(model.clone()))
         .map(|h| h.into())
@@ -48,68 +76,19 @@ pub async fn view() -> Vec<THtml> {
 }
 
 #[tauri::command]
-pub async fn update(window: Window, msg: TMsg, model: Option<TMap>) {
+pub async fn update(tmsg: TMsg, tmodel: TMap) -> TMap {
     info!("Backend: update");
-    let fmap: RMap = model.unwrap_or_default().into();
-    let mut model = MODEL.write().await;
-    match &msg {
+    let fmap: RMap = tmodel.into();
+    match &tmsg {
         TMsg::Msg(_, _) => {
-            let rmsg: RMsg = msg.into();
-            *model = NMLUGS
+            let rmsg: RMsg = tmsg.into();
+            NMLUGS
                 .get()
                 .unwrap()
-                .read()
-                .await
                 .iter()
-                .map(|p| p.update(rmsg.clone(), model.clone()))
-                .fold(fmap, |acc, m| acc.merge(m));
-            window.emit("view", EmptyPayload).unwrap();
+                .map(|p| p.update(rmsg.clone(), fmap.clone()))
+                .fold(fmap.clone(), |acc, m| acc.merge(m))
+                .into()
         }
     }
-}
-
-#[tauri::command]
-pub async fn install(window: Window) -> TAResult<()> {
-    info!("Backend: install");
-    let webview = window
-        .get_webview_window("main")
-        .expect("Main window should exist");
-    webview.eval("window.plugins = []").into_ta_result()?;
-    std::fs::read_dir(
-        webview
-            .app_handle()
-            .path()
-            .app_data_dir()
-            .into_ta_result()?
-            .join(NMIDE_PLUGIN_DIR),
-    )
-    .into_ta_result()?
-    .for_each(|dir| {
-        if let Ok(dir_entry) = dir {
-            if !dir_entry.path().is_file()
-                || dir_entry
-                    .path()
-                    .file_name()
-                    .is_some_and(|p| !p.to_str().unwrap_or_default().ends_with(".js"))
-            {
-                return;
-            }
-            match &webview.fs().read_to_string(dir_entry.path()) {
-                Ok(js) => {
-                    let err = webview.eval(js);
-                    if err.is_ok() {
-                        return;
-                    }
-                    error!(
-                        "Failed to eval plugin: {:?} {:?}",
-                        dir_entry.path(),
-                        err.unwrap_err()
-                    );
-                }
-                Err(err) => error!("Failed to eval plugin: {:?} {err:?}", dir_entry.path()),
-            }
-        }
-    });
-
-    Ok(())
 }

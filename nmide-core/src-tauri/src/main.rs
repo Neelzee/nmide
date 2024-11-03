@@ -9,8 +9,6 @@ mod handlers;
 mod setup;
 mod statics;
 
-const NMIDE_PLUGIN_DIR: &str = "plugins";
-
 #[tokio::main]
 async fn main() -> Result<()> {
     tauri::Builder::default()
@@ -18,15 +16,15 @@ async fn main() -> Result<()> {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
         .setup(|app| {
-            setup(app)?;
+            setup(app).expect("Setup should always succeed");
             #[cfg(debug_assertions)]
             {
                 development_setup(app)?;
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![init, update, view, install])
+        .invoke_handler(tauri::generate_handler![install, init, update, view])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .expect("Application should not error");
     Ok(())
 }
