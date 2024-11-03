@@ -6,7 +6,7 @@ stages:
   - integration test
   - svn
   - build
-  - release-ci
+  - release
 
 include:
   - template: Jobs/Code-Quality.gitlab-ci.yml
