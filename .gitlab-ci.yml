@@ -1,5 +1,4 @@
 stages:
-<<<<<<< HEAD
   - test
   - integration
   - report
