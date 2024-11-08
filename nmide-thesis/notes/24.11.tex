@@ -44,3 +44,81 @@ plugins are smaller, and there will be less unnecessary duplications.
 
 Again, unit tests should've been made ages ago, my state coalescing in the
 frontend should've had unit tests. I'll make some next time.
+
+
+\section{24.11.03}
+
+What is a good way to correct state collisions? Just not allow it? Error on
+collisions? Feels like it should happen at compile-time, and not runtime, but I
+can't check until runtime. Maybe I should filter out plugins with collisions,
+and not call them, just log it. Could be an idea. I guess that's what should be
+done, since this collision only happens once, since the new architecture is to
+only return the changed field, instead of the entire state. I could probably do
+something like this:
+
+// Get the state change along with the plugin name
+const new_state =
+  window.plugins.key_values.map(a ⇒ (fst(a), snd(b).update(msg, old_state)));
+// Get duplicates
+const collisions = Array.duplicates(TMap.Eq)(new_state);
+// Print them
+if (collisions.length !== 0) console.error("Collisions: ", collisions);
+// Get unique plugins, based on plugin name
+// similar to: map head \$ map group \$ map (update msg old_state) plugins, I think
+setModel(A.unique(TMap.Eq)(new_state));
+
+
+\section{24.11.06}
+
+I've started work on unit tests for the frontend. I can \textit{easily} create
+tests for the frontend, since all backend calls can be mocked, and I can supply
+my own pseudo-react-state, which my different functions manipulate, to ensure
+correctness. The plan for this month will to be finish the wanted
+functionality for v1.0.0, two months late. I just need to figure out some good
+tests.
+
+I've spent like 5 hours, (with breaks), writing tests just for my utility
+functions. This is going to take weeks.
+
+
+\section{24.11.07}
+
+Discovered something interesting. I can basically mock the entirety of the
+frontend. So, testing JSPS can be really extensive, ensuring the logic holds.
+I am knee-deep in \dots I don't know, Functional Programming? Logic?
+Category Theory? Creating equalities, monoids and such for my types, so that I
+can use the fp-ts library fully. I have the Haskell implementation of groupBy
+open so that I have a starting of point for it in my own code.
+
+I got to the point of writing tests for state-updating, and then I figured I
+should rewrite my update function, to add logging for state-collisions. Similar
+to what I discussed the other day. I think it'll work great.
+
+
+\section{24.11.08}
+
+Plugins should be a list of Plugin Name, and the Plugin, so that one, (me), can
+narrow down which Plugin causes what problem.
+
+It is super boring to write tests. This is killing me. Wrote a fun function
+for state change, which made me feel smart, but I also forgot the name of
+\texit{unzip}, which made me feel stupid. I was talking to some other students,
+and they pointed out something I should probably mention. I am writing
+functional TypeScript. Which is not a thing, in the sense it is not optimized.
+So my code might be really slow. Hopefully this is not the case. Either way,
+this is something I can see easily with E2E-testing, which I only have for the
+frontend, not the backend. I think I'll aim for writing these test's til the end
+of this month, and then start on creating the dependency plugin, in TypeScript.
+Hopefully I've found a smart solution for compiling TypeScript into JavaScript.
+And it will be a good test of the plugin system.
+
+I think I am going to say I am done with unit tests for today. I also did some
+logic-changes, (which I discovered when creating the tests), so I want to see
+if I can get the counter example to work. Then maybe I'll look into some
+JSP-Util library.
+
+Took one minute. I think I am starting to get a good system/architecture.
+
+It is pretty simple to create a JSP-Util Library, the only issue is that LSP
+help can be tricky to do. But that is a future problem, if it even is a
+problem.
