@@ -2,11 +2,11 @@ import { pipe } from "fp-ts/lib/function";
 import * as S from "fp-ts/string";
 import * as A from "fp-ts/Array";
 import * as T from "fp-ts/Tuple";
-import { TMap } from "./bindings/TMap";
+import { TMap, TValue } from "./bindings/TMap";
 import { Eq, fromEquals } from "fp-ts/Eq";
 import { Ord } from "fp-ts/lib/Ord";
 
-export const MapEq: Eq<[string, any]> =
+export const MapEq: Eq<[string, TValue]> =
   fromEquals(([x, _], [y, __]) => S.Eq.equals(x, y))
 
 export const MapOrd: Ord<[string, any]> =
@@ -16,7 +16,7 @@ export const MapOrd: Ord<[string, any]> =
 };
 
 const ModelFold = (xs: TMap, ys: TMap): TMap => pipe(
-  A.difference(MapEq)(xs)(ys),
+  A.difference(MapEq)(ys)(xs),
   A.union(MapEq)(ys),
 )
 

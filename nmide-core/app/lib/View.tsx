@@ -12,7 +12,7 @@ import { DHtml } from "./Decoder";
 import { TMap } from "./bindings/TMap";
 import { PathReporter } from "io-ts/PathReporter";
 
-const pluginView = (model: TMap): ((p: Nmlugin) => THtml) => (p: Nmlugin) =>
+const pluginView = (model: TMap): (([_, p]: [string, Nmlugin]) => THtml) => ([_, p]) =>
   pipe(
     p.view(model),
     DHtml.decode,
@@ -31,7 +31,7 @@ const pluginView = (model: TMap): ((p: Nmlugin) => THtml) => (p: Nmlugin) =>
 
 const View = (
   setHtmls: React.Dispatch<React.SetStateAction<THtml[]>>,
-  plugins: Nmlugin[],
+  plugins: [string, Nmlugin][],
   tmodel: TMap,
 ) => {
   useEffect(() => {

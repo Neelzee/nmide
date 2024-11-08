@@ -16,7 +16,7 @@ import Update from "./lib/Update";
 
 export default function Page() {
   const [htmls, setHtmls] = useState<THtml[]>([]);
-  const [plugins, setPlugins] = useState<Nmlugin[]>([]);
+  const [plugins, setPlugins] = useState<[string, Nmlugin][]>([]);
   const [model, setModel] = useState<TMap>([]);
   const [installed, setInstalled] = useState(false);
   const [msg, setMsg] = useState<TMsg | undefined>()

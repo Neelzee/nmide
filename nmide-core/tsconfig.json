@@ -12,15 +12,9 @@
     // Path alias
     "baseUrl": ".",
     "paths": {
-      "@styles/*": [
-        "./src/styles/*"
+      "@/app/*": [
+        "app/*"
       ],
-      "@components/*": [
-        "./src/components/*"
-      ],
-      "@assets/*": [
-        "./src/assets/*"
-      ]
     },
     /* Bundler mode */
     "moduleResolution": "bundler",

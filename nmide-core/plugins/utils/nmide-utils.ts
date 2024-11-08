@@ -62,10 +62,3 @@ const LookupMap = <T>(func: (a: T) => T) =>
     map[index] = [key, func(val)];
     return true;
   }
-
-export {
-  Lookup,
-  LookupOrDefault,
-  LookupMap,
-  Insert,
-};

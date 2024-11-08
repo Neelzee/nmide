@@ -2,12 +2,12 @@ import { invoke, InvokeArgs, InvokeOptions } from "@tauri-apps/api/core"
 import * as t from "io-ts";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/lib/function";
-import { DHtmlArr, DMapArr } from "./Decoder";
+import { DHtmlArr, DInitDecoder, DUpdateDecoder } from "./Decoder";
 import { PathReporter } from "io-ts/PathReporter";
 import { TMap } from "./bindings/TMap";
 import { TMsg } from "./bindings/TMsg";
 
-type NmideArgs = {
+export type NmideArgs = {
   "install": {
     args: undefined,
   }
@@ -22,14 +22,14 @@ type NmideArgs = {
   },
 }
 
-const NmideDecoderTest = {
+export const NmideDecoderTest = {
   "install": t.null,
-  "init": DMapArr,
+  "init": DInitDecoder,
   "view": DHtmlArr,
-  "update": DMapArr,
+  "update": DUpdateDecoder,
 }
 
-type NmideDecodedType<
+export type NmideDecodedType<
   K extends keyof NmideArgs
   & keyof typeof NmideDecoderTest
 > = t.TypeOf<typeof NmideDecoderTest[K]>
@@ -60,6 +60,5 @@ const NmideClient = async <
     return E.left(new Error(`Got error from backend: ${error}`))
   }
 }
-
 
 export default NmideClient;
