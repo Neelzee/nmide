@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect } from "react";
 import React from "react";
 import { THtml } from "./bindings/THtml";

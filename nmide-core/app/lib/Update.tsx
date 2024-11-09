@@ -1,5 +1,3 @@
-"use client"
-
 import { TMap } from "./bindings/TMap"
 import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/Either";
