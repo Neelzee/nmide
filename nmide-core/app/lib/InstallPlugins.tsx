@@ -1,5 +1,3 @@
-"use client"
-
 import "./Window";
 import { pipe } from "fp-ts/lib/function";
 import * as M from "fp-ts/Map";
