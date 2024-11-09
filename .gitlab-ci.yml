@@ -12,7 +12,6 @@ include:
   - template: Jobs/Code-Quality.gitlab-ci.yml
   - ".gitlab/test-ci.yml"
   - ".gitlab/integration-ci.yml"
-  - ".gitlab/release-ci.yml"
   - ".gitlab/report-ci.yml"
   - ".gitlab/build-ci.yml"
   - ".gitlab/variables-ci.yml"
