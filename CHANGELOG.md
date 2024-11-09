@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [1.0.0] - 2024-11-09
 
 ### 🚀 Features
 
@@ -38,6 +38,7 @@ All notable changes to this project will be documented in this file.
 - Updated pipeline
 - Removed merge conflict text
 - Corrected job name
+- Bump version
 
 ## [0.1.0] - 2024-08-15
 
