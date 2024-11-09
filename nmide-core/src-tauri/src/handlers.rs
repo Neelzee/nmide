@@ -76,7 +76,7 @@ pub async fn view(tmodel: TMap) -> Vec<THtml> {
 }
 
 #[tauri::command]
-pub async fn update(tmsg: TMsg, tmodel: TMap) -> TMap {
+pub async fn update(tmsg: TMsg, tmodel: TMap) -> Vec<(String, TMap)> {
     info!("Backend: update");
     let fmap: RMap = tmodel.into();
     match &tmsg {
@@ -86,9 +86,13 @@ pub async fn update(tmsg: TMsg, tmodel: TMap) -> TMap {
                 .get()
                 .unwrap()
                 .iter()
-                .map(|p| p.update(rmsg.clone(), fmap.clone()))
-                .fold(fmap.clone(), |acc, m| acc.merge(m))
-                .into()
+                .map(|p| {
+                    (
+                        p.name().to_string(),
+                        p.update(rmsg.clone(), fmap.clone()).into(),
+                    )
+                })
+                .collect::<Vec<(String, TMap)>>()
         }
     }
 }

@@ -1,9 +1,5 @@
-"use client"
-
 import "./Window";
 import { pipe } from "fp-ts/lib/function";
-import * as A from "fp-ts/Array";
-import * as T from "fp-ts/Tuple";
 import * as M from "fp-ts/Map";
 import * as S from "fp-ts/string";
 import { useEffect } from "react";
@@ -14,21 +10,29 @@ export const InstallPlugins = (
   setInstalled: React.Dispatch<React.SetStateAction<boolean>>,
 ) => useEffect(() => {
   if (window === undefined) return;
-  NmideClient("install").then(_ => setInstalled(true))
+  InstallPluginsFunction().then(_ => setInstalled(true))
     .catch(err => console.error("Install Error: ", err));
 }, []);
 
+export const InstallPluginsFunction = (): Promise<void> => new Promise(
+  // TODO: Should probably reject if its Left<Error>
+  resolve => NmideClient("install").then(_ => resolve())
+);
+
 export const LoadPlugins = (
-  setPlugins: React.Dispatch<React.SetStateAction<Nmlugin[]>>,
+  setPlugins: React.Dispatch<React.SetStateAction<[string, Nmlugin][]>>,
   installed: boolean,
 ) => useEffect(() => {
   if (window === undefined || !installed) return;
-  setPlugins(pipe(
-    window.plugins,
-    M.toArray(S.Ord),
-    A.map(T.snd),
-  ));
+  LoadPluginsFunction().then(setPlugins)
   return () => {
     setPlugins([]);
   }
 }, [installed]);
+
+export const LoadPluginsFunction = (): Promise<[string, Nmlugin][]> => new Promise(resolve => resolve(
+  pipe(
+    window.plugins,
+    M.toArray(S.Ord),
+  )
+));

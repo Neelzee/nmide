@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react";
 import React from "react";
 import { THtml } from "./lib/bindings/THtml";
@@ -14,9 +12,9 @@ import { InstallPlugins, LoadPlugins } from "./lib/InstallPlugins"
 import { TMsg } from "./lib/bindings/TMsg";
 import Update from "./lib/Update";
 
-export default function Page() {
+export default function App() {
   const [htmls, setHtmls] = useState<THtml[]>([]);
-  const [plugins, setPlugins] = useState<Nmlugin[]>([]);
+  const [plugins, setPlugins] = useState<[string, Nmlugin][]>([]);
   const [model, setModel] = useState<TMap>([]);
   const [installed, setInstalled] = useState(false);
   const [msg, setMsg] = useState<TMsg | undefined>()

@@ -33,6 +33,10 @@ impl Nmlugin {
     pub fn update(&self, msg: RMsg, model: RMap) -> RMap {
         self.lib.update()(msg, model)
     }
+
+    pub fn name(&self) -> &str {
+        &self.plugin_path
+    }
 }
 
 impl std::fmt::Debug for Nmlugin {

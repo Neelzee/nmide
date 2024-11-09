@@ -25,7 +25,7 @@ pub fn setup(app: &mut tauri::App) -> Result<()> {
 
     let nmide_plugin_dir = NMIDE_PLUGIN_DIR.get().unwrap();
     if !nmide_plugin_dir.exists() {
-        fs::create_dir(nmide_plugin_dir)
+        fs::create_dir_all(nmide_plugin_dir)
             .unwrap_or_else(|err| {
                 panic!("Creation of the plugin directory: `{nmide_plugin_dir:?}` should succeed, failed with error: {err:?}")
             });
@@ -88,7 +88,7 @@ pub fn development_setup(app: &mut tauri::App) -> Result<()> {
 
     fs::remove_dir_all(&plugin_folder)
         .expect("Should be able to remove directory and it's content");
-    fs::create_dir(&plugin_folder).expect("Should have permissions to create plugins folder");
+    fs::create_dir_all(&plugin_folder).expect("Should have permissions to create plugins folder");
 
     for pp in plugin_paths {
         let _ = fs::remove_file(plugin_folder.join(pp.file_name().unwrap()));
