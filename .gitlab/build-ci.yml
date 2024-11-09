@@ -6,7 +6,7 @@ pdf-build:
     - pdflatex --version
     - pdflatex --output-directory=nmide-thesis nmide-thesis/main.tex
   rules:
-    - if: "1 == 1"
+    - if: '$CI_PIPELINE_SOURCE == $CI_PIPELINE_SOURCE'
       when: always
       changes:
         - nmide-thesis/**
