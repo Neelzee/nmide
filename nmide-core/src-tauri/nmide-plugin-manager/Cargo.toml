@@ -1,6 +1,6 @@
 [package]
 name = "nmide-plugin-manager"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Nils Michael Fitjar <nfi005@uib.no>"]
 edition = "2021"
 
@@ -8,7 +8,7 @@ edition = "2021"
 profiler = true
 
 [dependencies]
-anyhow = "1.0.86"
+anyhow = "1.0.93"
 libloading = "0.8.5"
 nmide-std-lib = { path = "../nmide-std-lib" }
 log = "0.4.22"
