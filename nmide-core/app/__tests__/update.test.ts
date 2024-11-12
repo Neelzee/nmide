@@ -1,8 +1,8 @@
 import { afterEach, expect, suite, test } from 'vitest';
-import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
+import { clearMocks } from '@tauri-apps/api/mocks';
 import { NmluginVerified as Nmlugin } from "../lib/Nmlugin";
-import { TMsg } from '../lib/bindings/TMsg';
-import { TMap } from '../lib/bindings/TMap';
+import { TMsg } from "nmide-js-utils/bindings/TMsg";
+import { TMap } from "nmide-js-utils/bindings/TMap";
 import * as U from "../lib/Utils.ts";
 import * as E from "fp-ts/Either";
 import { UpdateFunction } from "../lib/Update.tsx";

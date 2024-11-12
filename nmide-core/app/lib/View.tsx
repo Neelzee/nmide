@@ -1,13 +1,13 @@
 import { useEffect } from "react";
 import React from "react";
-import { THtml } from "./bindings/THtml";
+import { THtml } from "nmide-js-utils/bindings/THtml";
 import NmideClient from "./NmideClient";
 import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/Either";
 import * as A from "fp-ts/Array";
 import Nmlugin from "./Nmlugin";
 import { DHtml } from "./Decoder";
-import { TMap } from "./bindings/TMap";
+import { TMap } from "nmide-js-utils/bindings/TMap";
 import { PathReporter } from "io-ts/PathReporter";
 
 const pluginView = (model: TMap): (([_, p]: [string, Nmlugin]) => THtml) => ([_, p]) =>

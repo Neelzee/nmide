@@ -1,8 +1,8 @@
 import { Fragment } from "react/jsx-runtime";
 import { v4 as uuidv4 } from "uuid";
-import { THtml } from "../lib/bindings/THtml";
+import { THtml } from "nmide-js-utils/bindings/THtml";
 import React from "react";
-import { TMsg } from "./bindings/TMsg";
+import { TMsg } from "nmide-js-utils/bindings/TMsg";
 import { emit } from "@tauri-apps/api/event";
 
 export default function RenderHtml({ kind, kids, attrs, text }: THtml) {

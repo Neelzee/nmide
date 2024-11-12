@@ -10,7 +10,7 @@ import { Eq as BooleanEq } from "fp-ts/boolean";
 import * as NA from "fp-ts/NonEmptyArray";
 import * as Ord from "fp-ts/Ord";
 import { pipe } from "fp-ts/function";
-import { TMap, TValue } from "./bindings/TMap";
+import { TMap, TValue } from "nmide-js-utils/bindings/TMap";
 import { Monoid } from "fp-ts/Monoid";
 
 export const NmDebugLog = <V>(v: V): V => {

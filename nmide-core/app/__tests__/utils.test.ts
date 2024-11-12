@@ -2,7 +2,7 @@ import { expect, test } from 'vitest';
 import * as U from "../lib/Utils";
 import * as O from "fp-ts/Option";
 import * as A from "fp-ts/Array";
-import { TMap } from '../lib/bindings/TMap';
+import { TMap } from "nmide-js-utils/bindings/TMap";
 
 [
   {

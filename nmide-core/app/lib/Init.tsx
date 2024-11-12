@@ -1,6 +1,6 @@
 import Nmlugin from "./Nmlugin";
 import * as E from "fp-ts/Either";
-import { TMap } from "./bindings/TMap";
+import { TMap } from "nmide-js-utils/bindings/TMap";
 import { pipe } from "fp-ts/lib/function";
 import { PathReporter } from "io-ts/PathReporter";
 import { DMap } from "./Decoder";

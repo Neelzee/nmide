@@ -4,8 +4,8 @@ import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/lib/function";
 import { DHtmlArr, DInitDecoder, DUpdateDecoder } from "./Decoder";
 import { PathReporter } from "io-ts/PathReporter";
-import { TMap } from "./bindings/TMap";
-import { TMsg } from "./bindings/TMsg";
+import { TMap } from "nmide-js-utils/bindings/TMap";
+import { TMsg } from "nmide-js-utils/bindings/TMsg";
 
 export type NmideArgs = {
   "install": {
