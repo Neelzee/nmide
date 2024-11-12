@@ -1,6 +1,6 @@
-import { TMap, TValue } from "../../lib/bindings/TMap";
-import { TMsg } from "../../lib/bindings/TMsg";
-import HtmlBuilder from "../../lib/HtmlBuilder";
+import { TMap, TValue } from "nmide-js-utils/bindings/TMap";
+import { TMsg } from "nmide-js-utils/bindings/TMsg";
+import HtmlBuilder from "nmide-js-utils/HtmlBuilder";
 import { NmluginVerified as Nmlugin } from "../../lib/Nmlugin";
 import * as O from "fp-ts/Option";
 import * as U from "../../lib/Utils";

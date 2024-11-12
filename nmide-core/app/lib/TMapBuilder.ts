@@ -1,5 +1,4 @@
-import { Json } from "fp-ts/lib/Json";
-import { TMap, TValue } from "./bindings/TMap";
+import { TMap, TValue } from "nmide-js-utils/bindings/TMap";
 import { tBool, tFloat, tInt, tList, tStr } from "./Utils";
 
 export default class HtmlBuilder {

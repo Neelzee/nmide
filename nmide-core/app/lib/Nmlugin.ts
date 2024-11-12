@@ -1,6 +1,6 @@
-import { THtml } from "./bindings/THtml";
-import { TMap } from "./bindings/TMap";
-import { TMsg } from "./bindings/TMsg";
+import { THtml } from "nmide-js-utils/bindings/THtml";
+import { TMap } from "nmide-js-utils/bindings/TMap";
+import { TMsg } from "nmide-js-utils/bindings/TMsg";
 
 interface NmluginUnknown {
   init: () => unknown;

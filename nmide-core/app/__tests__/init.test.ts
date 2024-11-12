@@ -3,7 +3,7 @@ import { InitFunction } from "../lib/Init";
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
 import * as E from "fp-ts/Either";
 import TrivialPlugin from './test_plugins/trivial_plugin';
-import { TMap } from '../lib/bindings/TMap';
+import { TMap } from "nmide-js-utils/bindings/TMap";
 import CounterPlugin from './test_plugins/counter_plugin';
 import { NmideArgs, NmideDecodedType, NmideDecoderTest } from '../lib/NmideClient';
 

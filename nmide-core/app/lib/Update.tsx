@@ -1,10 +1,10 @@
-import { TMap } from "./bindings/TMap"
+import { TMap } from "nmide-js-utils/bindings/TMap"
 import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/Either";
 import { PathReporter } from "io-ts/lib/PathReporter";
 import * as U from "./Utils";
 import { useEffect } from "react";
-import { TMsg } from "./bindings/TMsg";
+import { TMsg } from "nmide-js-utils/bindings/TMsg";
 import Nmlugin from "./Nmlugin";
 import { DMap } from "./Decoder";
 import NmideClient from "./NmideClient";
