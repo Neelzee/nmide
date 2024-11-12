@@ -24,6 +24,7 @@ nmide-lib-build:
   stage: build
   when: manual
   script:
+    - exit
     - gcc --version
     - cmake --version
     - make --version
@@ -39,24 +40,28 @@ nmide-lib-build:
       - nmide-lib/release/libnmide.*
 
 windows-build:
-  image: apemill/choco:latest
+  image: neelzee/nmide-tauri:latest
   stage: build
   when: manual
   script:
+    # Adding Windows 64-bit target
+    - rustup target add x86_64-pc-windows-msvc
+    - cargo install --locked cargo-xwin
     - npm --version
     - cd nmide-core
     - pwd
     - npm i
-    - npm run tauri build
+    - npm run tauri build -- --runner cargo-xwin --target x86_64-pc-windows-msvc
   tags:
-    - nmide-core
+    - nmide-core-windows
   artifacts:
     when: on_success
     access: all
     paths:
       - $CORE_OUT_DIR
 
-debian-build:
+linux-build:
+  image: neelzee/nmide-tauri:latest
   stage: build
   when: manual
   tags:

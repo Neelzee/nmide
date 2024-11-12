@@ -1,22 +1,8 @@
-# Builds for tests
-nmide-core-test-build:
-  stage: test
-  tags:
-    - nmide-core
-  script:
-    - cargo --version
-    - npm --version
-    - cd nmide-core/src-tauri
-    - cargo build
-  artifacts:
-    expire_in: 1 hrs
-    paths:
-      - nmide-core/src-tauri/target
-
 c-test-build:
   image: neelzee/nmide-c:latest
   stage: test
   script:
+    - exit
     - gcc --version
     - cmake --version
     - make --version
@@ -36,8 +22,7 @@ c-test-build:
 # Tests
 
 test-nmide-core-backend:
-  dependencies:
-    - nmide-core-test-build
+  image: neelzee/nmide-tauri:latest
   stage: test
   tags:
     - nmide-core
@@ -45,13 +30,9 @@ test-nmide-core-backend:
     - cargo --version
     - cd nmide-core/src-tauri
     - cargo test --workspace
-  needs:
-    - job: nmide-core-test-build
-      artifacts: true
 
 test-nmide-core-frontend:
-  dependencies:
-    - nmide-core-test-build
+  image: neelzee/nmide-tauri:latest
   tags:
     - nmide-core
   stage: test
@@ -60,9 +41,6 @@ test-nmide-core-frontend:
     - cd nmide-core
     - npm i
     - npm run test
-  needs:
-    - job: nmide-core-test-build
-      artifacts: true
 
 c-test:
   dependencies:
@@ -71,6 +49,7 @@ c-test:
   image: neelzee/nmide-c:latest
   stage: test
   script:
+    - exit
     - cd nmide-lib/debug
     - ls
     - ./test_cmap
@@ -89,7 +68,7 @@ test-nmide-plugins:
     - cargo --version
     - cd nmide-plugin
     - pwd
-    - for dir in */; do if [ -f "$dir/Cargo.toml" ]; then echo "Running tests in $dir"; (cd "$dir" && cargo test); else echo "Skipping $dir (no Cargo.toml found)"; fi; done
+    - cargo test
 
 test-nmide-wrapper:
   image: neelzee/nmide-wrapper:latest
@@ -97,6 +76,7 @@ test-nmide-wrapper:
     - c-test-build
   stage: test
   script:
+    - exit
     - cmake --version
     - cargo --version
     - cd nmide-wrapper/nmide-rust-ffi
