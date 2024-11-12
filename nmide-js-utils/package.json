@@ -1,0 +1,11 @@
+{
+  "name": "nmide-js-utils",
+  "version": "1.0.0",
+  "description": "Nmide JS utils",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nils.Fitjar",
+  "license": "Beerware"
+}
