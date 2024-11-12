@@ -10,13 +10,21 @@ RUN apt-get install -y \
 
 # Installing necessary dependencies
 # Tauri
-RUN apt-get install -y libwebkit2gtk-4.0-dev \
+RUN apt-get install -y libwebkit2gtk-4.1-dev \
   wget \
   file \
   libssl-dev \
   libgtk-3-dev \
   libayatana-appindicator3-dev \
-  librsvg2-dev
+  librsvg2-dev \
+  libjavascriptcoregtk-4.1-dev \
+  libxdo-dev \
+  libsoup-3.0-dev \
+  nsis \
+  lld \
+  llvm \
+  clang-tools-16
+
 
 RUN rm -rf /var/lib/apt/lists/*
 
