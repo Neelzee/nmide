@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use anyhow::Result;
 use clap::{Arg, Command};
 
+mod code_gen;
 fn cli() -> Command {
     Command::new("ncli")
         .about("Nmide CLI")

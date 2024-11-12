@@ -1,0 +1,14 @@
+window.plugins.set(
+    "{{ plugin_name }}",
+    {
+        init: () => {
+            return [];
+        },
+        view: (model) => {
+            return { kind: "Frag", kids: [], attrs: [], text: null };
+        },
+        update: (msg, model) => {
+            return [];
+        }
+    }
+);

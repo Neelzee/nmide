@@ -1,0 +1,12 @@
+[package]
+name = "{{ plugin_name }}"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "{{ plugin_name }}"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+abi_stable = "0.11.3"
+nmide-std-lib = { git = "https://git.app.uib.no/Nils.Fitjar/nmide", tag = "v1.0.0" }
