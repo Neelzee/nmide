@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { TMsg } from "nmide-js-utils/bindings/TMsg";
+import { TMsg } from "@nmide/js-utils";
 import { listen } from "@tauri-apps/api/event";
 
 const MsgListener = (

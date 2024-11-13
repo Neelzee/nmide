@@ -1,7 +1,7 @@
 import { afterEach, expect, test } from 'vitest';
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
 import { InstallPluginsFunction, LoadPluginsFunction } from "../lib/InstallPlugins";
-import { NmluginVerified } from '../lib/Nmlugin';
+import { NmluginVerified } from "@nmide/js-utils";
 import TrivialPlugin from './test_plugins/trivial_plugin';
 import CounterPlugin from './test_plugins/counter_plugin';
 

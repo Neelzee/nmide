@@ -1,6 +1,6 @@
-import { TAttr } from "./bindings/TAttr";
-import { THtml } from "./bindings/THtml";
-import { THtmlKind } from "./bindings/THtmlKind";
+import { TAttr } from "./TAttr";
+import { THtml } from "./THtml";
+import { THtmlKind } from "./THtmlKind";
 
 export default class HtmlBuilder {
   _kind: THtmlKind = "Frag";
