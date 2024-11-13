@@ -11,7 +11,8 @@ import {
   tValueMaybe,
   TValuePrimities
 } from "./Types";
-import { GroupBy, TMapFieldEq, TMapPartialEq } from "./Utils";
+import { GroupBy } from "./Utils";
+import { TotalTMapFieldEq, TMapPartialEq } from "./Eq";
 
 export default class MapBuilder {
   private lst: [string, TValue | MapBuilder | TValuePrimities][] = [];
@@ -47,7 +48,7 @@ export default class MapBuilder {
       ],
       GroupBy(Eq.fromEquals(TMapPartialEq.equals)),
       A.filterMap(A.head),
-      A.reduce<TMap, TMap>([], A.union(TMapFieldEq)),
+      A.reduce<TMap, TMap>([], A.union(TotalTMapFieldEq)),
     );
   }
 }
