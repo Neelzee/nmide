@@ -1,0 +1,14 @@
+{
+  "name": "dependency-viewer",
+  "version": "1.0.0",
+  "description": "Dependency Graph Viewer",
+  "main": "main.ts",
+  "scripts": {
+    "test": "vitest"
+  },
+  "author": "neelzee",
+  "license": "Beerware",
+  "dependencies": {
+    "@nmide/js-utils": "^1.0.0"
+  }
+}
