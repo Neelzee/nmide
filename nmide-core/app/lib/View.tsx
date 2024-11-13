@@ -1,31 +1,35 @@
 import { useEffect } from "react";
 import React from "react";
-import { THtml } from "nmide-js-utils/bindings/THtml";
+import {
+  THtml,
+  TMap,
+  Decoder,
+  NmluginUnknown as Nmlugin
+} from "@nmide/js-utils";
 import NmideClient from "./NmideClient";
 import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/Either";
 import * as A from "fp-ts/Array";
-import Nmlugin from "./Nmlugin";
-import { DHtml } from "./Decoder";
-import { TMap } from "nmide-js-utils/bindings/TMap";
 import { PathReporter } from "io-ts/PathReporter";
 
-const pluginView = (model: TMap): (([_, p]: [string, Nmlugin]) => THtml) => ([_, p]) =>
-  pipe(
-    p.view(model),
-    DHtml.decode,
-    decoded => E.isRight(decoded)
-      ? E.right(decoded.right)
-      : E.left(
-        new Error(
-          `Failed to decode model: ${PathReporter.report(decoded).join("\n")}`
-        )
-      ),
-    E.getOrElse<Error, THtml>(err => {
-      console.error("Error on pluginView: ", err);
-      return { kind: "Frag", kids: [], text: null, attrs: [] };
-    })
-  );
+const pluginView = (
+  model: TMap
+): (([_, p]: [string, Nmlugin]) => THtml) => ([_, p]) =>
+    pipe(
+      p.view(model),
+      Decoder.DHtml.decode,
+      decoded => E.isRight(decoded)
+        ? E.right(decoded.right)
+        : E.left(
+          new Error(
+            `Failed to decode model: ${PathReporter.report(decoded).join("\n")}`
+          )
+        ),
+      E.getOrElse<Error, THtml>(err => {
+        console.error("Error on pluginView: ", err);
+        return { kind: "Frag", kids: [], text: null, attrs: [] };
+      })
+    );
 
 const View = (
   setHtmls: React.Dispatch<React.SetStateAction<THtml[]>>,

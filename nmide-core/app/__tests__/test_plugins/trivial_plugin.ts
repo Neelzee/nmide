@@ -1,4 +1,4 @@
-import { NmluginVerified as Nmlugin } from "../../lib/Nmlugin";
+import { NmluginVerified as Nmlugin } from "@nmide/js-utils";
 
 const TrivialPlugin: Nmlugin = {
   init: () => [],

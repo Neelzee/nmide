@@ -1,18 +1,24 @@
-import { TMap } from "nmide-js-utils/bindings/TMap"
 import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/Either";
 import { PathReporter } from "io-ts/lib/PathReporter";
-import * as U from "./Utils";
 import { useEffect } from "react";
-import { TMsg } from "nmide-js-utils/bindings/TMsg";
-import Nmlugin from "./Nmlugin";
-import { DMap } from "./Decoder";
+import {
+  TMsg,
+  TMap,
+  Decoder,
+  GetOrElse,
+  NmluginUnknown as Nmlugin,
+  StateUpdateHandler,
+} from "@nmide/js-utils";
 import NmideClient from "./NmideClient";
 
-const PluginUpdate = (msg: TMsg, model: TMap): (([pln, p]: [string, Nmlugin]) => [string, TMap]) =>
+const PluginUpdate = (
+  msg: TMsg,
+  model: TMap
+): (([pln, p]: [string, Nmlugin]) => [string, TMap]) =>
   ([pln, p]: [string, Nmlugin]) => pipe(
     p.update(msg, model),
-    DMap.decode,
+    Decoder.DMap.decode,
     decoded => E.isRight(decoded)
       ? E.right(decoded.right)
       : E.left(
@@ -20,7 +26,7 @@ const PluginUpdate = (msg: TMsg, model: TMap): (([pln, p]: [string, Nmlugin]) =>
           `Failed to decode model from Plugin: ${PathReporter.report(decoded).join("\n")}`
         )
       ),
-    U.GetOrElse<TMap>([]),
+    GetOrElse<TMap>([]),
     model => [pln, model],
   );
 
@@ -37,7 +43,7 @@ const Update = (
         if (E.isLeft(val)) {
           console.error("Error on update: ", val.left);
         } else {
-          setModel(val.right);
+          setModel(val.right[0]);
         }
       })
   }, [tmsg]);
@@ -47,9 +53,9 @@ export const UpdateFunction = (
   tmsg: TMsg,
   plugins: [string, Nmlugin][],
   tmodel: TMap,
-): Promise<E.Either<Error, TMap>> =>
+): Promise<E.Either<Error, [TMap, [string, TMap][]]>> =>
   NmideClient("update", { tmsg, tmodel })
-    .then(U.StateUpdateHandler(plugins.map(PluginUpdate(tmsg, tmodel))))
+    .then(StateUpdateHandler(plugins.map(PluginUpdate(tmsg, tmodel))))
     .catch(err => { return err; });
 
 export default Update;

@@ -2,10 +2,10 @@ import { invoke, InvokeArgs, InvokeOptions } from "@tauri-apps/api/core"
 import * as t from "io-ts";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/lib/function";
-import { DHtmlArr, DInitDecoder, DUpdateDecoder } from "./Decoder";
 import { PathReporter } from "io-ts/PathReporter";
-import { TMap } from "nmide-js-utils/bindings/TMap";
-import { TMsg } from "nmide-js-utils/bindings/TMsg";
+import { TMap, Decoder, TMsg } from "@nmide/js-utils";
+
+const { DHtmlArr, DInitDecoder, DUpdateDecoder } = Decoder;
 
 export type NmideArgs = {
   "install": {

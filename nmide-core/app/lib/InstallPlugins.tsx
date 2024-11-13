@@ -3,7 +3,7 @@ import { pipe } from "fp-ts/lib/function";
 import * as M from "fp-ts/Map";
 import * as S from "fp-ts/string";
 import { useEffect } from "react";
-import Nmlugin from "./Nmlugin";
+import { NmluginUnknown as Nmlugin } from "@nmide/js-utils";
 import NmideClient from "./NmideClient";
 
 export const InstallPlugins = (

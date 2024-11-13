@@ -1,19 +1,17 @@
-import Nmlugin from "./Nmlugin";
 import * as E from "fp-ts/Either";
-import { TMap } from "nmide-js-utils/bindings/TMap";
+import { TMap } from "@nmide/js-utils";
 import { pipe } from "fp-ts/lib/function";
 import { PathReporter } from "io-ts/PathReporter";
-import { DMap } from "./Decoder";
+import { Decoder, NmluginUnknown as Nmlugin, StateUpdateHandler } from "@nmide/js-utils";
 import { useEffect } from "react";
 import NmideClient from "./NmideClient";
 import "./Window";
-import { StateUpdateHandler } from "./Utils";
 
 const pluginInit = ([pln, p]: [string, Nmlugin]): [string, TMap] => [
   pln,
   pipe(
     p.init(),
-    DMap.decode,
+    Decoder.DMap.decode,
     decoded => E.isRight(decoded)
       ? E.right(decoded.right)
       : E.left(
@@ -37,13 +35,13 @@ const Init = (
         console.error("Error from init: ", val.left);
         return;
       }
-      setModel(val.right);
+      setModel(val.right[0]);
     });
 }, [plugins]);
 
 export const InitFunction = (
   plugins: [string, Nmlugin][],
-): Promise<E.Either<Error, TMap>> =>
+): Promise<E.Either<Error, [TMap, [string, TMap][]]>> =>
   NmideClient("init")
     .then(StateUpdateHandler(plugins.map(pluginInit)));
 

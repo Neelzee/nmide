@@ -1,6 +1,6 @@
 import * as t from "io-ts";
-import { TValue } from "nmide-js-utils/bindings/TMap"
-import { THtml } from "nmide-js-utils/bindings/THtml"
+import { TValue } from "./TMap";
+import { THtml } from "./THtml";
 
 export const DValue: t.RecursiveType<any, TValue> = t.recursion("DValue", () =>
   t.union([

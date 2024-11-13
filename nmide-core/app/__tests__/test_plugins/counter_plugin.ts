@@ -1,18 +1,22 @@
-import { TMap, TValue } from "nmide-js-utils/bindings/TMap";
-import { TMsg } from "nmide-js-utils/bindings/TMsg";
-import HtmlBuilder from "nmide-js-utils/HtmlBuilder";
-import { NmluginVerified as Nmlugin } from "../../lib/Nmlugin";
+import {
+  TMap,
+  TValue,
+  TMsg,
+  HtmlBuilder,
+  NmluginVerified as Nmlugin,
+  lookup,
+  TValueInt,
+} from "@nmide/js-utils";
 import * as O from "fp-ts/Option";
-import * as U from "../../lib/Utils";
 import { pipe } from "fp-ts/lib/function";
 
 const CounterPlugin: Nmlugin = {
   init: () => [["counter", { "Int": 0 }]],
   view: (model: TMap) => {
     const counter = pipe(
-      U.lookup<string, TValue>("counter")(model),
+      lookup<string, TValue>("counter")(model),
       O.getOrElse<TValue>(() => { return { Int: -1 } }),
-    ) as U.TValueInt;
+    ) as TValueInt;
     return new HtmlBuilder()
       .kind("Div")
       .kids([
@@ -28,10 +32,10 @@ const CounterPlugin: Nmlugin = {
     const [tmsg, tvalue] = msg.Msg;
     if (tmsg !== "increment") return [];
     const value = (pipe(
-      U.lookup<string, TValue>("counter")(model),
+      lookup<string, TValue>("counter")(model),
       O.getOrElse<TValue>(() => { return { Int: 0 } }),
-    ) as U.TValueInt).Int;
-    const increment = (tvalue as U.TValueInt).Int;
+    ) as TValueInt).Int;
+    const increment = (tvalue as TValueInt).Int;
     return [["counter", { Int: value + increment }]];
   },
 };
