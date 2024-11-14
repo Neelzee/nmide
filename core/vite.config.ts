@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 const host = process.env.TAURI_DEV_HOST;
 
@@ -25,4 +26,7 @@ export default defineConfig({
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_ENV_DEBUG,
   },
+  plugins: [
+    nodePolyfills({ include: ["timers/promises"] }),
+  ],
 });
