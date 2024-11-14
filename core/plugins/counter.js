@@ -5,7 +5,6 @@ window.plugins.set(
       return [["counter", { "Int": 0 }]];
     },
     update: (msg, model) => {
-      console.log(msg, model);
       if (msg.Msg[0] === "increment") {
         const prevVal = model[0][1]["Int"];
         const increment = msg.Msg[1]["Int"];
