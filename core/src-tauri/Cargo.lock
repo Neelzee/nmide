@@ -737,6 +737,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "core"
+version = "1.0.0"
+dependencies = [
+ "abi_stable",
+ "anyhow",
+ "anyhow-tauri",
+ "dotenv",
+ "libloading 0.8.5",
+ "log",
+ "nmide-plugin-manager",
+ "nmide-std-lib",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-dialog",
+ "tauri-plugin-fs",
+ "tauri-plugin-log",
+ "tauri-plugin-shell",
+ "tokio",
+]
+
+[[package]]
 name = "core-foundation"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2277,30 +2301,6 @@ dependencies = [
  "cfg_aliases",
  "libc",
  "memoffset",
-]
-
-[[package]]
-name = "nmide-core"
-version = "1.0.0"
-dependencies = [
- "abi_stable",
- "anyhow",
- "anyhow-tauri",
- "dotenv",
- "libloading 0.8.5",
- "log",
- "nmide-plugin-manager",
- "nmide-std-lib",
- "once_cell",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-dialog",
- "tauri-plugin-fs",
- "tauri-plugin-log",
- "tauri-plugin-shell",
- "tokio",
 ]
 
 [[package]]
