@@ -7,7 +7,7 @@ import * as NA from "fp-ts/NonEmptyArray";
 import { pipe } from "fp-ts/function";
 import { TMap, TValue } from "./TMap";
 import { Monoid } from "fp-ts/Monoid";
-import { TValueBool, TValueFloat, TValueInt, TValueList, TValueStr } from "./Types";
+import { isTBool, isTFloat, isTInt, isTList, isTObj, isTStr, TValueBool, TValueFloat, TValueInt, TValueList, TValueStr } from "./Types";
 import { PartialTMapFieldEq, TMapPartialEq } from "./Eq";
 import { fromCompare, Ord } from "fp-ts/lib/Ord";
 import { Ord as StringOrd } from "fp-ts/string";
@@ -24,6 +24,27 @@ export const lookup = <K, V>(k: K): (xs: [K, V][]) => O.Option<V> =>
     A.findFirst(([ok, _]) => ok === k),
     O.map(T.snd)
   );
+
+export const tLookup = <T extends TValue>(k: string): ((xs: TMap) => O.Option<T>) =>
+  (xs: TMap): O.Option<T> => pipe(
+    xs,
+    A.findFirst(([ok, _]) => ok === k),
+    O.map(T.snd),
+    O.match(
+      () => O.none,
+      el => isT<T>(el) ? O.some(el) : O.none,
+    ),
+  );
+
+export const isT = <T extends TValue>(x: TValue): x is T => {
+  if (isTInt(x)) return true;
+  if (isTFloat(x)) return true;
+  if (isTBool(x)) return true;
+  if (isTStr(x)) return true;
+  if (isTList(x)) return true;
+  if (isTObj(x)) return true;
+  return false;
+};
 
 export const PluginMonoid: Monoid<TMap> = {
   concat: (xs: TMap, ys: TMap) => A.sort(PartialTMapFieldOrd)(A.concat(xs)(ys)),
