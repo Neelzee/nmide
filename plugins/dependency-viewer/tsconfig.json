@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ESNext",
+    "removeComments": true,
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "lib": [
+      "dom"
+    ]
+  },
+  "include": [
+    "main.ts",
+  ],
+  "exclude": [
+    "__tests__/*"
+  ]
+}
