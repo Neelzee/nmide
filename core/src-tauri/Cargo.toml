@@ -2,7 +2,7 @@
 members = ["nmide-macros", "nmide-plugin-manager", "nmide-std-lib"]
 
 [package]
-name = "nmide-core"
+name = "core"
 version = "1.0.0"
 description = "A simple IDE"
 authors = ["Nils Michael Fitjar <nfi005@uib.no>"]
