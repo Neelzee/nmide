@@ -9,6 +9,6 @@
   "author": "neelzee",
   "license": "Beerware",
   "dependencies": {
-    "@nmide/js-utils": "^1.0.0"
+    "@nmide/js-utils": "^1.3.0"
   }
 }
