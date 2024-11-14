@@ -7,7 +7,7 @@ import * as NA from "fp-ts/NonEmptyArray";
 import { pipe } from "fp-ts/function";
 import { TMap, TValue } from "./TMap";
 import { Monoid } from "fp-ts/Monoid";
-import { isTBool, isTFloat, isTInt, isTList, isTObj, isTStr, TValueBool, TValueFloat, TValueInt, TValueList, TValueStr } from "./Types";
+import { isTBool, isTFloat, isTInt, isTList, isTObj, isTStr, TMapPair, TValueBool, TValueFloat, TValueInt, TValueList, TValuePrimities, TValueStr } from "./Types";
 import { PartialTMapFieldEq, TMapPartialEq } from "./Eq";
 import { fromCompare, Ord } from "fp-ts/lib/Ord";
 import { Ord as StringOrd } from "fp-ts/string";
@@ -36,14 +36,33 @@ export const tLookup = <T extends TValue>(k: string): ((xs: TMap) => O.Option<T>
     ),
   );
 
+export const getValue = (x: TValue): TValuePrimities => {
+  if (isTList(x)) return A.map(getValue)(x.List);
+  if (isTObj(x)) {
+    return A.map(([k, v]: TMapPair) => [k, getValue(v)])(x.Obj);
+  }
+  if (isTInt(x)) return x.Int;
+  if (isTFloat(x)) return x.Float;
+  if (isTBool(x)) return x.Bool;
+  return x.Str;
+}
+
+export const isValueT = <T extends TValuePrimities>(x: TValuePrimities, f = false): x is T => {
+  if (typeof x === "number" && !f) return true;
+  if (typeof x === "number") return true;
+  if (typeof x === "string") return true;
+  if (typeof x === "boolean") return true;
+  if (Array.isArray(x)) return true;
+  return false;
+};
+
 export const isT = <T extends TValue>(x: TValue): x is T => {
   if (isTInt(x)) return true;
   if (isTFloat(x)) return true;
   if (isTBool(x)) return true;
   if (isTStr(x)) return true;
   if (isTList(x)) return true;
-  if (isTObj(x)) return true;
-  return false;
+  return isTObj(x);
 };
 
 export const PluginMonoid: Monoid<TMap> = {
