@@ -8,9 +8,6 @@ import { TMap, Decoder, TMsg } from "@nmide/js-utils";
 const { DHtmlArr, DInitDecoder, DUpdateDecoder } = Decoder;
 
 export type NmideArgs = {
-  "install": {
-    args: undefined,
-  }
   "init": {
     args: undefined,
   },
@@ -23,7 +20,6 @@ export type NmideArgs = {
 }
 
 export const NmideDecoderTest = {
-  "install": t.null,
   "init": DInitDecoder,
   "view": DHtmlArr,
   "update": DUpdateDecoder,
