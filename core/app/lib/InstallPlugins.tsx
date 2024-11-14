@@ -35,9 +35,16 @@ export const InstallPluginsFunction = async () => {
     ))
     .then(A.map(p => join(pluginDir, p.name)))
     .then(A.map(p => p.then(path => convertFileSrc(path))))
-    .then(A.map(p => p.then(src => {
+    .then(paths => Promise.all(paths))
+    .then(A.sort(S.Ord))
+    .then(A.map(src => {
       let element: HTMLElement;
-      if (src.endsWith(".js")) {
+      if (src.endsWith(".module.js")) {
+        const script = document.createElement("script");
+        script.src = src;
+        script.type = "module"
+        element = script;
+      } else if (src.endsWith(".js")) {
         const script = document.createElement("script");
         script.src = src;
         element = script;
@@ -48,9 +55,8 @@ export const InstallPluginsFunction = async () => {
         element = style;
       }
       document.body.append(element);
-      return () => { document.body.removeChild(element) };
-    })))
-    .then(paths => Promise.all(paths))
+      return () => { document.body.removeChild(element) }
+    }))
     .then(paths => setTimeout(250, paths));
 }
 
