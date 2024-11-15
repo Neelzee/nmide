@@ -4,18 +4,17 @@ import * as O from "fp-ts/Option";
 import * as Eq from "fp-ts/Eq";
 import { TMap, TValue } from "./TMap";
 import {
-  isTValue,
-  MaybeTMapPair,
   TMapPair,
-  tObj,
   tValueMaybe,
   TValuePrimities
 } from "./Types";
 import { GroupBy } from "./Utils";
 import { TotalTMapFieldEq, TMapPartialEq } from "./Eq";
 
+type MapBuilderProps = TValue | MapBuilder | TValuePrimities;
+
 export default class MapBuilder {
-  private lst: [string, TValue | MapBuilder | TValuePrimities][] = [];
+  private lst: [string, MapBuilderProps][] = [];
 
   public add(k: string, v: TValue | MapBuilder | TValuePrimities) {
     this.lst.push([k, v]);
@@ -23,18 +22,14 @@ export default class MapBuilder {
   }
 
   public build(): TMap {
-    const mapPrimitives
-      = ([k, v]) => O.map<TValue, TMapPair>(_v => [k, _v])(tValueMaybe(v));
+    const filterMapBuilder = (x: [string, MapBuilderProps]): x is [string, MapBuilder] =>
+      x[1] instanceof MapBuilder;
 
-    const mapBuilders: ([k, v]: [string, any]) => MaybeTMapPair
-      = ([k, v]) => v instanceof MapBuilder
-        ? O.some([k, tObj(v.build())])
-        : O.none;
+    const filterTValue = (x: [string, MapBuilderProps]): x is [string, TValue] =>
+      typeof x[1] === "object" && !Array.isArray(x[1]);
 
-    const filterTValues: ([k, v]: [string, any]) => MaybeTMapPair
-      = ([k, v]) => isTValue(v)
-        ? O.some([k, v])
-        : O.none;
+    const filterPrimitive = (x: [string, MapBuilderProps]): x is [string, TValuePrimities] =>
+      !filterMapBuilder(x) && !filterTValue(x);
 
     const lst = this.lst;
 
@@ -42,9 +37,19 @@ export default class MapBuilder {
 
     return pipe(
       [
-        A.filterMap(mapBuilders)(lst),
-        A.filterMap(mapPrimitives)(lst),
-        A.filterMap(filterTValues)(lst),
+        pipe(
+          A.filter(filterMapBuilder)(lst),
+          A.map<[string, MapBuilder], TMapPair>(([k, v]) => [k, { Obj: v.build() }]),
+        ),
+        pipe(
+          A.filter(filterPrimitive)(lst),
+          A.filterMap(
+            ([k, v]) => O.map<TValue, TMapPair>(_v => [k, _v])(tValueMaybe(v))
+          ),
+        ),
+        pipe(
+          A.filter(filterTValue)(lst),
+        ),
       ],
       GroupBy(Eq.fromEquals(TMapPartialEq.equals)),
       A.filterMap(A.head),
