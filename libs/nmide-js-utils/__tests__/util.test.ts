@@ -1,10 +1,11 @@
-import { expect, test } from 'vitest';
+import { expect, suite, test } from 'vitest';
 import * as U from "../lib/Utils";
 import * as O from "fp-ts/Option";
 import * as A from "fp-ts/Array";
 import { NmluginEq, TotalTMapFieldEq } from '../lib/Eq';
-import { TMap } from '../lib/TMap';
+import { TMap, TValue } from '../lib/TMap';
 import { TMapToString } from '../lib/Debug';
+import { isBool, isFloat, isInt, isList, isObj, isStr, tObj, tValueMaybe, TValuePrimities } from '../lib/Types';
 
 [
   {
@@ -113,3 +114,50 @@ testDataModelOverwrite.forEach(({ prevModel, newModel, finalModel }) => {
       .toStrictEqual(finalModel.sort())
   );
 });
+
+const testTypeInferene: [TValuePrimities, string][] = [
+  [1, "Int"],
+  ["foobar", "Str"],
+  [-1, "Int"],
+  [1.2, "Float"],
+  [[1, 2, 3, 4, 5], "List"],
+  [[["obj_1", 1], ["obj_2", 2]], "Obj"],
+];
+
+suite("TypeInference", () => {
+  test("Int", () => expect(isInt(1)).toBe(true));
+  test("Float", () => {
+    expect(isInt(1.2)).toBe(false);
+    expect(isFloat(1.2)).toBe(true);
+  });
+  test("Str", () => expect(isStr("foobar")).toBe(true));
+  test("Bool", () => expect(isBool(false)).toBe(true));
+  test("List", () => {
+    expect(isList([])).toBe(true);
+    expect(isList([1, 2, 3, 4, 5])).toBe(true);
+    expect(isList([["obj_1", 1], ["obj_2", 2]])).toBe(false);
+  });
+  test("Obj", () => {
+    expect(isObj([])).toBe(false);
+    expect(isObj([1, 2, 3, 4, 5])).toBe(false);
+    expect(isObj([["obj_1", 1], ["obj_2", 2]])).toBe(true);
+  });
+});
+
+const tValuePrimitives: [TValuePrimities, string][] = [
+  [1, "Int"],
+  ["foobar", "Str"],
+  [-1, "Int"],
+  [1.2, "Float"],
+  [[1, 2, 3, 4, 5], "List"],
+  [[["obj_1", 1], ["obj_2", 2]], "Obj"],
+];
+
+tValuePrimitives.forEach(([x, y]) =>
+  test(`tValueMaybe: ${x} to be ${y}`, () => {
+    const result = tValueMaybe(x);
+    expect(O.isSome(result)).toBe(true);
+    expect(y in O.getOrElse<TValue>(() => { throw new Error("Unreachable"); })(result))
+      .toBe(true);
+  })
+);
