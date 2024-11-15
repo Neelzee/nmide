@@ -25,7 +25,7 @@ export const lookup = <K, V>(k: K): (xs: [K, V][]) => O.Option<V> =>
     O.map(T.snd)
   );
 
-export const tLookup = <T extends TValue>(k: string): ((xs: TMap) => O.Option<T>) =>
+export const tLookup = <T extends TValue = TValue>(k: string): ((xs: TMap) => O.Option<T>) =>
   (xs: TMap): O.Option<T> => pipe(
     xs,
     A.findFirst(([ok, _]) => ok === k),
