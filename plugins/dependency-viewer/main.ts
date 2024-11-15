@@ -12,21 +12,11 @@ window.plugins.set(
         .add("DependencyViewerInit", false)
         .add(
           "DependencyViewerModel",
-          tObj([
-            [
-              "links", tList([
-                tObj([["source", "id1"], ["target", "id1"]]),
-                tObj([["source", "id2"], ["target", "id1"]]),
-              ])
-            ],
-            [
-              "nodes", tList([
-                tObj([["id", "id1"]]),
-                tObj([["id", "id2"]]),
-              ])
-            ],
-          ])
-        )
+          JSON.stringify({
+            nodes: [{ id: "id1" }, { id: "id2" }],
+            links: [{ source: "id1", target: "id1" }, { source: "id1", target: "id2" }]
+          })
+        ).build();
     },
     view: (model: TMap): THtml => {
       return new HtmlBuilder()
