@@ -3,7 +3,7 @@ const esbuild = require('esbuild');
 esbuild.build({
   entryPoints: ['./main.ts'],
   bundle: true,
-  outfile: './dist/bundle.js',
+  outfile: './dist/DependencyViewer.js',
   minify: true,
 }).catch(() => process.exit(1));
 
