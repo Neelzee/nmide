@@ -7,7 +7,7 @@ import * as NA from "fp-ts/NonEmptyArray";
 import { pipe } from "fp-ts/function";
 import { TMap, TValue } from "./TMap";
 import { Monoid } from "fp-ts/Monoid";
-import { isTBool, isTFloat, isTInt, isTList, isTObj, isTStr, TMapPair, TValueBool, TValueFloat, TValueInt, TValueList, TValuePrimities, TValueStr } from "./Types";
+import { isObj, isTBool, isTFloat, isTInt, isTList, isTObj, isTStr, TMapPair, tObj, TValueBool, TValueFloat, TValueInt, TValueList, TValueObj, TValuePrimities, TValueStr } from "./Types";
 import { PartialTMapFieldEq, TMapPartialEq } from "./Eq";
 import { fromCompare, Ord } from "fp-ts/lib/Ord";
 import { Ord as StringOrd } from "fp-ts/string";

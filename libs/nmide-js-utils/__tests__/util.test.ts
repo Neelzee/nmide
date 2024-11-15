@@ -5,7 +5,16 @@ import * as A from "fp-ts/Array";
 import { NmluginEq, TotalTMapFieldEq } from '../lib/Eq';
 import { TMap, TValue } from '../lib/TMap';
 import { TMapToString } from '../lib/Debug';
-import { isBool, isFloat, isInt, isList, isObj, isStr, tObj, tValueMaybe, TValuePrimities } from '../lib/Types';
+import {
+  isBool,
+  isFloat,
+  isInt,
+  isList,
+  isObj,
+  isStr,
+  tValueMaybe,
+  TValuePrimities
+} from '../lib/Types';
 
 [
   {
