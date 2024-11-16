@@ -205,3 +205,10 @@ function, that another JSP is calling, when it receives a Msg.
 
 All I need now, are two Plugins, one that acts as a file explorer, and another
 that can parse the dependencies between the files. Maybe a mini-LSP?
+
+Something has happened, so Rust plugins dont work any more. I don't know what,
+but I realised something, I would like to debug Rust Plugins, like I debug
+JSP's, being able to interact with them. There are a few ways I can achieve
+this. I could add this functionality to the CLI tool I want too make, or I
+could change the way I do backend plugins, install them the same way I install
+JSP. This would just be an invoke-call.
