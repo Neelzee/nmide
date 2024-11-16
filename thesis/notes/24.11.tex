@@ -188,3 +188,20 @@ I think I should at least analyze it, and write a few paragraphs about my tech
 stack choice, among them being React.
 
 Maybe Haskell?
+
+
+\section{24.11.16}
+
+I think it would be possible to do what Tauri does, but in Haskell, with
+something like threepeny-gui https://heinrichapfelmus.github.io/threepenny-gui/
+and electron https://www.electronjs.org/. This would be cool, but I think I
+should focus on creating the first few plugins, and maybe look at re-writing
+everything to Haskell. I think it would be a fun experience.
+
+But, to the real matter at hand. My current Plugin setup, should work
+regardless of what tech stack I have. I have a trivial-JSP, that renders the
+dependency graph using the D3 JS-library. It does this by exposing an extra
+function, that another JSP is calling, when it receives a Msg.
+
+All I need now, are two Plugins, one that acts as a file explorer, and another
+that can parse the dependencies between the files. Maybe a mini-LSP?
