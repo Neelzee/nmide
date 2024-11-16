@@ -1,8 +1,8 @@
-use crate::statics::{NMIDE_PLUGIN_DIR, NMLUGS};
+use crate::statics::{NMIDE_PLUGIN_DIR, NMLUGS, PLUGINS};
 use anyhow::{Context, Result};
 use nmide_plugin_manager::Nmlugin;
-use std::fs;
 use std::path::PathBuf;
+use std::{collections::HashMap, fs};
 use tauri::Manager;
 use tokio::sync::RwLock;
 
@@ -61,6 +61,17 @@ pub fn setup(app: &mut tauri::App) -> Result<()> {
                 })
             })
             .collect()
+    })?;
+
+    PLUGINS.set({
+        let plugins = NMLUGS.get().expect("Should already be Initialized");
+
+        let mut map = HashMap::new();
+        for plugin in plugins {
+            map.insert(plugin.name().to_string(), plugin);
+        }
+
+        map
     })?;
     Ok(())
 }

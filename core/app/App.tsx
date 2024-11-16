@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import { THtml, TMap, TMsg, NmluginUnknown as Nmlugin } from "@nmide/js-utils";
 import RenderHtml from "./lib/Html";

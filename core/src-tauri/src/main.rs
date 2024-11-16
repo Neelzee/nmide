@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use crate::handlers::{init, update, view};
+use crate::handlers::{get_plugins, init, plugin_init, plugin_update, plugin_view, update, view};
 use crate::setup::{development_setup, setup};
 use anyhow::Result;
 
@@ -23,7 +23,15 @@ async fn main() -> Result<()> {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![init, update, view])
+        .invoke_handler(tauri::generate_handler![
+            init,
+            update,
+            view,
+            plugin_init,
+            plugin_update,
+            plugin_view,
+            get_plugins,
+        ])
         .run(tauri::generate_context!())
         .expect("Application should not error");
     Ok(())
