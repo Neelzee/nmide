@@ -17,44 +17,71 @@ export type NmideArgs = {
   "update": {
     args: { tmsg: TMsg, tmodel: TMap, },
   },
+  "plugin_init": {
+    args: { plugin_name: string },
+  },
+  "plugin_view": {
+    args: { plugin_name: string, tmodel: TMap },
+  },
+  "plugin_update": {
+    args: { plugin_name: string, tmsg: TMsg, tmodel: TMap, },
+  },
+  "get_plugins": {
+    args: undefined,
+  }
 }
 
-export const NmideDecoderTest = {
+export const NmideDecoder = {
   "init": DInitDecoder,
   "view": DHtmlArr,
   "update": DUpdateDecoder,
+  "plugin_init": Decoder.DMap,
+  "plugin_view": Decoder.DHtml,
+  "plugin_update": Decoder.DMap,
+  "get_plugins": t.array(t.string),
 }
 
 export type NmideDecodedType<
   K extends keyof NmideArgs
-  & keyof typeof NmideDecoderTest
-> = t.TypeOf<typeof NmideDecoderTest[K]>
+  & keyof typeof NmideDecoder
+> = t.TypeOf<typeof NmideDecoder[K]>
 
-const NmideClient = async <
-  K extends keyof NmideArgs & keyof typeof NmideDecoderTest,
+export const NmideInvoker = <
+  K extends keyof NmideArgs & keyof typeof NmideDecoder,
   A extends InvokeArgs & NmideArgs[K]["args"]
 >(
   cmd: K,
   args?: A,
   options?: InvokeOptions,
-): Promise<E.Either<Error, NmideDecodedType<K>>> => {
-  try {
-    return pipe(
-      await invoke(cmd, args, options),
-      u => NmideDecoderTest[cmd].decode(u),
-      decoded =>
-        E.isLeft(decoded)
-          ? E.left(
-            new Error(
-              "Failed validating data from backend: " +
-              `${PathReporter.report(decoded).join("\n")}`
-            )
+): Promise<E.Either<Error, unknown>> =>
+  invoke(cmd, args, options)
+    .then(e => {
+      console.debug("Value: ", e);
+      return E.right(e);
+    })
+    .catch(err => E.left(new Error(err)));
+
+
+const NmideClient = <
+  K extends keyof NmideArgs & keyof typeof NmideDecoder,
+  A extends InvokeArgs & NmideArgs[K]["args"]
+>(
+  cmd: K,
+  args?: A,
+  options?: InvokeOptions,
+): Promise<E.Either<Error, NmideDecodedType<K>>> =>
+  NmideInvoker(cmd, args, options)
+    .then(unknown_data => pipe(
+      unknown_data,
+      NmideDecoder[cmd].decode,
+      E.match<t.Errors, NmideDecodedType<K>, E.Either<Error, NmideDecodedType<K>>>(
+        errs => E.left(
+          new Error(
+            `Got errors validating results from backend on cmd: ${cmd}, Validation Errors: ${errs.map(e => JSON.stringify(e)).join("\n")}`
           )
-          : E.right(decoded.right),
-    )
-  } catch (error) {
-    return E.left(new Error(`Got error from backend: ${error}`))
-  }
-}
+        ),
+        data => E.right(data)
+      ),
+    ));
 
 export default NmideClient;

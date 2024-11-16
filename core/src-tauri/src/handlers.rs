@@ -1,13 +1,12 @@
-use std::fs;
-
-use crate::statics::{NMIDE_PLUGIN_DIR, NMLUGS};
+use crate::statics::{NMLUGS, PLUGINS};
+use anyhow::anyhow;
+use anyhow_tauri::{IntoTAResult, TAResult};
 use log::info;
 use nmide_std_lib::{
     html::thtml::THtml,
     map::{rmap::RMap, tmap::TMap},
     msg::{rmsg::RMsg, tmsg::TMsg},
 };
-use tauri::{Manager, Window};
 
 #[tauri::command]
 pub async fn init() -> TMap {
@@ -55,4 +54,53 @@ pub async fn update(tmsg: TMsg, tmodel: TMap) -> Vec<(String, TMap)> {
                 .collect::<Vec<(String, TMap)>>()
         }
     }
+}
+
+#[tauri::command]
+pub async fn plugin_init(plugin_name: &str) -> TAResult<TMap> {
+    if let Some(plugin) = PLUGINS
+        .get()
+        .expect("Should be initialized")
+        .get(plugin_name)
+    {
+        return Ok(plugin.init().into());
+    }
+
+    Err(anyhow!("Could not find plugin: {plugin_name}")).into_ta_result()
+}
+
+#[tauri::command]
+pub async fn plugin_view(plugin_name: &str, tmodel: TMap) -> TAResult<THtml> {
+    if let Some(plugin) = PLUGINS
+        .get()
+        .expect("Should be initialized")
+        .get(plugin_name)
+    {
+        return Ok(plugin.view(tmodel.into()).into());
+    }
+
+    Err(anyhow!("Could not find plugin: {plugin_name}")).into_ta_result()
+}
+
+#[tauri::command]
+pub async fn plugin_update(plugin_name: &str, tmsg: TMsg, tmodel: TMap) -> TAResult<TMap> {
+    if let Some(plugin) = PLUGINS
+        .get()
+        .expect("Should be initialized")
+        .get(plugin_name)
+    {
+        return Ok(plugin.update(tmsg.into(), tmodel.into()).into());
+    }
+
+    Err(anyhow!("Could not find plugin: {plugin_name}")).into_ta_result()
+}
+
+#[tauri::command]
+pub async fn get_plugins() -> Vec<String> {
+    PLUGINS
+        .get()
+        .expect("Should be initialized")
+        .keys()
+        .map(|p| p.to_string())
+        .collect()
 }

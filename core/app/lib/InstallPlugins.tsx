@@ -2,13 +2,16 @@ import "./Window";
 import { pipe } from "fp-ts/lib/function";
 import * as M from "fp-ts/Map";
 import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
 import * as S from "fp-ts/string";
 import { useEffect } from "react";
-import { NmluginUnknown as Nmlugin } from "@nmide/js-utils";
+import { AsyncNmluginUnknown, NmluginUnknown as Nmlugin, TMap, TMsg } from "@nmide/js-utils";
 import { readDir } from "@tauri-apps/plugin-fs";
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { setTimeout } from "timers/promises";
+import NmideClient, { NmideInvoker } from "./NmideClient";
+import { NmDebugLogMsg } from "@nmide/js-utils/lib/Debug";
 
 export const InstallPlugins = (
   setInstalled: React.Dispatch<React.SetStateAction<boolean>>,
@@ -78,3 +81,34 @@ export const LoadPluginsFunction = (): Promise<[string, Nmlugin][]> => new Promi
     M.toArray(S.Ord),
   )
 ));
+
+export const InstallBackendPluginsFunction = () =>
+  NmideClient("get_plugins")
+    .then(E.map(A.map<string, [string, AsyncNmluginUnknown]>(plugin_name => {
+      return [
+        plugin_name,
+        {
+          init: () => NmideInvoker("plugin_init", { plugin_name }),
+          update: (tmsg: TMsg, tmodel: TMap) => NmideInvoker("plugin_view", { plugin_name, tmsg, tmodel }),
+          view: (tmodel: TMap) => NmideInvoker("plugin_view", { plugin_name, tmodel }),
+        }
+      ];
+    })));
+
+export const InstallBackendPlugins = (
+) => useEffect(() => {
+  if (window === undefined) return;
+  InstallBackendPluginsFunction()
+    .then(result => pipe(
+      result,
+      NmDebugLogMsg("Installing Backend Plugins"),
+      E.getOrElse<Error, [string, AsyncNmluginUnknown][]>(err => {
+        console.debug("Error installing backend plugins: ", err);
+        return [];
+      }),
+      plugins => {
+        window.async_plugins = new Map();
+        plugins.forEach(([k, v]) => window.async_plugins.set(k, v))
+      },
+    ))
+}, [])
