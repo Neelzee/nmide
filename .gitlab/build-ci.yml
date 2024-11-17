@@ -45,6 +45,7 @@ windows-build:
   when: manual
   script:
     # Adding Windows 64-bit target
+    - apt-get clang
     - rustup target add x86_64-pc-windows-msvc
     - cargo install --locked cargo-xwin
     - npm --version
