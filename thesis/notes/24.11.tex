@@ -1,0 +1,230 @@
+\section{24.11.02}
+
+I have done it, I don't really know what I have done differently, but it works.
+There is still the issue with Msg not being registered correctly, but I think
+that's an easy fix.
+
+We had a Magnolia Workshop this week, learned \textit{some} stuff, like, the
+IDE and Compiler should communicate using LSP, (insane!). But more interesting
+stuff, I have a lot of UX I need to consider, my supervisors expect IDE
+functionality, and I should make a wishlist of Plugins to develop.
+
+\begin{itemize}
+  \item Plugin Debugger
+  \begin{itemize}
+    \item Display State
+    \item Display Msg's being sent
+    \item Check if there are state collisions
+    \item Check if there are Msg collisions
+  \end{itemize}
+  \item Dependency Viewer
+  \begin{itemize}
+    \item Showcase JS
+  \end{itemize}
+  \item File Explorer
+  \item Text Editor
+  \begin{itemize}
+    \item Use existing JS
+  \end{itemize}
+  \item Rendering Framework
+  \begin{itemize}
+    \item Facilitate ease of pre-DOM-manipulation
+  \end{itemize}
+  \item Mini-LSP-Client
+  \begin{itemize}
+    \item Hover functionality
+    \item GOTO Declaration
+  \end{itemize}
+\end{itemize}
+
+In state changes, plugins should only return \textit{what} they change, not the
+entire state. I think this will be a good change, since not only will it ensure
+that overrides are easier to detect, (since we can compare states), states from
+plugins are smaller, and there will be less unnecessary duplications.
+
+Again, unit tests should've been made ages ago, my state coalescing in the
+frontend should've had unit tests. I'll make some next time.
+
+
+\section{24.11.03}
+
+What is a good way to correct state collisions? Just not allow it? Error on
+collisions? Feels like it should happen at compile-time, and not runtime, but I
+can't check until runtime. Maybe I should filter out plugins with collisions,
+and not call them, just log it. Could be an idea. I guess that's what should be
+done, since this collision only happens once, since the new architecture is to
+only return the changed field, instead of the entire state. I could probably do
+something like this:
+
+// Get the state change along with the plugin name
+const new_state =
+  window.plugins.key_values.map(a ⇒ (fst(a), snd(b).update(msg, old_state)));
+// Get duplicates
+const collisions = Array.duplicates(TMap.Eq)(new_state);
+// Print them
+if (collisions.length !== 0) console.error("Collisions: ", collisions);
+// Get unique plugins, based on plugin name
+// similar to: map head \$ map group \$ map (update msg old_state) plugins, I think
+setModel(A.unique(TMap.Eq)(new_state));
+
+
+\section{24.11.06}
+
+I've started work on unit tests for the frontend. I can \textit{easily} create
+tests for the frontend, since all backend calls can be mocked, and I can supply
+my own pseudo-react-state, which my different functions manipulate, to ensure
+correctness. The plan for this month will to be finish the wanted
+functionality for v1.0.0, two months late. I just need to figure out some good
+tests.
+
+I've spent like 5 hours, (with breaks), writing tests just for my utility
+functions. This is going to take weeks.
+
+
+\section{24.11.07}
+
+Discovered something interesting. I can basically mock the entirety of the
+frontend. So, testing JSPS can be really extensive, ensuring the logic holds.
+I am knee-deep in \dots I don't know, Functional Programming? Logic?
+Category Theory? Creating equalities, monoids and such for my types, so that I
+can use the fp-ts library fully. I have the Haskell implementation of groupBy
+open so that I have a starting of point for it in my own code.
+
+I got to the point of writing tests for state-updating, and then I figured I
+should rewrite my update function, to add logging for state-collisions. Similar
+to what I discussed the other day. I think it'll work great.
+
+
+\section{24.11.08}
+
+Plugins should be a list of Plugin Name, and the Plugin, so that one, (me), can
+narrow down which Plugin causes what problem.
+
+It is super boring to write tests. This is killing me. Wrote a fun function
+for state change, which made me feel smart, but I also forgot the name of
+\texit{unzip}, which made me feel stupid. I was talking to some other students,
+and they pointed out something I should probably mention. I am writing
+functional TypeScript. Which is not a thing, in the sense it is not optimized.
+So my code might be really slow. Hopefully this is not the case. Either way,
+this is something I can see easily with E2E-testing, which I only have for the
+frontend, not the backend. I think I'll aim for writing these test's til the end
+of this month, and then start on creating the dependency plugin, in TypeScript.
+Hopefully I've found a smart solution for compiling TypeScript into JavaScript.
+And it will be a good test of the plugin system.
+
+I think I am going to say I am done with unit tests for today. I also did some
+logic-changes, (which I discovered when creating the tests), so I want to see
+if I can get the counter example to work. Then maybe I'll look into some
+JSP-Util library.
+
+Took one minute. I think I am starting to get a good system/architecture.
+
+It is pretty simple to create a JSP-Util Library, the only issue is that LSP
+help can be tricky to do. But that is a future problem, if it even is a
+problem.
+<<<<<<< HEAD
+
+
+\section{24.11.09}
+
+I think I can release v1.0.0, just need to write some documentation, and then
+I'll build some files, and finish.
+
+I can build for Windows and Linux, but building for macOS means I have to get
+my hands on a macOS machine or a WM, or get my CI/CD to work again.
+
+Tried to do CI/CD stuff, but GitLab-runner issue is a recurring problem. The
+ones I tried to create have not been online for two months, (about the time
+since I did CI/CD work), and the universities' is also offline! I hope it comes
+online tomorrow, and that I remember to turn on my runner.
+
+
+\section{24.11.10}
+
+Back on the CI/CD-grind, this sucks. After I migrated to Tauri-2.0, and
+migrated to ViteJS, my Tauri-Image is missing dependencies, and it's the same
+process as before, building the image, (which takes 11 minutes, I should've
+fixed this a long time ago), and then re-running the pipeline. Just to find out
+I am missing another library. I feel Cargo should know what dependencies crates
+have, but this is only discovered during compile-time.
+
+It takes around 16 minutes to build now, I hate doing CI/CD. But I am close to
+getting a NSIS build working, i.e. Windows build to work without it being
+Windows.
+
+
+\section{24.11.09}
+
+I think I can release v1.0.0, just need to write some documentation, and then
+I'll build some files, and finish.
+
+I can build for Windows and Linux, but building for macOS means I have to get
+my hands on a macOS machine or a WM, or get my CI/CD to work again.
+
+Tried to do CI/CD stuff, but GitLab-runner issue is a recurring problem. The
+ones I tried to create have not been online for two months, (about the time
+since I did CI/CD work), and the universities' is also offline! I hope it comes
+online tomorrow, and that I remember to turn on my runner.
+
+
+\section{24.11.14}
+
+Started utilizing the issue system in GitLab, my thought process is that this
+will make it easier to both keep track on what I am working on, and make it
+easier to switch between tasks, because some of them are less interesting.
+
+
+\section{24.11.15}
+
+The only problem with doing this issue-system, is that taking notes is a little
+bit harder.
+
+I have made plugin installation the way I wanted, as script-tags, and made a
+demonstration of how to use this system alongside an external JavaScript
+library. But I've done some thinking, do I need to use React? I don't think so.
+But, it does give a lot of handy things for free. Like optimized rendering,
+\textit{easy} update handling.
+I think I should at least analyze it, and write a few paragraphs about my tech
+stack choice, among them being React.
+
+Maybe Haskell?
+
+
+\section{24.11.16}
+
+I think it would be possible to do what Tauri does, but in Haskell, with
+something like threepeny-gui https://heinrichapfelmus.github.io/threepenny-gui/
+and electron https://www.electronjs.org/. This would be cool, but I think I
+should focus on creating the first few plugins, and maybe look at re-writing
+everything to Haskell. I think it would be a fun experience.
+
+But, to the real matter at hand. My current Plugin setup, should work
+regardless of what tech stack I have. I have a trivial-JSP, that renders the
+dependency graph using the D3 JS-library. It does this by exposing an extra
+function, that another JSP is calling, when it receives a Msg.
+
+All I need now, are two Plugins, one that acts as a file explorer, and another
+that can parse the dependencies between the files. Maybe a mini-LSP?
+
+Something has happened, so Rust plugins don't work anymore. I don't know what,
+but I realized something, I would like to debug Rust Plugins, like I debug
+JSP's, being able to interact with them. There are a few ways I can achieve
+this. I could add this functionality to the CLI tool I want to make, or I
+could change the way I do backend plugins, install them the same way I install
+JSP. This would just be an invoke-call.
+
+
+\section{24.11.17}
+
+I am going to redesign the standard library to fix memory leaks.
+
+I think I should refactor the Tauri app to just Purescript, I think just
+utilizing the "purity" of plugins should be enough when re-rendering.
+Furthermore, I hope I can find something that does the V-DOM stuff for me. If
+just the window object is used, it would be easy to just inject functions
+wherever, like the state validation logic. Or rendering. We'll see, for now I'll
+just "half-ass" this dependency viewer plugin.
+
+I think the dependency viewer thing works, but Magnolia is so large, it takes a
+long time to parse it into a tree. I need to create some efficient way to
+navigate it.

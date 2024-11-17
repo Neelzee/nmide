@@ -4,17 +4,17 @@ pdf-build:
   when: always
   script:
     - pdflatex --version
-    - pdflatex --output-directory=nmide-thesis nmide-thesis/main.tex
+    - pdflatex --output-directory=thesis thesis/main.tex
   rules:
-    - if: '$CI_PIPELINE_SOURCE == $CI_PIPELINE_SOURCE'
+    - if: "$CI_PIPELINE_SOURCE == $CI_PIPELINE_SOURCE"
       when: always
       changes:
-        - nmide-thesis/**
+        - thesis/**
   artifacts:
     when: on_success
     access: all
     paths:
-      - nmide-thesis/*.pdf
+      - thesis/*.pdf
 
 nmide-lib-build:
   image: neelzee/nmide-c:latest
@@ -28,7 +28,7 @@ nmide-lib-build:
     - gcc --version
     - cmake --version
     - make --version
-    - mkdir nmide-lib/release
+    - mkdir lib/release
     - cd nmide-lib/release
     - cmake -DCMAKE_BUILD_TYPE=Release ..
     - make
@@ -48,7 +48,7 @@ windows-build:
     - rustup target add x86_64-pc-windows-msvc
     - cargo install --locked cargo-xwin
     - npm --version
-    - cd nmide-core
+    - cd core
     - pwd
     - npm i
     - npm run tauri build -- --runner cargo-xwin --target x86_64-pc-windows-msvc
@@ -68,7 +68,7 @@ linux-build:
     - nmide-core
   script:
     - npm --version
-    - cd nmide-core
+    - cd core
     - pwd
     - npm i
     - npm run tauri build

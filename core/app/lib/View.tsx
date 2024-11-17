@@ -1,0 +1,54 @@
+import { useEffect } from "react";
+import React from "react";
+import {
+  THtml,
+  TMap,
+  Decoder,
+  NmluginUnknown as Nmlugin
+} from "@nmide/js-utils";
+import NmideClient from "./NmideClient";
+import { pipe } from "fp-ts/lib/function";
+import * as E from "fp-ts/Either";
+import * as A from "fp-ts/Array";
+import { PathReporter } from "io-ts/PathReporter";
+
+const pluginView = (
+  model: TMap
+): (([_, p]: [string, Nmlugin]) => THtml) => ([_, p]) =>
+    pipe(
+      p.view(model),
+      Decoder.DHtml.decode,
+      decoded => E.isRight(decoded)
+        ? E.right(decoded.right)
+        : E.left(
+          new Error(
+            `Failed to decode model: ${PathReporter.report(decoded).join("\n")}`
+          )
+        ),
+      E.getOrElse<Error, THtml>(err => {
+        console.error("Error on pluginView: ", err);
+        return { kind: "Frag", kids: [], text: null, attrs: [] };
+      })
+    );
+
+const View = (
+  setHtmls: React.Dispatch<React.SetStateAction<THtml[]>>,
+  plugins: [string, Nmlugin][],
+  tmodel: TMap,
+) => {
+  useEffect(() => {
+    NmideClient("view", { tmodel })
+      .then(v => setHtmls(
+        pipe(
+          v,
+          E.getOrElse<Error, THtml[]>(err => {
+            console.error("Error from NmideClient in View: ", err);
+            return [];
+          }),
+          A.concat(A.map(pluginView(tmodel))(plugins)),
+        )
+      ));
+  }, [plugins, tmodel]);
+}
+
+export default View;
