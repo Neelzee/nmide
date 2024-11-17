@@ -3,7 +3,7 @@ use abi_stable::{
     StableAbi,
 };
 use rstest::rstest;
-use std::{cell::LazyCell, convert::Into, mem::ManuallyDrop, sync::LazyLock};
+use std::{convert::Into, mem::ManuallyDrop};
 
 #[repr(C)]
 #[derive(StableAbi)]

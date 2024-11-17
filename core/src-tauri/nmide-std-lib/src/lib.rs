@@ -17,16 +17,16 @@ use msg::rmsg::RMsg;
 
 #[repr(C)]
 #[derive(StableAbi)]
-#[sabi(kind(Prefix(prefix_ref = NmideStandardLibrary_Ref)))]
+#[sabi(kind(Prefix(prefix_ref = NmideStandardLibraryRef)))]
 #[sabi(missing_field(panic))]
 pub struct NmideStdLib {
     pub init: extern "C" fn() -> RMap,
-    pub view: extern "C" fn(model: RMap) -> RHtml,
-    pub update: extern "C" fn(msg: RMsg, model: RMap) -> RMap,
+    pub view: extern "C" fn(model: &RMap) -> RHtml,
+    pub update: extern "C" fn(msg: &RMsg, model: &RMap) -> RMap,
 }
 
-impl RootModule for NmideStandardLibrary_Ref {
-    abi_stable::declare_root_module_statics! {NmideStandardLibrary_Ref}
+impl RootModule for NmideStandardLibraryRef {
+    abi_stable::declare_root_module_statics! {NmideStandardLibraryRef}
 
     const BASE_NAME: &'static str = "nmide_example_plugin";
     const NAME: &'static str = "nmide_example_plugin";
@@ -35,6 +35,6 @@ impl RootModule for NmideStandardLibrary_Ref {
 
 pub fn load_root_module_in_directory(
     directory: &Path,
-) -> Result<NmideStandardLibrary_Ref, LibraryError> {
-    NmideStandardLibrary_Ref::load_from_directory(directory)
+) -> Result<NmideStandardLibraryRef, LibraryError> {
+    NmideStandardLibraryRef::load_from_directory(directory)
 }
