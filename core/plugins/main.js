@@ -20,13 +20,12 @@ window.plugins.set("DependencyViewer", {
   },
   update: function(msg, model) {
     const [m, _] = msg.Msg;
-    if (m !== "render") return [];
+    if (m !== "dependency_render") return [];
     const lookup = model.find(([k, _]) => k === "init");
     if (lookup !== undefined && lookup[1].Bool === false) {
-      const div = document.createElement("div");
-      div.id = "graph";
-      document.body.appendChild(div);
-      window.plugins.get("d3").render();
+      const input = document.createElement("input");
+      input.id = "info-module-input";
+      document.appendChild(input);
       return [["init", { "Bool": true }]];
     }
     return [];
