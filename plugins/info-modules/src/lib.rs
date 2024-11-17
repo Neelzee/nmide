@@ -160,6 +160,9 @@ fn get_modules(path: PathBuf) -> Result<Vec<Module>> {
             continue;
         };
         let dir = dir.unwrap();
+        if dir.path().to_str().unwrap_or_default().eq(".svn") {
+            continue;
+        }
         if dir.path().is_dir() {
             dirs.push(Ok(dir));
             continue;
