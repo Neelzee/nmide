@@ -12,6 +12,8 @@ export default function RenderHtml({ kind, kids, attrs, text }: THtml) {
   const id = attrs.find(el => "Id" in el)?.Id;
   const style = undefined;
   const onClick = attrs.find(el => "OnClick" in el)?.OnClick;
+  const onInput = attrs.find(el => "OnInput" in el)?.OnInput;
+  const emitInput = attrs.find(el => "EmitInput" in el)?.EmitInput;
   const src = attrs.find(el => "Src" in el)?.Src;
   switch (kind) {
     case "Div":
@@ -309,6 +311,10 @@ export default function RenderHtml({ kind, kids, attrs, text }: THtml) {
             id={id}
             style={RsStyleToReactCSSProperties(style)}
             onClick={OnClickParse(onClick)}
+            onInput={OnInputParse(onInput)}
+            onChange={el => {
+              EmitInputParse(emitInput, el.target.value)
+            }}
           >
           </input>
 
@@ -522,10 +528,30 @@ function OnClickParse(msg: TMsg | undefined): () => void {
     if (msg === undefined) {
       return;
     }
-    emit("msg", msg).catch(err => console.error("Error form OnClickParse emit:", err));
+    emit("msg", msg).catch(err => console.error("Error from OnClickParse emit:", err));
   };
 }
 
+function EmitInputParse(msg: string | undefined, value: string): React.ChangeEventHandler<HTMLInputElement> | undefined {
+  return () => {
+    if (msg === undefined) {
+      return;
+    }
+    const tmsg: TMsg = {
+      Msg: [msg, { Str: value }]
+    };
+    emit("msg", tmsg).catch(err => console.error("Error from EmitInputParse emit:", err));
+  };
+}
+
+function OnInputParse(msg: TMsg | undefined): () => void {
+  return () => {
+    if (msg === undefined) {
+      return;
+    }
+    emit("msg", msg).catch(err => console.error("Error from OnInputParse emit:", err));
+  };
+}
 
 function RsStyleToReactCSSProperties(_: undefined): React.CSSProperties | undefined {
   return undefined;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import React from "react";
 import { THtml, TMap, TMsg, NmluginUnknown as Nmlugin } from "@nmide/js-utils";
 import RenderHtml from "./lib/Html";
@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import View from "./lib/View";
 import Init from "./lib/Init";
 import MsgListener from "./lib/MsgListener";
-import { InstallPlugins, LoadPlugins } from "./lib/InstallPlugins"
+import { InstallBackendPlugins, InstallPlugins, LoadPlugins } from "./lib/InstallPlugins"
 import Update from "./lib/Update";
 
 
@@ -19,6 +19,7 @@ export default function App() {
 
   MsgListener(setMsg);
   InstallPlugins(setInstalled);
+  InstallBackendPlugins();
   LoadPlugins(setPlugins, installed);
   Init(plugins, setModel);
   View(setHtmls, plugins, model);

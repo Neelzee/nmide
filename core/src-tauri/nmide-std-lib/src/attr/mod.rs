@@ -13,6 +13,8 @@ pub mod tattr {
         Class(String),
         Style(String),
         OnClick(TMsg),
+        OnInput(TMsg),
+        EmitInput(String),
         Src(String),
     }
 
@@ -30,6 +32,10 @@ pub mod tattr {
                 RAttrKind::Style => Self::Style(value.str().unwrap_or_default().to_string()),
                 RAttrKind::OnClick => Self::OnClick(value.msg().unwrap().clone().into()),
                 RAttrKind::Src => Self::Src(value.str().unwrap_or_default().to_string()),
+                RAttrKind::OnInput => Self::OnInput(value.msg().unwrap().clone().into()),
+                RAttrKind::EmitInput => {
+                    Self::EmitInput(value.str().unwrap_or_default().to_string())
+                }
             }
         }
     }

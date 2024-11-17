@@ -61,6 +61,24 @@ impl RAttr {
             },
         }
     }
+
+    pub fn new_on_input(rmsg: RMsg) -> Self {
+        Self {
+            kind: RAttrKind::OnInput,
+            val: RAttrUnion {
+                _msg: ManuallyDrop::new(rmsg),
+            },
+        }
+    }
+
+    pub fn new_emit_input(rmsg: RString) -> Self {
+        Self {
+            kind: RAttrKind::EmitInput,
+            val: RAttrUnion {
+                _str: ManuallyDrop::new(rmsg),
+            },
+        }
+    }
 }
 
 #[repr(u8)]
@@ -70,6 +88,8 @@ pub enum RAttrKind {
     Class,
     Style,
     OnClick,
+    OnInput,
+    EmitInput,
     Src,
 }
 

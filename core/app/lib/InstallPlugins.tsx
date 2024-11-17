@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { AsyncNmluginUnknown, NmluginUnknown as Nmlugin, TMap, TMsg } from "@nmide/js-utils";
 import { readDir } from "@tauri-apps/plugin-fs";
 import { appDataDir, join } from "@tauri-apps/api/path";
-import { convertFileSrc } from "@tauri-apps/api/core";
+import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { setTimeout } from "timers/promises";
 import NmideClient, { NmideInvoker } from "./NmideClient";
 import { NmDebugLogMsg } from "@nmide/js-utils/lib/Debug";
@@ -84,13 +84,15 @@ export const LoadPluginsFunction = (): Promise<[string, Nmlugin][]> => new Promi
 
 export const InstallBackendPluginsFunction = () =>
   NmideClient("get_plugins")
-    .then(E.map(A.map<string, [string, AsyncNmluginUnknown]>(plugin_name => {
+    .then(E.map(A.map<string, [string, AsyncNmluginUnknown]>(pluginName => {
       return [
-        plugin_name,
+        pluginName,
         {
-          init: () => NmideInvoker("plugin_init", { plugin_name }),
-          update: (tmsg: TMsg, tmodel: TMap) => NmideInvoker("plugin_view", { plugin_name, tmsg, tmodel }),
-          view: (tmodel: TMap) => NmideInvoker("plugin_view", { plugin_name, tmodel }),
+          init: () => {
+            return invoke("plugin_init", { pluginName });
+          },
+          update: (tmsg: TMsg, tmodel: TMap) => invoke("plugin_update", { pluginName, tmsg, tmodel }),
+          view: (tmodel: TMap) => invoke("plugin_view", { pluginName, tmodel }),
         }
       ];
     })));
