@@ -2,7 +2,6 @@ import { pipe } from "fp-ts/lib/function";
 import { TValue } from "./TMap";
 import * as O from "fp-ts/Option";
 import * as A from "fp-ts/Array";
-import { MonoidAny } from "fp-ts/lib/boolean";
 
 export type TValuePrimities = number
   | boolean
