@@ -206,9 +206,25 @@ function, that another JSP is calling, when it receives a Msg.
 All I need now, are two Plugins, one that acts as a file explorer, and another
 that can parse the dependencies between the files. Maybe a mini-LSP?
 
-Something has happened, so Rust plugins dont work any more. I don't know what,
-but I realised something, I would like to debug Rust Plugins, like I debug
+Something has happened, so Rust plugins don't work anymore. I don't know what,
+but I realized something, I would like to debug Rust Plugins, like I debug
 JSP's, being able to interact with them. There are a few ways I can achieve
-this. I could add this functionality to the CLI tool I want too make, or I
+this. I could add this functionality to the CLI tool I want to make, or I
 could change the way I do backend plugins, install them the same way I install
 JSP. This would just be an invoke-call.
+
+
+\section{24.11.17}
+
+I am going to redesign the standard library to fix memory leaks.
+
+I think I should refactor the Tauri app to just Purescript, I think just
+utilizing the "purity" of plugins should be enough when re-rendering.
+Furthermore, I hope I can find something that does the V-DOM stuff for me. If
+just the window object is used, it would be easy to just inject functions
+wherever, like the state validation logic. Or rendering. We'll see, for now I'll
+just "half-ass" this dependency viewer plugin.
+
+I think the dependency viewer thing works, but Magnolia is so large, it takes a
+long time to parse it into a tree. I need to create some efficient way to
+navigate it.
