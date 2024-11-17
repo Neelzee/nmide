@@ -10,7 +10,7 @@ use nmide_std_lib::{
     html::rhtml::RHtml,
     map::rmap::{RMap, RValue},
     msg::rmsg::{RMsg, RMsgKind, RMsgUnion},
-    NmideStandardLibrary_Ref, NmideStdLib,
+    NmideStandardLibraryRef, NmideStdLib,
 };
 use serde::{Deserialize, Serialize};
 use std::{
@@ -23,7 +23,7 @@ use std::{
 };
 
 #[export_root_module]
-pub fn get_library() -> NmideStandardLibrary_Ref {
+pub fn get_library() -> NmideStandardLibraryRef {
     NmideStdLib { init, view, update }.leak_into_prefix()
 }
 
@@ -31,18 +31,19 @@ pub fn get_library() -> NmideStandardLibrary_Ref {
 pub fn init() -> RMap {
     RMap::new()
         .insert("info-module-path", false)
+        .insert("info-module-file-path", "")
         .insert("info-module-graph", "")
 }
 
 #[sabi_extern_fn]
-pub fn view(_: RMap) -> RHtml {
+pub fn view(module: &RMap) -> RHtml {
     RHtml::Div(
         rvec![
             RHtml::Input(
                 RVec::new(),
-                rvec![RAttr::new_id(
-                    RString::from_str("info-module-input").unwrap_or_default()
-                )]
+                rvec![RAttr::new_emit_input(
+                    RString::from_str("info-module-update-input").unwrap_or_default()
+                )],
             ),
             RHtml::Button(
                 rvec![RHtml::text(
@@ -52,10 +53,17 @@ pub fn view(_: RMap) -> RHtml {
                     RMsgKind::Msg,
                     RMsgUnion::new(
                         RString::from_str("info-module-find-file").unwrap_or_default(),
-                        RValue::new_int(0)
+                        RValue::new_str(
+                            module
+                                .lookup("info-module-file-path")
+                                .into_option()
+                                .and_then(|s| s.str())
+                                .map(|s| s.to_string())
+                                .unwrap_or_default()
+                        )
                     )
                 ))],
-            )
+            ),
         ],
         RVec::new(),
     )
@@ -111,12 +119,30 @@ impl Module {
 }
 
 #[sabi_extern_fn]
-pub fn update(msg: RMsg, _: RMap) -> RMap {
+pub fn update(msg: &RMsg, _: &RMap) -> RMap {
+    if msg.is_msg("info-module-update-input") {
+        return RMap::new().insert(
+            "info-module-file-path",
+            msg.val()
+                .get_value()
+                .str()
+                .map(|s| ManuallyDrop::into_inner(s.clone()))
+                .map(|s| s.to_string())
+                .unwrap_or_default(),
+        );
+    }
+
     if !msg.is_msg("info-module-find-file") {
         return RMap::new();
     }
 
-    let path = ManuallyDrop::into_inner(msg.val().get_value().str().unwrap().clone()).to_string();
+    let path = msg
+        .val()
+        .get_value()
+        .str()
+        .map(|s| ManuallyDrop::into_inner(s.clone()))
+        .map(|s| s.to_string())
+        .unwrap_or_default();
     let path = PathBuf::from_str(&path).unwrap_or_default();
 
     RMap::new().insert(
