@@ -1,12 +1,10 @@
 pub mod rmsg;
 pub mod tmsg {
-    use std::mem::ManuallyDrop;
-
+    use super::rmsg::RMsg;
     use crate::map::tmap::TValue;
     use serde::{Deserialize, Serialize};
+    use std::mem::ManuallyDrop;
     use ts_rs::TS;
-
-    use super::rmsg::RMsg;
 
     #[derive(Serialize, Deserialize, TS, Clone)]
     #[ts(export)]

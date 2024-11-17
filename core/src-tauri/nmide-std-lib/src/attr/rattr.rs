@@ -35,6 +35,24 @@ impl RAttr {
         }
     }
 
+    pub fn new_id(id: RString) -> Self {
+        Self {
+            kind: RAttrKind::Id,
+            val: RAttrUnion {
+                _str: ManuallyDrop::new(id),
+            },
+        }
+    }
+
+    pub fn new_class(class: RString) -> Self {
+        Self {
+            kind: RAttrKind::Class,
+            val: RAttrUnion {
+                _str: ManuallyDrop::new(class),
+            },
+        }
+    }
+
     pub fn new_click(rmsg: RMsg) -> Self {
         Self {
             kind: RAttrKind::OnClick,

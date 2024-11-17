@@ -76,4 +76,8 @@ impl RMsgUnion {
             msg: ManuallyDrop::new(Tuple2::from_tuple((l, r))),
         }
     }
+
+    pub fn get_value(&self) -> &RValue {
+        unsafe { &self.msg.1 }
+    }
 }
