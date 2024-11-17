@@ -71,6 +71,8 @@ pub fn setup(app: &mut tauri::App) -> Result<()> {
             map.insert(plugin.name().to_string(), plugin);
         }
 
+        println!("{map:?}");
+
         map
     })?;
     Ok(())

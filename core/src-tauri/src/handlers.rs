@@ -9,15 +9,14 @@ use nmide_std_lib::{
 };
 
 #[tauri::command]
-pub async fn init() -> TMap {
+pub async fn init() -> Vec<(String, TMap)> {
     info!("Backend: init");
     let model = NMLUGS
         .get()
         .expect("Plugins are already initialized at this point")
         .iter()
-        .map(|p| p.init())
-        .fold(RMap::new(), |acc, m| acc.merge(m))
-        .into();
+        .map(|p| (p.name().to_string(), p.init().into()))
+        .collect();
     model
 }
 
@@ -29,7 +28,7 @@ pub async fn view(tmodel: TMap) -> Vec<THtml> {
         .get()
         .unwrap()
         .iter()
-        .map(|p| p.view(model.clone()))
+        .map(|p| p.view(&model))
         .map(|h| h.into())
         .collect::<Vec<THtml>>()
 }
@@ -45,23 +44,19 @@ pub async fn update(tmsg: TMsg, tmodel: TMap) -> Vec<(String, TMap)> {
                 .get()
                 .unwrap()
                 .iter()
-                .map(|p| {
-                    (
-                        p.name().to_string(),
-                        p.update(rmsg.clone(), fmap.clone()).into(),
-                    )
-                })
+                .map(|p| (p.name().to_string(), p.update(&rmsg, &fmap).into()))
                 .collect::<Vec<(String, TMap)>>()
         }
     }
 }
 
 #[tauri::command]
-pub async fn plugin_init(plugin_name: &str) -> TAResult<TMap> {
+pub async fn plugin_init(plugin_name: String) -> TAResult<TMap> {
+    info!("Backend: plugin_init-{plugin_name}");
     if let Some(plugin) = PLUGINS
         .get()
         .expect("Should be initialized")
-        .get(plugin_name)
+        .get(&plugin_name)
     {
         return Ok(plugin.init().into());
     }
@@ -70,26 +65,28 @@ pub async fn plugin_init(plugin_name: &str) -> TAResult<TMap> {
 }
 
 #[tauri::command]
-pub async fn plugin_view(plugin_name: &str, tmodel: TMap) -> TAResult<THtml> {
+pub async fn plugin_view(plugin_name: String, tmodel: TMap) -> TAResult<THtml> {
+    info!("Backend: plugin_view-{plugin_name}");
     if let Some(plugin) = PLUGINS
         .get()
         .expect("Should be initialized")
-        .get(plugin_name)
+        .get(&plugin_name)
     {
-        return Ok(plugin.view(tmodel.into()).into());
+        return Ok(plugin.view(&tmodel.into()).into());
     }
 
     Err(anyhow!("Could not find plugin: {plugin_name}")).into_ta_result()
 }
 
 #[tauri::command]
-pub async fn plugin_update(plugin_name: &str, tmsg: TMsg, tmodel: TMap) -> TAResult<TMap> {
+pub async fn plugin_update(plugin_name: String, tmsg: TMsg, tmodel: TMap) -> TAResult<TMap> {
+    info!("Backend: plugin_update-{plugin_name}");
     if let Some(plugin) = PLUGINS
         .get()
         .expect("Should be initialized")
-        .get(plugin_name)
+        .get(&plugin_name)
     {
-        return Ok(plugin.update(tmsg.into(), tmodel.into()).into());
+        return Ok(plugin.update(&tmsg.into(), &tmodel.into()).into());
     }
 
     Err(anyhow!("Could not find plugin: {plugin_name}")).into_ta_result()
@@ -97,6 +94,7 @@ pub async fn plugin_update(plugin_name: &str, tmsg: TMsg, tmodel: TMap) -> TARes
 
 #[tauri::command]
 pub async fn get_plugins() -> Vec<String> {
+    info!("Backend: get_plugins");
     PLUGINS
         .get()
         .expect("Should be initialized")
