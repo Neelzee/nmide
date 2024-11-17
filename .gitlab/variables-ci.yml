@@ -1,4 +1,4 @@
 variables:
-  CORE_OUT_DIR: "nmide-core/src-tauri/target/release/*"
+  CORE_OUT_DIR: "core/src-tauri/target/release/*"
   ENABLED: true
   CC: "gcc"
