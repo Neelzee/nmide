@@ -302,16 +302,19 @@ export default function RenderHtml({ kind, kids, attrs, text }: THtml) {
       );
     case "Input":
       return (
-        <input
-          key={key}
-          className={className}
-          id={id}
-          style={RsStyleToReactCSSProperties(style)}
-          onClick={OnClickParse(onClick)}
-        >
+        <>
+          <input
+            key={key}
+            className={className}
+            id={id}
+            style={RsStyleToReactCSSProperties(style)}
+            onClick={OnClickParse(onClick)}
+          >
+          </input>
+
           {txt}
           {kids.map(RenderHtml)}
-        </input>
+        </>
       );
     case "Label":
       return (
