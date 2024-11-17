@@ -4,9 +4,9 @@ pdf-build:
   when: always
   script:
     - pdflatex --version
-    - pdflatex --output-directory=nmide-thesis nmide-thesis/main.tex
+    - pdflatex --output-directory=thesis thesis/main.tex
   rules:
-    - if: '$CI_PIPELINE_SOURCE == $CI_PIPELINE_SOURCE'
+    - if: "$CI_PIPELINE_SOURCE == $CI_PIPELINE_SOURCE"
       when: always
       changes:
         - nmide-thesis/**
