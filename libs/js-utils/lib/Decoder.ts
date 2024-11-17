@@ -17,6 +17,8 @@ export const DAttrs = t.union([t.type({ "Id": t.string }),
 t.type({ "Class": t.string }),
 t.type({ "Style": t.string }),
 t.type({ "OnClick": DMsg }),
+t.type({ "OnInput": DMsg }),
+t.type({ "EmitInput": t.string }),
 t.type({ "Src": t.string }),
 ]);
 export const DHtmlKind = t.union([
