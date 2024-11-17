@@ -7,7 +7,14 @@ import * as T from "fp-ts/Tuple";
 import { MonoidAll, MonoidAny } from "fp-ts/boolean";
 import { Eq as NumberEq } from "fp-ts/number";
 import { Eq as BooleanEq } from "fp-ts/boolean";
-import { isTBool, isTFloat, isTInt, isTList, isTObj, isTStr, TValueBool, TValueFloat, TValueInt, TValueList, TValueStr } from "./Types";
+import {
+  isTBool,
+  isTFloat,
+  isTInt,
+  isTList,
+  isTObj,
+  isTStr,
+} from "./Types";
 import { NmluginUnknown as Nmlugin } from "./Nmlugin";
 
 
