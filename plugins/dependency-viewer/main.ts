@@ -1,4 +1,4 @@
-import { getValue, HtmlBuilder, THtml, tList, tLookup, TMap, TMsg, tObj, TValueBool, TValueObj } from "@nmide/js-utils"
+import { getValue, HtmlBuilder, THtml, tList, tLookup, TMap, TMsg, tObj, TValueBool, TValueObj, TValueStr } from "@nmide/js-utils"
 import MapBuilder from "@nmide/js-utils/lib/MapBuilder";
 import { map, getOrElse } from "fp-ts/Option";
 import { pipe } from "fp-ts/lib/function";
@@ -10,13 +10,7 @@ window.plugins.set(
     init: (): TMap => {
       return new MapBuilder()
         .add("DependencyViewerInit", false)
-        .add(
-          "DependencyViewerModel",
-          JSON.stringify({
-            nodes: [{ id: "id1" }, { id: "id2" }],
-            links: [{ source: "id1", target: "id1" }, { source: "id1", target: "id2" }]
-          })
-        ).build();
+        .build();
     },
     view: (model: TMap): THtml => {
       return new HtmlBuilder()
@@ -24,7 +18,21 @@ window.plugins.set(
           new HtmlBuilder()
             .kind("Button")
             .text("Render Dependency")
-            .attrs([{ OnClick: { Msg: ["dependency_render", { Int: 0 }] } }])
+            .attrs([{
+              OnClick: {
+                Msg: ["dependency_render", {
+                  Str: pipe(
+                    model,
+                    tLookup<TValueStr>("info-module-graph"),
+                    map<TValueStr, string>(a => a.Str),
+                    getOrElse(() => {
+                      console.log("Module does not have info-module-graph: ", model);
+                      return "";
+                    })
+                  )
+                }]
+              }
+            }])
         ])
         .build();
     },
@@ -39,7 +47,7 @@ window.plugins.set(
       if (skip) return [];
       const graph = pipe(
         model,
-        tLookup<TValueObj>("DependencyViewerModel"),
+        tLookup<TValueObj>("info-module-graph"),
         getOrElse(() => tObj([])),
       );
       const div = document.createElement("div");
