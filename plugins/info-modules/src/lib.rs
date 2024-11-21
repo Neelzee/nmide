@@ -1,24 +1,20 @@
 use abi_stable::{
-    export_root_module,
-    prefix_type::PrefixTypeTrait,
-    rvec, sabi_extern_fn,
-    std_types::{ROption, RString, RVec},
+    export_root_module, prefix_type::PrefixTypeTrait, sabi_extern_fn, std_types::RVec,
 };
-use anyhow::Result;
+use anyhow::{Context, Result};
 use nmide_std_lib::{
-    attr::rattr::{RAttr, RAttrKind, RAttrUnion},
-    html::rhtml::RHtml,
-    map::rmap::{RMap, RValue},
-    msg::rmsg::{RMsg, RMsgKind, RMsgUnion},
-    NmideStandardLibraryRef, NmideStdLib,
+    html::rhtml::RHtml, map::rmap::RMap, msg::rmsg::RMsg, NmideStandardLibraryRef, NmideStdLib,
 };
+use once_cell::sync::Lazy;
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::HashMap,
-    fs::{self, read_dir, File},
+    collections::{HashMap, HashSet},
+    fs::{read_dir, File},
     io::Read,
     mem::ManuallyDrop,
     path::PathBuf,
+    process::Command,
     str::FromStr,
 };
 
@@ -30,46 +26,14 @@ pub fn get_library() -> NmideStandardLibraryRef {
 #[sabi_extern_fn]
 pub fn init() -> RMap {
     RMap::new()
-        .insert("info-module-path", false)
-        .insert("info-module-file-path", "")
-        .insert("info-module-graph", "")
 }
 
 #[sabi_extern_fn]
-pub fn view(module: &RMap) -> RHtml {
-    RHtml::Div(
-        rvec![
-            RHtml::Input(
-                RVec::new(),
-                rvec![RAttr::new_emit_input(
-                    RString::from_str("info-module-update-input").unwrap_or_default()
-                )],
-            ),
-            RHtml::Button(
-                rvec![RHtml::text(
-                    RString::from_str("Find File").unwrap_or_default()
-                )],
-                rvec![RAttr::new_click(RMsg::new(
-                    RMsgKind::Msg,
-                    RMsgUnion::new(
-                        RString::from_str("info-module-find-file").unwrap_or_default(),
-                        RValue::new_str(
-                            module
-                                .lookup("info-module-file-path")
-                                .into_option()
-                                .and_then(|s| s.str())
-                                .map(|s| s.to_string())
-                                .unwrap_or_default()
-                        )
-                    )
-                ))],
-            ),
-        ],
-        RVec::new(),
-    )
+pub fn view(_: &RMap) -> RHtml {
+    RHtml::Frag(RVec::new(), RVec::new())
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Hash, PartialEq, Eq)]
 struct Node {
     id: String,
 }
@@ -91,28 +55,39 @@ struct Module {
     imports: Vec<String>,
 }
 
+static IMPORTS_RE: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r"imports\s+([^\n,]+,\s*)*[^;\n]+;").unwrap());
+
+static PACKAGE_RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?m)^package (.*)$").unwrap());
+
 impl Module {
     pub fn new(path: PathBuf) -> Result<Self> {
         let mut file = File::open(path)?;
         let mut buffer = String::new();
         file.read_to_string(&mut buffer)?;
 
-        let mut split = buffer.split_terminator("package");
-        split.next();
-        let mut content_name = split.next().unwrap_or_default().split_whitespace();
-        let name = content_name.next().unwrap_or_default().trim().to_string();
+        let imports_raw = IMPORTS_RE
+            .find_iter(&buffer)
+            .map(|m| m.as_str())
+            .collect::<Vec<_>>()
+            .join(" ");
 
-        let mut split = buffer.split_terminator("imports");
-        split.next(); // everything before imports
-                      // Everything after
-        let content = split.next().unwrap_or_default();
-        let mut content_split = content.split_terminator(";");
-        // Should be all imports
-        let imports_line = content_split.next().unwrap_or_default();
-        let imports: Vec<String> = imports_line
+        let imports_raw = imports_raw.replace("imports", "");
+        let imports_raw = imports_raw.replace(",", "");
+        let imports_raw = imports_raw.replace(";", "");
+        let imports = imports_raw
             .split_whitespace()
-            .map(|i| i.to_string())
-            .collect();
+            .filter(|p| !p.contains("//"))
+            .map(|s| s.to_string())
+            .collect::<Vec<_>>();
+
+        let name_raw = PACKAGE_RE
+            .find_iter(&buffer)
+            .map(|m| m.as_str())
+            .collect::<Vec<_>>()
+            .join(" ");
+
+        let name = name_raw.replace("package", "").trim().to_string();
 
         Ok(Self { name, imports })
     }
@@ -120,18 +95,6 @@ impl Module {
 
 #[sabi_extern_fn]
 pub fn update(msg: &RMsg, _: &RMap) -> RMap {
-    if msg.is_msg("info-module-update-input") {
-        return RMap::new().insert(
-            "info-module-file-path",
-            msg.val()
-                .get_value()
-                .str()
-                .map(|s| ManuallyDrop::into_inner(s.clone()))
-                .map(|s| s.to_string())
-                .unwrap_or_default(),
-        );
-    }
-
     if !msg.is_msg("info-module-find-file") {
         return RMap::new();
     }
@@ -145,11 +108,43 @@ pub fn update(msg: &RMsg, _: &RMap) -> RMap {
         .unwrap_or_default();
     let path = PathBuf::from_str(&path).unwrap_or_default();
 
-    RMap::new().insert(
-        "info-module-graph",
-        serde_json::to_string::<Data>(&to_data(to_tree(get_modules(path).unwrap_or_default())))
-            .unwrap_or_default(),
-    )
+    let result = run(path).unwrap_or_default();
+
+    RMap::new().insert("info-module-graph", result)
+}
+
+fn run(path: PathBuf) -> Result<String> {
+    let dirs = read_dir(path)?;
+    let modules = dirs
+        .filter_map(|p| p.map(|pl| pl.path()).ok())
+        .filter(|p| p.is_dir())
+        .filter(|p| !p.ends_with(".svn"))
+        .flat_map(|p| get_modules(p).unwrap_or_default())
+        .collect::<Vec<_>>();
+
+    let mut node_set = HashSet::new();
+    let mut links = Vec::new();
+
+    for module in modules {
+        let source = Node { id: module.name };
+        if node_set.contains(&source) {
+            continue;
+        }
+        for id in module.imports {
+            let target = Node { id };
+            links.push(Link {
+                source: source.id.clone(),
+                target: target.id.clone(),
+            });
+            node_set.insert(target);
+        }
+        node_set.insert(source);
+    }
+
+    let nodes = node_set.into_iter().collect();
+
+    serde_json::to_string::<Data>(&Data { nodes, links })
+        .context("Failed serializing Data to string")
 }
 
 fn get_modules(path: PathBuf) -> Result<Vec<Module>> {
@@ -174,39 +169,4 @@ fn get_modules(path: PathBuf) -> Result<Vec<Module>> {
     }
 
     Ok(modules)
-}
-
-fn to_tree(modules: Vec<Module>) -> HashMap<String, Vec<String>> {
-    let mut tree: HashMap<String, Vec<String>> = HashMap::new();
-    for module in modules {
-        if tree.contains_key(&module.name) {
-            let mut old_imports: Vec<String> = tree.get(&module.name).unwrap().clone();
-            for import in module.imports {
-                if !old_imports.contains(&import) {
-                    old_imports.push(import);
-                }
-            }
-            tree.insert(module.name, old_imports);
-        } else {
-            tree.insert(module.name, module.imports);
-        }
-    }
-    tree
-}
-
-fn to_data(tree: HashMap<String, Vec<String>>) -> Data {
-    let mut nodes: Vec<Node> = Vec::new();
-    let mut links: Vec<Link> = Vec::new();
-    for (id, targets) in tree {
-        let node = Node { id: id.clone() };
-        nodes.push(node);
-        for target in targets {
-            links.push(Link {
-                source: id.clone(),
-                target,
-            });
-        }
-    }
-
-    Data { links, nodes }
 }

@@ -287,6 +287,8 @@ dependencies = [
  "abi_stable",
  "anyhow",
  "nmide-std-lib",
+ "once_cell",
+ "regex",
  "serde",
  "serde_json",
 ]
