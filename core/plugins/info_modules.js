@@ -4,14 +4,14 @@ window.plugins.set(
     init: () => {
       return [];
     },
-    update: (msg, model) => {
+    update: (_, __) => {
       return [];
     },
-    view: model => {
+    view: _ => {
       return {
         kind: "Button",
         kids: [],
-        text: "Render Magnolia",
+        text: "Load Magnolia",
         attrs: [{
           OnClick: { Msg: ["info-module-find-file", { Str: "/home/nmf/Documents/magnolia-src" }] }
         }],
