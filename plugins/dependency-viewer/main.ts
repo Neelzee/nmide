@@ -26,7 +26,6 @@ window.plugins.set(
                     tLookup<TValueStr>("info-module-graph"),
                     map<TValueStr, string>(a => a.Str),
                     getOrElse(() => {
-                      console.log("Module does not have info-module-graph: ", model);
                       return "";
                     })
                   )
