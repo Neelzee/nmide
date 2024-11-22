@@ -20,6 +20,8 @@ t.type({ "OnClick": DMsg }),
 t.type({ "OnInput": DMsg }),
 t.type({ "EmitInput": t.string }),
 t.type({ "Src": t.string }),
+t.type({ "Type": t.string }),
+t.type({ "Checked": t.boolean }),
 ]);
 export const DHtmlKind = t.union([
   t.literal("Div"), t.literal("P"), t.literal("H1"), t.literal("H2"),
