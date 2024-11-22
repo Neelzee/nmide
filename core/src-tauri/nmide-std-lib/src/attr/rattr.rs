@@ -19,6 +19,13 @@ impl RAttr {
         }
     }
 
+    pub fn bool(&self) -> Option<bool> {
+        match self.kind {
+            RAttrKind::Checked => Some(unsafe { self.val._bool.clone() }),
+            _ => None,
+        }
+    }
+
     pub fn msg(&self) -> Option<ManuallyDrop<RMsg>> {
         match self.kind {
             RAttrKind::OnClick => Some(unsafe { self.val._msg.clone() }),
@@ -87,6 +94,8 @@ pub enum RAttrKind {
     Id,
     Class,
     Style,
+    Type,
+    Checked,
     OnClick,
     OnInput,
     EmitInput,
@@ -97,5 +106,6 @@ pub enum RAttrKind {
 #[derive(StableAbi)]
 pub union RAttrUnion {
     _str: ManuallyDrop<RString>,
+    _bool: bool,
     _msg: ManuallyDrop<RMsg>,
 }

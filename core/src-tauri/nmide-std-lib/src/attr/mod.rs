@@ -12,6 +12,8 @@ pub mod tattr {
         Id(String),
         Class(String),
         Style(String),
+        Type(String),
+        Checked(bool),
         OnClick(TMsg),
         OnInput(TMsg),
         EmitInput(String),
@@ -36,6 +38,8 @@ pub mod tattr {
                 RAttrKind::EmitInput => {
                     Self::EmitInput(value.str().unwrap_or_default().to_string())
                 }
+                RAttrKind::Type => Self::Type(value.str().unwrap_or_default().to_string()),
+                RAttrKind::Checked => Self::Checked(value.bool().unwrap_or_default()),
             }
         }
     }
