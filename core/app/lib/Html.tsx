@@ -15,6 +15,8 @@ export default function RenderHtml({ kind, kids, attrs, text }: THtml) {
   const onInput = attrs.find(el => "OnInput" in el)?.OnInput;
   const emitInput = attrs.find(el => "EmitInput" in el)?.EmitInput;
   const src = attrs.find(el => "Src" in el)?.Src;
+  const type = attrs.find(el => "Type" in el)?.Type;
+  const checked = attrs.find(el => "Checked" in el)?.Checked;
   switch (kind) {
     case "Div":
       return (
@@ -315,6 +317,8 @@ export default function RenderHtml({ kind, kids, attrs, text }: THtml) {
             onChange={el => {
               EmitInputParse(emitInput, el.target.value)
             }}
+            type={type}
+            checked={checked}
           >
           </input>
 
