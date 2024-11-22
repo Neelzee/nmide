@@ -15,6 +15,8 @@ import {
   isTObj,
   isTStr,
   TMapPair,
+  tObj,
+  TValueObj,
   TValuePrimities
 } from "./Types";
 import { PartialTMapFieldEq, TMapPartialEq } from "./Eq";
@@ -42,6 +44,39 @@ export const tLookup = <T extends TValue = TValue>(k: string): ((xs: TMap) => O.
     O.match(
       () => O.none,
       el => isT<T>(el) ? O.some(el) : O.none,
+    ),
+  );
+
+export const tObjLookup = <T extends TValue = TValue>(k: string): ((o: TValueObj) => O.Option<T>) =>
+  (o: TValueObj) => pipe(
+    o.Obj,
+    A.findFirst(([ok, _]) => ok === k),
+    O.map(T.snd),
+    O.match(
+      () => O.none,
+      el => isT<T>(el) ? O.some(el) : O.none,
+    ),
+  );
+
+export const setTObjField = (k: string, v: TValue): ((o: TValueObj) => TValueObj) =>
+  (o: TValueObj) => pipe(
+    tObjLookup(k)(o),
+    el => el,
+    O.match(
+      () => { return { Obj: A.append<[string, TValue]>([k, v])(o.Obj) }; },
+      _ => pipe(
+        o.Obj,
+        A.map(
+          ([xk, xv]: [string, TValue]): [string, TValue] => {
+            if (xk == k) {
+              return [xk, v];
+            } else {
+              return [xk, xv];
+            }
+          }
+        ),
+        Obj => { return { Obj }; },
+      ),
     ),
   );
 
