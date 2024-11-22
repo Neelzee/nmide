@@ -124,15 +124,6 @@ testDataModelOverwrite.forEach(({ prevModel, newModel, finalModel }) => {
   );
 });
 
-const testTypeInferene: [TValuePrimities, string][] = [
-  [1, "Int"],
-  ["foobar", "Str"],
-  [-1, "Int"],
-  [1.2, "Float"],
-  [[1, 2, 3, 4, 5], "List"],
-  [[["obj_1", 1], ["obj_2", 2]], "Obj"],
-];
-
 suite("TypeInference", () => {
   test("Int", () => expect(isInt(1)).toBe(true));
   test("Float", () => {
