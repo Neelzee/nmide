@@ -10,7 +10,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@nmide/js-utils": "^1.6.1",
+    "@nmide/js-utils": "file:../libs/js-utils",
     "@tauri-apps/api": "^2.0.0",
     "@tauri-apps/plugin-fs": "^2.0.0",
     "@tauri-apps/plugin-log": "^2.0.0",
