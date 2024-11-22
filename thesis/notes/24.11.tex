@@ -228,3 +228,25 @@ just "half-ass" this dependency viewer plugin.
 I think the dependency viewer thing works, but Magnolia is so large, it takes a
 long time to parse it into a tree. I need to create some efficient way to
 navigate it.
+
+
+\section{24.11.22}
+
+Done some plugin work, the dependency viewer works, it was not Magnolia, but
+skill-issue that was the issue. I tried to read the entire .svn folder, which
+I assume is a large one. Did some change on how I do stuff as well, instead of
+doing stupid splitting of the file, I changed it to regex. The graph looks
+ugly, but it works. If I want to make it prettier, I need to be better at D3,
+the JavaScript visualization library I am using. Which I cannot be bothered to
+do. Instead, I will create the debug-plugin, which should let me enable and
+disable plugins. I kinda want to do this in PureScript, but it is frustrating 
+to work with, since Array and lists are two different things, and I would
+rather be working with Haskell, but I cannot be bothered with learning to
+compile it to JavaScript.
+
+The more I am working with PureScript, the more annoyed I am becoming. Why are
+same concepts in PureScript not translated as the same concept in JavaScript?
+It not being a one-to-one mapping on basic stuff like tuples is very annoying.
+
+The encoding/decoding is so close, and to \textit{fix} it I have to write so
+much shitty code.
