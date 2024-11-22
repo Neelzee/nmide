@@ -16,6 +16,7 @@ import {
   isTStr,
 } from "./Types";
 import { NmluginUnknown as Nmlugin } from "./Nmlugin";
+import { GroupBy, PartialTMapFieldOrd } from "./Utils";
 
 
 /**
@@ -55,8 +56,11 @@ export const TotalTMapEq: Eq<TMap> = fromEquals(
  */
 export const TMapPartialEq: Eq<TMap> = fromEquals(
   (x, y) => pipe(
-    A.zip(x)(y),
-    A.foldMap(MonoidAny)(([a, b]) => PartialTMapFieldEq.equals(a, b)),
+    A.concat(x)(y),
+    el => el,
+    A.sort(PartialTMapFieldOrd),
+    GroupBy(PartialTMapFieldEq),
+    A.foldMap(MonoidAny)(z => A.size(z) != 1)
   )
 );
 
