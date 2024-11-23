@@ -34,7 +34,10 @@ export const DHtmlKind = t.union([
   t.literal("Menu"), t.literal("Nav"), t.literal("Ol"), t.literal("Option"),
   t.literal("Select"), t.literal("Style"), t.literal("Svg"), t.literal("Table"),
   t.literal("Td"), t.literal("Th"), t.literal("Ul"), t.literal("Video"),
-  t.literal("Frag"), t.literal("Text"), t.literal("Script")]);
+  t.literal("Frag"), t.literal("Text"), t.literal("Script"),
+  t.literal("Tr"),
+  t.literal("Tbody"),
+]);
 export const DHtml: t.RecursiveType<any, THtml> = t.recursion("DHtml", () => t.type({
   kind: DHtmlKind,
   kids: t.array(DHtml),
