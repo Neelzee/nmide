@@ -5,7 +5,7 @@ import { PathReporter } from "io-ts/PathReporter";
 import { Decoder, NmluginUnknown as Nmlugin, StateUpdateHandler } from "@nmide/js-utils";
 import { useEffect } from "react";
 import NmideClient from "./NmideClient";
-import "./Window";
+import "@nmide/js-utils";
 
 const pluginInit = ([pln, p]: [string, Nmlugin]): [string, TMap] => [
   pln,
