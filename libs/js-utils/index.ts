@@ -10,3 +10,4 @@ export * from "./lib/MapBuilder";
 export * from "./lib/Nmlugin";
 export * from "./lib/Types";
 export * from "./lib/Utils";
+export * from "./lib/Window";
