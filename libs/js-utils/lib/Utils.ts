@@ -15,13 +15,14 @@ import {
   isTObj,
   isTStr,
   TMapPair,
-  tObj,
   TValueObj,
   TValuePrimities
 } from "./Types";
 import { PartialTMapFieldEq, TMapPartialEq } from "./Eq";
 import { fromCompare, Ord } from "fp-ts/lib/Ord";
 import { Ord as StringOrd } from "fp-ts/string";
+import { THtml } from "./THtml";
+import HtmlBuilder from "./HtmlBuilder";
 
 export const GetOrElse = <R>(t: R): ((v: E.Either<Error, R>) => R) =>
   E.getOrElse<Error, R>(e => {
@@ -57,6 +58,20 @@ export const tObjLookup = <T extends TValue = TValue>(k: string): ((o: TValueObj
       el => isT<T>(el) ? O.some(el) : O.none,
     ),
   );
+
+export const tObjLookupOr = <T extends TValue = TValue>(k: string) =>
+  (def: T) =>
+    (o: TValueObj) => pipe(
+      o.Obj,
+      A.findFirst(([ok, _]) => ok === k),
+      O.map(T.snd),
+      O.match(
+        () => O.none,
+        el => isT<T>(el) ? O.some(el) : O.none,
+      ),
+      O.getOrElse(() => def)
+    );
+
 
 export const setTObjField = (k: string, v: TValue): ((o: TValueObj) => TValueObj) =>
   (o: TValueObj) => pipe(
@@ -207,3 +222,5 @@ export const ModelOverwrite = (
   newModel: TMap
 ): TMap => A.union(PartialTMapFieldEq)(prevModel)(newModel);
 
+
+export const emptyHtml = (): THtml => new HtmlBuilder().build();
