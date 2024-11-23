@@ -256,3 +256,27 @@ my shitty code. Not having tests is a pain, I have written about this before,
 and what did I learn? Apparently nothing!
 Still got state issues. I need to expand the current tests to include the
 plugins I have made, to ensure a wider set of test data.
+
+
+\section{24.11.23}
+
+I just forgot to use my model-fold function. The whole idea about the new
+re-write, (having update return the updated fields instead of the entire
+state), was to avoid needlessly sending the state around. But for that to work,
+one needs to have the previous state, and overwrite the fields in it, with the
+new values from the coalesced update.
+
+Now, for my debug plugin to work, I need to overwrite all plugins. Which I
+should be able to do quite effectively. I can just map some function over the
+plugin-installation-field, and return the empty result if it is disabled. This
+can also be done in the init function, since it is by default enabled, so it
+does not matter which order this pre-write happens.
+
+I don't think React is doing anything to help, since the re-rendering of the
+entire DOM happens every time the state changes. I think this is because I do
+not use the \textit{key} attribute. Re-doing and re-thinking the way things are
+rendered will help, because the only reason React was used, was for this case,
+maybe going to another framework, or no framework, would be a good choice.
+Because now, the only reason to keep React, is the way it handles
+React-State-Change with regard to perpetually re-calling the listeners, which
+most likely can be emulated. I will look into it.
