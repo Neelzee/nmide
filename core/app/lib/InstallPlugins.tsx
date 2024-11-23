@@ -1,4 +1,4 @@
-import "./Window";
+import "@nmide/js-utils";
 import { pipe } from "fp-ts/lib/function";
 import * as M from "fp-ts/Map";
 import * as A from "fp-ts/Array";
