@@ -9,6 +9,7 @@ import {
   GetOrElse,
   NmluginUnknown as Nmlugin,
   StateUpdateHandler,
+  ModelOverwrite,
 } from "@nmide/js-utils";
 import NmideClient from "./NmideClient";
 
@@ -43,7 +44,7 @@ const Update = (
         if (E.isLeft(val)) {
           console.error("Error on update: ", val.left);
         } else {
-          setModel(val.right[0]);
+          setModel(prev => ModelOverwrite(prev, val.right[0]));
         }
       })
   }, [tmsg]);
