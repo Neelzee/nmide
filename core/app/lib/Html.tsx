@@ -469,6 +469,19 @@ export default function RenderHtml({ kind, kids, attrs, text }: THtml) {
           {kids.map(RenderHtml)}
         </table>
       );
+    case "Tbody":
+      return (
+        <tbody
+          key={key}
+          className={className}
+          id={id}
+          style={RsStyleToReactCSSProperties(style)}
+          onClick={OnClickParse(onClick)}
+        >
+          {txt}
+          {kids.map(RenderHtml)}
+        </tbody>
+      );
     case "Td":
       return (
         <td
@@ -494,6 +507,19 @@ export default function RenderHtml({ kind, kids, attrs, text }: THtml) {
           {txt}
           {kids.map(RenderHtml)}
         </th>
+      );
+    case "Tr":
+      return (
+        <tr
+          key={key}
+          className={className}
+          id={id}
+          style={RsStyleToReactCSSProperties(style)}
+          onClick={OnClickParse(onClick)}
+        >
+          {txt}
+          {kids.map(RenderHtml)}
+        </tr>
       );
     case "Ul":
       return (
