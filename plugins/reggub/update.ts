@@ -1,5 +1,6 @@
 import {
   isTObj,
+  isTStr,
   setTObjField,
   tBool,
   tLookup,
@@ -15,6 +16,10 @@ import {
 import * as O from "fp-ts/Option";
 
 export const update = (msg: TMsg, model: TMap): TMap => {
+  const newModel: TMap = [];
+  if (msg.Msg[0] === "reggub-tab-btn" && isTStr(msg.Msg[1])) {
+    newModel.push(["reggub-tab-btn", msg.Msg[1]]);
+  }
   if (
     msg.Msg[0] === "toggle-init"
     || msg.Msg[0] === "toggle-update"
@@ -30,8 +35,7 @@ export const update = (msg: TMsg, model: TMap): TMap => {
     const obj = O.getOrElse(() => tObj([["toggle-init", false], ["toggle-view", false], ["toggle-update", false]]))(tLookup<TValueObj>(field)(model));
     checked.Bool = !checked.Bool;
     const newObj = setTObjField(msg.Msg[0], checked)(obj);
-    console.log("New: ", [[field, newObj]]);
-    return [[field, newObj]];
+    newModel.push([field, newObj]);
   }
-  return [];
+  return newModel;
 }

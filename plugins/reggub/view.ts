@@ -1,5 +1,8 @@
 import {
+  getValue,
   HtmlBuilder,
+  isTList,
+  isTObj,
   NmluginUnknown,
   tBool,
   THtml,
@@ -7,21 +10,154 @@ import {
   TMap,
   tObjLookup,
   tStr,
+  TValue,
   TValueBool,
-  TValueObj
+  TValueObj,
 } from "@nmide/js-utils";
 import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/lib/function";
 import { fst } from "fp-ts/Tuple";
+import { _init } from "./init";
 
 export const view = (model: TMap): THtml => {
-  console.log("Model: ", model);
+  _init(model);
+  return new HtmlBuilder()
+    .kids([
+      new HtmlBuilder()
+        .kind("Div")
+        .attrs([{ Class: "tab" }])
+        .kids([
+          new HtmlBuilder()
+            .kind("Button")
+            .text("Plugin")
+            .attrs([
+              { OnClick: { Msg: ["reggub-tab-btn", tStr("Plugin")] } },
+              { Class: "tablinks" },
+            ]),
+          new HtmlBuilder()
+            .kind("Button")
+            .text("State")
+            .attrs([
+              { OnClick: { Msg: ["reggub-tab-btn", tStr("State")] } },
+              { Class: "tablinks" },
+            ]),
+        ]),
+      // Tab-content
+      new HtmlBuilder().kids([
+        pluginTab(model),
+        stateTab(model),
+      ]),
+    ])
+    .build();
+}
+
+const stateTab = (model: TMap): THtml => {
   return new HtmlBuilder()
     .kind("Div")
-    .kids([
-      pluginTab(model),
+    .attrs([
+      { Class: "tabstate tabcontent" },
+      { Id: "State" },
     ])
+    .kids(renderState(model))
+    .build();
+}
+
+const renderState = (model: TMap): THtml[] => {
+  return pipe(
+    model,
+    A.map(([field, value]) => new HtmlBuilder()
+      .kind("Table")
+      .attrs([
+        { Class: "statefield" }
+      ])
+      .kids([
+        new HtmlBuilder()
+          .kind("Tbody")
+          .kids([
+            new HtmlBuilder()
+              .kind("Tr")
+              .kids([
+                new HtmlBuilder()
+                  .kind("Th")
+                  .text("Field"),
+                new HtmlBuilder()
+                  .kind("Th")
+                  .text("Value"),
+              ]),
+            new HtmlBuilder()
+              .kind("Tr")
+              .kids([
+                new HtmlBuilder()
+                  .kind("Td")
+                  .text(field),
+                new HtmlBuilder()
+                  .kind("Td")
+                  .kids([renderTValue(value)])
+              ]),
+          ]),
+      ])
+      .build()
+    ),
+  );
+}
+
+const renderTValue = (x: TValue): THtml => {
+  if (isTObj(x)) {
+    return new HtmlBuilder()
+      .kind("Table")
+      .kids(pipe(
+        [
+          new HtmlBuilder()
+            .kind("Tr")
+            .kids([
+              new HtmlBuilder()
+                .kind("Th")
+                .text("Object-Field"),
+              new HtmlBuilder()
+                .kind("Th")
+                .text("Object-Value"),
+            ]),
+        ],
+        A.concat(pipe(
+          x.Obj,
+          A.map(([y, z]) => new HtmlBuilder()
+            .kind("Tr")
+            .kids([
+              new HtmlBuilder().kind("Td").text(y),
+              new HtmlBuilder().kind("Td").kids([renderTValue(z)]),
+            ])
+          )
+        ))
+      ))
+      .build();
+  } else if (isTList(x)) {
+    return new HtmlBuilder()
+      .kind("Table")
+      .kids(pipe(
+        [
+          new HtmlBuilder()
+            .kind("Tr")
+            .kids([
+              new HtmlBuilder()
+                .kind("Th")
+                .text("Value"),
+            ]),
+        ],
+        A.concat(pipe(
+          x.List,
+          A.map(y => new HtmlBuilder()
+            .kind("Tr")
+            .kids([
+              new HtmlBuilder().kind("Td").kids([renderTValue(y)]),
+            ])
+          )
+        ))
+      ))
+      .build();
+  }
+  return new HtmlBuilder()
+    .text(`${getValue(x)}`)
     .build();
 }
 
@@ -34,7 +170,8 @@ const pluginTab = (model: TMap): THtml => {
   return new HtmlBuilder()
     .kind("Div")
     .attrs([
-      { Class: "tab-plugin tab-content" }
+      { Class: "tabplugin tabcontent" },
+      { Id: "Plugin" },
     ])
     .kids(pipe(
       getPlugins(),
