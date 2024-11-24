@@ -1,7 +1,6 @@
 import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/Either";
 import { PathReporter } from "io-ts/lib/PathReporter";
-import { useEffect } from "react";
 import {
   TMsg,
   TMap,
@@ -9,7 +8,6 @@ import {
   GetOrElse,
   NmluginUnknown as Nmlugin,
   StateUpdateHandler,
-  ModelOverwrite,
 } from "@nmide/js-utils";
 import NmideClient from "./NmideClient";
 
@@ -31,24 +29,12 @@ const PluginUpdate = (
     model => [pln, model],
   );
 
-const Update = (
+export const Update = (
   tmodel: TMap,
-  setModel: React.Dispatch<React.SetStateAction<TMap>>,
-  tmsg: TMsg | undefined,
+  tmsg: TMsg,
   plugins: [string, Nmlugin][],
-): void => {
-  useEffect(() => {
-    if (tmsg === undefined) return;
-    UpdateFunction(tmsg, plugins, tmodel)
-      .then(val => {
-        if (E.isLeft(val)) {
-          console.error("Error on update: ", val.left);
-        } else {
-          setModel(prev => ModelOverwrite(prev, val.right[0]));
-        }
-      })
-  }, [tmsg]);
-};
+) => UpdateFunction(tmsg, plugins, tmodel);
+
 
 export const UpdateFunction = (
   tmsg: TMsg,
@@ -59,4 +45,3 @@ export const UpdateFunction = (
     .then(StateUpdateHandler(plugins.map(PluginUpdate(tmsg, tmodel))))
     .catch(err => { return err; });
 
-export default Update;

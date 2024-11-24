@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import React from "react";
 import {
   THtml,
@@ -14,7 +13,7 @@ import { PathReporter } from "io-ts/PathReporter";
 
 const pluginView = (
   model: TMap
-): (([_, p]: [string, Nmlugin]) => THtml) => ([_, p]) =>
+): (([pln, p]: [string, Nmlugin]) => [string, THtml]) => ([pln, p]) =>
     pipe(
       p.view(model),
       Decoder.DHtml.decode,
@@ -28,27 +27,21 @@ const pluginView = (
       E.getOrElse<Error, THtml>(err => {
         console.error("Error on pluginView: ", err);
         return { kind: "Frag", kids: [], text: null, attrs: [] };
-      })
+      }),
+      h => [pln, h]
     );
 
-const View = (
-  setHtmls: React.Dispatch<React.SetStateAction<THtml[]>>,
+export const View = (
   plugins: [string, Nmlugin][],
   tmodel: TMap,
-) => {
-  useEffect(() => {
-    NmideClient("view", { tmodel })
-      .then(v => setHtmls(
-        pipe(
-          v,
-          E.getOrElse<Error, THtml[]>(err => {
-            console.error("Error from NmideClient in View: ", err);
-            return [];
-          }),
-          A.concat(A.map(pluginView(tmodel))(plugins)),
-        )
-      ));
-  }, [plugins, tmodel]);
-}
+) =>
+  NmideClient("view", { tmodel })
+    .then(v => pipe(
+      v,
+      E.getOrElse<Error, [string, THtml][]>(err => {
+        console.error("Error from NmideClient in View: ", err);
+        return [];
+      }),
+      A.concat(A.map(pluginView(tmodel))(plugins)),
+    ));
 
-export default View;
