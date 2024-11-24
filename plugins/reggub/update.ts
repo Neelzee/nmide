@@ -4,6 +4,7 @@ import {
   setTObjField,
   tBool,
   tLookup,
+  tLookupOr,
   TMap,
   TMsg,
   tObj,
@@ -13,14 +14,20 @@ import {
   TValueObj,
   TValueStr
 } from "@nmide/js-utils";
+import { pipe } from "fp-ts/lib/function";
+import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
 
 export const update = (msg: TMsg, model: TMap): TMap => {
   const newModel: TMap = [];
   if (msg.Msg[0] === "reggub-tab-btn" && isTStr(msg.Msg[1])) {
-    newModel.push(["reggub-tab-btn", msg.Msg[1]]);
+    //@ts-ignore
+    window.plugins.get("reggub_helper").openTab(msg.Msg[1].Str);
   }
-  if (
+  const hasInit = tLookupOr<TValueBool>("reggub-init")(tBool(false))(model).Bool;
+  if (!hasInit) {
+    newModel.push(["reggub-init", tBool(true)]);
+  } if (
     msg.Msg[0] === "toggle-init"
     || msg.Msg[0] === "toggle-update"
     || msg.Msg[0] === "toggle-view"
@@ -37,5 +44,13 @@ export const update = (msg: TMsg, model: TMap): TMap => {
     const newObj = setTObjField(msg.Msg[0], checked)(obj);
     newModel.push([field, newObj]);
   }
+
+  if (!hasInit) {
+    window.cleanup = pipe(
+      window.cleanup,
+      A.filter(([k, _]) => k !== "reggub"),
+    );
+  }
+
   return newModel;
 }

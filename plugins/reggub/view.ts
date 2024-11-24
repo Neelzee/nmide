@@ -7,6 +7,7 @@ import {
   tBool,
   THtml,
   tLookup,
+  tLookupOr,
   TMap,
   tObjLookup,
   tStr,
@@ -22,34 +23,39 @@ import { _init } from "./init";
 
 export const view = (model: TMap): THtml => {
   _init(model);
-  return new HtmlBuilder()
-    .kids([
-      new HtmlBuilder()
-        .kind("Div")
-        .attrs([{ Class: "tab" }])
-        .kids([
-          new HtmlBuilder()
-            .kind("Button")
-            .text("Plugin")
-            .attrs([
-              { OnClick: { Msg: ["reggub-tab-btn", tStr("Plugin")] } },
-              { Class: "tablinks" },
-            ]),
-          new HtmlBuilder()
-            .kind("Button")
-            .text("State")
-            .attrs([
-              { OnClick: { Msg: ["reggub-tab-btn", tStr("State")] } },
-              { Class: "tablinks" },
-            ]),
+  const hasInit = tLookupOr<TValueBool>("reggub-init")(tBool(true))(model).Bool;
+  if (!hasInit) {
+    return new HtmlBuilder()
+      .kids([
+        new HtmlBuilder()
+          .kind("Div")
+          .attrs([{ Class: "tab" }])
+          .kids([
+            new HtmlBuilder()
+              .kind("Button")
+              .text("Plugin")
+              .attrs([
+                { OnClick: { Msg: ["reggub-tab-btn", tStr("Plugin")] } },
+                { Class: "tablinks" },
+              ]),
+            new HtmlBuilder()
+              .kind("Button")
+              .text("State")
+              .attrs([
+                { OnClick: { Msg: ["reggub-tab-btn", tStr("State")] } },
+                { Class: "tablinks" },
+              ]),
+          ]),
+        // Tab-content
+        new HtmlBuilder().kids([
+          pluginTab(model),
+          stateTab(model),
         ]),
-      // Tab-content
-      new HtmlBuilder().kids([
-        pluginTab(model),
-        stateTab(model),
-      ]),
-    ])
-    .build();
+      ])
+      .build();
+  }
+
+  return new HtmlBuilder().build();
 }
 
 const stateTab = (model: TMap): THtml => {
