@@ -40,5 +40,5 @@ export const _init = (model: TMap) => {
 
 export const init = (): TMap => {
   _init([]);
-  return [];
+  return [["reggub-init", tBool(false)]];
 };
