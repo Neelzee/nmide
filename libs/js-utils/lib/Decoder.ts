@@ -48,5 +48,4 @@ export const DMap = t.array(t.tuple([t.string, DValue]));
 export const DMapArr = t.array(DMap);
 export const DUpdateDecoder = t.array(t.tuple([t.string, DMap]));
 export const DInitDecoder = DUpdateDecoder;
-export const DHtmlArr = t.array(DHtml);
-export const DViewDecoder = t.tuple([DHtmlArr, DMap]);
+export const DViewDecoder = t.array(t.tuple([t.string, DHtml]));

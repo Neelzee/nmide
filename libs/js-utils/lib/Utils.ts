@@ -48,6 +48,18 @@ export const tLookup = <T extends TValue = TValue>(k: string): ((xs: TMap) => O.
     ),
   );
 
+export const tLookupOr = <T extends TValue = TValue>(k: string) =>
+  (def: T) =>
+    (xs: TMap): T => pipe(
+      xs,
+      A.findFirst(([ok, _]) => ok === k),
+      O.map(T.snd),
+      O.match(
+        () => def,
+        el => isT<T>(el) ? el : def,
+      ),
+    );
+
 export const tObjLookup = <T extends TValue = TValue>(k: string): ((o: TValueObj) => O.Option<T>) =>
   (o: TValueObj) => pipe(
     o.Obj,
