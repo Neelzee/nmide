@@ -280,3 +280,24 @@ maybe going to another framework, or no framework, would be a good choice.
 Because now, the only reason to keep React, is the way it handles
 React-State-Change with regard to perpetually re-calling the listeners, which
 most likely can be emulated. I will look into it.
+
+
+\section{24.11.24}
+
+I think the re-write of the project should be to TypeScript first, and then
+PureScript. There aren't a lot of examples of Tauri + PureScript inter-op out
+there so, from what I can tell, I still need at least an entry-point, that calls
+the main function to the PureScript code. So instead of going to the extreme
+right away, I'll do it partially. That way I can also help create more examples
+of PureScript + Tauri, since I have already made the only example app for Tauri
++ PureScript.
+
+So this works, but I need to handle how to re-render stuff. I want plugins to
+be able to optionally clean up after they have done a view. So in most cases,
+the view can just be called once, and every subsequent call, it only changes what
+html it wants to change. This off course only works in the JSPS, all other
+plugins without direct access to the DOM need to re-render everything. My idea,
+is that the Core can sort the HTMLElements created by which plugin created them,
+and then remove them when needed. The problem is that I am now moving away from
+the pure Init-Update-View-architecture I designed, so I should probably wrap
+this idea into its own JS-Plugin.
