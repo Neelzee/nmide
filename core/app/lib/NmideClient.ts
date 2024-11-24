@@ -5,7 +5,7 @@ import { pipe } from "fp-ts/lib/function";
 import { TMap, Decoder, TMsg } from "@nmide/js-utils";
 import { NmDebugLogMsg } from "@nmide/js-utils/lib/Debug";
 
-const { DHtmlArr, DInitDecoder, DUpdateDecoder } = Decoder;
+const { DViewDecoder, DInitDecoder, DUpdateDecoder } = Decoder;
 
 export type NmideArgs = {
   "init": {
@@ -33,7 +33,7 @@ export type NmideArgs = {
 
 export const NmideDecoder = {
   "init": DInitDecoder,
-  "view": DHtmlArr,
+  "view": DViewDecoder,
   "update": DUpdateDecoder,
   "plugin_init": Decoder.DMap,
   "plugin_view": Decoder.DHtml,

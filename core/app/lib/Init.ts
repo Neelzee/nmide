@@ -3,7 +3,6 @@ import { TMap } from "@nmide/js-utils";
 import { pipe } from "fp-ts/lib/function";
 import { PathReporter } from "io-ts/PathReporter";
 import { Decoder, NmluginUnknown as Nmlugin, StateUpdateHandler } from "@nmide/js-utils";
-import { useEffect } from "react";
 import NmideClient from "./NmideClient";
 import "@nmide/js-utils";
 
@@ -25,25 +24,10 @@ const pluginInit = ([pln, p]: [string, Nmlugin]): [string, TMap] => [
     }),
   )];
 
-const Init = (
-  plugins: [string, Nmlugin][],
-  setModel: React.Dispatch<React.SetStateAction<TMap>>,
-) => useEffect(() => {
-  InitFunction(plugins)
-    .then(val => {
-      if (E.isLeft(val)) {
-        console.error("Error from init: ", val.left);
-        return;
-      }
-      setModel(val.right[0]);
-    });
-}, [plugins]);
-
-export const InitFunction = (
+export const Init = (
   plugins: [string, Nmlugin][],
 ): Promise<E.Either<Error, [TMap, [string, TMap][]]>> =>
   NmideClient("init")
     .then(StateUpdateHandler(plugins.map(pluginInit)));
 
 
-export default Init;

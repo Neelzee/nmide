@@ -8,9 +8,9 @@ import {
   ModelOverwrite,
 } from "@nmide/js-utils";
 import * as E from "fp-ts/Either";
-import { UpdateFunction } from "../lib/Update.tsx";
-import CounterPlugin from "./test_plugins/counter_plugin.ts";
-import { NmideClientMock } from './init.test.ts';
+import { UpdateFunction } from "../lib/Update";
+import CounterPlugin from "./test_plugins/counter_plugin";
+import { NmideClientMock } from './init.test';
 
 afterEach(clearMocks);
 
