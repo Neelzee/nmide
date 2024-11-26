@@ -6,6 +6,7 @@ declare global {
   interface Window {
     cleanup: [string, HTMLElement][];
     renderHtml: (html: THtml) => HTMLElement;
+    parseHtml: (html: THtml) => HTMLElement;
     state: TMap;
     plugins: Map<string, Nmlugin>;
     async_plugins: Map<string, AsyncNmluginUnknown>;
