@@ -42,13 +42,17 @@ const createElement = ({ kind, kids, text, attrs }: THtml) => {
 }
 
 export const renderHtml = (html: THtml) => {
-  // Remove frags
-  html.kids.flatMap(kid => kid.kind === "Frag" ? kid.kids : [kid]);
-
-  const element = createElement(html);
+  const element = parseHtml(html);
 
   root.appendChild(element);
 
+  return element;
+}
+
+export const parseHtml = (html: THtml) => {
+  // Remove frags
+  html.kids.flatMap(kid => kid.kind === "Frag" ? kid.kids : [kid]);
+  const element = createElement(html);
   return element;
 }
 
