@@ -1,6 +1,8 @@
 import {
   getValue,
   HtmlBuilder,
+  isList,
+  isObj,
   isTList,
   isTObj,
   NmluginUnknown,
@@ -65,7 +67,7 @@ const stateTab = (model: TMap): THtml => {
       { Class: "tabstate tabcontent" },
       { Id: "State" },
     ])
-    .kids(renderState(model))
+    .kids([renderTable(model)])
     .build();
 }
 
@@ -238,16 +240,7 @@ const renderPlugin = ([init, update, view]: [boolean, boolean, boolean]) => (pln
     new HtmlBuilder()
       .kind("Input")
       .attrs([
-        {
-          OnClick: {
-            Msg: ["toggle-init",
-              {
-                Obj: [["plugin", tStr(pln)],
-                ["checked", tBool(init)]]
-              }
-            ]
-          }
-        },
+        { Id: `${pln}-init` },
         { Type: "checkbox" },
         { Checked: init }
       ]),
@@ -257,16 +250,7 @@ const renderPlugin = ([init, update, view]: [boolean, boolean, boolean]) => (pln
     new HtmlBuilder()
       .kind("Input")
       .attrs([
-        {
-          OnClick: {
-            Msg: ["toggle-update",
-              {
-                Obj: [["plugin", tStr(pln)],
-                ["checked", tBool(update)]]
-              }
-            ]
-          }
-        },
+        { Id: `${pln}-update` },
         { Type: "checkbox" },
         { Checked: update },
       ]),
@@ -291,3 +275,99 @@ const renderPlugin = ([init, update, view]: [boolean, boolean, boolean]) => (pln
       ]),
   ])
   .build();
+
+
+export const renderTable = (model: TMap): THtml => {
+  return new HtmlBuilder()
+    .kind("Table")
+    .attrs([{ Id: "reggub-state-table" }])
+    .kids(pipe(
+      [
+        new HtmlBuilder()
+          .kind("Tr")
+          .kids([
+            new HtmlBuilder().kind("Th").text("Field"),
+            new HtmlBuilder().kind("Th").text("Value"),
+          ])
+          .build()
+      ],
+      A.concat(model.map(e => renderRow(e).build())),
+    ))
+    .build();
+};
+
+const renderRow = ([field, value]: [string, TValue]): HtmlBuilder => new HtmlBuilder()
+  .kind("Tr")
+  .kids([
+    new HtmlBuilder()
+      .kind("Td")
+      .attrs([{ Class: "state_field" }])
+      .text(field)
+      .build(),
+    new HtmlBuilder()
+      .kind("Td")
+      .kids([renderValue(value)])
+      .build(),
+  ]);
+
+const renderValue = (x: TValue): HtmlBuilder => {
+  const y = getValue(x);
+  if (isTObj(x) && isObj(y)) {
+    return new HtmlBuilder()
+      .kind("Table")
+      .kids(pipe(
+        [
+          new HtmlBuilder()
+            .kind("Tr")
+            .kids([
+              new HtmlBuilder().kind("Td").text("Field"),
+              new HtmlBuilder().kind("Td").text("Value"),
+            ]),
+        ],
+        A.concat(pipe(
+          x.Obj,
+          A.map(
+            ([i, v]) => new HtmlBuilder()
+              .kind("Tr")
+              .kids([
+                new HtmlBuilder().kind("Td").text(i),
+                renderValue(v),
+              ])
+          ),
+        )),
+      ))
+  } else if (isTList(x) && isList(y)) {
+    return new HtmlBuilder()
+      .kind("Table")
+      .kids(pipe(
+        [
+          new HtmlBuilder()
+            .kind("Tr")
+            .kids([
+              new HtmlBuilder().kind("Td").text("Index"),
+              new HtmlBuilder().kind("Td").text("Value"),
+            ]),
+        ],
+        A.concat(pipe(
+          x.List,
+          A.mapWithIndex(
+            (i, v) => new HtmlBuilder()
+              .kind("Tr")
+              .kids([
+                new HtmlBuilder().kind("Td").text(`Index-${i}`),
+                renderValue(v),
+              ])
+          ),
+        )),
+      ),
+      );
+  } else if (!isObj(y) && !isList(y)) {
+    return renderIntStrBool(y);
+  }
+  return new HtmlBuilder();
+}
+
+const renderIntStrBool = (x: number | boolean | string): HtmlBuilder =>
+  new HtmlBuilder()
+    .text(`${x}`)
+    .attrs([{ Class: `state_value state_${typeof x}` }]);
