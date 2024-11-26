@@ -7,7 +7,8 @@ window.plugins.set(
     update: (_, __) => {
       return [];
     },
-    view: _ => {
+    view: model => {
+      window.plugins.get("reggub").reRender(model);
       return {
         kind: "Frag",
         kids: [],
