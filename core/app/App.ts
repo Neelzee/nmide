@@ -19,7 +19,6 @@ export const App = (): void => {
     Update(prevState, msg, plugins)
       .then(state => pipe(
         state,
-        NmDebugLogMsg("State"),
         GetOrElse<[TMap, [string, TMap][]]>([[], []]),
         ([state, collisions]) => A.isEmpty(collisions)
           ? state
@@ -49,7 +48,6 @@ export const App = (): void => {
 
   InstallPlugins()
     .then(_ => LoadPlugins())
-    //.then(plugins => setTimeout(250, plugins))
     .then(plugins => Init(plugins))
     .then(init => pipe(
       init,
