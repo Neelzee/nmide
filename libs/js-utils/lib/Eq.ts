@@ -55,13 +55,18 @@ export const TotalTMapEq: Eq<TMap> = fromEquals(
  * Will return true if two models have the same field
  */
 export const TMapPartialEq: Eq<TMap> = fromEquals(
-  (x, y) => pipe(
-    A.concat(x)(y),
-    el => el,
-    A.sort(PartialTMapFieldOrd),
-    GroupBy(PartialTMapFieldEq),
-    A.foldMap(MonoidAny)(z => A.size(z) != 1)
-  )
+  (x, y) => {
+    if (x.length === 0 || y.length === 0) {
+      return false;
+    }
+    return pipe(
+      A.concat(x)(y),
+      el => el,
+      A.sort(PartialTMapFieldOrd),
+      GroupBy(PartialTMapFieldEq),
+      A.foldMap(MonoidAny)(z => A.size(z) != 1)
+    );
+  }
 );
 
 /**
