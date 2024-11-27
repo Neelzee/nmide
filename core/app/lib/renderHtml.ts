@@ -2,10 +2,6 @@ import { THtml, TMsg } from "@nmide/js-utils";
 import { emit } from "@tauri-apps/api/event";
 
 
-export const root = document.getElementById("root");
-
-if (root == null) throw Error("Root is null");
-
 const createElement = ({ kind, kids, text, attrs }: THtml) => {
   const className = attrs.find(el => "Class" in el)?.Class;
   const id = attrs.find(el => "Id" in el)?.Id;
@@ -43,9 +39,7 @@ const createElement = ({ kind, kids, text, attrs }: THtml) => {
 
 export const renderHtml = (html: THtml) => {
   const element = parseHtml(html);
-
-  root.appendChild(element);
-
+  window.root.appendChild(element);
   return element;
 }
 

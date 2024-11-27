@@ -8,7 +8,7 @@ import * as M from "fp-ts/Map";
 import * as A from "fp-ts/Array";
 import * as S from "fp-ts/string";
 import { View } from "./lib/View";
-import { renderHtml, root } from "./lib/renderHtml";
+import { renderHtml } from "./lib/renderHtml";
 import { Update } from "./lib/Update";
 import { NmDebugLogMsg } from "@nmide/js-utils/lib/Debug";
 
@@ -41,7 +41,7 @@ export const App = (): void => {
         A.map<[string, THtml], [string, HTMLElement]>(([x, y]) => [x, renderHtml(y)]),
       ))
       .then(newCleanup => {
-        window.cleanup.forEach(([_, e]) => root!.removeChild(e));
+        window.cleanup.forEach(([_, e]) => window.root.removeChild(e));
         window.cleanup = newCleanup;
       });
   });
