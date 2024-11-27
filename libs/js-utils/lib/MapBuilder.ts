@@ -6,17 +6,17 @@ import { TMap, TValue } from "./TMap";
 import {
   TMapPair,
   tValueMaybe,
-  TValuePrimities
+  TValuePrimitive
 } from "./Types";
 import { GroupBy } from "./Utils";
 import { TotalTMapFieldEq, TMapPartialEq } from "./Eq";
 
-type MapBuilderProps = TValue | MapBuilder | TValuePrimities;
+type MapBuilderProps = TValue | MapBuilder | TValuePrimitive;
 
 export default class MapBuilder {
   private lst: [string, MapBuilderProps][] = [];
 
-  public add(k: string, v: TValue | MapBuilder | TValuePrimities) {
+  public add(k: string, v: TValue | MapBuilder | TValuePrimitive) {
     this.lst.push([k, v]);
     return this;
   }
@@ -28,7 +28,7 @@ export default class MapBuilder {
     const filterTValue = (x: [string, MapBuilderProps]): x is [string, TValue] =>
       typeof x[1] === "object" && !Array.isArray(x[1]);
 
-    const filterPrimitive = (x: [string, MapBuilderProps]): x is [string, TValuePrimities] =>
+    const filterPrimitive = (x: [string, MapBuilderProps]): x is [string, TValuePrimitive] =>
       !filterMapBuilder(x) && !filterTValue(x);
 
     const lst = this.lst;
