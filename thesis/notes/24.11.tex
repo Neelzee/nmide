@@ -321,3 +321,13 @@ the frontend side, I should probably move away from the T-types, (THtml, TMap,
 etc.), I think converting them to the actual JavaScript Objects they represent
 will be better. I would just have to keep the utility functions I have made for
 managing the types in the frontend, and also add them to the backend.
+
+Plugins should be able to have different displays. Or should that be a Plugin?
+I am developing a thing for plugin-izing, all possible features. If it is a
+Plugin, then I need to expose even more of the API. I have to change the way
+Plugins are called, by adding an extra key, being the window-url.
+
+Found out that the way I do collisions, don't really make sense. I had this
+typing: (TMap, [(String, TMap)]), Where the first element of the tuple, is the
+final new state, while the second, is a list of collisions, the plugin and the
+field that is collided with. This information is not encoded in this type.
