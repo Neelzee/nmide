@@ -16,7 +16,7 @@ import {
   isTStr,
   TMapPair,
   TValueObj,
-  TValuePrimities
+  TValuePrimitive
 } from "./Types";
 import { PartialTMapFieldEq, TMapPartialEq } from "./Eq";
 import { fromCompare, Ord } from "fp-ts/lib/Ord";
@@ -107,7 +107,7 @@ export const setTObjField = (k: string, v: TValue): ((o: TValueObj) => TValueObj
     ),
   );
 
-export const getValue = (x: TValue): TValuePrimities => {
+export const getValue = (x: TValue): TValuePrimitive => {
   if (isTList(x)) return A.map(getValue)(x.List);
   if (isTObj(x)) {
     return A.map(([k, v]: TMapPair) => [k, getValue(v)])(x.Obj);
@@ -118,7 +118,7 @@ export const getValue = (x: TValue): TValuePrimities => {
   return x.Str;
 }
 
-export const isValueT = <T extends TValuePrimities>(x: TValuePrimities, f = false): x is T => {
+export const isValueT = <T extends TValuePrimitive>(x: TValuePrimitive, f = false): x is T => {
   if (typeof x === "number" && !f) return true;
   if (typeof x === "number") return true;
   if (typeof x === "string") return true;

@@ -13,7 +13,7 @@ import {
   isObj,
   isStr,
   tValueMaybe,
-  TValuePrimities
+  TValuePrimitive
 } from '../lib/Types';
 
 [
@@ -144,7 +144,7 @@ suite("TypeInference", () => {
   });
 });
 
-const tValuePrimitives: [TValuePrimities, string][] = [
+const tValuePrimitives: [TValuePrimitive, string][] = [
   [1, "Int"],
   ["foobar", "Str"],
   [-1, "Int"],

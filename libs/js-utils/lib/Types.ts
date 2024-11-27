@@ -3,11 +3,11 @@ import { TValue } from "./TMap";
 import * as O from "fp-ts/Option";
 import * as A from "fp-ts/Array";
 
-export type TValuePrimities = number
+export type TValuePrimitive = number
   | boolean
   | string
-  | TValuePrimities[]
-  | [string, TValuePrimities][];
+  | TValuePrimitive[]
+  | [string, TValuePrimitive][];
 
 export type TValueInt = { Int: number };
 export const isTInt = (x: object): x is TValueInt => "Int" in x;
@@ -49,7 +49,7 @@ export const tBool = (s: boolean): TValueBool => {
   return { Bool: s };
 };
 
-export const tList = <T extends TValuePrimities>(lst: T[]): TValueList => {
+export const tList = <T extends TValuePrimitive>(lst: T[]): TValueList => {
   return {
     List: pipe(
       lst,
@@ -58,7 +58,7 @@ export const tList = <T extends TValuePrimities>(lst: T[]): TValueList => {
   };
 };
 
-export const tObj = <T extends TValuePrimities>(obj: [string, T][]): TValueObj => {
+export const tObj = <T extends TValuePrimitive>(obj: [string, T][]): TValueObj => {
   return {
     Obj: pipe(
       obj,
@@ -76,7 +76,7 @@ export const isInt = (x: unknown): x is number =>
   typeof x === "number" && !isFloat(x);
 export const isBool = (x: unknown): x is boolean => typeof x === "boolean";
 export const isStr = (x: unknown): x is string => typeof x === "string";
-export const isObj = (x: unknown): x is [string, TValuePrimities][] => {
+export const isObj = (x: unknown): x is [string, TValuePrimitive][] => {
   // is it a list?
   if (!Array.isArray(x)) return false;
   // has it any elements?
@@ -86,7 +86,7 @@ export const isObj = (x: unknown): x is [string, TValuePrimities][] => {
   // is the first element of the tuple?
   return isStr(x[0][0]);
 };
-export const isList = (x: unknown): x is TValuePrimities[] =>
+export const isList = (x: unknown): x is TValuePrimitive[] =>
   Array.isArray(x) && !isObj(x);
 
 export const tValueMaybe = <T>(t: T): O.Option<TValue> => {
@@ -105,14 +105,14 @@ export const tValueMaybe = <T>(t: T): O.Option<TValue> => {
   if (isList(t)) {
     return pipe(
       t,
-      A.filterMap<TValuePrimities, TValue>(tValueMaybe),
+      A.filterMap<TValuePrimitive, TValue>(tValueMaybe),
       List => List.length !== t.length ? O.none : O.some({ List })
     );
   }
   if (isObj(t)) {
     return pipe(
       t,
-      A.filterMap<[string, TValuePrimities], [string, TValue]>(
+      A.filterMap<[string, TValuePrimitive], [string, TValue]>(
         ([k, v]) => O.map<TValue, TMapPair>(_v => [k, _v])(tValueMaybe(v))
       ),
       Obj => Obj.length !== t.length ? O.none : O.some({ Obj })
