@@ -8,6 +8,7 @@ declare global {
     renderHtml: (html: THtml) => HTMLElement;
     parseHtml: (html: THtml) => HTMLElement;
     state: TMap;
+    root: HTMLElement;
     plugins: Map<string, Nmlugin>;
     async_plugins: Map<string, AsyncNmluginUnknown>;
   }
