@@ -1,7 +1,7 @@
-import { App } from "./App";
 import { parseHtml, renderHtml } from "./lib/renderHtml";
+import { main } from "../index.js";
 
 window.renderHtml = renderHtml;
 window.parseHtml = parseHtml;
 window.root = document.body;
-window.addEventListener("DOMContentLoaded", () => App());
+main();
