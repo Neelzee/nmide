@@ -301,3 +301,23 @@ is that the Core can sort the HTMLElements created by which plugin created them,
 and then remove them when needed. The problem is that I am now moving away from
 the pure Init-Update-View-architecture I designed, so I should probably wrap
 this idea into its own JS-Plugin.
+
+
+\section{27.11.24}
+
+I still have the Init-Update-View-architecture, (IUV), all I am doing is
+exposing more of the internal API to JSPS. I think this is okay, since
+theoretically, nothing is different between the \textit{standard} plugin system,
+(SPS), and the JSPS, but practically, a JSP would be more suited for managing
+the user view, while the SPS would be better suited for more computational heavy
+tasks. Maybe, I have no source to back me up here, just vibes. I still have the
+recurring problem of state management. I am hoping this will be solved when I
+rewrite my IUV-System to PureScript. The issue will be that the ADT's in
+PureScript do not map to JavaScript Objects. Sometimes they are wrapped, which
+makes the FFI between PureScript and JavaScript difficult. But I think just
+converting the objects before they enter and after they leave the PureScript
+world will suffice. I was also thinking, that since everything is managed on
+the frontend side, I should probably move away from the T-types, (THtml, TMap,
+etc.), I think converting them to the actual JavaScript Objects they represent
+will be better. I would just have to keep the utility functions I have made for
+managing the types in the frontend, and also add them to the backend.
