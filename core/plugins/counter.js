@@ -6,7 +6,7 @@ window.plugins.set(
     },
     update: (msg, model) => {
       if (msg.Msg[0] === "increment") {
-        const prevVal = model[0][1]["Int"];
+        const prevVal = model.find(([k, _]) => k === "counter")[1].Int;
         const increment = msg.Msg[1]["Int"];
         return [
           ["counter",

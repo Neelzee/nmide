@@ -1,16 +1,16 @@
 import { afterEach, expect, test } from 'vitest';
-import { InitFunction } from "../lib/Init";
+import { Init as InitFunction } from "../lib/Init";
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
 import * as E from "fp-ts/Either";
 import TrivialPlugin from './test_plugins/trivial_plugin';
 import { TMap } from "@nmide/js-utils";
 import CounterPlugin from './test_plugins/counter_plugin';
-import { NmideArgs, NmideDecodedType, NmideDecoderTest } from '../lib/NmideClient';
+import { NmideArgs, NmideDecodedType, NmideDecoder } from '../lib/NmideClient';
 
 afterEach(clearMocks);
 
 export const NmideClientMock = <
-  K extends keyof NmideArgs & keyof typeof NmideDecoderTest,
+  K extends keyof NmideArgs & keyof typeof NmideDecoder,
 >(
   _: K,
   response: NmideDecodedType<K>,

@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import MapBuilder from '../lib/MapBuilder';
-import { tFloat, tInt, tList, tObj, tStr, tValueMaybe, TValuePrimities } from '../lib/Types';
+import { tFloat, tInt, tList, tObj, tStr, tValueMaybe, TValuePrimitive } from '../lib/Types';
 import { TMap } from '../lib/TMap';
 import { tLookup } from '../lib/Utils';
 
@@ -9,7 +9,7 @@ test("Empty TMap", () => {
 });
 
 test("1-level TMap", () => {
-  const data: TValuePrimities[] = [
+  const data: TValuePrimitive[] = [
     1,
     "foobar",
     -1,
