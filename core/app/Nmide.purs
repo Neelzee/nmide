@@ -4,11 +4,13 @@ import Data.Argonaut (Json)
 import Data.Either (Either)
 import Data.Unit (Unit)
 import Effect (Effect)
-import State (TValue)
+import TMap (TValue, TMap)
 
 foreign import app ∷ Unit -> Effect Unit
 
 foreign import debug ∷ TValue -> Effect Unit
+
+foreign import debugTMap ∷ TMap -> Effect Unit
 
 foreign import debugJson ∷ Json -> Effect Unit
 
