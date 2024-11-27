@@ -1,6 +1,8 @@
 import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/Either";
 import { PathReporter } from "io-ts/lib/PathReporter";
+import { stateHandler } from "../../output/State";
+import { decodeState } from "../../output/TMap";
 import {
   TMsg,
   TMap,
@@ -42,6 +44,20 @@ export const UpdateFunction = (
   tmodel: TMap,
 ): Promise<E.Either<Error, [TMap, [string, TMap][]]>> =>
   NmideClient("update", { tmsg, tmodel })
-    .then(StateUpdateHandler(plugins.map(PluginUpdate(tmsg, tmodel))))
+    .then(val => {
+      const pluginModel = plugins.map(PluginUpdate(tmsg, tmodel));
+      if (E.isRight(val)) {
+        console.log("pluginModel: ", pluginModel);
+        try {
+          const st = decodeState({ tmap: pluginModel });
+          console.log(st)
+          const f = stateHandler(st);
+          console.log("foo: ", f);
+        } catch (err) {
+          console.log("err: ", err);
+        }
+      }
+      return StateUpdateHandler(pluginModel)(val);
+    })
     .catch(err => { return err; });
 

@@ -4,3 +4,4 @@ docs/
 output
 .spago
 index.js
+.psci_modules

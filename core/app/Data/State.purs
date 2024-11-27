@@ -1,86 +1,45 @@
-module State
-  ( foo
-  , TValue
-  ) where
+module State (stateHandler) where
 
 import Prelude
-
-import Control.Alt ((<|>))
-import Control.Monad.State (State)
-import Data.Argonaut (class DecodeJson, class EncodeJson, Json, JsonDecodeError(..), decodeJson, encodeJson, getField, jsonEmptyObject, (:=), (~>))
-import Data.Array (fromFoldable)
+import Data.List (List(..), foldl, groupBy, elem, sortBy, concatMap, null)
+import Data.List.Types
 import Data.Either (Either(..))
-import Data.List (List(..), (:))
-import Data.Maybe (Maybe(..))
-import Data.String (joinWith)
-import Data.Tuple (Tuple(..))
-import Foreign.Object (Object(..))
+import Data.Maybe
+import Data.List.NonEmpty as NE
+import Data.Tuple (Tuple(..), fst, snd)
+import TMap (TMap)
 
-type TValueInt = { int :: Int }
-type TValueStr = { str :: String }
-type TValueLst a = { lst :: List a }
-type TValueObj a = { obj :: List (Tuple String a) }
+type Collision = Tuple (List String) TMap
 
-data TValuePrimitive
-  = Int
-  | Str
-  | Lst (List TValuePrimitive)
-  | Obj (List (Tuple String TValuePrimitive))
+stateHandler :: List (Tuple String TMap) -> Either TMap (List Collision)
+stateHandler xs = do
+  let ys = groupByEqFields
+  let model = concatMap snd $ map NE.head ys
+  let collisions = map NE.tail ys
+  if (null collisions) then
+    Left model
+  else
+    Right $ map getCollision collisions
+  where
+  getCollision :: List (Tuple String TMap) -> Collision
+  getCollision ys = Tuple (map fst ys) (foldl combine Nil $ map snd ys)
 
-data TValue
-  = TValueInt TValueInt
-  | TValueStr TValueStr
-  | TValueLst (TValueLst TValue)
-  | TValueObj (TValueObj TValue)
+  groupByEqFields :: List (NonEmptyList (Tuple String TMap))
+  groupByEqFields = groupBy tmapFieldEq sortXs
 
-instance showTValue :: Show TValue where
-  show (TValueInt { int }) = "{ int: " <> show int <> " }"
-  show (TValueStr { str }) = "{ str: " <> show str <> " }"
-  show (TValueLst { lst }) = "{ lst: [ " <> (joinWith ", " $ fromFoldable $ map show lst) <> " ] }"
-  show (TValueObj { obj }) = "{ lst: [ " <> (joinWith ", " $ fromFoldable $ map showObj obj) <> " ] }"
+  tmapFieldEq :: Tuple String TMap -> Tuple String TMap -> Boolean
+  tmapFieldEq (Tuple _ ys) (Tuple _ zs) = tmapFieldEq' ys (map fst zs)
 
-instance decodeJsonTValue :: DecodeJson TValue where
-  decodeJson json = decodeTValue json
+  tmapFieldEq' :: TMap -> List String -> Boolean
+  tmapFieldEq' Nil _ = false
+  tmapFieldEq' ((Tuple y _) : ys) zs
+    | elem y zs = true
+    | otherwise = tmapFieldEq' ys zs
 
-instance encodeJsonTValue :: EncodeJson TValue where
-  encodeJson (TValueInt { int }) = "int" := int ~> jsonEmptyObject
-  encodeJson (TValueStr { str }) = "str" := str ~> jsonEmptyObject
-  encodeJson (TValueLst { lst }) = "lst" := (map encodeJson lst) ~> jsonEmptyObject
-  encodeJson (TValueObj { obj }) = "obj" := (map encodeJson obj) ~> jsonEmptyObject
+  sortXs :: List (Tuple String TMap)
+  sortXs = sortBy (comparing fst) xs
 
-decodeTValue :: Json -> Either JsonDecodeError TValue
-decodeTValue json = do
-  obj <- decodeJson json
-  decodeTValueInt obj
-    <|> decodeTValueStr obj
-    <|> decodeTValueLst obj
-    <|> decodeTValueObj obj
+  combine :: forall a. List a -> List a -> List a
+  combine Nil zs = zs
+  combine (y : ys) zs = combine ys (y : zs)
 
-decodeTValueInt :: Object Json -> Either JsonDecodeError TValue
-decodeTValueInt json = do
-  int <- getField json "int"
-  Right $ TValueInt { int }
-
-decodeTValueStr :: Object Json -> Either JsonDecodeError TValue
-decodeTValueStr json = do
-  str <- getField json "str"
-  Right $ TValueStr { str }
-
-decodeTValueLst :: Object Json -> Either JsonDecodeError TValue
-decodeTValueLst json = do
-  lst <- getField json "lst"
-  Right $ TValueLst { lst }
-
-decodeTValueObj :: Object Json -> Either JsonDecodeError TValue
-decodeTValueObj json = do
-  obj <- getField json "obj"
-  Right $ TValueObj { obj }
-
-showObj :: Tuple String TValue -> String
-showObj (Tuple x y) = "[ " <> x <> ", " <> (show y) <> " ]"
-
-foo :: TValue
-foo = TValueObj
-  { obj: Tuple "foo" (TValueInt { int: 10 })
-      : Nil
-  }
