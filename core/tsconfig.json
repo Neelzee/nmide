@@ -31,15 +31,10 @@
     "allowJs": true,
     "incremental": true,
     "esModuleInterop": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+    "plugins": []
   },
   "include": [
-    "src",
-    ".next/types/**/*.ts"
+    "app",
   ],
   "references": [
     {
@@ -50,6 +45,7 @@
     "out": "docs"
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "output"
   ]
 }

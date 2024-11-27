@@ -1,3 +1,6 @@
 node_modules/
 docs/
 .next/
+output
+.spago
+index.js
