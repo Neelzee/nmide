@@ -1,6 +1,5 @@
-module Data.THtml
+module Nmide.THtml
   ( TAttr(..)
-  , THtml'(..)
   , THtml(..)
   , THtmlKind(..)
   , btn
@@ -12,20 +11,19 @@ module Data.THtml
   , lookupAttrs
   , onclick
   , src
-  , toJsHtml
   , txt
-  )
-  where
+  ) where
 
-import Data.Array (fromFoldable)
-import Data.List (List(..), (:))
+import Data.Array (uncons)
+import Data.Generic.Rep (class Generic)
 import Data.Maybe (Maybe(..))
-import Data.Nullable (Nullable, toNullable)
+import Data.Nullable (Nullable, notNull, null)
+import Data.Show.Generic (genericShow)
 import Data.String (toLower)
-import Data.TMsg (TMsg)
-import Prelude (class Eq, otherwise, (==), map)
+import Nmide.TMsg (TMsg)
+import Prelude (class Eq, class Show, (==))
 
-data THtmlKind 
+data THtmlKind
   = A
   | Abbr
   | Address
@@ -142,27 +140,20 @@ data THtmlKind
 
 derive instance Eq THtmlKind
 
-newtype THtml = THtml { kind :: THtmlKind 
-  , attrs :: List TAttr
-  , kids :: List THtml
-  , text :: Maybe String
-  }
+derive instance Generic THtmlKind _
 
-newtype THtml' = THtml' { kind :: THtmlKind 
+instance showTHtmlKind :: Show THtmlKind where
+  show = genericShow
+
+newtype THtml = THtml
+  { kind :: THtmlKind
   , attrs :: Array TAttr
-  , kids :: Array THtml'
+  , kids :: Array THtml
   , text :: Nullable String
   }
 
-toJsHtml :: THtml -> THtml'
-toJsHtml (THtml { kind, attrs, kids, text }) = THtml'
-  { kind
-  , attrs: (fromFoldable attrs)
-  , kids: (fromFoldable (map toJsHtml kids))
-  , text: (toNullable text)
-  }
-
-data TAttr = Src String 
+data TAttr
+  = Src String
   | Id String
   | Class String
   | EmitInput String
@@ -175,7 +166,7 @@ src s = Src s
 id_ :: String -> TAttr
 id_ s = Id s
 
-class_ :: String -> TAttr 
+class_ :: String -> TAttr
 class_ s = Class s
 
 onclick :: TMsg -> TAttr
@@ -195,20 +186,23 @@ isKind k (THtml h) = h.kind == k
 lookupAttrs :: String -> THtml -> Maybe TAttr
 lookupAttrs s (THtml h) = find' h.attrs
   where
-    find' :: List TAttr -> Maybe TAttr
-    find' Nil = Nothing
-    find' (x:xs)
-      | isAttr s x = Just x
-      | otherwise = find' xs
+  find' :: Array TAttr -> Maybe TAttr
+  find' xs = case uncons xs of
+    Just { head: y, tail: ys } ->
+      if (isAttr s y) then
+        Just y
+      else
+        find' ys
+    _ -> Nothing
 
 emptyHtml :: THtml
-emptyHtml = THtml { kind: Frag, attrs: Nil, kids: Nil, text: Nothing }
+emptyHtml = THtml { kind: Frag, attrs: [], kids: [], text: null }
 
-div_ :: List THtml -> THtml
-div_ kids = THtml { kind: Div, attrs: Nil, kids, text: Nothing }
+div_ :: Array THtml -> THtml
+div_ kids = THtml { kind: Div, attrs: [], kids, text: null }
 
 btn :: String -> TMsg -> THtml
-btn s msg = THtml { kind: Button, attrs: onclick msg : Nil, kids: Nil, text: Just s }
+btn s msg = THtml { kind: Button, attrs: [ onclick msg ], kids: [], text: notNull s }
 
 txt :: String -> THtml
-txt t = THtml { kind: Text, attrs: Nil, kids: Nil, text: Just t }
+txt t = THtml { kind: Text, attrs: [], kids: [], text: notNull t }

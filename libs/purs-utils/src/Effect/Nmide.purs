@@ -1,20 +1,14 @@
 module Effect.Nmide
   ( addPlugin
-  , getPluginsList
-  )
-  where
-
+  , getPlugins
+  ) where
 
 import Prelude
 
-import Data.List (List, fromFoldable)
-import Data.Plugin (JsPlugin)
+import Nmide.Plugin (Plugin)
 import Data.Tuple (Tuple)
 import Effect (Effect)
 
-foreign import getPlugins :: Array (Tuple String JsPlugin)
+foreign import getPlugins :: Effect (Array (Tuple String Plugin))
 
-getPluginsList :: List (Tuple String JsPlugin)
-getPluginsList = fromFoldable getPlugins
-
-foreign import addPlugin :: String -> JsPlugin -> Effect Unit
+foreign import addPlugin :: String -> Plugin -> Effect Unit
