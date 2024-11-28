@@ -7,7 +7,8 @@ pub mod tattr {
     use super::rattr::{RAttr, RAttrKind};
 
     #[derive(Serialize, Deserialize, TS)]
-    #[ts(export, rename_all = "camelCase")]
+    #[serde(rename_all = "camelCase")]
+    #[ts(export)]
     pub enum TAttr {
         Id(String),
         Class(String),

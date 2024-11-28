@@ -7,7 +7,8 @@ pub mod tmsg {
     use ts_rs::TS;
 
     #[derive(Serialize, Deserialize, TS, Clone)]
-    #[ts(export, rename_all = "camelCase")]
+    #[serde(rename_all = "camelCase")]
+    #[ts(export)]
     pub enum TMsg {
         Msg(String, TValue),
     }
