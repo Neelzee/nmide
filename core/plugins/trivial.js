@@ -4,12 +4,12 @@ window.plugins.set(
     init: () => {
       return [];
     },
-    update: (msg, model) => {
+    update: (_, __) => {
       return [];
     },
-    view: model => {
+    view: _ => {
       return {
-        kind: "Frag",
+        kind: "frag",
         kids: [],
         text: null,
         attrs: [],

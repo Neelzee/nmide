@@ -3,7 +3,7 @@ window.plugins.set("d3", {
   update: (_, __) => [],
   view: (_) => {
     return {
-      kind: "Frag",
+      kind: "frag",
       kids: [],
       text: null,
       attrs: [],
