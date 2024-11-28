@@ -1,8 +1,9 @@
 import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/Either";
+import * as A from "fp-ts/Array";
 import { PathReporter } from "io-ts/lib/PathReporter";
 import { stateHandler } from "../../output/State";
-import { decodeState } from "../../output/TMap";
+import { decodeJsonTMap } from "../../output/TMap";
 import {
   TMsg,
   TMap,
@@ -24,7 +25,9 @@ const PluginUpdate = (
       ? E.right(decoded.right)
       : E.left(
         new Error(
-          `Failed to decode model from Plugin: ${PathReporter.report(decoded).join("\n")}`
+          `Failed to decode model from Plugin: ${pln}`
+          + `, supplied model: ${JSON.stringify(p.update(msg, model))}`
+          + `, errors: ${PathReporter.report(decoded).join("\n")}`
         )
       ),
     GetOrElse<TMap>([]),
@@ -47,10 +50,14 @@ export const UpdateFunction = (
     .then(val => {
       const pluginModel = plugins.map(PluginUpdate(tmsg, tmodel));
       if (E.isRight(val)) {
-        console.log("pluginModel: ", pluginModel);
+        const plm = pipe(
+          pluginModel,
+          A.filter(([_, m]) => m.length !== 0),
+        );
+        console.log("pluginModel: ", plm);
         try {
-          const st = decodeState({ tmap: pluginModel });
-          console.log(st)
+          const st = decodeJsonTMap(plm);
+          console.log(st);
           const f = stateHandler(st);
           console.log("foo: ", f);
         } catch (err) {

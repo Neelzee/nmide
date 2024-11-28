@@ -3,7 +3,6 @@ import * as t from "io-ts";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/lib/function";
 import { TMap, Decoder, TMsg } from "@nmide/js-utils";
-import { NmDebugLogMsg } from "@nmide/js-utils/lib/Debug";
 
 const { DViewDecoder, DInitDecoder, DUpdateDecoder } = Decoder;
 

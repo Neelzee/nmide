@@ -3,15 +3,15 @@ import { emit } from "@tauri-apps/api/event";
 
 
 const createElement = ({ kind, kids, text, attrs }: THtml) => {
-  const className = attrs.find(el => "Class" in el)?.Class;
-  const id = attrs.find(el => "Id" in el)?.Id;
-  const onClick = attrs.find(el => "OnClick" in el)?.OnClick;
-  const onInput = attrs.find(el => "OnInput" in el)?.OnInput;
-  const src = attrs.find(el => "Src" in el)?.Src;
-  const type = attrs.find(el => "Type" in el)?.Type;
-  const checked = attrs.find(el => "Checked" in el)?.Checked;
+  const className = attrs.find(el => "class" in el)?.class;
+  const id = attrs.find(el => "id" in el)?.id;
+  const onClick = attrs.find(el => "onClick" in el)?.onClick;
+  const onInput = attrs.find(el => "onInput" in el)?.onInput;
+  const src = attrs.find(el => "src" in el)?.src;
+  const type = attrs.find(el => "type" in el)?.type;
+  const checked = attrs.find(el => "checked" in el)?.checked;
 
-  const elementType = kind === "Frag" ? "div" : kind.toLowerCase();
+  const elementType = kind === "frag" ? "div" : kind;
 
   const element = document.createElement(elementType);
   element.textContent = text;
@@ -45,7 +45,7 @@ export const renderHtml = (html: THtml) => {
 
 export const parseHtml = (html: THtml) => {
   // Remove frags
-  html.kids.flatMap(kid => kid.kind === "Frag" ? kid.kids : [kid]);
+  html.kids.flatMap(kid => kid.kind === "frag" ? kid.kids : [kid]);
   const element = createElement(html);
   return element;
 }
@@ -67,7 +67,7 @@ function EmitInputParse(msg: string | undefined, value: string) {
       return;
     }
     const tmsg: TMsg = {
-      Msg: [msg, { Str: value }]
+      msg: [msg, { str: value }]
     };
     emit("msg", tmsg).catch(err => console.error("Error from EmitInputParse emit:", err));
   };

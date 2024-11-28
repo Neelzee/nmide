@@ -1,4 +1,3 @@
-import React from "react";
 import {
   THtml,
   TMap,
@@ -21,12 +20,14 @@ const pluginView = (
         ? E.right(decoded.right)
         : E.left(
           new Error(
-            `Failed to decode model: ${PathReporter.report(decoded).join("\n")}`
+            `Failed to decode plugin: ${pln}'s`
+            + `, supplied view: ${JSON.stringify(p.view(model))}`
+            + `, errors: ${PathReporter.report(decoded).join("\n")}`
           )
         ),
       E.getOrElse<Error, THtml>(err => {
         console.error("Error on pluginView: ", err);
-        return { kind: "Frag", kids: [], text: null, attrs: [] };
+        return { kind: "frag", kids: [], text: null, attrs: [] };
       }),
       h => [pln, h]
     );

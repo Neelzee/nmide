@@ -1,21 +1,20 @@
-module Main where
+module Main (main) where
 
 import Prelude
-import TMap
-import Data.Argonaut (Json, JsonDecodeError, decodeJson, encodeJson, stringify)
-import Data.Either (Either(..))
+
 import Effect (Effect)
-import Effect.Console (log)
 import Nmide as N
-import Web.Event.Event (EventType(..))
+import Web.Event.Event (Event)
 import Web.Event.EventTarget (addEventListener, eventListener)
 import Web.HTML (window)
+import Web.HTML.Event.EventTypes (domcontentloaded)
 import Web.HTML.Window (toEventTarget)
 
 main :: Effect Unit
 main = do
   w <- window
-  let windowTarget = toEventTarget w
-  domContentLoaded <- eventListener (\_ -> N.app unit)
-  addEventListener (EventType "DOMContentLoaded") domContentLoaded false windowTarget
-  log (stringify (encodeJson bar))
+  appEvent <- eventListener startApp
+  addEventListener domcontentloaded appEvent true (toEventTarget w)
+
+startApp :: Event -> Effect Unit
+startApp _ = N.app

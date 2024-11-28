@@ -1,6 +1,6 @@
 import { App } from "@/app/App";
 
-export const app = () => App();
+export const app = () => { App(); };
 
 export const debug = (a) => () => console.debug(a);
 

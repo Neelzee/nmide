@@ -6,7 +6,7 @@ import Data.Unit (Unit)
 import Effect (Effect)
 import TMap (TValue, TMap)
 
-foreign import app ∷ Unit -> Effect Unit
+foreign import app ∷ Effect Unit
 
 foreign import debug ∷ TValue -> Effect Unit
 
