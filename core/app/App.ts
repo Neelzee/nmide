@@ -13,7 +13,7 @@ import { Update } from "./lib/Update";
 import { NmDebugLogMsg } from "@nmide/js-utils/lib/Debug";
 
 export const App = (): void => {
-  const _unlisten = listen<TMsg>("msg", ({ payload: msg }) => {
+  listen<TMsg>("msg", ({ payload: msg }) => {
     const plugins = M.toArray(S.Ord)(window.plugins);
     const prevState = window.state;
     Update(prevState, msg, plugins)

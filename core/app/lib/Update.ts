@@ -1,9 +1,6 @@
 import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/Either";
-import * as A from "fp-ts/Array";
 import { PathReporter } from "io-ts/lib/PathReporter";
-import { stateHandler } from "../../output/State";
-import { decodeJsonTMap } from "../../output/TMap";
 import {
   TMsg,
   TMap,
@@ -47,24 +44,6 @@ export const UpdateFunction = (
   tmodel: TMap,
 ): Promise<E.Either<Error, [TMap, [string, TMap][]]>> =>
   NmideClient("update", { tmsg, tmodel })
-    .then(val => {
-      const pluginModel = plugins.map(PluginUpdate(tmsg, tmodel));
-      if (E.isRight(val)) {
-        const plm = pipe(
-          pluginModel,
-          A.filter(([_, m]) => m.length !== 0),
-        );
-        console.log("pluginModel: ", plm);
-        try {
-          const st = decodeJsonTMap(plm);
-          console.log(st);
-          const f = stateHandler(st);
-          console.log("foo: ", f);
-        } catch (err) {
-          console.log("err: ", err);
-        }
-      }
-      return StateUpdateHandler(pluginModel)(val);
-    })
+    .then(StateUpdateHandler(plugins.map(PluginUpdate(tmsg, tmodel))))
     .catch(err => { return err; });
 

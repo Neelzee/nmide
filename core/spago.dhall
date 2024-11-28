@@ -13,6 +13,8 @@ to generate this file without the comments in this block.
 { name = "nmide"
 , dependencies =
   [ "argonaut"
+  , "argonaut-codecs"
+  , "argonaut-generic"
   , "arrays"
   , "console"
   , "control"
