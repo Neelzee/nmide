@@ -1,4 +1,14 @@
-import { getValue, HtmlBuilder, THtml, tList, tLookup, TMap, TMsg, tObj, TValueBool, TValueObj, TValueStr } from "@nmide/js-utils"
+import {
+  HtmlBuilder,
+  THtml,
+  tLookup,
+  TMap,
+  TMsg,
+  tObj,
+  TValueBool,
+  TValueObj,
+  TValueStr
+} from "@nmide/js-utils"
 import MapBuilder from "@nmide/js-utils/lib/MapBuilder";
 import { map, getOrElse } from "fp-ts/Option";
 import { pipe } from "fp-ts/lib/function";
@@ -16,15 +26,15 @@ window.plugins.set(
       return new HtmlBuilder()
         .kids([
           new HtmlBuilder()
-            .kind("Button")
+            .kind("button")
             .text("Render Dependency")
             .attrs([{
-              OnClick: {
-                Msg: ["dependency_render", {
-                  Str: pipe(
+              onClick: {
+                msg: ["dependency_render", {
+                  str: pipe(
                     model,
                     tLookup<TValueStr>("info-module-graph"),
-                    map<TValueStr, string>(a => a.Str),
+                    map<TValueStr, string>(a => a.str),
                     getOrElse(() => {
                       return "";
                     })
@@ -36,11 +46,11 @@ window.plugins.set(
         .build();
     },
     update: (msg: TMsg, model: TMap): TMap => {
-      if (msg.Msg[0] !== "dependency_render") return [];
+      if (msg.msg[0] !== "dependency_render") return [];
       const skip = pipe(
         model,
         tLookup<TValueBool>("DependencyViewerInit"),
-        map<TValueBool, boolean>(a => a.Bool),
+        map<TValueBool, boolean>(a => a.bool),
         getOrElse(() => false),
       );
       if (skip) return [];
