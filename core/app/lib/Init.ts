@@ -15,7 +15,9 @@ const pluginInit = ([pln, p]: [string, Nmlugin]): [string, TMap] => [
       ? E.right(decoded.right)
       : E.left(
         new Error(
-          `Failed to decode model, plugin ${pln} errors: ${PathReporter.report(decoded).join("\n")}`
+          `Failed to decode model, plugin: ${pln}`
+          + `, supplied model: ${JSON.stringify(p.init())}`
+          + `, errors: ${PathReporter.report(decoded).join("\n")}`
         )
       ),
     E.getOrElse<Error, TMap>(err => {
