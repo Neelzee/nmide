@@ -6,12 +6,12 @@ window.plugins.set(
     },
     update: (msg, model) => {
       if (msg.msg[0] === "increment") {
-        const prevVal = model.find(([k, _]) => k === "counter")[1].Int;
+        const prevVal = model.find(([k, _]) => k === "counter")[1].int;
         const increment = msg.msg[1]["int"];
         return [
           ["counter",
             {
-              "Int": prevVal === undefined
+              "int": prevVal === undefined
                 ? 0
                 : prevVal + (increment === undefined ? 1 : increment)
             }
