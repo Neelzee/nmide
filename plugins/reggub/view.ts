@@ -25,27 +25,27 @@ import { _init } from "./init";
 
 export const view = (model: TMap): THtml => {
   _init(model);
-  const hasInit = tLookupOr<TValueBool>("reggub-init")(tBool(true))(model).Bool;
+  const hasInit = tLookupOr<TValueBool>("reggub-init")(tBool(true))(model).bool;
   if (!hasInit) {
     return new HtmlBuilder()
       .kids([
         new HtmlBuilder()
-          .kind("Div")
-          .attrs([{ Class: "tab" }])
+          .kind("div")
+          .attrs([{ class: "tab" }])
           .kids([
             new HtmlBuilder()
-              .kind("Button")
+              .kind("button")
               .text("Plugin")
               .attrs([
-                { OnClick: { Msg: ["reggub-tab-btn", tStr("Plugin")] } },
-                { Class: "tablinks" },
+                { onClick: { msg: ["reggub-tab-btn", tStr("Plugin")] } },
+                { class: "tablinks" },
               ]),
             new HtmlBuilder()
-              .kind("Button")
+              .kind("button")
               .text("State")
               .attrs([
-                { OnClick: { Msg: ["reggub-tab-btn", tStr("State")] } },
-                { Class: "tablinks" },
+                { onClick: { msg: ["reggub-tab-btn", tStr("State")] } },
+                { class: "tablinks" },
               ]),
           ]),
         // Tab-content
@@ -62,10 +62,10 @@ export const view = (model: TMap): THtml => {
 
 const stateTab = (model: TMap): THtml => {
   return new HtmlBuilder()
-    .kind("Div")
+    .kind("div")
     .attrs([
-      { Class: "tabstate tabcontent" },
-      { Id: "State" },
+      { class: "tabstate tabcontent" },
+      { id: "State" },
     ])
     .kids([renderTable(model)])
     .build();
@@ -75,32 +75,32 @@ const renderState = (model: TMap): THtml[] => {
   return pipe(
     model,
     A.map(([field, value]) => new HtmlBuilder()
-      .kind("Table")
+      .kind("table")
       .attrs([
-        { Class: "statefield" }
+        { class: "statefield" }
       ])
       .kids([
         new HtmlBuilder()
-          .kind("Tbody")
+          .kind("tbody")
           .kids([
             new HtmlBuilder()
-              .kind("Tr")
+              .kind("tr")
               .kids([
                 new HtmlBuilder()
-                  .kind("Th")
+                  .kind("th")
                   .text("Field"),
                 new HtmlBuilder()
-                  .kind("Th")
+                  .kind("th")
                   .text("Value"),
               ]),
             new HtmlBuilder()
-              .kind("Tr")
+              .kind("tr")
               .kids([
                 new HtmlBuilder()
-                  .kind("Td")
+                  .kind("td")
                   .text(field),
                 new HtmlBuilder()
-                  .kind("Td")
+                  .kind("td")
                   .kids([renderTValue(value)])
               ]),
           ]),
@@ -113,27 +113,27 @@ const renderState = (model: TMap): THtml[] => {
 const renderTValue = (x: TValue): THtml => {
   if (isTObj(x)) {
     return new HtmlBuilder()
-      .kind("Table")
+      .kind("table")
       .kids(pipe(
         [
           new HtmlBuilder()
-            .kind("Tr")
+            .kind("tr")
             .kids([
               new HtmlBuilder()
-                .kind("Th")
+                .kind("th")
                 .text("Object-Field"),
               new HtmlBuilder()
-                .kind("Th")
+                .kind("th")
                 .text("Object-Value"),
             ]),
         ],
         A.concat(pipe(
-          x.Obj,
+          x.obj,
           A.map(([y, z]) => new HtmlBuilder()
-            .kind("Tr")
+            .kind("tr")
             .kids([
-              new HtmlBuilder().kind("Td").text(y),
-              new HtmlBuilder().kind("Td").kids([renderTValue(z)]),
+              new HtmlBuilder().kind("td").text(y),
+              new HtmlBuilder().kind("td").kids([renderTValue(z)]),
             ])
           )
         ))
@@ -141,23 +141,23 @@ const renderTValue = (x: TValue): THtml => {
       .build();
   } else if (isTList(x)) {
     return new HtmlBuilder()
-      .kind("Table")
+      .kind("table")
       .kids(pipe(
         [
           new HtmlBuilder()
-            .kind("Tr")
+            .kind("tr")
             .kids([
               new HtmlBuilder()
-                .kind("Th")
+                .kind("th")
                 .text("Value"),
             ]),
         ],
         A.concat(pipe(
-          x.List,
+          x.list,
           A.map(y => new HtmlBuilder()
-            .kind("Tr")
+            .kind("tr")
             .kids([
-              new HtmlBuilder().kind("Td").kids([renderTValue(y)]),
+              new HtmlBuilder().kind("td").kids([renderTValue(y)]),
             ])
           )
         ))
@@ -176,17 +176,17 @@ const getPlugins = (): [string, NmluginUnknown][] => Array.from(
 
 const pluginTab = (model: TMap): THtml => {
   return new HtmlBuilder()
-    .kind("Div")
+    .kind("div")
     .attrs([
-      { Class: "tabplugin tabcontent" },
-      { Id: "Plugin" },
+      { class: "tabplugin tabcontent" },
+      { id: "Plugin" },
     ])
     .kids(pipe(
       getPlugins(),
       A.map<[string, NmluginUnknown], string>(fst),
       A.filter(pln => pln !== "reggub"),
       A.map(pln => renderPlugin(getPluginState(model, pln))(pln)),
-      A.prepend(new HtmlBuilder().kind("P").text("Plugins").build())
+      A.prepend(new HtmlBuilder().kind("p").text("Plugins").build())
     ))
     .build();
 }
@@ -198,7 +198,7 @@ const getPluginState = (model: TMap, pln: string): [boolean, boolean, boolean] =
     O.map<TValueObj, boolean>(el => pipe(
       el,
       tObjLookup<TValueBool>("toggle-init"),
-      O.map<TValueBool, boolean>(b => b.Bool),
+      O.map<TValueBool, boolean>(b => b.bool),
       O.getOrElse(() => false)
     )),
     O.getOrElse(() => false)
@@ -209,7 +209,7 @@ const getPluginState = (model: TMap, pln: string): [boolean, boolean, boolean] =
     O.map<TValueObj, boolean>(el => pipe(
       el,
       tObjLookup<TValueBool>("toggle-update"),
-      O.map<TValueBool, boolean>(b => b.Bool),
+      O.map<TValueBool, boolean>(b => b.bool),
       O.getOrElse(() => false)
     )),
     O.getOrElse(() => false)
@@ -220,7 +220,7 @@ const getPluginState = (model: TMap, pln: string): [boolean, boolean, boolean] =
     O.map<TValueObj, boolean>(el => pipe(
       el,
       tObjLookup<TValueBool>("toggle-view"),
-      O.map<TValueBool, boolean>(b => b.Bool),
+      O.map<TValueBool, boolean>(b => b.bool),
       O.getOrElse(() => false)
     )),
     O.getOrElse(() => false)
@@ -228,50 +228,40 @@ const getPluginState = (model: TMap, pln: string): [boolean, boolean, boolean] =
 ]
 
 const renderPlugin = ([init, update, view]: [boolean, boolean, boolean]) => (pln: string): THtml => new HtmlBuilder()
-  .kind("Div")
-  .attrs([{ Class: "plugin" }])
+  .kind("div")
+  .attrs([{ class: "plugin" }])
   .kids([
     new HtmlBuilder()
-      .kind("P")
+      .kind("p")
       .text(pln),
     new HtmlBuilder()
-      .kind("Label")
+      .kind("label")
       .text("Init"),
     new HtmlBuilder()
-      .kind("Input")
+      .kind("input")
       .attrs([
-        { Id: `${pln}-init` },
-        { Type: "checkbox" },
-        { Checked: init }
+        { id: `${pln}-init` },
+        { type: "checkbox" },
+        { checked: init }
       ]),
     new HtmlBuilder()
-      .kind("Label")
+      .kind("label")
       .text("Update"),
     new HtmlBuilder()
-      .kind("Input")
+      .kind("input")
       .attrs([
-        { Id: `${pln}-update` },
-        { Type: "checkbox" },
-        { Checked: update },
+        { id: `${pln}-update` },
+        { type: "checkbox" },
+        { checked: update },
       ]),
     new HtmlBuilder()
-      .kind("Label")
+      .kind("label")
       .text("View"),
     new HtmlBuilder()
-      .kind("Input")
+      .kind("input")
       .attrs([
-        {
-          OnClick: {
-            Msg: ["toggle-view",
-              {
-                Obj: [["plugin", tStr(pln)],
-                ["checked", tBool(view)]]
-              }
-            ]
-          }
-        },
-        { Type: "checkbox" },
-        { Checked: view }
+        { type: "checkbox" },
+        { checked: view }
       ]),
   ])
   .build();
@@ -279,15 +269,15 @@ const renderPlugin = ([init, update, view]: [boolean, boolean, boolean]) => (pln
 
 export const renderTable = (model: TMap): THtml => {
   return new HtmlBuilder()
-    .kind("Table")
-    .attrs([{ Id: "reggub-state-table" }])
+    .kind("table")
+    .attrs([{ id: "reggub-state-table" }])
     .kids(pipe(
       [
         new HtmlBuilder()
-          .kind("Tr")
+          .kind("tr")
           .kids([
-            new HtmlBuilder().kind("Th").text("Field"),
-            new HtmlBuilder().kind("Th").text("Value"),
+            new HtmlBuilder().kind("th").text("Field"),
+            new HtmlBuilder().kind("th").text("Value"),
           ])
           .build()
       ],
@@ -297,15 +287,15 @@ export const renderTable = (model: TMap): THtml => {
 };
 
 const renderRow = ([field, value]: [string, TValue]): HtmlBuilder => new HtmlBuilder()
-  .kind("Tr")
+  .kind("tr")
   .kids([
     new HtmlBuilder()
-      .kind("Td")
-      .attrs([{ Class: "state_field" }])
+      .kind("td")
+      .attrs([{ class: "state_field" }])
       .text(field)
       .build(),
     new HtmlBuilder()
-      .kind("Td")
+      .kind("td")
       .kids([renderValue(value)])
       .build(),
   ]);
@@ -314,23 +304,23 @@ const renderValue = (x: TValue): HtmlBuilder => {
   const y = getValue(x);
   if (isTObj(x) && isObj(y)) {
     return new HtmlBuilder()
-      .kind("Table")
+      .kind("table")
       .kids(pipe(
         [
           new HtmlBuilder()
-            .kind("Tr")
+            .kind("tr")
             .kids([
-              new HtmlBuilder().kind("Td").text("Field"),
-              new HtmlBuilder().kind("Td").text("Value"),
+              new HtmlBuilder().kind("td").text("Field"),
+              new HtmlBuilder().kind("td").text("Value"),
             ]),
         ],
         A.concat(pipe(
-          x.Obj,
+          x.obj,
           A.map(
             ([i, v]) => new HtmlBuilder()
-              .kind("Tr")
+              .kind("tr")
               .kids([
-                new HtmlBuilder().kind("Td").text(i),
+                new HtmlBuilder().kind("td").text(i),
                 renderValue(v),
               ])
           ),
@@ -338,23 +328,23 @@ const renderValue = (x: TValue): HtmlBuilder => {
       ))
   } else if (isTList(x) && isList(y)) {
     return new HtmlBuilder()
-      .kind("Table")
+      .kind("table")
       .kids(pipe(
         [
           new HtmlBuilder()
-            .kind("Tr")
+            .kind("tr")
             .kids([
-              new HtmlBuilder().kind("Td").text("Index"),
-              new HtmlBuilder().kind("Td").text("Value"),
+              new HtmlBuilder().kind("td").text("Index"),
+              new HtmlBuilder().kind("td").text("Value"),
             ]),
         ],
         A.concat(pipe(
-          x.List,
+          x.list,
           A.mapWithIndex(
             (i, v) => new HtmlBuilder()
-              .kind("Tr")
+              .kind("tr")
               .kids([
-                new HtmlBuilder().kind("Td").text(`Index-${i}`),
+                new HtmlBuilder().kind("td").text(`Index-${i}`),
                 renderValue(v),
               ])
           ),
@@ -370,4 +360,4 @@ const renderValue = (x: TValue): HtmlBuilder => {
 const renderIntStrBool = (x: number | boolean | string): HtmlBuilder =>
   new HtmlBuilder()
     .text(`${x}`)
-    .attrs([{ Class: `state_value state_${typeof x}` }]);
+    .attrs([{ class: `state_value state_${typeof x}` }]);
