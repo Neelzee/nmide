@@ -37,6 +37,7 @@ export const DHtmlKind = t.union([
   t.literal("frag"), t.literal("text"), t.literal("script"),
   t.literal("tr"),
   t.literal("tbody"),
+  t.literal("main"),
 ]);
 export const DHtml: t.RecursiveType<any, THtml> = t.recursion("DHtml", () => t.type({
   kind: DHtmlKind,
