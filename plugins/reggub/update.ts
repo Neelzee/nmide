@@ -21,28 +21,28 @@ import { toArray } from "fp-ts/lib/Map";
 
 export const update = (msg: TMsg, model: TMap): TMap => {
   const newModel: TMap = [];
-  if (msg.Msg[0] === "reggub-tab-btn" && isTStr(msg.Msg[1])) {
+  if (msg.msg[0] === "reggub-tab-btn" && isTStr(msg.msg[1])) {
     //@ts-ignore
-    window.plugins.get("reggub_helper").openTab(msg.Msg[1].Str);
+    window.plugins.get("reggub_helper").openTab(msg.msg[1].Str);
   }
-  const hasInit = tLookupOr<TValueBool>("reggub-init")(tBool(false))(model).Bool;
+  const hasInit = tLookupOr<TValueBool>("reggub-init")(tBool(false))(model).bool;
   if (!hasInit) {
     newModel.push(["reggub-init", tBool(true)]);
   } if (
-    msg.Msg[0] === "toggle-init"
-    || msg.Msg[0] === "toggle-update"
-    || msg.Msg[0] === "toggle-view"
+    msg.msg[0] === "toggle-init"
+    || msg.msg[0] === "toggle-update"
+    || msg.msg[0] === "toggle-view"
   ) {
-    const msg_obj = msg.Msg[1];
+    const msg_obj = msg.msg[1];
     if (!isTObj(msg_obj)) {
       return newModel;
     }
-    const pluginName = tObjLookupOr<TValueStr>("plugin")(tStr(""))(msg_obj).Str;
+    const pluginName = tObjLookupOr<TValueStr>("plugin")(tStr(""))(msg_obj).str;
     const checked = tObjLookupOr<TValueBool>("checked")(tBool(false))(msg_obj);
     const field = `${pluginName}-state`;
     const obj = tLookupOr<TValueObj>(field)(tObj([["toggle-init", false], ["toggle-view", false], ["toggle-update", false]]))(model);
-    checked.Bool = !checked.Bool;
-    const newObj = setTObjField(msg.Msg[0], checked)(obj);
+    checked.bool = !checked.bool;
+    const newObj = setTObjField(msg.msg[0], checked)(obj);
     newModel.push([field, newObj]);
   }
 

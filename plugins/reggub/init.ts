@@ -21,17 +21,17 @@ export const _init = (model: TMap) => {
       ["toggle-update", false]
     ]))(tLookup<TValueObj>(`${k}-state`)(model));
     const initDisabled =
-      tObjLookupOr<TValueBool>("toggle-init")(tBool(false))(obj).Bool;
+      tObjLookupOr<TValueBool>("toggle-init")(tBool(false))(obj).bool;
     v.init = initDisabled
       ? () => []
       : v.init;
     const viewDisabled =
-      tObjLookupOr<TValueBool>("toggle-view")(tBool(false))(obj).Bool;
+      tObjLookupOr<TValueBool>("toggle-view")(tBool(false))(obj).bool;
     v.view = viewDisabled
       ? (_: TMap) => emptyHtml()
       : v.view;
     const updateDisabled =
-      tObjLookupOr<TValueBool>("toggle-update")(tBool(false))(obj).Bool;
+      tObjLookupOr<TValueBool>("toggle-update")(tBool(false))(obj).bool;
     v.update = updateDisabled
       ? (_: TMsg, __: TMap) => []
       : v.update;
