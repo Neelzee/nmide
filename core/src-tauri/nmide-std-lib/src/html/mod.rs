@@ -12,7 +12,8 @@ pub mod thtml {
     macro_rules! thtmlkind {
         ( $( $name:ident ),* ) => {
             #[derive(Serialize, Deserialize, TS)]
-            #[ts(export, rename_all = "camelCase")]
+            #[serde(rename_all = "camelCase")]
+            #[ts(export)]
             pub enum THtmlKind {
                 $(
                     $name,
@@ -37,7 +38,8 @@ pub mod thtml {
     );
 
     #[derive(Serialize, Deserialize, TS)]
-    #[ts(export, rename_all = "camelCase")]
+    #[serde(rename_all = "camelCase")]
+    #[ts(export)]
     pub struct THtml {
         kind: THtmlKind,
         kids: Vec<THtml>,
