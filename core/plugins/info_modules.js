@@ -9,11 +9,11 @@ window.plugins.set(
     },
     view: _ => {
       return {
-        kind: "Button",
+        kind: "button",
         kids: [],
         text: "Load Magnolia",
         attrs: [{
-          OnClick: { Msg: ["info-module-find-file", { Str: "/home/nmf/Documents/magnolia-src" }] }
+          onClick: { msg: ["info-module-find-file", { str: "/home/nmf/Documents/magnolia-src" }] }
         }],
       }
     },

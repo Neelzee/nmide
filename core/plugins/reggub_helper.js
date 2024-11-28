@@ -10,7 +10,7 @@ window.plugins.set(
     view: model => {
       window.plugins.get("reggub").reRender(model);
       return {
-        kind: "Frag",
+        kind: "frag",
         kids: [],
         text: null,
         attrs: [],
