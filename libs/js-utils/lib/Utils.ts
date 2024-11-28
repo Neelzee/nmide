@@ -62,7 +62,7 @@ export const tLookupOr = <T extends TValue = TValue>(k: string) =>
 
 export const tObjLookup = <T extends TValue = TValue>(k: string): ((o: TValueObj) => O.Option<T>) =>
   (o: TValueObj) => pipe(
-    o.Obj,
+    o.obj,
     A.findFirst(([ok, _]) => ok === k),
     O.map(T.snd),
     O.match(
@@ -74,7 +74,7 @@ export const tObjLookup = <T extends TValue = TValue>(k: string): ((o: TValueObj
 export const tObjLookupOr = <T extends TValue = TValue>(k: string) =>
   (def: T) =>
     (o: TValueObj) => pipe(
-      o.Obj,
+      o.obj,
       A.findFirst(([ok, _]) => ok === k),
       O.map(T.snd),
       O.match(
@@ -88,11 +88,10 @@ export const tObjLookupOr = <T extends TValue = TValue>(k: string) =>
 export const setTObjField = (k: string, v: TValue): ((o: TValueObj) => TValueObj) =>
   (o: TValueObj) => pipe(
     tObjLookup(k)(o),
-    el => el,
     O.match(
-      () => { return { Obj: A.append<[string, TValue]>([k, v])(o.Obj) }; },
+      () => { return { obj: A.append<[string, TValue]>([k, v])(o.obj) }; },
       _ => pipe(
-        o.Obj,
+        o.obj,
         A.map(
           ([xk, xv]: [string, TValue]): [string, TValue] => {
             if (xk == k) {
@@ -102,20 +101,20 @@ export const setTObjField = (k: string, v: TValue): ((o: TValueObj) => TValueObj
             }
           }
         ),
-        Obj => { return { Obj }; },
+        obj => { return { obj }; },
       ),
     ),
   );
 
 export const getValue = (x: TValue): TValuePrimitive => {
-  if (isTList(x)) return A.map(getValue)(x.List);
+  if (isTList(x)) return A.map(getValue)(x.list);
   if (isTObj(x)) {
-    return A.map(([k, v]: TMapPair) => [k, getValue(v)])(x.Obj);
+    return A.map(([k, v]: TMapPair) => [k, getValue(v)])(x.obj);
   }
-  if (isTInt(x)) return x.Int;
-  if (isTFloat(x)) return x.Float;
-  if (isTBool(x)) return x.Bool;
-  return x.Str;
+  if (isTInt(x)) return x.int;
+  if (isTFloat(x)) return x.float;
+  if (isTBool(x)) return x.bool;
+  return x.str;
 }
 
 export const isValueT = <T extends TValuePrimitive>(x: TValuePrimitive, f = false): x is T => {

@@ -9,18 +9,18 @@ export type TValuePrimitive = number
   | TValuePrimitive[]
   | [string, TValuePrimitive][];
 
-export type TValueInt = { Int: number };
-export const isTInt = (x: object): x is TValueInt => "Int" in x;
-export type TValueFloat = { Float: number };
-export const isTFloat = (x: object): x is TValueFloat => "Float" in x;
-export type TValueStr = { Str: string };
-export const isTStr = (x: object): x is TValueStr => "Str" in x;
-export type TValueBool = { Bool: boolean };
-export const isTBool = (x: object): x is TValueBool => "Bool" in x;
-export type TValueList = { List: TValue[] };
-export const isTList = (x: object): x is TValueList => "List" in x;
-export type TValueObj = { Obj: [string, TValue][] };
-export const isTObj = (x: object): x is TValueObj => "Obj" in x;
+export type TValueInt = { int: number };
+export const isTInt = (x: object): x is TValueInt => "int" in x;
+export type TValueFloat = { float: number };
+export const isTFloat = (x: object): x is TValueFloat => "float" in x;
+export type TValueStr = { str: string };
+export const isTStr = (x: object): x is TValueStr => "str" in x;
+export type TValueBool = { bool: boolean };
+export const isTBool = (x: object): x is TValueBool => "bool" in x;
+export type TValueList = { list: TValue[] };
+export const isTList = (x: object): x is TValueList => "list" in x;
+export type TValueObj = { obj: [string, TValue][] };
+export const isTObj = (x: object): x is TValueObj => "obj" in x;
 
 export const isTValue = (x: unknown): x is TValue => typeof x !== "object"
   ? false
@@ -34,24 +34,24 @@ export const isTValue = (x: unknown): x is TValue => typeof x !== "object"
     || isTObj(x);
 
 export const tInt = <T extends number = number>(n: T): TValueInt => {
-  return { Int: n };
+  return { int: n };
 };
 
 export const tFloat = (n: number): TValueFloat => {
-  return { Float: n };
+  return { float: n };
 };
 
 export const tStr = (s: string): TValueStr => {
-  return { Str: s };
+  return { str: s };
 };
 
 export const tBool = (s: boolean): TValueBool => {
-  return { Bool: s };
+  return { bool: s };
 };
 
 export const tList = <T extends TValuePrimitive>(lst: T[]): TValueList => {
   return {
-    List: pipe(
+    list: pipe(
       lst,
       A.filterMap(tValueMaybe),
     )
@@ -60,7 +60,7 @@ export const tList = <T extends TValuePrimitive>(lst: T[]): TValueList => {
 
 export const tObj = <T extends TValuePrimitive>(obj: [string, T][]): TValueObj => {
   return {
-    Obj: pipe(
+    obj: pipe(
       obj,
       A.filterMap(
         ([k, v]) => O.map<TValue, TMapPair>(_v => [k, _v])(tValueMaybe(v))
@@ -106,7 +106,7 @@ export const tValueMaybe = <T>(t: T): O.Option<TValue> => {
     return pipe(
       t,
       A.filterMap<TValuePrimitive, TValue>(tValueMaybe),
-      List => List.length !== t.length ? O.none : O.some({ List })
+      list => list.length !== t.length ? O.none : O.some({ list })
     );
   }
   if (isObj(t)) {
@@ -115,7 +115,7 @@ export const tValueMaybe = <T>(t: T): O.Option<TValue> => {
       A.filterMap<[string, TValuePrimitive], [string, TValue]>(
         ([k, v]) => O.map<TValue, TMapPair>(_v => [k, _v])(tValueMaybe(v))
       ),
-      Obj => Obj.length !== t.length ? O.none : O.some({ Obj })
+      obj => obj.length !== t.length ? O.none : O.some({ obj })
     );
   }
   return O.none;
