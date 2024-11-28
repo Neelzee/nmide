@@ -9,7 +9,8 @@
   "author": "neelzee",
   "license": "Beerware",
   "dependencies": {
-    "@nmide/js-utils": "^1.4.0"
+    "@nmide/js-utils": "file:../../libs/js-utils",
+    "fp-ts": "^2.16.9"
   },
   "devDependencies": {
     "esbuild": "^0.24.0"
