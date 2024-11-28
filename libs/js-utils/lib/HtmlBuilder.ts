@@ -13,12 +13,12 @@ export default class HtmlBuilder {
     return this;
   }
 
-  kids(kids: (THtml | HtmlBuilder)[]): HtmlBuilder {
+  kids(...kids: (THtml | HtmlBuilder)[]): HtmlBuilder {
     this._kids = kids;
     return this;
   }
 
-  attrs(attrs: TAttr[]): HtmlBuilder {
+  attrs(...attrs: TAttr[]): HtmlBuilder {
     this._attrs = attrs;
     return this;
   }
