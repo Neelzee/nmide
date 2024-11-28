@@ -74,18 +74,18 @@ export const TMapPartialEq: Eq<TMap> = fromEquals(
  */
 export const TValueEq: Eq<TValue> = fromEquals(
   (x, y) => isTInt(x) && isTInt(y)
-    ? NumberEq.equals(x.Int, y.Int)
+    ? NumberEq.equals(x.int, y.int)
     : isTFloat(x) && isTFloat(y)
-      ? NumberEq.equals(x.Float, y.Float)
+      ? NumberEq.equals(x.float, y.float)
       : isTStr(x) && isTStr(y)
-        ? StringEq.equals(x.Str, y.Str)
+        ? StringEq.equals(x.str, y.str)
         : isTBool(x) && isTBool(y)
-          ? BooleanEq.equals(x.Bool, y.Bool)
+          ? BooleanEq.equals(x.bool, y.bool)
           : isTList(x) && isTList(y)
-            ? A.getEq(TValueEq).equals(x.List, y.List)
+            ? A.getEq(TValueEq).equals(x.list, y.list)
             : isTObj(x) && isTObj(y)
               ? A.getEq(TotalTMapFieldEq).equals(
-                Array.from(x.Obj.values()), Array.from(y.Obj.values())
+                Array.from(x.obj.values()), Array.from(y.obj.values())
               )
               : false
 );

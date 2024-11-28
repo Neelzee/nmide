@@ -2,4 +2,4 @@
 
 export type TMap = Array<[string, TValue]>;
 
-export type TValue = { "Int": number } | { "Float": number } | { "Bool": boolean } | { "Str": string } | { "List": Array<TValue> } | { "Obj": Array<[string, TValue]> };
+export type TValue = { "int": number } | { "float": number } | { "bool": boolean } | { "str": string } | { "list": Array<TValue> } | { "obj": Array<[string, TValue]> };

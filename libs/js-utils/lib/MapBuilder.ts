@@ -39,7 +39,7 @@ export default class MapBuilder {
       [
         pipe(
           A.filter(filterMapBuilder)(lst),
-          A.map<[string, MapBuilder], TMapPair>(([k, v]) => [k, { Obj: v.build() }]),
+          A.map<[string, MapBuilder], TMapPair>(([k, v]) => [k, { obj: v.build() }]),
         ),
         pipe(
           A.filter(filterPrimitive)(lst),
