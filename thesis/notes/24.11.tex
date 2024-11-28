@@ -331,3 +331,14 @@ Found out that the way I do collisions, don't really make sense. I had this
 typing: (TMap, [(String, TMap)]), Where the first element of the tuple, is the
 final new state, while the second, is a list of collisions, the plugin and the
 field that is collided with. This information is not encoded in this type.
+
+
+\section{28.11.24}
+
+I don't think I'll be able to get good PureScript support by the end of this
+month, but this is okay, since it was not the goal of this month. The general
+plan for the coming months should be developing the actual IDE plugins. I think
+I should see if I can make stuff abstract first, like how the setup should be
+for the plugins. It is probably smart to create the \textit{graph} of how the
+IDE plugins. Like, this plugin does this stuff, which this plugin can use.
+
