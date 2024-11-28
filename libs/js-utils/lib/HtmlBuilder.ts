@@ -3,7 +3,7 @@ import { THtml } from "./THtml";
 import { THtmlKind } from "./THtmlKind";
 
 export default class HtmlBuilder {
-  _kind: THtmlKind = "Frag";
+  _kind: THtmlKind = "frag";
   _kids: (THtml | HtmlBuilder)[] = [];
   _attrs: TAttr[] = [];
   _text: null | string = null;
