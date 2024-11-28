@@ -5,7 +5,7 @@ pub mod tmap {
     use ts_rs::TS;
 
     #[derive(Debug, Serialize, Deserialize, TS, Clone)]
-    #[ts(export_to = "TMap.ts")]
+    #[ts(export_to = "TMap.ts", rename_all = "camelCase")]
     pub enum TValue {
         Int(i32),
         Float(f32),
