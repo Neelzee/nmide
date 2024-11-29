@@ -13,7 +13,7 @@ import { TotalTMapFieldEq, TMapPartialEq } from "./Eq";
 
 type MapBuilderProps = TValue | MapBuilder | TValuePrimitive;
 
-export default class MapBuilder {
+export class MapBuilder {
   private lst: [string, MapBuilderProps][] = [];
 
   public add(k: string, v: TValue | MapBuilder | TValuePrimitive) {
