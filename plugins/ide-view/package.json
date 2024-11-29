@@ -1,0 +1,19 @@
+{
+  "name": "ide-view",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nils.Fitjar",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@nmide/js-utils": "file:../../libs/js-utils",
+    "fp-ts": "^2.16.9"
+  }
+}
