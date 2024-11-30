@@ -1,11 +1,21 @@
 {
   "identifier": "nmide-capabilities",
   "description": "permissions that were migrated from v1",
-  "local": true,
   "windows": [
-    "main"
+    "main",
+    "nmide-*"
   ],
+  "remote": {
+    "urls": [
+      "http://localhost",
+      "http://localhost/*",
+      "asset://localhost",
+      "asset://localhost/*"
+    ]
+  },
   "permissions": [
+    "core:webview:allow-create-webview-window",
+    "core:window:allow-set-title",
     "core:default",
     "fs:allow-read-file",
     "fs:allow-read-dir",
@@ -21,7 +31,6 @@
     "shell:allow-open",
     "fs:default",
     "shell:default",
-    "log:default",
     "log:default"
   ]
 }
