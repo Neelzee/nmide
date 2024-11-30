@@ -21,16 +21,15 @@ pub async fn init() -> Vec<(String, TMap)> {
 }
 
 #[tauri::command]
-pub async fn view(tmodel: TMap) -> Vec<THtml> {
+pub async fn view(tmodel: TMap) -> Vec<(String, THtml)> {
     info!("Backend: view");
     let model: RMap = tmodel.into();
     NMLUGS
         .get()
         .unwrap()
         .iter()
-        .map(|p| p.view(&model))
-        .map(|h| h.into())
-        .collect::<Vec<THtml>>()
+        .map(|p| (p.name().to_string(), p.view(&model).into()))
+        .collect::<Vec<(String, THtml)>>()
 }
 
 #[tauri::command]
