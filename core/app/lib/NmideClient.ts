@@ -77,7 +77,10 @@ const NmideClient = <
       NmideDecoder[cmd].decode,
       E.match<t.Errors, NmideDecodedType<K>, E.Either<Error, NmideDecodedType<K>>>(
         errs => E.left(
-          new Error(`Error from validating backend: ${JSON.stringify(errs)}`)
+          new Error(
+            `Error from validating backend: ${JSON.stringify(errs)}`
+            + `, supplied data: ${JSON.stringify(unknown_data)}`
+          )
         ),
         data => E.right(data),
       ),
