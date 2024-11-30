@@ -15,21 +15,24 @@ const createElement = ({ kind, kids, text, attrs }: THtml) => {
 
   const element = document.createElement(elementType);
   element.textContent = text;
-  element.className = className === undefined ? "" : className;
-  element.id = id === undefined ? "" : id;
-  element.addEventListener("click", OnClickParse(onClick));
-  element.addEventListener("onInput", OnInputParse(onInput));
+  if (className !== undefined) element.className = className;
+  if (id !== undefined) element.id = id;
+  if (onClick !== undefined)
+    element.addEventListener("click", OnClickParse(onClick));
+  if (onInput !== undefined)
+    element.addEventListener("onInput", OnInputParse(onInput));
   if (element instanceof HTMLInputElement) {
-    element.type = type === undefined ? "" : type;
-    element.checked = checked === undefined ? false : checked;
+    if (type !== undefined) element.type = type;
+    if (checked !== undefined) element.checked = checked;
   }
   if (
-    element instanceof HTMLScriptElement
-    || element instanceof HTMLImageElement
-    || element instanceof HTMLAudioElement
-    || element instanceof HTMLVideoElement
+    (element instanceof HTMLScriptElement
+      || element instanceof HTMLImageElement
+      || element instanceof HTMLAudioElement
+      || element instanceof HTMLVideoElement)
+    && src !== undefined
   ) {
-    element.src = src === undefined ? "" : src;
+    element.src = src;
   }
 
   kids.forEach(kid => element.appendChild(createElement(kid)));
@@ -39,6 +42,7 @@ const createElement = ({ kind, kids, text, attrs }: THtml) => {
 
 export const renderHtml = (html: THtml) => {
   const element = parseHtml(html);
+  if (html.kind === "frag" && html.kids.length === 0) return;
   window.root.appendChild(element);
   return element;
 }
@@ -51,33 +55,16 @@ export const parseHtml = (html: THtml) => {
 }
 
 
-function OnClickParse(msg?: TMsg) {
+function OnClickParse(msg: TMsg) {
   return () => {
-    if (msg === undefined) {
-      return;
-    }
     emit("msg", msg)
       .catch(err => console.error("Error from OnClickParse emit:", err));
   };
 }
 
-function EmitInputParse(msg: string | undefined, value: string) {
+function OnInputParse(msg: TMsg): () => void {
   return () => {
-    if (msg === undefined) {
-      return;
-    }
-    const tmsg: TMsg = {
-      msg: [msg, { str: value }]
-    };
-    emit("msg", tmsg).catch(err => console.error("Error from EmitInputParse emit:", err));
-  };
-}
-
-function OnInputParse(msg: TMsg | undefined): () => void {
-  return () => {
-    if (msg === undefined) {
-      return;
-    }
-    emit("msg", msg).catch(err => console.error("Error from OnInputParse emit:", err));
+    emit("msg", msg)
+      .catch(err => console.error("Error from OnInputParse emit:", err));
   };
 }
