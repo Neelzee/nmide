@@ -1,0 +1,19 @@
+{
+  "name": "info-modules",
+  "version": "1.0.0",
+  "main": "info_modules_helper.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nils.Fitjar",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@nmide/js-utils": "file:../../libs/js-utils",
+    "@tauri-apps/api": "^2.1.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.2"
+  }
+}

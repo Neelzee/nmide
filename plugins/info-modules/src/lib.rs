@@ -9,12 +9,11 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashSet,
     fs::{read_dir, File},
     io::Read,
     mem::ManuallyDrop,
     path::PathBuf,
-    process::Command,
     str::FromStr,
 };
 
