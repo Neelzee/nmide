@@ -1,8 +1,8 @@
 module Nmide where
 
+import Prelude
 import Data.Argonaut (Json)
 import Data.Either (Either)
-import Data.Unit (Unit)
 import Effect (Effect)
 import TMap (TValue, TMap)
 

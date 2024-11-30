@@ -4,17 +4,20 @@ import * as M from "fp-ts/Map";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import * as S from "fp-ts/string";
+import * as O from "fp-ts/Ord";
 import { AsyncNmluginUnknown, NmluginUnknown as Nmlugin, TMap, TMsg } from "@nmide/js-utils";
-import { readDir } from "@tauri-apps/plugin-fs";
+import { DirEntry, readDir } from "@tauri-apps/plugin-fs";
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { setTimeout } from "timers/promises";
 import NmideClient from "./NmideClient";
 import { NmDebugLogMsg } from "@nmide/js-utils/lib/Debug";
+import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 export const InstallPlugins = async () => {
   window.plugins = new Map();
   try {
+    await InstallHtmlPlugin();
     return await InstallPluginsFunction();
   } catch (err) {
     console.error("Install Error: ", err);
@@ -31,11 +34,12 @@ export const InstallPluginsFunction = async () => {
       A.filter(d => d.isFile),
       A.filter(d => d.name.endsWith(".js") || d.name.endsWith(".css")),
     ))
-    .then(A.map(p => join(pluginDir, p.name)))
-    .then(A.map(p => p.then(path => convertFileSrc(path))))
+    .then(A.map<DirEntry, Promise<[string, string]>>(p => join(pluginDir, p.name).then(path => [p.name, path])))
+    .then(A.map<Promise<[string, string]>, Promise<[string, string]>>(p => p.then(([pln, path]) => [pln, convertFileSrc(path)])))
     .then(paths => Promise.all(paths))
-    .then(A.sort(S.Ord))
-    .then(A.map(src => {
+    .then(A.sort(O.fromCompare<[string, string]>(([a, _], [b, __]) => S.Ord.compare(a, b))))
+    .then(A.map(([pln, src]) => {
+      window.pluginAssets.push([pln, src]);
       let element: HTMLElement;
       if (src.endsWith(".module.js")) {
         const script = document.createElement("script");
@@ -56,7 +60,36 @@ export const InstallPluginsFunction = async () => {
       return () => { document.head.removeChild(element) }
     }))
     .then(paths => setTimeout(250, paths));
-}
+};
+
+export const InstallHtmlPlugin = async () => {
+  const pluginDir = await appDataDir()
+    .then(p => join(p, "plugins"));
+  return readDir(pluginDir)
+    .then(dirs => pipe(
+      dirs,
+      A.filter(d => d.isFile),
+      A.filter(d => d.name.endsWith(".wb.html")),
+    ))
+    .then(A.map<DirEntry, Promise<[string, string]>>(p => join(pluginDir, p.name).then(path => [p.name, path])))
+    .then(A.map<Promise<[string, string]>, Promise<[string, string]>>(p => p.then(([pln, path]) => [pln, convertFileSrc(path)])))
+    .then(paths => Promise.all(paths))
+    .then(A.sort(O.fromCompare<[string, string]>(([a, _], [b, __]) => S.Ord.compare(a, b))))
+    .then(A.map(([pln, url]) => {
+      window.pluginAssets.push([pln, url]);
+      let name = url.split("%2F").pop()?.split(".")[0];
+      name = name === undefined ? url : name
+      console.log(url);
+      const wb = new WebviewWindow(`nmide-${name}`, { url });
+      wb.once("tauri://webview-created", () => {
+        wb.setTitle(name)
+          .then(_ => _);
+      });
+      wb.once("tauri://error", err => {
+        console.error(`Error in creating webview: ${name}: `, err);
+      });
+    }));
+};
 
 export const LoadPlugins = (): Promise<[string, Nmlugin][]> => LoadPluginsFunction()
   .catch(err => {

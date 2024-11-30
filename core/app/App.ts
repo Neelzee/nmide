@@ -72,7 +72,7 @@ export const App = (): void => {
       A.map<[string, THtml], [string, HTMLElement]>(([x, y]) => [x, renderHtml(y)]),
     ))
     .then(cleanup => {
-      window.cleanup = cleanup;
+      window.cleanup = window.cleanup.concat(cleanup);
     });
 };
 

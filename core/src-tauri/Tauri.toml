@@ -4,8 +4,8 @@ version = "1.0.0"
 identifier = "no.nilsmf.uib"
 
 [build]
-beforeDevCommand = "npx spago bundle-module --platform=node && npm run dev"
-beforeBuildCommand = "npx spago bundle-module --platform=node && npm run build"
+beforeDevCommand = "npm run dev"
+beforeBuildCommand = "npm run build"
 devUrl = "http://localhost:5173"
 frontendDist = "../dist"
 
