@@ -48,18 +48,19 @@ const update = (_: TMsg, __: TMap): TMap => {
   return [];
 };
 
+const getLocation = (html: THtml): string => {
+  const locAttr = html.attrs.find(
+    attr => "class" in attr && attr.class.includes("location-")
+  );
+  if (locAttr !== undefined && "class" in locAttr) {     // locAttr.class === "foo bar location-locationName foobar"
+    const index = locAttr.class.indexOf("location-");    // index = 7
+    if (index === -1) return "";                         // locAttr.substring(7) === "location-locationName foobar"
+    return locAttr.class.substring(index).split(" ")[0]; // locAttr.substring(7).split(" ")[0] === "location-locationName"
+  }
+  return "";
+};
+
 const view = (model: TMap) => {
-  const getLocation = (html: THtml): string => {
-    const locAttr = html.attrs.find(
-      attr => "class" in attr && attr.class.includes("location-")
-    );
-    if (locAttr !== undefined && "class" in locAttr) {     // locAttr.class === "foo bar location-locationName foobar"
-      const index = locAttr.class.indexOf("location-");    // index = 7
-      if (index === -1) return "";                         // locAttr.substring(7) === "location-locationName foobar"
-      return locAttr.class.substring(index).split(" ")[0]; // locAttr.substring(7).split(" ")[0] === "location-locationName"
-    }
-    return "";
-  };
   pipe(
     pluginViews,
     A.map<[string, ((model: TMap) => unknown)], [string, unknown]>(([s, v]) => [s, v(model)]),
@@ -70,7 +71,6 @@ const view = (model: TMap) => {
       O.map<THtml, [string, THtml]>(h => [s, h]),
     )),
     GroupBy(fromEquals((x, y) => getLocation(snd(x)) === getLocation(snd(y)))),
-    el => el,
     A.map<[string, THtml][], [string, [string, THtml][]]>(xs =>
       [
         pipe(
@@ -91,10 +91,22 @@ const view = (model: TMap) => {
     htmls.forEach(([pln, h]) => {
       const elem = window.parseHtml(h);
       rootElement.appendChild(elem);
-      window.cleanup.push([pln, elem]);
+      window.cleanup.push([pln, (() => { rootElement.removeChild(elem); })]);
     })
   });
   return emptyHtml();
+};
+
+const parseHtml = (html: THtml) => {
+  const location = getLocation(html);
+  let loc = location.split("location-")[1];
+  loc = loc === undefined ? "" : loc;
+  let rootElement = document.getElementById(loc);
+  if (rootElement === null) {
+    rootElement = window.root;
+  }
+  const elem = window.parseHtml(html);
+  rootElement.appendChild(elem);
 };
 
 const plugin: Nmlugin = {
@@ -105,5 +117,6 @@ const plugin: Nmlugin = {
 
 window.plugins.set(
   pluginName,
-  plugin,
+  //@ts-ignore
+  { ...plugin, parseHtml },
 );
