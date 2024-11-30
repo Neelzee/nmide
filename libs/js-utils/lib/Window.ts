@@ -4,6 +4,7 @@ import { TMap } from "./TMap";
 
 declare global {
   interface Window {
+    pluginAssets: [string, string][];
     cleanup: [string, HTMLElement][];
     renderHtml: (html: THtml) => HTMLElement;
     parseHtml: (html: THtml) => HTMLElement;
