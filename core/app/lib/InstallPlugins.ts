@@ -79,7 +79,6 @@ export const InstallHtmlPlugin = async () => {
       window.pluginAssets.push([pln, url]);
       let name = url.split("%2F").pop()?.split(".")[0];
       name = name === undefined ? url : name
-      console.log(url);
       const wb = new WebviewWindow(`nmide-${name}`, { url });
       wb.once("tauri://webview-created", () => {
         wb.setTitle(name)
