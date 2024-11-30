@@ -1,0 +1,150 @@
+\documentclass[UKenglish]{beamer}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{graphicx}
+
+\usepackage[normalem]{ulem}
+
+\usepackage{newclude}
+
+% Haskell
+\usepackage[cache=false]{minted}
+
+\usepackage{tikz}
+% Overlay effec
+\usetikzlibrary{shapes.geometric,positioning,shapes.symbols,overlay-beamer-styles}
+
+%% UIB
+\usepackage[utf8]{inputenx} % For æ, ø, å
+\usepackage{csquotes}       % Quotation marks
+\usepackage{microtype}      % Improved typography
+\usepackage{amssymb}        % Mathematical symbols
+\usepackage{mathtools}      % Mathematical symbols
+\usepackage[absolute, overlay]{textpos} % Arbitrary placement
+\setlength{\TPHorizModule}{\paperwidth} % Textpos units
+\setlength{\TPVertModule}{\paperheight} % Textpos units
+%%
+
+\title{Modular IDE Development Plan V25}
+\author{Nils Michael Fitjar}
+\date{\today}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section{Introduction}
+\begin{frame}{Project}
+  Create a modular IDE.
+  (modular in this context, meaning it can be extended with plugins)
+\end{frame}
+
+\section{Plan}
+\begin{frame}{Plan}
+    \begin{itemize}
+        \item \sout{Create an IDE}
+        \item Create Plugins
+        \item ...
+        \item Profit
+    \end{itemize}
+\end{frame}
+
+\section{Showcase}
+\begin{frame}{IDE}
+  So, here is my IDE:
+\end{frame}
+
+\section{Features}
+\begin{frame}{IDE Features}
+  \begin{itemize}
+    \item Dynamically loading of Plugins
+    \item Support for CSS, HTML, JavaScript
+    \item CSS and HTML plugins allows for:
+      \begin{itemize}
+        \item Styling
+        \item Multi-Window functionality
+        \item "Paging"
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Plugins}
+  A Plugin is either compiled or interpreted. Currently, only Rust Plugins
+  (compiled), and JavaScript Plugins (interpreted) are actively supported.
+  A Plugin, is dynamically loaded during startup. It is expected to be "pure".
+  It needs to expose, an init, view and update function.
+\end{frame}
+
+\section{Installation}
+\begin{frame}{Compiled Plugins}
+  \begin{itemize}
+    \item For a user, they simply drag and drop the .so file into
+      APPDATA/plugins.
+    \item For the IDE:
+      \begin{enumerate}
+        \item Read APPDATA/plugins
+        \item Sort by files ending with ".so"
+        \item Load using abi-stable library.
+        If the Plugin is out-of-date, i.e. the Nmide Std. Lib. has been
+        updated, after this Plugin was compiled, the IDE will crash. (safely)
+      \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Interpreted Plugins}
+  \begin{itemize}
+    \item For a user, they simply drag and drop the .js/.css/.html file into
+      APPDATA/plugins.
+    \item For the IDE:
+      \begin{enumerate}
+        \item Read APPDATA/plugins
+        \item Sort by files ending with ".js" or ".css" or ".html"
+        \item Create a tag/webview corresponding to the file-type.
+        \item Invalid JSP will not affect the IDE.
+        \item Invalid HTML will affect the IDE.
+        \item Invalid CSS will not affect the IDE.
+      \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+\section{Finished Work}
+\begin{frame}{Plugins}
+  Created Plugins
+  \begin{itemize}
+    \item Dependency Viewer
+    \item IDE-Framework
+    Creates HTML-Skeleton for other Plugins to use
+    \item IDE-View
+    Allows Plugins to "place" their HTML in a specific location
+    \item window-getter
+    Allows for Multi-Window-Documentation
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Miscellaneous}
+  \begin{itemize}
+    \item Can build for Windows, Linux and macOS
+  \end{itemize}
+\end{frame}
+
+\section{Remaining Work}
+\begin{frame}{Remaining Work}
+  \begin{itemize}
+    \item Plugins
+    \begin{itemize}
+      \item Workspace-Manager
+        Managing multiple-projects
+      \item File-Explorer
+        For viewing files in a folder
+      \item IDE-Editor
+        For editing files, (monaco)
+    \end{itemize}
+    \item More Tests
+    \begin{itemize}
+      \item Unit Tests
+      \item Integration Tests
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+\end{document}
