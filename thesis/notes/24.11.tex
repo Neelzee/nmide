@@ -303,7 +303,7 @@ the pure Init-Update-View-architecture I designed, so I should probably wrap
 this idea into its own JS-Plugin.
 
 
-\section{27.11.24}
+\section{24.11.27}
 
 I still have the Init-Update-View-architecture, (IUV), all I am doing is
 exposing more of the internal API to JSPS. I think this is okay, since
@@ -333,7 +333,7 @@ final new state, while the second, is a list of collisions, the plugin and the
 field that is collided with. This information is not encoded in this type.
 
 
-\section{28.11.24}
+\section{24.11.28}
 
 I don't think I'll be able to get good PureScript support by the end of this
 month, but this is okay, since it was not the goal of this month. The general
@@ -342,3 +342,25 @@ I should see if I can make stuff abstract first, like how the setup should be
 for the plugins. It is probably smart to create the \textit{graph} of how the
 IDE plugins. Like, this plugin does this stuff, which this plugin can use.
 
+
+\section{24.11.30}
+
+What have I been doing lately? I need to figure that out.
+
+For August, I did C-stuff, which I haven't used since, and should possibly
+rework or remove. I struggled with technical debt, tests and documentation.
+Released v0.1.0
+
+For September, I attempted to setup a good CI/CD, still haven't succeeded 100\%,
+but this is not just because of a lack of understanding on how GitLab pipelines
+work, but also because I need a specialized runner. I also discovered that the
+Rust ABI is not stable, out of the box. Worked on JSPS. Released v1.0.0
+
+For October, I finallized JSPS, added tests, doc-tests, started thinking about
+optimializations. Made up an issue about race-conditioned Msg in a
+single-threaded language.
+
+For November, I've redesigned the core-architecture, changing how the update
+function works, moved away from React, to TypeScript. Added support for CSS
+plugins and HTML plugins. Started work on the ide-plugin-group. Exposed a lot of
+the core functionality for JSPS.
