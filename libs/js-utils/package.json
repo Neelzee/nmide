@@ -1,6 +1,6 @@
 {
   "name": "@nmide/js-utils",
-  "version": "1.17.0",
+  "version": "1.18.0",
   "description": "nmide utility functions",
   "main": "index.ts",
   "scripts": {
