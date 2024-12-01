@@ -1,7 +1,9 @@
 node_modules/
 docs/
 .next/
-output
+output/
 .spago
 index.js
 .psci_modules
+entry.js
+build/
