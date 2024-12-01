@@ -5,7 +5,7 @@ window.plugins.set(
     update: (_, __) => [],
     view: (_) => {
       return {
-        kind: "Frag",
+        kind: "frag",
         kids: [],
         text: null,
         attrs: [],

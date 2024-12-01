@@ -9,7 +9,6 @@ import {
   NmluginUnknown as Nmlugin,
   StateUpdateHandler,
 } from "@nmide/js-utils";
-import NmideClient from "./NmideClient";
 
 const PluginUpdate = (
   msg: TMsg,
@@ -43,7 +42,16 @@ export const UpdateFunction = (
   plugins: [string, Nmlugin][],
   tmodel: TMap,
 ): Promise<E.Either<Error, [TMap, [string, TMap][]]>> =>
-  NmideClient("update", { tmsg, tmodel })
-    .then(StateUpdateHandler(plugins.map(PluginUpdate(tmsg, tmodel))))
+  window.client("update", { tmsg, tmodel })
+    .then(StateUpdateHandler(plugins.map(plugin => {
+      try {
+        return PluginUpdate(tmsg, tmodel)(plugin);
+      } catch (err) {
+        window.log.error(
+          `Got error on plugin: ${plugin[0]}, error: ${JSON.stringify(err)}`
+        );
+        return [plugin[0], []];
+      }
+    })))
     .catch(err => { return err; });
 
