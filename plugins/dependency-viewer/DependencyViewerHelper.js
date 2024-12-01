@@ -1,4 +1,4 @@
-windows.plugins.set(
+window.plugins.set(
   "DependencyViewerHelper",
   {
     init: () => [],
@@ -12,24 +12,15 @@ windows.plugins.set(
       };
     },
     render: (graph) => {
+      if (graph === "") return;
       const width = 1280
       const height = 720
 
-      // { Obj: [string, TValue][] }
-      const jsonify = (obj) => {
-        const val = obj.Obj;
-        return val.map(([k, v]) => [k, jsonify(v)]);
-      };
-
-      console.log(jsonify(graph));
+      const data = JSON.parse(graph);
 
       async function populateGraph() {
         const svg = d3.select("#graph svg")
 
-        const data = {
-          nodes: jsonify(graph.Obj.find(([k, _]) => k === "nodes")),
-          links: jsonify(graph.Obj.find(([k, _]) => k === "links")),
-        };
         const links = data.links.map(d => ({ ...d }))
         const nodes = data.nodes.map(d => ({ ...d }))
 
