@@ -31,6 +31,6 @@ export default defineConfig({
     sourcemap: !!process.env.TAURI_ENV_DEBUG,
   },
   plugins: [
-    nodePolyfills({ include: ["timers/promises"] }),
+    nodePolyfills({ include: [] }),
   ],
 });
