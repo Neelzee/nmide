@@ -6,7 +6,7 @@ declare global {
   interface Window {
     pluginAssets: [string, string][];
     cleanup: [string, (() => void)][];
-    renderHtml: (html: THtml) => HTMLElement;
+    renderHtml: (html: THtml) => HTMLElement | undefined;
     parseHtml: (html: THtml) => HTMLElement;
     state: TMap;
     root: HTMLElement;
