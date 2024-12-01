@@ -1,5 +1,4 @@
 import { THtml, TMsg } from "@nmide/js-utils";
-import { emit } from "@tauri-apps/api/event";
 
 
 const createElement = ({ kind, kids, text, attrs }: THtml) => {
@@ -57,14 +56,14 @@ export const parseHtml = (html: THtml) => {
 
 function OnClickParse(msg: TMsg) {
   return () => {
-    emit("msg", msg)
-      .catch(err => console.error("Error from OnClickParse emit:", err));
+    window.emit("msg", msg)
+      .catch(err => window.log.error("Error from OnClickParse emit:", err));
   };
 }
 
 function OnInputParse(msg: TMsg): () => void {
   return () => {
-    emit("msg", msg)
-      .catch(err => console.error("Error from OnInputParse emit:", err));
+    window.emit("msg", msg)
+      .catch(err => window.log.error("Error from OnInputParse emit:", err));
   };
 }

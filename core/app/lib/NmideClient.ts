@@ -65,7 +65,7 @@ const NmideClient = <
   cmd: K,
   args?: A,
   options?: InvokeOptions,
-) => NmideInvoker(
+): Promise<E.Either<Error, NmideDecodedType<K>>> => NmideInvoker(
   cmd,
   args,
   options,

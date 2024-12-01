@@ -1,6 +1,5 @@
 import { GetOrElse, ModelOverwrite, THtml, TMap, TMsg } from "@nmide/js-utils";
-import { emit, listen } from "@tauri-apps/api/event";
-import { InstallPlugins, LoadPlugins } from "./lib/InstallPlugins";
+import { InstallPlugins } from "./lib/InstallPlugins";
 import { Init } from "./lib/Init";
 import "@nmide/js-utils";
 import { constant, pipe } from "fp-ts/lib/function";
@@ -12,7 +11,7 @@ import { renderHtml } from "./lib/renderHtml";
 import { Update } from "./lib/Update";
 
 export const App = (): void => {
-  listen<TMsg>("msg", ({ payload: msg }) => {
+  window.listen<TMsg>("msg", ({ payload: msg }) => {
     const plugins = M.toArray(S.Ord)(window.plugins);
     const prevState = window.state;
     Update(prevState, msg, plugins)
@@ -24,14 +23,14 @@ export const App = (): void => {
           : pipe(
             collisions,
             A.map(([pln, model]) => {
-              console.debug(`Collisions from: ${pln}, with model: `, model);
+              window.log.error(`Collisions from: ${pln}, with model: `, model);
             }),
             constant(state),
           ),
       ))
       .then(newState => {
         window.state = ModelOverwrite(prevState, newState);
-        emit("nmide://update").catch(err => console.error("emit update: ", err));
+        window.emit("nmide://update").catch(err => window.log.error("emit update: ", err));
         return window.state;
       })
 
@@ -40,7 +39,7 @@ export const App = (): void => {
           try {
             clean();
           } catch (err) {
-            console.debug(`Error on Cleanup from plugin: ${pln}, `, err);
+            window.log.error(`Error on Cleanup from plugin: ${pln}, `, err);
           }
         });
         return newState;
@@ -50,7 +49,7 @@ export const App = (): void => {
         htmls,
         A.map<[string, THtml], [string, (() => void)]>(
           ([x, y]) => [x, (() => {
-            const elem = renderHtml(y);
+            const elem = window.renderHtml(y);
             if (elem === undefined) return
             window.root.removeChild(elem);
           })]
@@ -58,11 +57,11 @@ export const App = (): void => {
       )).then(cleanup => {
         window.cleanup = cleanup;
       })
-      .then(_ => emit("nmide://view").catch(err => console.error("emit view: ", err)));
+      .then(_ => window.emit("nmide://view").catch(err => window.log.error("emit view: ", err)));
   });
 
   InstallPlugins()
-    .then(_ => LoadPlugins())
+    .then(_ => M.toArray(S.Ord)(window.plugins))
     .then(plugins => Init(plugins))
     .then(init => pipe(
       init,
@@ -72,14 +71,14 @@ export const App = (): void => {
         : pipe(
           collisions,
           A.map(([pln, model]) => {
-            console.debug(`Collisions from: ${pln}, with model: `, model);
+            window.log.error(`Collisions from: ${pln}, with model: `, model);
           }),
           _ => state,
         ),
     ))
     .then(state => {
       window.state = state;
-      emit("nmide://init").catch(err => console.error("emit init: ", err));
+      window.emit("nmide://init").catch(err => window.log.error("emit init: ", err));
       return state;
     })
     .then(tmodel => View(M.toArray(S.Ord)(window.plugins), tmodel))
@@ -97,7 +96,7 @@ export const App = (): void => {
       window.cleanup = window.cleanup.concat(cleanup);
     })
     .then(_ => {
-      emit("nmide://view").catch(err => console.error("emit view: ", err));
+      window.emit("nmide://view").catch(err => window.log.error("emit view: ", err));
     });
 };
 
