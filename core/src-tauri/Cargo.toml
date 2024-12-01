@@ -13,6 +13,10 @@ edition = "2021"
 [build]
 profiler = true
 
+[lib]
+name = "core_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
 [build-dependencies]
 tauri-build = { version = "2.0.3", features = [] }
 dotenv = "0.15.0"
@@ -34,8 +38,12 @@ tauri-plugin-shell = "2.0.2"
 tauri-plugin-dialog = "2.0.3"
 serde_json = "1.0.133"
 abi_stable = "0.11.3"
+actix-web = "4.9.0"
+actix-files = "0.6.6"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
+server = []
+ide = []
