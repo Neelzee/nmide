@@ -9,7 +9,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@nmide/js-utils": "file:../libs/js-utils"
+    "@nmide/js-utils": "file:../libs/js-utils",
+    "fp-ts": "^2.16.9"
   },
   "devDependencies": {
     "typescript": "^5.2.2",
