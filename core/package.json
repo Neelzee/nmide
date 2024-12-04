@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "tauri": "npx spago bundle-module --platform=node && tauri",
+    "tauri": "tauri",
     "test": "vitest"
   },
   "dependencies": {

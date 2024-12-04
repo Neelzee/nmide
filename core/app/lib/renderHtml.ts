@@ -1,6 +1,5 @@
 import { THtml, TMsg } from "@nmide/js-utils";
 
-
 const createElement = ({ kind, kids, text, attrs }: THtml) => {
   const className = attrs.find(el => "class" in el)?.class;
   const id = attrs.find(el => "id" in el)?.id;
@@ -40,8 +39,8 @@ const createElement = ({ kind, kids, text, attrs }: THtml) => {
 }
 
 export const renderHtml = (html: THtml) => {
-  const element = parseHtml(html);
-  if (html.kind === "frag" && html.kids.length === 0) return;
+  const element = window.parseHtml(html);
+  if (html.kind === "frag" && html.kids.length === 0 || element === undefined) return;
   window.root.appendChild(element);
   return element;
 }
