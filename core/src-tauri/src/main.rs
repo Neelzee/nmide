@@ -1,7 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use anyhow::{Context, Result};
+#[allow(unused_imports)]
+use anyhow::Context;
+use anyhow::Result;
 
 #[tokio::main]
 async fn main() -> Result<()> {
