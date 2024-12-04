@@ -14,7 +14,7 @@ export interface AppOption {
   client?: NmideClient;
   log?: NmideLogger;
   listen?: <T>(event: string, handler: (x: Payload<T>) => void) => Promise<any>,
-  emit?: <T>(event: string, payload?: Payload<T>) => Promise<void>,
+  emit?: <T>(event: string, payload?: T) => Promise<void>,
   getPluginPaths?: Promise<string[]>,
   pluginInstallers?: ((path: string) => Promise<string | undefined>)[],
 }
