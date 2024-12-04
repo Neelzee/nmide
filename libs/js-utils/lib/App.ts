@@ -15,6 +15,8 @@ export interface AppOption {
   log?: NmideLogger;
   listen?: <T>(event: string, handler: (x: Payload<T>) => void) => Promise<any>,
   emit?: <T>(event: string, payload?: Payload<T>) => Promise<void>,
+  getPluginPaths?: Promise<string[]>,
+  pluginInstallers?: ((path: string) => Promise<string | undefined>)[],
 }
 
 export interface Payload<T> {
@@ -92,6 +94,8 @@ export const defaultConfig: AppConfig = {
   },
   listen: (_: any, __: any) => new Promise(r => r(undefined)),
   emit: (_: any, __?: any) => new Promise(r => r()),
+  getPluginPaths: new Promise(r => r([])),
+  pluginInstallers: [(_: string) => new Promise(r => r(undefined))],
 };
 
 export const getOpts = (opts?: AppOption): AppConfig => {
