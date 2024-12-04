@@ -11,3 +11,4 @@ export * from "./lib/Nmlugin";
 export * from "./lib/Types";
 export * from "./lib/Utils";
 export * from "./lib/Window";
+export * from "./lib/App";

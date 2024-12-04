@@ -3,7 +3,6 @@ import { TMap } from "@nmide/js-utils";
 import { pipe } from "fp-ts/lib/function";
 import { PathReporter } from "io-ts/PathReporter";
 import { Decoder, NmluginUnknown as Nmlugin, StateUpdateHandler } from "@nmide/js-utils";
-import NmideClient from "./NmideClient";
 import "@nmide/js-utils";
 
 const pluginInit = ([pln, p]: [string, Nmlugin]): [string, TMap] => [
@@ -29,7 +28,17 @@ const pluginInit = ([pln, p]: [string, Nmlugin]): [string, TMap] => [
 export const Init = (
   plugins: [string, Nmlugin][],
 ): Promise<E.Either<Error, [TMap, [string, TMap][]]>> =>
-  NmideClient("init")
-    .then(StateUpdateHandler(plugins.map(pluginInit)));
+  window.client("init")
+    .then(StateUpdateHandler(plugins.map(plugin => {
+      try {
+        return pluginInit(plugin);
+      } catch (err) {
+        window.log.error(
+          `Got error from plugin: ${plugin[0]}`
+          + `, during init, error:`, err
+        );
+        return [plugin[0], []];
+      }
+    })));
 
 

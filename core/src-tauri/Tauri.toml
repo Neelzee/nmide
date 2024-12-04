@@ -1,5 +1,5 @@
-productName = "nmide"
-mainBinaryName = "nmide"
+productName = "nmide-dev"
+mainBinaryName = "nmide-dev"
 version = "1.0.0"
 identifier = "no.nilsmf.uib"
 
