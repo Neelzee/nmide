@@ -90,23 +90,12 @@ const view = (model: TMap) => {
     }
     htmls.forEach(([pln, h]) => {
       const elem = window.parseHtml(h);
+      if (elem === undefined) return;
       rootElement.appendChild(elem);
       window.cleanup.push([pln, (() => { rootElement.removeChild(elem); })]);
     })
   });
   return emptyHtml();
-};
-
-const parseHtml = (html: THtml) => {
-  const location = getLocation(html);
-  let loc = location.split("location-")[1];
-  loc = loc === undefined ? "" : loc;
-  let rootElement = document.getElementById(loc);
-  if (rootElement === null) {
-    rootElement = window.root;
-  }
-  const elem = window.parseHtml(html);
-  rootElement.appendChild(elem);
 };
 
 const plugin: Nmlugin = {

@@ -1,26 +1,57 @@
 use crate::statics::{NMIDE_PLUGIN_DIR, NMLUGS, PLUGINS};
-use anyhow::{Context, Result};
+use anyhow::{anyhow, Context, Result};
 use nmide_plugin_manager::Nmlugin;
 use std::path::PathBuf;
+use std::str::FromStr;
 use std::{collections::HashMap, fs};
 use tauri::Manager;
 use tokio::sync::RwLock;
 
 use crate::statics::{APP_CACHE_DIR, APP_DATA_DIR};
 
+fn server_setup() -> Result<(PathBuf, PathBuf, PathBuf)> {
+    Ok((
+        PathBuf::from_str("./app_data")?,
+        PathBuf::from_str("./app_cache")?,
+        PathBuf::from_str("./app_data/plugins")?,
+    ))
+}
+
+fn ide_setup(app: &mut tauri::App) -> Result<(PathBuf, PathBuf, PathBuf)> {
+    let app_handle = app.app_handle();
+    Ok((
+        app_handle.path().app_data_dir()?,
+        app_handle.path().app_config_dir()?,
+        app_handle.path().app_data_dir()?.join("plugins"),
+    ))
+}
+
 pub fn setup(app: &mut tauri::App) -> Result<()> {
-    let app_handle = app.handle();
+    let paths: Result<(PathBuf, PathBuf, PathBuf)> = if cfg!(feature = "server") {
+        server_setup()
+    } else if cfg!(feature = "ide") {
+        ide_setup(app)
+    } else {
+        Err(anyhow!("No setup available, since no feature was chosen"))
+    };
+
+    #[cfg(debug_assertions)]
+    if cfg!(feature = "ide") {
+        ide_development_setup(app)?;
+    }
+
+    let (app_data, app_cache, nmide_plugin) = paths?;
 
     APP_DATA_DIR
-        .set(RwLock::new(app_handle.path().app_data_dir().unwrap()))
+        .set(RwLock::new(app_data))
         .expect("Initialization of NMIDE_PLUGIN_DIR should always succeed");
 
     APP_CACHE_DIR
-        .set(RwLock::new(app_handle.path().app_config_dir().unwrap()))
+        .set(RwLock::new(app_cache))
         .expect("Initialization of NMIDE_PLUGIN_DIR should always succeed");
 
     NMIDE_PLUGIN_DIR
-        .set(app_handle.path().app_data_dir().unwrap().join("plugins"))
+        .set(nmide_plugin)
         .expect("Initialization of NMIDE_PLUGIN_DIR should always succeed");
 
     let nmide_plugin_dir = NMIDE_PLUGIN_DIR.get().unwrap();
@@ -75,10 +106,11 @@ pub fn setup(app: &mut tauri::App) -> Result<()> {
 
         map
     })?;
+
     Ok(())
 }
 
-pub fn development_setup(app: &mut tauri::App) -> Result<()> {
+fn ide_development_setup(app: &mut tauri::App) -> Result<()> {
     let dev_plugin_folder = PathBuf::new()
         .join("../plugins/")
         .canonicalize()

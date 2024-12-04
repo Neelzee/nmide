@@ -1,12 +1,12 @@
 {
-  "name": "nmide",
+  "name": "core",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "tauri": "npx spago bundle-module --platform=node && tauri",
+    "tauri": "tauri",
     "test": "vitest"
   },
   "dependencies": {
@@ -18,17 +18,12 @@
     "fp-ts": "^2.16.9",
     "io-ts": "^2.2.21",
     "purescript": "^0.15.15",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "spago": "^0.21.0",
-    "swr": "^2.2.5",
-    "uuid": "^10.0.0"
+    "spago": "^0.21.0"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.1.0",
-    "@testing-library/dom": "^10.4.0",
-    "@types/node": "22.5.5",
     "@vitejs/plugin-react": "^4.3.3",
+    "esbuild": "^0.24.0",
     "jsdom": "^25.0.1",
     "typescript": "^5.2.2",
     "vite": "^5.4.10",

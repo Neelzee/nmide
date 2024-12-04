@@ -2,9 +2,9 @@ import {
   THtml,
   TMap,
   Decoder,
-  NmluginUnknown as Nmlugin
+  NmluginUnknown as Nmlugin,
+  emptyHtml
 } from "@nmide/js-utils";
-import NmideClient from "./NmideClient";
 import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/Either";
 import * as A from "fp-ts/Array";
@@ -36,13 +36,22 @@ export const View = (
   plugins: [string, Nmlugin][],
   tmodel: TMap,
 ) =>
-  NmideClient("view", { tmodel })
+  window.client("view", { tmodel })
     .then(v => pipe(
       v,
       E.getOrElse<Error, [string, THtml][]>(err => {
         console.error("Error from NmideClient in View: ", err);
         return [];
       }),
-      A.concat(A.map(pluginView(tmodel))(plugins)),
+      A.concat(A.map<[string, Nmlugin], [string, THtml]>(plugin => {
+        try {
+          return pluginView(tmodel)(plugin);
+        } catch (err) {
+          window.log.error(
+            `Got error on plugin: ${plugin[0]}, error: ${JSON.stringify(err)}`
+          );
+          return [plugin[0], emptyHtml()];
+        }
+      })(plugins)),
     ));
 
