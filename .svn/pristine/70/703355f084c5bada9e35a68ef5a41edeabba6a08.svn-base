@@ -1,0 +1,47 @@
+\documentclass[UKenglish]{beamer}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{graphicx}
+
+\usepackage[normalem]{ulem}
+
+\usepackage{newclude}
+
+% Haskell
+\usepackage[cache=false]{minted}
+
+\usepackage{tikz}
+% Overlay effec
+\usetikzlibrary{shapes.geometric,positioning,shapes.symbols,overlay-beamer-styles}
+
+%% UIB
+\usepackage[utf8]{inputenx} % For æ, ø, å
+\usepackage{csquotes}       % Quotation marks
+\usepackage{microtype}      % Improved typography
+\usepackage{amssymb}        % Mathematical symbols
+\usepackage{mathtools}      % Mathematical symbols
+\usepackage[absolute, overlay]{textpos} % Arbitrary placement
+\setlength{\TPHorizModule}{\paperwidth} % Textpos units
+\setlength{\TPVertModule}{\paperheight} % Textpos units
+%%
+
+\title{JavaScript Plugin System}
+\author{Nils Michael Fitjar}
+\date{\today}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section{Project}
+\begin{frame}{Project}
+  Create a modular IDE.
+  (modular in this context, meaning it can be extended with plugins)
+\end{frame}
+
+\begin{frame}{Plugin Example}
+  \center \include{../../figures/jsps}
+\end{frame}
+
+\end{document}

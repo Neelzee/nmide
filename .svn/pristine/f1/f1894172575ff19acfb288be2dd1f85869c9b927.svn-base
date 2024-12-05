@@ -1,0 +1,64 @@
+c-check-report:
+  dependencies:
+    - c-test-build
+  image: neelzee/nmide-c:latest
+  allow_failure: true
+  stage: report
+  script:
+    - gcc --version
+    - cppcheck --version
+    - valgrind --version
+    - cd nmide-lib
+    - ls
+    - touch report
+    - cppcheck --enable=all --errorlist --force --quiet --output-file=report -imunit -ibuild -irelease -idebug . >> report
+    - ls
+    - mv report report-"$(date -I)".xml
+    - cd debug
+    - ls
+    - valgrind --xml=yes --xml-file=valgrind_test_cmap.xml --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmap || true
+    - valgrind --xml=yes --xml-file=valgrind_test_cmodel.xml --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmodel || true
+    - valgrind --xml=yes --xml-file=valgrind_test_cmsg.xml --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test_cmsg || true
+    - ls
+    - mv valgrind_test_cmap.xml ../valgrind_"$(date -I)"_test_cmap.xml
+    - mv valgrind_test_cmodel.xml ../valgrind_"$(date -I)"_test_cmodel.xml
+    - mv valgrind_test_cmsg.xml ../valgrind_"$(date -I)"_test_cmsg.xml
+  needs:
+    - job: c-test-build
+      artifacts: true
+  artifacts:
+    expire_in: 1 week
+    access: all
+    paths:
+      - nmide-lib/report-*.xml
+      - nmide-lib/valgrind_*_test_cmap.xml
+      - nmide-lib/valgrind_*_test_cmodel.xml
+      - nmide-lib/valgrind_*_test_cmsg.xml
+
+nmide-core-coverage-report:
+  dependencies:
+    - nmide-core-test-build
+  variables:
+    LLVM_PROFILE_FILE: "target/coverage/nmide-%p-%m.profraw"
+    RUSTFLAGS: "-Cinstrument-coverage"
+  stage: report
+  tags:
+    - nmide-core
+  script:
+    - rustup component add llvm-tools-preview
+    - cargo install grcov
+    - cargo --version
+    - cd nmide-core/src-tauri
+    - cargo test --workspace
+    - grcov . -s . --binary-path ./target/debug/ -t cobertura --branch --ignore-not-existing -o ./target/debug/coverage/
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - nmide/nmide-core/src-tauri/target/coverage/
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: nmide/nmide-core/src-tauri/target/coverage/cobertura.xml
+  needs:
+    - job: nmide-core-test-build
+      artifacts: true

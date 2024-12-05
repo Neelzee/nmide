@@ -1,0 +1,296 @@
+\section{24.08.07}
+
+Previously I tried to basically create vs code. The attempt would've work, in the sense I would probably have a
+finished product by the end of the year. The general idea, was make a basic IDE, and then make plugins for it,
+extending the IDE. Work on one plugin at the time, and creating the functionality needed (in the core IDE) for
+the plugin to work. This would've been the easy way out. But it would suck as a developer, to create new plugins.
+When I figured this out, I only had a shitty file explorer, so no time lost (except 5-6 months on and off work).
+
+Now I am working on something close to what my supervisor wanted, a purely modular application, where all functionality
+comes from plugins. While this is \textit{harder} to develop, it will be easier to create plugins for. So, for topics,
+I think I should pivot towards lifetime of an application. Since, this new way, will increase the lifetime of the IDE,
+since any shitty plugin I make, is \textit{easy} to make better, in what ever language they want.
+
+To do this, I need C, and when developing in C, I need tests.
+
+
+\section{24.08.08}
+
+I've finished a lot of tests for the C library, they suck, and don't have proper documentation nor cover all the edge cases,
+but, they exist, and are in the pipelines. I also kinda finished the types in the C library. I am working on the wrapper, but
+it's hard, mostly because I don't know if what I am doing will work, and it seems like a waste coding without knowing if it's
+useful.
+
+So, instead of doing that, I moved on to the core-functionality, plugin management. Well, a basic form, since all it should do,
+is load plugins, and call them. That's what I will start with, but eventually, I need some form of API/ABI/Interface so that a
+\textit{manager} plugin can call other plugins, or at least decide what happens when.
+
+I also need some integration tests, but I am currently unsure on how to do that. Or what the best practice is.
+
+Technical debt is a bitch and a half. I can feel myself rapidly ageing due to the choices I have, and am making. I have no idea
+why I did what I did (basically yesterday), but it was, and I am stupid for it (I probably made that decision because I did not
+know better). I don't feel like fixing it right now, but it will suck to refactor later, I think I am reaching the end of my (6 days)
+work sprint. To be fair, I have been working on this, basically as a day job in what is supposed to be my vacation, but alas,
+I have nothing better to do (other than walk the dog, or drink). It is mostly a pain, because it is a small change, changing a C
+struct to use a pointer in one field. But that requires this workplan:
+
+\begin{\begin{itemize}
+  \item Change the C code
+  \item Ensure memory safety (I have ignored this for all other functionalities in my C code, thus far)
+  \item Compile the code
+  \item Test it (it will probably work; the same test that have failed will continue to fail)
+  \item Copy over the new library, and changed header(s)
+  \item Rebuild the Rust-C-Bindings file
+  \item Change the Rust code to work with *mut Struct, instead of Struct
+\end{itemize}}
+
+And knowing me, I will suddenly find other not necessary for the v0.1.0 release to do, like:
+
+\begin{itemize}
+  \item Find a way to automatically build my notes into one pdf
+  \item Refactor the pipelines
+  \item Create a Rust macro so that I can write all my Html-Enums like this: Div, P, \dots
+  with the added #[HtmlNode] macro-attribute, so that it expands to: Div { kids: Vec<Html> }, P { kids: Vec<Html> }, \dots.
+  \item Create a Rust macro so that I can create Html the same way Elm-Lang does
+  \item Finally fix push-to-svn
+  \item Find a way to visualize my architecture so that I can create a figure to use in my thesis
+  \item Tidy up the repo
+  \item Write notes
+  \item Sleep
+\end{itemize}
+
+Too many things that can be wrong to be able to develop this application any further, I need to do some serious maintenance on the entire
+\textit{stack}, I need some integration testing, a simple test-case scenario, before I try to integrate everything.  A lot of half-assed
+functionality going around.
+
+
+\section{24.08.09}
+
+I need integration tests. And I need them to be good. To achieve this, I should design a specification document for the test integration, from
+the simplesest case, to the more complex one. It should be scalable, in the sense of adding another module to integrate with, should not
+require a large rewrite of the tests. Now, how the fuck do I do this? I don't know, so time to do research.
+
+After doing a lot of research, (enough to finish one cup of coffee), from a wide variety of sources (one wikipedia article called
+\textit{Integration Testing}, one \textit{How-To} article, and one StackOverFlow Question (it had no satisfying answers because it was a bad question)),
+I found what I need, I think. There are several tools for integration testing, but most of them are aimed at microservices, or seem to
+\textit{beefy} for this case. I think I will just have to create some bash-scripts and tests myself. But first, I will try to draw some figures
+of what test-cases I need, because 1. I need them for my thesis, 2. it will make it easier to get an overview over my tests, and, 3. it seems
+like fun.
+
+\include{figures/integration-tests}
+
+So, I got some general plans (or drawings, atleast), but I have encountered another problem, or imagined it. I should really try to modularize
+my modular IDE. Currently, it is not modular enough for my liking, I should almost have each feature as it's own module, so that I can test it
+alone, and therefore have better integration testing. So, I could make proper integration tests for what I have  now, and then have to rewrite
+them when I eventually refactor the core IDE, or I can refactor the core IDE. Right now, I don't wanna do nothing. But I think refactoring the
+core is the best plan, since a lot of the code should be refactored, and split up more. For example, the C-Library, should be split up into one
+library for all the types, and another one for the functions.
+
+\section{24.08.12}
+
+I haven't done anything since last time. I took a break over the weekend. Still need to work on modularing the application and creating
+integration tests.
+
+After trying to write one test, I can already tell this will suck. A lot of stuff to keep track of, I need to pay careful attention to the error
+messages I get.
+
+I am stupid, this is known. I need to figure out memory stuff. When I call an external function, I receive a pointer to some memory of that
+library. Do I need to also free this, as the caller, or send it back to be free'd? If it is the first scenario, I need to figure out if I can
+clone the bytes in the memory I have a pointer to, so that the caller can manage the memory instead.
+
+I need to fix my wrapper library, I need to go back to use bindgen in the build.rs, so that I can specify types to be used. An example of this,
+is that currently, the C-type char, is translated to *mut i8, in Rust, but it should be *const i8, meaning the String can only be read from,
+not written too.
+
+A lot of pain is coming from C-Strings, and Rust-Strings. Or, converting to char. I am working on this, because I am working on integration
+testing, and the easiest test, is to see if a String from C and Rust are the same. Maybe I would save a lot of time if I just create my own
+C-String, that works similar to a Rust String? In C, a char is just an integer, signed or unsigned, depending on the platform. While a String is
+just an array of Char (integers), ending with \0.
+
+This might help doubly, since I don't care about Strings in C space, only the Rust space. All I need, is the type, which is just a struct with
+some unsigned integers, and size of the integers.
+
+
+\section{24.08.13}
+
+I am pretty sure I am finished with the refactor of the wrapper, got no tests to verify it, however.
+For some reason, my way of converting String into char* is destructive. I have no clue why. But atleast my build.rs works.
+
+The \textit{smart} developer in me, keeps mentioning unit tests. I, as an intern, do not know this fancy word, and I would rather die than write
+one. (This will create a tremendous workload for me in the future).
+
+Offcourse my code doesn't work, I am creating pointers in functions, which are dropped as soon as the function returns. I love Rust.
+I need to change my function to take in the ptr I am writing too, so that I can be sure my ptr points to valid memory.
+
+But does it need to? I don't need to verify that it works this way: C -> RS -> C, or RS -> C -> RS, I just need this: C -> RS.
+I'll see what I can do for the wrapper part, and then just continue on C -> RS tests.
+
+Memory management will be the end of me. I want to go back to higher languages. Like Haskell. Maybe I should give Ocaml a real try? Anyway,
+I'ver had a lot of issues with pointers, in Rust. Which ChatGPT actually helped with. Kinda. It did say I should use std::mem:.forget, which
+takes ownership of a value, and doesn't run it's destructor. Basically \textit{leaking} it. Which is a solution to my problem, where the pointer
+to the value I have created, is dropped immediately. (because the function returns). But the documentation states that ManuallyDrop is
+typically preferred. So, I am not sure if I should count this as a ChatGPT win. It usually wins on easier problems (which is probably why it's
+so popular among certain \textit{tech}bros). Either way, I should really simplify my tests, before continuing to work on the wrapper. I need
+some more C to Rust tests.
+I don't know why, but it feels like doing FFI should be way easier than it is. I guess Rust is one of the harder languages to do that kind of
+interop with, it can't even do it with itself. Or, it's harder in Rust, because I know \textit{normal} Rust, ie. safe Rust. But now I need
+Rust to behave in a manner in which I am not used to, for Rust, or any language.
+Either way, I have a self-made deadline, for the 15th, to release v0.1.0 of Nmide. And to fulfill that, I want to be able to render text on
+the screen, from a Plugin. Currently, I cannot do that. (I think, I have not properly tested anything).
+
+
+\section{24.08.14}
+
+Doing stuff fancy is hard. Not only is the conversion between C and Rust harder, because I wanted \textit{complex} structures, but I also struggle
+with the cooperation between \textit{proper} C and \textit{proper} Rust. Working with C for example, you usually use pointers, to ease the
+overhead on copying values, while in Rust, you work with values, which also occupy some space in memory, you don't think about it being a
+pointer. In Rust, if you are using pointers, explicitly, you are probably doing something wrong.
+This has led me to believe I have made a mistake when designing my C-Library. It should not be C, in the sense it should not made with C in mind,
+rather, it should be made with FFI in mind. And in other languages than C, pointers are difficult to work with. So I should pass everything as
+values instead.
+
+I don't know how long it took me, but I did it, it is simpler to test things, but I am still struggling with strings. For some reason it won't
+do what I want it to do. Maybe I should create my own String-Struct, that acts like an opaque struct, since I am not inspecting strings on the C
+level. (Or, I am not doing it now, atleast). Also, sidenote, my brain is so rotten that instead of using \{.\} to end my sentences, I use
+semicolons.
+
+I can avoid C. Or, I can delay creating a good C-interface, until later, and still hit my self-made deadline of the 15th. I can specify that
+an extern function is Rust, and everything is good. There might be some memory issues, I don't know, we'll see.
+
+I can make it more modular. I was thinking about having view be like view :: Model -> (String, Html), so that I know where to place the Html, but
+instead, I'll make the placing of the Html a plugin in itself. How? I don't know! But I will refactor the IDE to just dump html inside of the
+main-tag, and eventually figure out where a Plugin can interject, or how it can interject.
+
+So, all my issues has been with C stuff. I should really look into why this did not work. But, atleast I can make plugins in Rust now. And
+actually render them.
+
+Holy Shit, I have a state (model), that is updated by a Msg, through a plugin! Shit works!!!!
+It still all in Rust, but hey! It's going forward! I can actually release something tomorrow! Now I need to figure out how to do plugin-management
+in a smart-ish way. Because, I could do it the easy way, where I create a master plugin that loads all other plugins. That would work, but it
+feels like cheating. I think the cooler/more complex way would be to have some ABI at the Nmide-Level, so that plugins can manage other plugins
+but I don't really know how. I should really send an email to my supervisors and get some help. Hopefully we can meet some time next week.
+
+
+\section{24.08.15}
+
+Working on a plugin-manager-plugin (PMP). Fun, but also not, since I have no plugins to manage, except one. the Nmide-Core-Stuff is finished, ish.
+I have a state that is updated, and it even worked if I had the same plugin twice (two plugins consuming the same plugin). All that happened was
+that I had two texts, two buttons, and two counters, all incrementing at the same pace. Because I designed the Model the way I did, I can use it
+heavily in my PMP, allowing for higher ordered plugins (sounds fancy, probably not the correct terminology). An example of what my PMP could do:
+
+\begin{itemize}
+  \item Instead of all messages being sent to all plugins, a plugin could \textit{subscribe} to a Msg
+  \item Plugins could choose if they want to expose their messages or not, ensuring msg collisions wont happen
+  \item Plugins could add a location-attribute to their html, which the PMP could use to \textit{place} the Html
+  \item PMP could ensure that view is only called if the Model has changed
+\end{itemize}
+
+I found it better to follow my favourite development slogan: KISS. Keep It Stupid, Stupid. IE. Your application should be stupid/simple. So
+instead of overcomplicating the Nmide-Core-Plugin-ABI, I can keep it simple, and then overcomplicate my plugins instead.
+
+Now, what am I supposed to do?
+
+I am still in need of a good pipeline, which needs good integration tests. Other than that, I need a better C-Rust-Wrapper, and C-Library.
+I also need more plugins. Nmide-Rust-FFI could probably be split into some standard nmide-rust-library, and a Rust-C-Wrapper. I also need to
+actual research. I could also make a Haskell plugin, having it only be a framework plugin, since CHtml to Html works, it's just char to str
+that doesn't work. So, it wouldn't really work, since the id's I set in Haskell, will be gibberish in Rust, and therefore no other Plugin can
+use them.
+
+
+\section{24.08.16}
+
+I found a \textit{fun} problem. I have this Tree structure (Html Nodes), and I have a predicate f, and if f is true, I want to apply g to that node.
+g should only be applied once, and traverasal of the Tree structure should be BFS. I can't use map, because if two siblings fulfill the predicate,
+g will be applied twice. I can use fold, because then the fold closure could include some kind of state, ie. the accumilator is atuple, where
+fst is the list of kids, and snd is if g has been applied.
+
+
+\section{24.08.21}
+
+I need to create a plan for what's next for Nmide. I need more plugins, unit tests, integration tests, and a C-Rust-Wrapper, that is working
+and testable. I should also do cleanup in my repo, adding CHANGELOG's and other chores. But I also don't want to do anything.
+
+
+\section{24.08.23}
+
+I have rewritten stuff. the Rust-C-Wrapper no longer specified the types. The C-Lib now has more types. I have some form of unit and
+integration testing, and the pipelines are up and running again. I still need a proper Rust-C-Wrapper test, to test that the calling
+works, and I should also use valgrind on this, to ensure that I atleast know about the memory leaks I have. (I know I have a lot).
+Also, stuff doesn't work. I get crashes on plugin loads now. I'll check if my v0.1.0 works.
+
+\dots
+
+v0.1.0 works, in the sense that it creates a div, but I don't want to only show this on Tuesday. I should work on a \textit{std} plugin, and get
+nmide to dynamically load plugins on startup, instead of having the path hardcoded.
+
+\dots
+
+Fixed! I forgot to add the auto-TS-from-Rust step to the new nmide-std-lib. This, along with the revised plugin loading, makes nmide-core
+pretty cool. (ie. I can show it to my supervisors).
+
+\dots
+
+I should be better on committing when I am done with work. Instead of having to spend a lot of time figuring out what I did, before
+committing.
+
+
+\section{24.08.29}
+
+It's a shared-object file, not a C-Library.
+
+I had the first meeting with my supervisors, + a lot of new students. (like 5). Who all had to watch my progress. I think it went okay,
+got some notes. I need to analyze what can and cannot be done with the Msg-ing system, to see what limits it may impose on eventual
+future plugins.
+I mentioned it was difficult to find littrature about plugin architecture, and they said I could read Eclipse Plugins, which is about
+how Eclipse designed their plugin system, in which apparently, they were among the first to develop.
+I figured myself, that I could write something about plugin security, since executing arbitrary code at runtime is not entirely safe.
+
+\dots
+
+I got two days left of August, so I should try to plan the coming months, with features and releases. I know I have a lot to do:
+
+\begin{itemize}
+  \item Nmide Std. Lib.
+  \begin{itemize}
+    \item Improve Styling
+    \item Improve Rs-Ts bindings
+  \end{itemize}
+  \item Plugin IDE
+  \begin{itemize}
+    \item Workspace Creation
+    \item File Explorer
+    \item Text Editor
+  \end{itemize}
+  \item Plugin Managers Example
+  \item Expand Plugin Language Landscape
+    \begin{itemize}
+      \item TypeScript Example
+      \item C Example
+      \item Haskell Example
+    \end{itemize}
+  \item Tests
+  \begin{itemize}
+    \item Unit Tests
+    \item Memory Leak Tests
+    \item Integration Tests
+    \item Platform Tests
+  \end{itemize}
+  \item Building of Nmide
+\end{itemize}
+
+I have one task, which blocks, refactoring of the stdlib blocks development of plugins. But I could still work on
+tests, building of Nmide and the stdlib refactoring, at the same time, jumping between them, to ensure I am not
+too bored. Incase the work is boring, that is. So I think a good plan is to have the release of Nmide v1.0.0 be
+for the end of September. I think this will work. These tasks are technical, there are some chores, like
+CHANGELOG's, wiki-writing, and general docs to be written, but I think this will be doable.
+
+
+\section{24.08.31}
+
+I can now bundle/build the app. I also fixed it so that Nmide uses the builtin Tauri-pathing, so there is no
+disconnect between development and production.
+
+I also looked into the possibility of TypeScript plugins. Looks like there is no good support for it, without
+using eval, which is not good. It would be better if a TypeScript plugin had even thighter connection to the
+Html of the IDE, but that is how it is.
+

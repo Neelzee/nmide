@@ -1,0 +1,93 @@
+\section{24.10.03}
+
+I can't for the life of me do JS-Plugin support, shit sucks.
+Should I ditch React and just do TS/JS? IDK, man.
+
+
+\section{24.10.09}
+
+I need a View for the frontend, and one for the backend, and finally, one for
+coalescing both of them.
+
+
+\section{24.10.10}
+
+I'll drop first-class-plugin support for JavaScript, and instead just allow
+plugins to create script-tags, which can do whatever. I can reuse the asset
+logic I've used when I attempted the full support of JavaScript, but there are
+a lot of cooler code-samples I can't use, but hopefully write a little about,
+since I've fallen for functional TypeScript. It is what it is.
+
+I think my commit history will be fucked. Since I've been working on a branch
+with the idea of squashing commits, and therefore ignoring standard commit
+message etiquette.
+
+
+\section{24.10.11}
+
+I should've made tests way earlier, small shit doesn't work, that should work,
+which makes debugging the larger shit harder, because it could be due to the
+small shit not working. Shit.
+
+
+\section{24.10.19}
+
+I hope that I can actually do JavaScript plugins now, since I have finally made
+tests, and doc-tests, (cool Rust-feature). I think I should split the HTML-part
+into a frontend and backend one, and just coalesce them before rendering. That
+way I can do some caching or diffing to ensure I don't needlessly re-render the
+view.
+At least all the Rust-plugins work, so I hope I can design the
+JavaScript-Plugin-System, (JSPS?), around it, without breaking it. I hope I can
+write about this, but I should probably create more diagrams to display, to pad
+my thesis, both with the diagrams, and also paragraphs explaining the diagrams
+and the general idea behind them.
+
+I think I can get this to work, I have successfully \textit{installed} a
+JS-Plugin, now I need to call init on it, and merge the states. Hopefully this
+will be easier.
+
+
+\section{24.10.20}
+
+I have a new problem. Well, kinda and also not really. With the JSPS support, I
+have introduced race-conditions to my state change. I feel like it's more of a
+problem I can drag out in writing, than an actual problem to solve with code.
+Practically, it should not be a problem, just use FIFO. If, for some reason, two
+Msg are arriving at the same time, we have two cases. It's either A: a
+coincidence, due to the \textit{pureness} of plugins, it should not matter to
+the state if one of them comes in first. Or B: the plugin-developer has made a
+\textit{mistake}, as two different Msg being sent at the same time, which does
+have an overlapping effect on the state, should probably not happen.
+But we'll see if this is actually the case when I actually begin developing
+plugins.
+
+I have issues with race-conditions, regardless. I have a lot of different
+effects that need to run synchronously, but run asynchronously.
+
+
+\section{24.10.24}
+
+I think I can solve JSPS stuff by using promises. Insane concept, I know, but I
+think my issue has been with how React re-renders stuff. Maybe it doesn't
+\textit{kill} the asynchronous function that is in the useEffect, when it
+re-renders the component, I do not really know.
+
+I like the way Promise-chaining looks, but I can't get it to work, I need to
+redesign the way my architecture looks, to allow this, which probably means
+more frontend control. Is it bad that I spend most of the time designing the
+architecture? Hopefully not, because a good foundation should facilitate quick
+development.
+
+I've also thought about how to use these notes, I think I can feed them to the
+garbage machine creator, (AI), since it's always garbage out, it's no problem
+feeding it garbage. It might summarize my notes for me better than I could.
+
+
+\section{24.10.30}
+
+Magnolia Workshop. What is most relevant to me, is compiler-IDE-communication.
+Can we use some LSP from the compiler? For compiling the code, CLI is the
+standard.
+
+Plugins should be installed by the backend.

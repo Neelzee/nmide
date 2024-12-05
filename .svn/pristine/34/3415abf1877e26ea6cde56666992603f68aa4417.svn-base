@@ -1,0 +1,10 @@
+[package]
+name = "nmide-macros"
+version = "1.0.0"
+edition = "2021"
+
+[build]
+profiler = true
+
+[dependencies]
+serde = { version = "1.0.214", features = ["derive"] }
