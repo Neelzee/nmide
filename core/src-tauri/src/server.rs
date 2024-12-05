@@ -1,31 +1,45 @@
 use std::{path::PathBuf, str::FromStr};
 
 use crate::{handlers, setup::setup};
-use actix_web::{get, middleware, web, App, HttpResponse, HttpServer};
+use actix_cors::Cors;
+use actix_web::{middleware, options, post, web, App, HttpResponse, HttpServer};
 use anyhow::Result;
-use nmide_std_lib::{map::tmap::TMap, msg::tmsg::TMsg};
+use core_std_lib::{map::tmap::TMap, msg::tmsg::TMsg};
 
-#[get("/init")]
+#[post("/init")]
 pub async fn init() -> HttpResponse {
-    HttpResponse::Ok().json(handlers::init().await)
+    HttpResponse::Ok()
+        .insert_header(("Access-Control-Allow-Origin", "*"))
+        .json(handlers::init().await)
 }
 
-#[get("/view")]
+#[post("/view")]
 pub async fn view(tmodel: web::Json<TMap>) -> HttpResponse {
-    HttpResponse::Ok().json(handlers::view(tmodel.0).await)
+    HttpResponse::Ok()
+        .insert_header(("Access-Control-Allow-Origin", "*"))
+        .json(handlers::view(tmodel.0).await)
 }
 
-#[get("/update")]
+#[post("/update")]
 pub async fn update(tmsg: web::Json<TMsg>, tmodel: web::Json<TMap>) -> HttpResponse {
-    HttpResponse::Ok().json(handlers::update(tmsg.0, tmodel.0).await)
+    HttpResponse::Ok()
+        .insert_header(("Access-Control-Allow-Origin", "*"))
+        .json(handlers::update(tmsg.0, tmodel.0).await)
 }
 
 pub async fn run() -> Result<()> {
     setup(server_setup().expect("Server Setup should succeed")).expect("Setup should succeed");
-    HttpServer::new(|| App::new().service(init).wrap(middleware::Logger::default()))
-        .bind(("127.0.0.1", 8080))?
-        .run()
-        .await?;
+    HttpServer::new(|| {
+        App::new()
+            .wrap(middleware::Logger::default())
+            .wrap(Cors::default().allow_any_origin())
+            .service(init)
+            .service(view)
+            .service(update)
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await?;
     Ok(())
 }
 

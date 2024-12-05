@@ -68,6 +68,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "actix-cors"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f9e772b3bcafe335042b5db010ab7c09013dad6eac4915c91d8d50902769f331"
+dependencies = [
+ "actix-utils",
+ "actix-web",
+ "derive_more",
+ "futures-util",
+ "log",
+ "once_cell",
+ "smallvec",
+]
+
+[[package]]
 name = "actix-files"
 version = "0.6.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -992,15 +1007,17 @@ dependencies = [
 name = "core"
 version = "1.0.0"
 dependencies = [
+ "actix-cors",
  "actix-files",
  "actix-web",
  "anyhow",
  "anyhow-tauri",
+ "core-plugin-lib",
+ "core-std-lib",
  "log",
- "nmide-plugin-manager",
- "nmide-std-lib",
  "once_cell",
  "serde",
+ "serde_json",
  "tauri",
  "tauri-build",
  "tauri-plugin-dialog",
@@ -1048,6 +1065,36 @@ dependencies = [
  "bitflags 2.6.0",
  "core-foundation",
  "libc",
+]
+
+[[package]]
+name = "core-macros"
+version = "1.0.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
+name = "core-plugin-lib"
+version = "1.0.0"
+dependencies = [
+ "abi_stable",
+ "anyhow",
+ "core-std-lib",
+ "log",
+]
+
+[[package]]
+name = "core-std-lib"
+version = "1.0.0"
+dependencies = [
+ "abi_stable",
+ "core-macros",
+ "once_cell",
+ "rstest",
+ "serde",
+ "stabby",
+ "ts-rs",
 ]
 
 [[package]]
@@ -2630,37 +2677,6 @@ dependencies = [
  "cfg_aliases",
  "libc",
  "memoffset",
-]
-
-[[package]]
-name = "nmide-macros"
-version = "1.0.0"
-dependencies = [
- "serde",
-]
-
-[[package]]
-name = "nmide-plugin-manager"
-version = "1.0.0"
-dependencies = [
- "abi_stable",
- "anyhow",
- "libloading 0.8.6",
- "log",
- "nmide-std-lib",
-]
-
-[[package]]
-name = "nmide-std-lib"
-version = "1.0.0"
-dependencies = [
- "abi_stable",
- "nmide-macros",
- "once_cell",
- "rstest",
- "serde",
- "stabby",
- "ts-rs",
 ]
 
 [[package]]

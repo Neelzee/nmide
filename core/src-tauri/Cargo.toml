@@ -1,5 +1,5 @@
 [workspace]
-members = ["nmide-macros", "nmide-plugin-manager", "nmide-std-lib"]
+members = ["core-macros", "core-plugin-lib", "core-std-lib"]
 
 [package]
 name = "core"
@@ -19,7 +19,10 @@ tauri-build = { version = "2.0.3", features = [], optional = true }
 
 [dependencies]
 # IDE specific dependencies
-tauri = { version = "2.1.1", features = ["protocol-asset", "config-toml"], optional = true }
+tauri = { version = "2.1.1", features = [
+  "protocol-asset",
+  "config-toml",
+], optional = true }
 tauri-plugin-log = { version = "2.0.2", optional = true }
 tauri-plugin-fs = { version = "2.0.3", optional = true }
 tauri-plugin-shell = { version = "2.0.2", optional = true }
@@ -29,14 +32,16 @@ anyhow-tauri = { version = "1.0.0", optional = true }
 # Server specific dependencies
 actix-web = { version = "4.9.0", optional = true }
 actix-files = { version = "0.6.6", optional = true }
+actix-cors = { version = "0.7.0", optional = true }
 
 serde = { version = "1.0.215", features = ["derive"] }
 once_cell = "1.20.2"
 tokio = { version = "1.41.1", features = ["full"] }
 anyhow = "1.0.93"
-nmide-std-lib = { path = "./nmide-std-lib" }
-nmide-plugin-manager = { path = "./nmide-plugin-manager" }
+core-std-lib = { path = "./core-std-lib" }
+core-plugin-lib = { path = "./core-plugin-lib" }
 log = "0.4.22"
+serde_json = "1.0.133"
 
 [features]
 default = []
@@ -51,4 +56,4 @@ ide = [
   "dep:tauri-plugin-dialog",
   "dep:tauri-build",
 ]
-server = ["dep:actix-web", "dep:actix-files"]
+server = ["dep:actix-web", "dep:actix-files", "dep:actix-cors"]

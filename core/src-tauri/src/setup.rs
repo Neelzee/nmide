@@ -1,6 +1,6 @@
 use crate::statics::{NMIDE_PLUGIN_DIR, NMLUGS, PLUGINS};
 use anyhow::Result;
-use nmide_plugin_manager::Nmlugin;
+use core_plugin_lib::Nmlugin;
 use std::path::PathBuf;
 use std::{collections::HashMap, fs};
 use tokio::sync::RwLock;

@@ -1,4 +1,4 @@
-use nmide_plugin_manager::Nmlugin;
+use core_plugin_lib::Nmlugin;
 use once_cell::sync::OnceCell;
 use std::{collections::HashMap, path::PathBuf};
 use tokio::sync::RwLock;

@@ -1,10 +1,10 @@
 use crate::statics::NMLUGS;
-use log::info;
-use nmide_std_lib::{
+use core_std_lib::{
     html::thtml::THtml,
     map::{rmap::RMap, tmap::TMap},
     msg::{rmsg::RMsg, tmsg::TMsg},
 };
+use log::info;
 
 pub async fn init() -> Vec<(String, TMap)> {
     info!("Backend: init");
