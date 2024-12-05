@@ -1,6 +1,6 @@
 use crate::setup::setup;
 use anyhow::{Context, Result};
-use nmide_std_lib::{html::thtml::THtml, map::tmap::TMap, msg::tmsg::TMsg};
+use core_std_lib::{html::thtml::THtml, map::tmap::TMap, msg::tmsg::TMsg};
 use std::fs;
 use std::path::PathBuf;
 use tauri::Manager;

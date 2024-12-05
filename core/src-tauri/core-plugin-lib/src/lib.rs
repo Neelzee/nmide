@@ -1,7 +1,5 @@
 use abi_stable::library::{LibraryError, LibraryPath, RootModule};
-use nmide_std_lib::{
-    html::rhtml::RHtml, map::rmap::RMap, msg::rmsg::RMsg, NmideStandardLibraryRef,
-};
+use core_std_lib::{html::rhtml::RHtml, map::rmap::RMap, msg::rmsg::RMsg, NmideStandardLibraryRef};
 use std::path::Path;
 
 pub struct Nmlugin {
