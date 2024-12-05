@@ -2,7 +2,7 @@ use abi_stable::{
     export_root_module, prefix_type::PrefixTypeTrait, sabi_extern_fn, std_types::RVec,
 };
 use anyhow::{Context, Result};
-use nmide_std_lib::{
+use core_std_lib::{
     html::rhtml::RHtml, map::rmap::RMap, msg::rmsg::RMsg, NmideStandardLibraryRef, NmideStdLib,
 };
 use once_cell::sync::Lazy;
