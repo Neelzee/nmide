@@ -108,6 +108,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "013b6c2c3a14d678f38cd23994b02da3a1a1b6a5d1eedddfe63a5a5f11b13a81"
 
 [[package]]
+name = "core-macros"
+version = "1.0.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
+name = "core-std-lib"
+version = "1.0.0"
+dependencies = [
+ "abi_stable",
+ "core-macros",
+ "once_cell",
+ "rstest",
+ "serde",
+ "stabby",
+ "ts-rs",
+]
+
+[[package]]
 name = "core_extensions"
 version = "1.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -286,7 +306,7 @@ version = "0.1.0"
 dependencies = [
  "abi_stable",
  "anyhow",
- "nmide-std-lib",
+ "core-std-lib",
  "once_cell",
  "regex",
  "serde",
@@ -336,26 +356,6 @@ name = "memchr"
 version = "2.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "78ca9ab1a0babb1e7d5695e3530886289c18cf2f87ec19a575a0abdce112e3a3"
-
-[[package]]
-name = "nmide-macros"
-version = "1.0.0"
-dependencies = [
- "serde",
-]
-
-[[package]]
-name = "nmide-std-lib"
-version = "1.0.0"
-dependencies = [
- "abi_stable",
- "nmide-macros",
- "once_cell",
- "rstest",
- "serde",
- "stabby",
- "ts-rs",
-]
 
 [[package]]
 name = "once_cell"
