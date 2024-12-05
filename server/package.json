@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@nmide/js-utils": "file:../libs/js-utils",
-    "fp-ts": "^2.16.9"
+    "fp-ts": "^2.16.9",
+    "io-ts": "^2.2.21"
   },
   "devDependencies": {
     "typescript": "^5.2.2",
