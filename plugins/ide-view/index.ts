@@ -98,6 +98,19 @@ const view = (model: TMap) => {
   return emptyHtml();
 };
 
+const parseHtml = (html: THtml) => {
+  const location = getLocation(html);
+  let loc = location.split("location-")[1];
+  loc = loc === undefined ? "" : loc;
+  let rootElement = document.getElementById(loc);
+  if (rootElement === null) {
+    rootElement = window.root;
+  }
+  const elem = window.parseHtml(html);
+  if (elem === undefined) return;
+  rootElement.appendChild(elem);
+};
+
 const plugin: Nmlugin = {
   init,
   update,
