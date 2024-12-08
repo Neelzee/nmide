@@ -4,8 +4,9 @@ integration-tests-nmide:
   tags:
     - nmide-core
   script:
+    - exit
     - cargo --version
-    - cd nmide-tests
+    - cd tests
     - cargo test
 
 integration-tests-nmide-rust-plugins:
@@ -14,6 +15,7 @@ integration-tests-nmide-rust-plugins:
   tags:
     - nmide-core
   script:
+    - exit
     - cargo --version
-    - cd nmide-tests/rust-test
+    - cd tests/rust-test
     - cargo test

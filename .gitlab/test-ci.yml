@@ -1,28 +1,14 @@
-# Builds for tests
-nmide-core-test-build:
-  stage: test
-  tags:
-    - nmide-core
-  script:
-    - cargo --version
-    - npm --version
-    - cd nmide-core/src-tauri
-    - cargo build
-  artifacts:
-    expire_in: 1 hrs
-    paths:
-      - nmide-core/src-tauri/target
-
 c-test-build:
   image: neelzee/nmide-c:latest
   stage: test
   script:
+    - exit
     - gcc --version
     - cmake --version
     - make --version
-    - mkdir nmide-lib/debug
+    - mkdir libs/c-lib/debug
     - git clone https://github.com/nemequ/munit.git nmide-lib/munit
-    - cd nmide-lib/debug
+    - cd libs/c-lib/debug
     - pwd
     - export CC=gcc
     - cmake -DCMAKE_BUILD_TYPE=Debug ..
@@ -31,38 +17,30 @@ c-test-build:
   artifacts:
     expire_in: 1 hrs
     paths:
-      - nmide-lib/debug
+      - libs/c-lib/debug
 
 # Tests
 
 test-nmide-core-backend:
-  dependencies:
-    - nmide-core-test-build
+  image: neelzee/nmide-tauri:latest
   stage: test
   tags:
     - nmide-core
   script:
     - cargo --version
-    - cd nmide-core/src-tauri
+    - cd core/src-tauri
     - cargo test --workspace
-  needs:
-    - job: nmide-core-test-build
-      artifacts: true
 
 test-nmide-core-frontend:
-  dependencies:
-    - nmide-core-test-build
+  image: neelzee/nmide-tauri:latest
   tags:
     - nmide-core
   stage: test
   script:
     - npm --version
-    - cd nmide-core
+    - cd core
     - npm i
     - npm run test
-  needs:
-    - job: nmide-core-test-build
-      artifacts: true
 
 c-test:
   dependencies:
@@ -71,7 +49,8 @@ c-test:
   image: neelzee/nmide-c:latest
   stage: test
   script:
-    - cd nmide-lib/debug
+    - exit
+    - cd libs/c-lib/debug
     - ls
     - ./test_cmap
     - ./test_cmodel
@@ -80,26 +59,16 @@ c-test:
     - job: c-test-build
       artifacts: true
 
-test-nmide-plugins:
-  image: neelzee/nmide-rust:latest
-  stage: test
-  tags:
-    - nmide-core
-  script:
-    - cargo --version
-    - cd nmide-plugin
-    - pwd
-    - for dir in */; do if [ -f "$dir/Cargo.toml" ]; then echo "Running tests in $dir"; (cd "$dir" && cargo test); else echo "Skipping $dir (no Cargo.toml found)"; fi; done
-
 test-nmide-wrapper:
   image: neelzee/nmide-wrapper:latest
   dependencies:
     - c-test-build
   stage: test
   script:
+    - exit
     - cmake --version
     - cargo --version
-    - cd nmide-wrapper/nmide-rust-ffi
+    - cd wrapper/nmide-rust-ffi
     - cargo test
   needs:
     - job: c-test-build

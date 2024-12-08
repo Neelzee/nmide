@@ -1,326 +1,825 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to the Nmide project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+
+- Added back function
+- Added lookup-or-default
+- Added helper plugins
+- Added helper functions
+- Added tests for MapBuilder
+- Added getValue
+- Added tLookup
+- Added readme
+
+### Changed
+
+- Bumped version
+- Updated cliff config
+- Updated cliff config
+- Updated cliff config
+- Updated cliff config
+- Updated cliff config
+- Updated cliff config
+- Updated December notes
+- Updated plugins
+- Corrected dependencies
+- Changed name
+- Changed name
+- Changed name
+- Renamed installer module
+- Renamed test folder
+- Expanded appoptions
+- Plugins work on server
+- Updated plugins
+- Removed purescript
+- Updated plugins
+- Corrected entry point
+- Setup now takes options
+- Setup now takes options
+- Expanded window
+- De-Tauri-fied core
+- Init commit
+- Init commit
+- Started on server capabilities
+- Updated December notes
+- Updated plugins
+- Now utilizes IDE-PS
+- Init commit
+- Updated November notes
+- Updated plugins
+- Improved NmdieClient error msg
+- Removed console.log
+- Cleanup is now a function
+- Added helper plugin
+- Exposed rendering function
+- Started on presentation for V25
+- Corrected spelling mistakes
+- Added support for HTML plugin
+- Added new field on window
+- Init commit
+- Init commit
+- Plugin update
+- Init commit
+- Updated November notes
+- Init commit
+- Updated plugins
+- Updated spago
+- Moved plugins to test folder
+- Updated plugins
+- Removed unused plugin
+- Updated T-Types
+- T-Type now uses camelCase
+- Impl statehandling in purescript
+- Partial replacement of Main
+- Added purescript
+- Updated November notes
+- Exposed root
+- Exposed root
+- Updated November notes
+- Plugin updates
+- Exposed parseHtml for plugin usage
+- Added new field to window
+- Unpured reggub
+- Updated November notes
+- Updated Plugins
+- React to pure TypeScript
+- Updated November notes
+- Updated plugins
+- Updated html render
+- Implemented plugin toggle
+- Version bump
+- Updated bindings and Decoder
+- Added tr and tbody tags
+- Updated monthly notes.
+- Updated plugins
+- Plugin for plugin-management
+- Added TValueObj functions
+- Added new attributes
+- Installed js-utils with path
+- Updated monthly notes
+- Started on debug plugin
+- Started on PureScript library
+- Updated plugins
+- Corrected rendering
+- Corrected windows build
+- Corrected windows-build
+- Corrected paths
+- Corrected pdf-build
+- Added example data too plugin
+- Updated daily notes
+- Updated html-attribute parsing
+- Changed plugin msg
+- Renamed libraries
+- Version bump
+- Updated TS-types
+- Feat!(nmide-plugin-manager): Updated plugin-sig
+- Renamed nmide-js-utils
+- Renamed c library
+- Updated daily docs
+- Added async plugin interface
+- Groundwork for async plugins
+- Updated daily notes
+- Init commit
+- Init commit
+- Updated daily notes
+- Bumped version
+- Implemented plugin
+- Updated plugins
+- Implemented build step to plugin
+- Can now use external JS-libraries
+- Moved dependency-viewer to core
+- Updated gitignore
+- Added support for css-plugins
+- Moved libraries to own folder
+- Started on dependency-viewer
+- Upgraded package version
+- Installed js-utils from npm
+- Moved more utility functions to js-utils
+- Installed nmide-js-utils
+- Init commit
+- Updated jobs
+- Notes update
+- Implemented build-job for Windows
+- Svn update
+- Updated CHANGELOG
+
+### Fixed
+
+- Added client
+- Corrected name for modules
+- Corrected path to core-std-lib
+- Corrected typing on window
+- Added test
+- Fixed tests
+- Removed unused code
+- Updated window
+- Removed unused packages
+- Corrected function type
+- Added emits, re-ordered update-loop
+- Added if-statements for attributes
+- Chaned MapBuilder export
+- Added main tag
+- Added main-tag
+- Corrected T-Types
+- Corrected T-Types
+- Corrected renaming
+- Corrected HtmlBuilder
+- Updated T-types
+- Fixed TMapPartialEq on empty TMap
+- Corrected spelling
+- Made reggub unpure
+- Updated ViewDecoder
+- Made the counter-plugin example safe
+- Fix!(core): Corrected state change
+- Fix!(js-utils): Corrected TMapPartialEq
+- Added tests for eq-functions
+- Updated attributes
+- Updated html to include new attributes
+- Uses regex to get modules
+- Corrected file filter
+- Updated decoder
+- Corrected inference logic
+- Corrected imports
+- Corrected import statements
+- Corrected if-statement
+
+### Removed
+
+- Deleted unused files
+- Removed unused file
+- Removed unused file
+- Removed Window.ts
+- Removed console.log
+- Removed old test
+- Removed unused files
+- Removed unused files
+- Fix!(core): removed kids from input-tag
+- Removed unused imports
+- Removed unused configs
+- Removed nmide prefix
 
 ## [1.0.0] - 2024-11-09
 
-### 🚀 Features
+### Changed
 
-- *(nmide-plugin-manager)* Added name-id
-- *(nmide-core)* Implemented utility builder
-
-### 🐛 Bug Fixes
-
-- *(nmide-core)* Corrected path creation
-
-### 🚜 Refactor
-
-- *(nmide-core)* Removing folding
-- *(nmide-core)* Corrected state-change logic
-- *(nmide-core)* Switch to vitejs from nextjs
-
-### 📚 Documentation
-
-- *(CHANGELOG)* Updated changelog
-- *(nmide-thesis)* Updated notes
-- Updated readme for v1.0.0
-
-### 🎨 Styling
-
-- *(CHANGELOG)* Using default config for cliff
-
-### 🧪 Testing
-
-- *(nmide-core)* Created tests for RSC
-
-### ⚙️ Miscellaneous Tasks
-
-- Updated pipeline
-- Removed merge conflict text
-- Corrected job name
 - Bump version
+- Merge branch 'dev' into 'main'
+- Merge branch 'feature' into 'dev'
+- Using default config for cliff
+- Updated readme for v1.0.0
+- Switch to vitejs from nextjs
+- Corrected state-change logic
+- Implemented utility builder
+- Removing folding
+- Added name-id
+- Updated notes
+- Merge branch 'dev' into 'main'
+- Corrected job name
+- Merge branch 'main' into dev
+- Updated pipeline
+- Updated changelog
+
+### Fixed
+
+- Corrected path creation
+- Created tests for RSC
+
+### Removed
+
+- Removed merge conflict text
 
 ## [0.1.0] - 2024-08-15
 
-### 🚀 Features
+### Added
 
-- *(nmide-core)* Enabled test coverage
-- *(nmide-core)* Added chtml
-- *(nmide-std-lib)* Added fn from Html to CHtml
-- *(nmide-cli)* Added cmd system
-- *(nmide-core)* Migrated to Tauri v2
-- *(nmide-std-lib)* Implemented R* to T*
-- *(nmide-core)* Created script-tag for JS plugin
-- *(nmide-core)* Created Init function
-- *(nmide-core)* Started on JSP-System
-- *(nmide-std-lib)* Added merge_mut to rmap
-- *(nmide-core)* Started on std JSP library
-
-### 🐛 Bug Fixes
-
-- *(nmide-docker)* Removed unused dependencies
-- *(nmide-plugin)* Added all plugins to workspace
-- *(nmide-core)* Added omitted type
-- *(nmide-core)* Corrected frontendUrl path
-- *(nmide-core)* Implemented new ts types
-- *(nmide-plugin-manager)* Updated usage of NSL
-- *(nmide-core)* Improved Init.tsx
-- *(nmide-core)* Corrected Init.tsx
-- *(nmide-std-lib)* Updated lib for ease of use
-- *(nmide-core)* Updated permissions
-- *(nmide-std-lib)* Corrected map methods
-- *(nmide-core)* Added conditional-wait to init
-- *(nmide-core)* Updated DHtml
-
-### 🚜 Refactor
-
-- *(nmide-plugin)* Removed deprecated exs.
-- *(nmide-core)* Split main into components
-- *(nmide-core)* Removed debugging code
-- *(nmide-core)* Removed msg-handler
-- Changed unwrap to unwrap_or_default
-- *(nmide-core)* Corrected Tauri sec-conf
-- *(nmide-core)* Removed state from backend
-
-### 📚 Documentation
-
-- Updated README.md
-- *(nmide-thesis)* Updated daily notes
-- *(nmide-thesis)* Updated daily notes
-- *(nmide-thesis)* Updated daily notes
-- *(nmide-thesis)* Updated daily notes
-- *(nmide-thesis)* Updated daily notes
-- *(nmide-thesis)* Presentation, what's an IDE?
-- *(nmide-thesis)* Daily note update
-- *(nmide-thesis)* Updated daily notes
-- *(README)* Updated readme
-- *(nmide-thesis)* Daily note update
-- *(nmide-thesis)* Updated notes
-
-### 🧪 Testing
-
-- *(nmide-core)* Corrected tests
-- *(nmide-std-lib)* Added Map parametarized tests
-
-### ⚙️ Miscellaneous Tasks
-
-- *(justfile)* Cleaned up messy justfile #35
-- Improved ci: #48
-- C-pipelines can now fail
-- Added rules to build jobs
-- Added nmide-core coverage report
-- Corrected image for nmide-coverage
-- Changed name from unit test to test
-- Corrected image for wrapper job
-- Corrected images for jobs
-- Refactor gitlab-ci
-- Added test-build for nmide-core
-- Added release stage
-- Corrected dependencies
-- Corrected job script
-- Added grcov to job
+- Added merge_mut to rmap
+- Added conditional-wait to init
+- Added omitted type
+- Added cmd system
+- Added fn from Html to CHtml
+- Added chtml
 - Added tags
-- *(nmide-cli)* Init commit
-- *(nmide-core)* Upgraded tauri-plugin versions
+- Added all plugins to workspace
+- Added grcov to job
+- Added release stage
+- Added test-build for nmide-core
+- Added nmide-core coverage report
+- Added rules to build jobs
+
+### Changed
+
+- Merge branch 'dev' into 'main'
+- Feat!(nmide-core): Added JSPS
+- Upgraded tauri-plugin versions
+- Removed state from backend
+- Corrected Tauri sec-conf
+- Started on std JSP library
+- Changed unwrap to unwrap_or_default
+- Updated notes
+- Daily note update
+- Started on JSP-System
+- Updated readme
+- Updated daily notes
+- Merge branch 'refactor' into 'dev'
+- Split main into components
+- Merge branch 'feature' into 'dev'
+- Daily note update
+- Refactor!(nmide-core): Corrected frontend-calls
+- Feat!(nmide-core): updated attributes and render
+- Presentation, what's an IDE?
+- Merge branch 'feature' into 'dev'
+- Feat! migration to stable Tauri v2
+- Updated daily notes
+- Created Init function
+- Created script-tag for JS plugin
+- Updated daily notes
+- Implemented R* to T*
+- Feat!(nmide-std-lib): Added TS-types
+- Feat!(nmide-std-lib): Implemented stable structs
+- Merge branch 'NC-TS-Plugins' into 'dev'
+- Migrated to Tauri v2
+- Updated daily notes
+- Init commit
+- Updated daily notes
+- Updated daily notes
+- Enabled test coverage
+- Updated README.md
+- Corrected job script
+- Corrected dependencies
+- Merge branch 'dev' of git.app.uib.no:Nils.Fitjar/nmide into dev
+- Refactor gitlab-ci
+- Corrected images for jobs
+- Corrected image for wrapper job
+- Changed name from unit test to test
+- Corrected image for nmide-coverage
+- Merge branch 'dev' of git.app.uib.no:Nils.Fitjar/nmide into dev
+- C-pipelines can now fail
+- Improved ci: #48
+- Cleaned up messy justfile #35
+
+### Fixed
+
+- Updated DHtml
+- Added Map parametarized tests
+- Corrected map methods
+- Updated permissions
+- Updated lib for ease of use
+- Corrected Init.tsx
+- Improved Init.tsx
+- Fix!(nmide-core): updated NSL
+- Updated usage of NSL
+- Implemented new ts types
+- Corrected frontendUrl path
+- Corrected tests
+
+### Removed
+
+- Removed msg-handler
+- Removed debugging code
+- Removed deprecated exs.
+- Removed unused dependencies
 
 ## [0.2.0] - 2024-08-31
 
-### 🚀 Features
+### Added
 
-- *(justfile)* Added command to build thesis pdf
-- *(Dockerfile)* Added possibility to use svn in pipelines
-- *(Docker)* Created Images for each job in the pipeline
-- *(justfile)* Added cmd to build, tag and push
-- *(nmide-lib)* Added munit
-- *(nmide-lib)* Added tests
-- *(C)* Added c-tests and checks
-- *(nmide-lib)* Implemented cmap
-- *(nmide-core)* Added testing
-- *(justfile)* New build release cmd nmide-lib
-- *(.gitlab-ci.yml)* C-check fails on errors
-- *(nmide-lib)* Added cmsg
-- *(nmide-framework)* Added counter example
-- *(nmide-lib)* Added cmsg
-- *(nmide-framework)* Added counter example
-- *(nmide-core)* Added Ord, Eq in Value and Map
-- *(nmide-macros)* Added cast_html method to Html
-- *(nmide-std-lib)* Added ts-auto-gen for Html
-- *(nmide-ide)* Created simple showcase plugin
-- *(nmide-core)* Added open file dialog
-- *(nmide-plugin)* Can now open/close files
-- *(nmide-plugin)* Added some basic css
-- *(nmide-core)* Added dev plugin test support
-
-### 🐛 Bug Fixes
-
-- *(nmide-core)* Corrected usage of ffi-wrapper in nmide-core
-- *(justfile)* Corrected just-commands paths
-- *(justfile)* Corrected pathing
-- *(nmide-thesis)* Corrected invalid json-obj
-- *(Dockerfile)* Added missing libraries to tauri-img
-- *(justfile)* Added docker build cmd, corrected build-release cmd
-- *(nmide-rust-ffi)* Can now call function from C, they just dont work
-- *(just)* Corrected cmd, added cmd to push to svn
-- *(nmide-rust-ffi)* Fixed issue with building crate
-- *(ci)* Corrected pdf-build script
-- Corrected pdf-build job
-- Pdf-build fix
-- *(Docker)* Added js and rs test images
-- *(nmide-rust-ffi)* Fixed issue with building
-- *(justfile)* Corrected cmd
-- *(c.Dockerfile)* Added cmake
-- *(.gitlab-ci)* Corrected build script on c-test
-- *(.gitlab-ci)* Corrected path in jobs, added pwd
-- *(.gitlab-ci)* Corrected invalid git-clone path
-- *(nmide-framework)* Corrected pathing to wrapper
-- *(.gitlab-ci.yml)* Corrected exec name
-- *(RenderHtml)* Added key-props to rendering
-- *(Nmide-Lib)* Corrected munit integration
-- *(c.Dockerfile)* Added libc
-- *(nmide-lib)* Corrected CMAKE_C_STANDARD
-- *(nmide-lib)* Corrected source-files for library
-- *(nmide-lib)* Added casting to free
-- *(.gitlab-ci.yml)* Corrected rule
-- *(nmide-core)* Updated wrapper imports
-- *(nmide-lib)* Added casting to free
-- *(.gitlab-ci.yml)* Corrected rule
-- *(nmide-core)* Updated wrapper imports
-- *(nmide-plugin)* Corrected update fn
-- *(nmide-wrapper)* Corrected build.rs
-- *(nmide-wrapper)* Corrected build.rs
-- *(nmide-wrapper)* Corrected build.rs
-- *(nmide-lib)* Added new CHtmlElement types
-- *(nmide-plugin)* Simplified nmide-manager
-- *(nmide-tests)* Updated plugins
-- *(nmide-std-lib)* Corrected ts-export for types
-- *(nmide-core)* Added P-tag rendering
-- *(nmide-plugin)* Corrected Msg
-- *(nmide-core)* Corrected RS-TS export path
-- *(nmide-core)* Improved Css-Typing
-
-### 💼 Other
-
-- *(nmide-rust-ffi)* Attempt to correct building
-
-### 🚜 Refactor
-
-- *(project)* Reorganized the repo
-- *(nmide-lib)* Refactored Makefile
-- *(nmide-lib)* Now using CMakeLists instead of Make
-- Changed Dockerfile.* to *.Dockerfile
-- *(.gitlab-ci.yml)* Moved from `&&` to multiline script
-- *(nmide-lib)* Added c-affix
-- *(nmide-lib)* Added c-affix
-- Removed cliff
-- *(nmide-core)* Removed logging
-- *(nmide-core)* Client is now ts
-- *(nmide-core)* Removed css
-
-### 📚 Documentation
-
-- *(README)* Updated README.md
-- *(CHANGELOG)* Added CHANGELOG.md
-- *(nmide-thesis)* Added thesis
-- *(nmide-thesis)* Moved from overleaf
-- *(nmide-lib)* Updated readme to nmide-lib
-- *(nmide-thesis)* Added notes
-- *(nmide-wrapper)* Added docs for code-gen
-- *(nmide-thesis)* Added new notes
-- *(nmide-thesis)* Added more notes
-- *(nmide-thesis)* Updated notes
-- *(nmide-thesis)* Updated notes
-- *(nmide-thesis)* Updated notes
-- *(nmide-thesis)* Updated notes
-- *(nmide-thesis)* Added notes
-- *(nmide-wrapper)* Added docs for code-gen
-- *(nmide-thesis)* Added new notes
-- *(nmide-thesis)* Added more notes
-- *(nmide-thesis)* Updated notes
-- *(nmide-thesis)* Updated notes
-- *(nmide-thesis)* Updated notes
-- *(nmide-thesis)* Updated notes
-- *(nmide-thesis)* Created presentation plan
-- *(nmide-thesis)* Created code example
-- *(nmide-std-lib)* Corrected code in doc-string
-- *(nmide-thesis)* Updated notes
-- *(nmide-thesis)* Updated slides
-- *(nmide-thesis)* Updated notes
-- *(nmide-thesis)* Last fix to presentation
-- *(nmide-thesis)* Updated daily notes
-- *(nmide-thesis)* Updated daily notes
-
-### 🧪 Testing
-
-- *(nmide-lib)* Removed vals in cmsg
-- *(nmide-core)* Added more DOM tests
-- *(nmide-lib)* Added greetings function for testing
-- *(nmide-lib)* Removed vals in cmsg
-- *(nmide-core)* Added more DOM tests
-- *(nmide-lib)* Added greetings function for testing
-- *(nmide-plugin-c)* Created C plugin for testing
-- *(c-test)* Added integration test for c plugins
-
-### ⚙️ Miscellaneous Tasks
-
-- *(cliff.toml)* Removed unconventional commits
-- *(nmide-rust-ffi)* Added gitignore file
-- *(.gitlab-ci.yml)* Refactored pipelines
-- Removed linting job
-- *(pdf)* Added job to build pdf
-- Corrected pdf-job
-- *(Dockerfile)* Added just and pdflatex to img
-- *(svn)* Updated svn
-- *(nmide-lib)* Added unrelevant CMakeFiles to gitignore
-- Change artifact directory
-- Only builds pdf on change
-- *(nmide-lib)* V0.1.0 release
-- Added images for testing
-- Added static code analysis
-- Removed static code analysis
-- *(justfile)* Added init cmd to build-release
-- Corrected tests
-- Corrected tests
+- Added changelogs
+- Added dev plugin test support
+- Feat!(nmide-core): added os-agnostic pathing
+- Added open file dialog
+- Added P-tag rendering
+- Added integration test for c plugins
+- Added new CHtmlElement types
+- Added ts-auto-gen for Html
+- Added cast_html method to Html
+- Test!(nmide-tests): added unit and integration
+- Feat!(nmide-plugin): added nmide-std-lib to plugin
+- Added counter example
+- Feat!(nmide-rust-ffi): added CRUD~ to model
+- Added $ENABLED to disable jobs
+- Feat!(nmide-wrapper): added attr to Html
+- Feat!(nmide-lib): added len to cmap
+- Added casting to free
+- Added greetings function for testing
+- Added more notes
+- Added c-affix
+- Added new notes
+- Added docs for code-gen
+- Added more DOM tests
+- Feat!(nmide-lib): added function interface
+- Added cmsg
+- Feat!(nmide-lib): added cmodel and cmap | #31
+- Added notes
+- Added counter example
+- Feat!(nmide-rust-ffi): added CRUD~ to model
+- Added $ENABLED to disable jobs
+- Feat!(nmide-wrapper): added attr to Html
+- Feat!(nmide-lib): added len to cmap
+- Added casting to free
+- Added greetings function for testing
+- Added more notes
+- Added c-affix
+- Added new notes
+- Added docs for code-gen
+- Added more DOM tests
+- Feat!(nmide-lib): added function interface
+- Added cmsg
+- Feat!(nmide-lib): added cmodel and cmap | #31
+- Added notes
+- Added libc
 - Added install to js-test
-- Bugfixing
-- Corrected report filename
-- Allows failure on c-check job
-- *(.gitlab-ci.yml)* Corrected dependency name
-- *(.gitlab-ci.yml)* Corrected c-* jobs
-- Bugfix
-- Bugfix
-- Bugfix
-- Bugfid
-- Corrected exit code
-- Corrected correction of exit code
-- Bugfix
-- Bugfix?
-- Bugfix.
-- Corrected report path
-- *(.gitlab-ci.yml)* Added $ENABLED to disable jobs
-- Corrected rules
-- Corrected job
-- *(.gitlab-ci.yml)* Corrected dependency name
-- *(.gitlab-ci.yml)* Corrected c-* jobs
-- Bugfix
-- Bugfix
-- Bugfix
-- Bugfid
-- Corrected exit code
-- Corrected correction of exit code
-- Bugfix
-- Bugfix?
-- Bugfix.
-- Corrected report path
-- *(.gitlab-ci.yml)* Added $ENABLED to disable jobs
-- Corrected rules
-- Corrected job
-- Corrected job
-- Update git
-- *(nmide-thesis)* Updated presentations
-- Update .gitlab-ci.yml file
-- Update .gitlab-ci.yml file
-- Re-added cliff
-- *(nmide)* Added changelogs
+- Added testing
+- Added key-props to rendering
+- Added cmake
+- Added c-tests and checks
+- Added init cmd to build-release
+- Added static code analysis
+- Added images for testing
+- Added tests
+- Added munit
+- Added js and rs test images
+- Added cmd to build, tag and push
+- Added unrelevant CMakeFiles to gitignore
+- Added docker build cmd, corrected build-release cmd
+- Added missing libraries to tauri-img
+- Added just and pdflatex to img
+- Added job to build pdf
+- Added command to build thesis pdf
+- Added thesis
+- Added gitignore file
+- Added just, started on ffi
+- Added symbols in frontend
+- Added symbol
+- Added symbol to fofs
+- Added conditional rendering on explorer
+- Added dynamic rendering
+- Added clone to structs
+- Added pretty-files func
+- Added stack and origin fields to NmideError
+- Added manual start on build jobs
+- Added test script
+- Added tests
+- Added docs
+- Added logging
+- Added osops tests
+- Added tests
+- Added lifetime to wsfile
+- Added types
+- Added collapsable file explorer
+- Added get content from folder
+- Added getters and setters for root folder
+
+### Changed
+
 - Updated CHANGELOG.md for v0.2.0
+- Re-added cliff
+- Updated daily notes
+- Updated daily notes
+- Last fix to presentation
+- Added some basic css
+- Can now open/close files
+- Updated notes
+- Updated slides
+- Refactor!(nmide-plugin-manager): plugin refactor
+- Client is now ts
+- Created simple showcase plugin
+- Updated notes
+- Refactor!(nmide-rust-ffi): finished refactor
+- Feat!(nmide-core): plugins are loaded on startup
+- Merge branch 'dev' of git.app.uib.no:Nils.Fitjar/nmide into dev
+- Update .gitlab-ci.yml file
+- Merge branch 'dev' of git.app.uib.no:Nils.Fitjar/nmide into dev
+- Update .gitlab-ci.yml file
+- Corrected code in doc-string
+- Added Ord, Eq in Value and Map
+- Feat!(nmide-std-lib): finished basic html structs
+- Updated presentations
+- Feat!(nmide-std-lib): implemented nmide-std-lib
+- Update git
+- Created code example
+- Created presentation plan
+- Corrected job
+- Merge branch 'dev' of git.app.uib.no:Nils.Fitjar/nmide into dev
+- Updated notes
+- Feat!(nmide-plugin): release of v0.1.0
+- Feat!(nmide-rust-ffi): release of v0.1.0
+- Feat!(nmide-core): release of v0.1.0
+- Feat!(nmide-rust-ffi): updated C and RS fn typings
+- Updated notes
+- Merge branch 'dev' of git.app.uib.no:Nils.Fitjar/nmide into dev
+- Corrected job
+- Feat!(nmide-core): can now send and update msg
+- Corrected rules
+- Feat!(nmide-tests): started on integration tests
+- Refactor!(nmide-framework): changed plugin to rust
+- Feat!(nmide-code): can now properly render Html
+- Updated notes
+- Refactor!(nmide-lib): structs now use values
+- Updated notes
+- Refactor!(nmide-lib): changed char to const char
+- Refactor!(nmide-rust-ffi): started updating
+- Refactor!(nmide-plugin): simplified framework plugin
+- Refactor!(nmide-core): modularized nmide-core-backend, per: #44
+- Refactor!(nmide-rust-ffi): Html is now enum
+- Corrected report path
+- Bugfix.
+- Bugfix?
+- Bugfix
+- Corrected correction of exit code
+- Corrected exit code
+- Bugfid
+- Update .gitlab-ci.yml file
+- Bugfix
+- Bugfix
+- Bugfix
+- Corrected c-* jobs
+- Corrected dependency name
+- Merge branch 'dev' of git.app.uib.no:Nils.Fitjar/nmide into dev
+- Updated notes
+- Feat!(nmide-plugin): release of v0.1.0
+- Feat!(nmide-rust-ffi): release of v0.1.0
+- Feat!(nmide-core): release of v0.1.0
+- Feat!(nmide-rust-ffi): updated C and RS fn typings
+- Updated notes
+- Corrected job
+- Feat!(nmide-core): can now send and update msg
+- Corrected rules
+- Feat!(nmide-tests): started on integration tests
+- Refactor!(nmide-framework): changed plugin to rust
+- Feat!(nmide-code): can now properly render Html
+- Updated notes
+- Refactor!(nmide-lib): structs now use values
+- Updated notes
+- Refactor!(nmide-lib): changed char to const char
+- Refactor!(nmide-rust-ffi): started updating
+- Refactor!(nmide-plugin): simplified framework plugin
+- Refactor!(nmide-core): modularized nmide-core-backend, per: #44
+- Refactor!(nmide-rust-ffi): Html is now enum
+- Corrected report path
+- Bugfix.
+- Bugfix?
+- Bugfix
+- Corrected correction of exit code
+- Corrected exit code
+- Bugfid
+- Update .gitlab-ci.yml file
+- Bugfix
+- Bugfix
+- Bugfix
+- Corrected c-* jobs
+- Corrected dependency name
+- Merge branch 'dev' into 'main'
+- Allows failure on c-check job
+- Corrected report filename
+- Bugfixing
+- C-check fails on errors
+- Corrected tests
+- Corrected tests
+- New build release cmd nmide-lib
+- Merge branch 'dev' of git.app.uib.no:Nils.Fitjar/nmide into dev
+- Moved from `&&` to multiline script
+- Implemented cmap
+- Merge branch 'dev' into 'main'
+- Merge branch 'dev' of git.app.uib.no:Nils.Fitjar/nmide into dev
+- Updated readme to nmide-lib
+- V0.1.0 release
+- Changed Dockerfile.* to *.Dockerfile
+- Only builds pdf on change
+- Change artifact directory
+- Merge branch 'dev' into 'main'
+- Created Images for each job in the pipeline
+- Merge branch 'dev' into 'main'
+- Added possibility to use svn in pipelines
+- Now using CMakeLists instead of Make
+- Updated svn
+- Merge branch 'dev' into 'main'
+- Merge branch 'dev' of git.app.uib.no:Nils.Fitjar/nmide into dev
+- Corrected pdf-job
+- Moved from overleaf
+- Merge branch 'dev' of git.app.uib.no:Nils.Fitjar/nmide into dev
+- Refactored pipelines
+- Refactored Makefile
+- Attempt to correct building
+- Reorganized the repo
+- Added CHANGELOG.md
+- Refactor!(nmide-rust-ffi): updated nmide-rust-ffi to new nmide-libc
+- Refactor!(html_lib): refactored html_lib
+- Updated README.md
+- Update of lib
+- Update of Rust-C-FFI
+- Alpha
+- Merge branch 'dev' into 'main'
+- Merge issues
+- Merge branch 'dev' into 'main'
+- Dev
+- Alpha
+- Started on rendering html
+- Merge branch 'rework' into 'dev'
+- Alpha version of nmide-libc and nmide-rust-ffi
+- Updated just clean
+- Started on C bindings
+- React is back again
+- Rework
+- Started on proper type-verification between frontend and backend
+- What was I working on?
+- Started on builder
+- Started on settings
+- Changed name from lib to nmide
+- Started on navbar
+- Correction
+- Reworked pipeline
+- Reworked errors
+- Corrected name using path instead of filename
+- Changed wsfolder to use osstring
+- Reworked serialization
+- Changed from string to OsString
+- Refactoring workspace
+- Changed to prefer import-style, added path aliasing
+- Changed styling
+- Started on explorer functionality
+- Corrected explorer
+- Merge issues
+- Got things ready for server development
+- Moved docker files
+- Updated readme
+- Merge branch 'dev', remote-tracking branch 'origin' into HEAD
+- Styling explorer
+- Cant dockerize an application, idiot
+- Refactored explorer
+- Svn update
+- Updated .gitignore
+- Merge branch 'dev' into 'main'
+- Merge branch 'main' of git.app.uib.no:Nils.Fitjar/nmide
+- Update .gitlab-ci.yml file
+- Merge branch 'dev' into 'main'
+- .vscode no more
+- Updated pipeline
+- Explorer fix
+- Started on docker
+- Corrected linting pipeline
+- Updated
+- Corrected svn pipeline
+- Refactored svn pipeline
+- Refactored svn pipeline
+- Updated img
+- Merge branch 'dev' of git.app.uib.no:Nils.Fitjar/nmide into dev
+- Automated fixes by clippy, and cargo fix
+- Corrected svn pipeline
+- Refactored
+- Corrected svn pipeline
+- Updated svn job
+- Updated gitignore
+- Created script for generating ISSUE.md
+- FolderOrFiles is the issue
+- Can't get rendering too work, but ws is ok
+- Reactivity
+- Seems something doesnt work
+- Started on createEffects()
+- Automated fixes by clippy, and cargo fix
+- Merge branch 'dev' of git.app.uib.no:Nils.Fitjar/nmide into dev
+- Automated fixes by clippy, and cargo fix
+- Corrected pipeline
+- Corrected pipeline
+- Corrected pipeline
+- Chmod
+- Corrected pipeline
+- Corrected pipeline
+- Corrected pipeline
+- Corrected pipeline
+- Corrected pipeline
+- Corrected pipeline
+- Corrected pipeline
+- Corrected pipeline
+- Corrected pipeline
+- Reworked tests
+- Can now set root
+- Merge branch 'testing' into 'dev'
+- Merge branch 'fronterr' into 'testing'
+- Finished error rendring, just missing styling
+- Started on error rendring
+- Worked on tests
+- Merge branch 'error' into 'dev'
+- Doesnt work
+- Finished rough error irefactor
+- Finished workspace
+- Fixed get_content
+- Errors
+- Still working on changing nmideerror
+- Started on reworking NmideError
+- Merge branch 'dev' of git.app.uib.no:Nils.Fitjar/nmide into dev
+- Delete ¨
+- Now more files show upon first init
+- Merge branch 'dev' of git.app.uib.no:Nils.Fitjar/nmide into dev
+- Update .gitlab-ci.yml file
+- Merge branch 'logging' into 'dev'
+- Logging
+- Update .gitlab-ci.yml file
+- Merge branch 'main' into 'dev'
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Svn
+- Implemented push to svn script
+- Started on svn script
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Merge branch 'dev' into 'main'
+- Merge branch 'main' into 'dev'
+- Merge branch 'main' of git.app.uib.no:Nils.Fitjar/nmide
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Updated version
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Update .gitlab-ci.yml file
+- Updated readme
+- Split testing to front and backend
+- Corrected script
+- Corrected git-url
+- Corrected git-push cmd
+- Corrected git-push cmd
+- Corrected command
+- Changed errors
+- Updated pipeline
+- Clippy issues
+- Updated pipeline
+- Started on invoking cmd
+- Implemented workspace init
+- Reworked folder and abstract-folder structure
+- Chmodded prebuild script
+- Deleted unused file
+- Started on backend calls
+- Reworked osops
+- Started on consts.rs
+- Updated readme
+- Updated .gitignore
+- Updated ver
+- Started on workspace
+- Reworked wsfile new
+- Impl new for file and folder
+- Started on os operations
+- Started on prebuild script
+- Started on the explorer
+- Updated cargo.toml
+- Merge branch 'solid-refactor' into 'main'
+- Changed from React to Solid
+- I hate react btw
+- File explorer is now psuedo-functional
+- Started making it possible to open other folders
+- Started on explorer window
+- Started on editor
+- Started on pointless frontend work
+- Init commit
+- Initial commit
+
+### Fixed
+
+- Fix!(nmide-core): fixed technical debt per #47
+- Improved Css-Typing
+- Corrected RS-TS export path
+- Corrected Msg
+- Corrected ts-export for types
+- Fix(nmide-tests) corrected plugin-tests:
+- Fix(nmide-plugin):
+- Updated plugins
+- Created C plugin for testing
+- Simplified nmide-manager
+- Corrected build.rs
+- Corrected build.rs
+- Corrected build.rs
+- Corrected update fn
+- Updated wrapper imports
+- Corrected rule
+- Updated wrapper imports
+- Corrected rule
+- Corrected source-files for library
+- Corrected CMAKE_C_STANDARD
+- Fix!(nmide-lib): corrected CMakeLists.txt
+- Corrected munit integration
+- Corrected exec name
+- Fix!(nmide-rust-ffi): updated rust wrapper
+- Corrected pathing to wrapper
+- Corrected invalid git-clone path
+- Corrected path in jobs, added pwd
+- Corrected build script on c-test
+- Corrected cmd
+- Fixed issue with building
+- Pdf-build fix
+- Corrected pdf-build job
+- Corrected pdf-build script
+- Fixed issue with building crate
+- Corrected cmd, added cmd to push to svn
+- Can now call function from C, they just dont work
+- Corrected invalid json-obj
+- Corrected pathing
+- Corrected just-commands paths
+- Corrected usage of ffi-wrapper in nmide-core
+- Fixed rendering issue
+- Fixed workfolder count
+- Fixed merge issues
+- Fixed explorer
+- Fixed serialization for FolderOrFile
+- Fixed svn script
+- Fixed rendering on frontend
+- Test create types, is run by preBuild.sh
+- Tests
+- Fixed workspace init
+- Fixed pipeline
+- Fixed clippy issues
+- Fixed clippy issues
+- Fixed explorer
+- Fixed function that gets contents in folder
+
+### Removed
+
+- Removed css
+- Removed logging
+- Refactor!(nmide-wrapper): removed duplicate html
+- Removed cliff
+- Fix!(nmide-lib): removed CHtmlLocation
+- Removed vals in cmsg
+- Fix!(nmide-lib): removed CHtmlLocation
+- Removed vals in cmsg
+- Removed static code analysis
+- Removed linting job
+- Removed unconventional commits
+- Removed old rust-code
+- Removed openapi generation
+- Removed unused vscode
+- Removed content from File
+- Removed Either, added Either
+- Removed biome from pipeline
+- Removed lifetimes
+- Removed serde rename
+- Removed .vscode
+
+[unreleased]: https://github.com/Neelzee/Nmide/compare/v1.0.0..HEAD
+[1.0.0]: https://github.com/Neelzee/Nmide/compare/v0.1.0..v1.0.0
+[0.1.0]: https://github.com/Neelzee/Nmide/compare/v0.2.0..v0.1.0
+[0.2.0]: https://github.com/Neelzee/Nmide/compare/v0.1.0..v0.2.0
 
 <!-- generated by git-cliff -->

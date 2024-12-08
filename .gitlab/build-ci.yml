@@ -4,17 +4,17 @@ pdf-build:
   when: always
   script:
     - pdflatex --version
-    - pdflatex --output-directory=nmide-thesis nmide-thesis/main.tex
+    - pdflatex --output-directory=thesis thesis/main.tex
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+    - if: "$CI_PIPELINE_SOURCE == $CI_PIPELINE_SOURCE"
       when: always
       changes:
-        - nmide-thesis/**
+        - thesis/**
   artifacts:
     when: on_success
     access: all
     paths:
-      - nmide-thesis/*.pdf
+      - thesis/*.pdf
 
 nmide-lib-build:
   image: neelzee/nmide-c:latest
@@ -24,10 +24,11 @@ nmide-lib-build:
   stage: build
   when: manual
   script:
+    - exit
     - gcc --version
     - cmake --version
     - make --version
-    - mkdir nmide-lib/release
+    - mkdir lib/release
     - cd nmide-lib/release
     - cmake -DCMAKE_BUILD_TYPE=Release ..
     - make
@@ -39,29 +40,39 @@ nmide-lib-build:
       - nmide-lib/release/libnmide.*
 
 windows-build:
+  image: neelzee/nmide-tauri:latest
   stage: build
   when: manual
   script:
-    - echo "Needs a windows image"
+    # Adding Windows 64-bit target
+    - apt-get install clang
+    - rustup target add x86_64-pc-windows-msvc
+    - cargo install --locked cargo-xwin
+    - npm --version
+    - cd core
+    - pwd
+    - npm i
+    - npm run tauri build -- --runner cargo-xwin --target x86_64-pc-windows-msvc
   tags:
-    - nmide-core
+    - nmide-core-windows
   artifacts:
     when: on_success
     access: all
     paths:
       - $CORE_OUT_DIR
 
-debian-build:
+linux-build:
+  image: neelzee/nmide-tauri:latest
   stage: build
   when: manual
   tags:
     - nmide-core
   script:
     - npm --version
-    - cd nmide-core
+    - cd core
     - pwd
     - npm i
-    - npm run tauri dev
+    - npm run tauri build
   artifacts:
     when: on_success
     access: all
