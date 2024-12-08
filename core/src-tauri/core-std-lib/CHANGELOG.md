@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Bumped version
 - Updated cliff config
 - Changed name
 - T-Type now uses camelCase
