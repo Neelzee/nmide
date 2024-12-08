@@ -1,4 +1,4 @@
-name: checks
+name: Core-Linting
 
 on:
   push:
@@ -10,9 +10,9 @@ jobs:
   linting-frontend:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
     - name: Linting
-      run: cd core/ && npx eslint app/
+      run: cd core/ && npm i && npx eslint app/
   linting-backend:
     runs-on: ubuntu-latest
     steps:
