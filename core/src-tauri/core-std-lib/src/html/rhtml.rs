@@ -1,9 +1,12 @@
+//! RHtml
+
+// TODO: Add doc-string
+
+use crate::attr::rattr::RAttr;
 use abi_stable::{
     std_types::{ROption, RString, RVec},
     StableAbi,
 };
-
-use crate::attr::rattr::RAttr;
 
 macro_rules! rhtmlkind {
     ( $( $name:ident ),* ) => {
