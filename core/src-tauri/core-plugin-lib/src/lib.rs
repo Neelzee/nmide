@@ -1,3 +1,11 @@
+#![warn(
+    clippy::all,
+    clippy::restriction,
+    clippy::pedantic,
+    clippy::nursery,
+    clippy::cargo
+)]
+
 use abi_stable::library::{LibraryError, LibraryPath, RootModule};
 use core_std_lib::{html::rhtml::RHtml, map::rmap::RMap, msg::rmsg::RMsg, NmideStandardLibraryRef};
 use std::path::Path;
