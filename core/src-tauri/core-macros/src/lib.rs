@@ -1,3 +1,11 @@
+#![warn(
+    clippy::all,
+    clippy::restriction,
+    clippy::pedantic,
+    clippy::nursery,
+    clippy::cargo
+)]
+
 #[macro_export]
 macro_rules! define_html {
     ( $( $name:ident ),* ) => {
