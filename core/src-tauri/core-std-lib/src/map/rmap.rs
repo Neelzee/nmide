@@ -185,7 +185,7 @@ impl RKeyPair {
     /// Returns true if the given string is equal to the key.
     ///
     /// ```rust
-    /// use nmide_std_lib::map::rmap::RKeyPair;
+    /// use core_std_lib::map::rmap::RKeyPair;
     /// let key = String::from("foo");
     /// let other_key = "bar";
     /// assert!(
@@ -270,7 +270,7 @@ impl RMap {
     /// Only checks the first-level.
     ///
     /// ```rust
-    /// use nmide_std_lib::map::rmap::RMap;
+    /// use core_std_lib::map::rmap::RMap;
     /// let key = String::from("foo");
     /// assert!(RMap::new().insert(&key, 0).contains_key(&key));
     /// assert!(!RMap::new().contains_key(&key));
@@ -289,7 +289,7 @@ impl RMap {
     /// (Map::merge, MAPS, Map::new)
     ///
     /// ```rust
-    /// use nmide_std_lib::map::rmap::RMap;
+    /// use core_std_lib::map::rmap::RMap;
     /// let key = String::from("foo");
     /// assert_eq!(RMap::new().merge(RMap::new()), RMap::new());
     /// assert_eq!(
@@ -326,7 +326,7 @@ impl RMap {
     /// If it already exists in the map, updates the value instead.
     ///
     /// ```rust
-    /// use nmide_std_lib::map::rmap::RMap;
+    /// use core_std_lib::map::rmap::RMap;
     /// let key = String::from("foo");
     /// let other_key = String::from("foobar");
     /// let mut a = RMap::new();
@@ -357,7 +357,7 @@ impl RMap {
     /// If it already exists in the map, updates the value instead.
     ///
     /// ```rust
-    /// use nmide_std_lib::map::rmap::RMap;
+    /// use core_std_lib::map::rmap::RMap;
     /// let key = String::from("foo");
     /// let other_key = String::from("foobar");
     /// assert_eq!(RMap::new().insert(&key, 1), RMap::new().insert(&key, 1));
@@ -394,7 +394,7 @@ impl RMap {
     /// it doesn't exist, returns none.
     ///
     /// ```rust
-    /// use nmide_std_lib::map::rmap::RMap;
+    /// use core_std_lib::map::rmap::RMap;
     /// let key = String::from("foo");
     /// let other_key = String::from("foobar");
     /// assert!(RMap::new().insert(&key, 1).lookup(&key).is_some());
@@ -415,7 +415,7 @@ impl RMap {
     /// Removes the given value, by the given key, returning it if it exists.
     ///
     /// ```rust
-    /// use nmide_std_lib::map::rmap::RMap;
+    /// use core_std_lib::map::rmap::RMap;
     /// let key = String::from("foo");
     /// let mut map = RMap::new().insert(&key, 1);
     /// assert!(map.lookup(&key).is_some());
@@ -437,7 +437,7 @@ impl RMap {
     /// Removes the given value, by the given key.
     ///
     /// ```rust
-    /// use nmide_std_lib::map::rmap::RMap;
+    /// use core_std_lib::map::rmap::RMap;
     /// let key = String::from("foo");
     /// let mut map = RMap::new().insert(&key, 1);
     /// assert!(map.lookup(&key).is_some());
