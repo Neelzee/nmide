@@ -1005,7 +1005,7 @@ dependencies = [
 
 [[package]]
 name = "core"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "actix-cors",
  "actix-files",
@@ -1069,14 +1069,14 @@ dependencies = [
 
 [[package]]
 name = "core-macros"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "serde",
 ]
 
 [[package]]
 name = "core-plugin-lib"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "abi_stable",
  "anyhow",
@@ -1086,7 +1086,7 @@ dependencies = [
 
 [[package]]
 name = "core-std-lib"
-version = "1.0.0"
+version = "2.0.0"
 dependencies = [
  "abi_stable",
  "core-macros",

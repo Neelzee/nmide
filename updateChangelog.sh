@@ -6,13 +6,13 @@ function changelog_core_std_lib() {
       --include-path "*/src-tauri/nmide-std-lib/**" \
       --include-path "*/src-tauri/core-std-lib/**" \
       --repository "../../.." \
-      --config "src/Cargo.toml"
+      --config "../../cliff.toml"
   )
   cd core/src-tauri/core-std-lib/ && echo "csl/$new_tag" && git cliff \
     --include-path "*/src-tauri/nmide-std-lib/**" \
     --include-path "*/src-tauri/core-std-lib/**" \
     --repository "../../.." \
-    --config "src/Cargo.toml" >CHANGELOG.md
+    --config "../../cliff.toml" >CHANGELOG.md
   cd $dir
 }
 
@@ -22,13 +22,13 @@ function changelog_core_plugin_lib() {
       --include-path "*/src-tauri/nmide-plugin-manager/**" \
       --include-path "*/src-tauri/core-plugin-lib/**" \
       --repository "../../.." \
-      --config "src/Cargo.toml"
+      --config "../../cliff.toml"
   )
   cd core/src-tauri/core-plugin-lib/ && echo "cpl/$new_tag" && git cliff \
     --include-path "*/src-tauri/nmide-plugin-manager/**" \
     --include-path "*/src-tauri/core-plugin-lib/**" \
     --repository "../../.." \
-    --config "src/Cargo.toml" >CHANGELOG.md
+    --config "../../cliff.toml" >CHANGELOG.md
   cd $dir
 }
 
@@ -38,13 +38,13 @@ function changelog_core_macros() {
       --include-path "*/src-tauri/nmide-macros/**" \
       --include-path "*/src-tauri/core-macros/**" \
       --repository "../../.." \
-      --config "src/Cargo.toml"
+      --config "../../cliff.toml"
   )
   cd core/src-tauri/core-macros/ && echo "cms/$new_tag" && git cliff \
     --include-path "*/src-tauri/nmide-macros/**" \
     --include-path "*/src-tauri/core-macros/**" \
     --repository "../../.." \
-    --config "src/Cargo.toml" >CHANGELOG.md
+    --config "../../cliff.toml" >CHANGELOG.md
   cd $dir
 }
 
