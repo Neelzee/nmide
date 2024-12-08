@@ -10,7 +10,7 @@ jobs:
   linting-frontend:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@v4
     - name: Linting
       run: cd core/ && npm i && npx eslint app/
   linting-backend:
