@@ -1086,7 +1086,7 @@ dependencies = [
 
 [[package]]
 name = "core-std-lib"
-version = "2.0.0"
+version = "2.0.1"
 dependencies = [
  "abi_stable",
  "core-macros",
