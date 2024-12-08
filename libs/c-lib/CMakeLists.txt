@@ -5,7 +5,7 @@ project(
   LANGUAGES
     C
   VERSION
-    0.1.0
+    0.1.1
 )
 
 set(CMAKE_C_STANDARD 11)
