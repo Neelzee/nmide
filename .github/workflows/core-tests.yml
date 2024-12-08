@@ -1,19 +1,25 @@
-name: Rust
+name: Core-Unit-Tests
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "dev" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "dev" ]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-
+  test-frontend:
     runs-on: ubuntu-latest
-
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      run: cd core && npm i
+    - name: Run tests
+      run: cd core npm run test
+  test-backend:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - name: Build
