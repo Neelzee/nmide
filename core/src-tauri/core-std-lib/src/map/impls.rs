@@ -1,3 +1,7 @@
+//! Contains all `impl`'s for RValue and RMap.
+//!
+//! These are standard, like `PartialEq` and `fmt`.
+
 use super::{
     rmap::{RKeyPair, RMap, RValKind, RValue, RValueUnion},
     tmap::{TMap, TValue},
@@ -131,6 +135,7 @@ impl<S: ToString, T: Into<RValue>> From<Vec<(S, T)>> for RValue {
     }
 }
 
+#[cfg(feature = "ts")]
 impl From<TValue> for RValue {
     fn from(value: TValue) -> Self {
         match value {
@@ -180,6 +185,7 @@ impl Default for RMap {
     }
 }
 
+#[cfg(feature = "ts")]
 impl From<TMap> for RMap {
     fn from(value: TMap) -> Self {
         Self {

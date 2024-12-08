@@ -1,3 +1,7 @@
+//! RMsg
+
+// TODO: Add doc-string
+
 use crate::{map::rmap::RValue, msg::tmsg::TMsg};
 use abi_stable::{
     std_types::{RString, Tuple2},
@@ -25,6 +29,7 @@ impl RMsg {
         &self.val
     }
 
+    // TODO: Add doc-test
     pub fn is_msg<S: ToString>(&self, key: S) -> bool {
         let s = key.to_string();
         unsafe { self.val.msg.0 == s }
@@ -42,6 +47,7 @@ impl Clone for RMsg {
     }
 }
 
+#[cfg(feature = "ts")]
 impl From<TMsg> for RMsg {
     fn from(value: TMsg) -> Self {
         match value {

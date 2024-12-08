@@ -1,4 +1,13 @@
+//! *Map
+//!
+//! Contains a Json-like type, that allows sending of complicated structures between Plugins.
+
+// TODO: Add doc-string
+
+/// Rust-Map
 pub mod rmap;
+#[cfg(feature = "ts")]
+/// TypeScript Map
 pub mod tmap {
     use super::rmap::{RKeyPair, RMap, RValue};
     use serde::{Deserialize, Serialize};
@@ -56,10 +65,6 @@ pub mod tmap {
     impl TMap {
         pub fn new() -> Self {
             Self(Vec::new())
-        }
-
-        pub fn merge(self, _other: Self) -> Self {
-            unimplemented!("Not implementation for TMap.merge yet")
         }
     }
 

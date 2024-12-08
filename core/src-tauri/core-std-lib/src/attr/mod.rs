@@ -1,4 +1,12 @@
+//! *Attr
+//!
+//! An Attr type is a representation of an HTML-attribute. This mapping is not total, and will not
+//! be total, but it does include some of the bare-essentials to create a simple Plugin.
+
+/// Rust-Attr
 pub mod rattr;
+#[cfg(feature = "ts")]
+/// TypeScript Attr
 pub mod tattr {
     use crate::msg::tmsg::TMsg;
     use serde::{Deserialize, Serialize};
@@ -10,14 +18,77 @@ pub mod tattr {
     #[serde(rename_all = "camelCase")]
     #[ts(export)]
     pub enum TAttr {
+        /// ```html
+        /// <div id="foobar"/>
+        /// ```
         Id(String),
+        /// ```html
+        /// <div class="foobar"/>
+        /// ```
         Class(String),
         Style(String),
+        /// Only valid for `Input`
+        /// ```html
+        /// <input type="checkbox"/>
+        /// ```
         Type(String),
+        /// Only valid for `Input`
+        /// ```html
+        /// <input type="checkbox" checked="true"/>
+        /// ```
         Checked(bool),
+        /// Only valid for `Input`
+        /// Given this DOM
+        /// ```html
+        /// <div id="foobar"/>
+        /// ```
+        /// The `OnClick`-Attributes has this effect on an HTML-Element:
+        /// ```javascript
+        /// const el = document.getElementById("foobar");
+        /// el.addEventListener("click", () => {
+        ///   window.emit("msg", msg);
+        /// });
+        /// ```
+        /// Where `msg` is the value [`TMsg`] in `OnClick`
+        ///
+        /// [`TMsg`]: ../msg/mod.rs
         OnClick(TMsg),
+        /// Only valid for `Input`
+        /// Given this DOM
+        /// ```html
+        /// <div id="foobar"/>
+        /// ```
+        /// The `OnInput`-Attributes has this effect on an HTML-Element:
+        /// ```javascript
+        /// const el = document.getElementById("foobar");
+        /// el.addEventListener("input", () => {
+        ///   window.emit("msg", msg);
+        /// });
+        /// ```
+        /// Where `msg` is the value [`TMsg`] in `OnInput`
+        ///
+        /// [`TMsg`]: ../msg/mod.rs
         OnInput(TMsg),
+        /// Only valid for `Input`
+        /// Given this DOM
+        /// ```html
+        /// <div id="foobar"/>
+        /// ```
+        /// The `OnClick`-Attributes has this effect on an HTML-Element:
+        /// ```javascript
+        /// const el = document.getElementById("foobar");
+        /// el.addEventListener("input", () => {
+        ///   window.emit("msg", { msg: [msgName, el.value] });
+        /// });
+        /// ```
+        /// Where `msgName` is the value in `EmitInput`, and the name of the [`Msg`] being sent.
+        ///
+        /// [`Msg`]: ../msg/mod.rs
         EmitInput(String),
+        /// Only valid for `Img`, `Video`, `Audio`, and `Script`
+        /// ```html
+        /// <img src="foobar"/>
+        /// ```
         Src(String),
     }
 

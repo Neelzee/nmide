@@ -1,3 +1,7 @@
+//! RMap
+
+// TODO: Add doc-string
+
 use abi_stable::{
     std_types::{ROption, RString, RVec},
     StableAbi,
@@ -41,6 +45,7 @@ impl RValue {
         list.into()
     }
 
+    // TODO: Add doc-test
     pub fn int(&self) -> Option<i32> {
         if self.kind == RValKind::Int {
             Some(unsafe { self.val._int })
@@ -49,6 +54,7 @@ impl RValue {
         }
     }
 
+    // TODO: Add doc-test
     pub fn float(&self) -> Option<f32> {
         if self.kind == RValKind::Float {
             Some(unsafe { self.val._float })
@@ -57,6 +63,7 @@ impl RValue {
         }
     }
 
+    // TODO: Add doc-test
     pub fn bool(&self) -> Option<bool> {
         if self.kind == RValKind::Bool {
             Some(unsafe { self.val._bool })
@@ -65,6 +72,7 @@ impl RValue {
         }
     }
 
+    // TODO: Add doc-test
     pub fn str(&self) -> Option<&ManuallyDrop<RString>> {
         if self.kind == RValKind::Str {
             Some(unsafe { &self.val._str })
@@ -73,6 +81,7 @@ impl RValue {
         }
     }
 
+    // TODO: Add doc-test
     pub fn lst(&self) -> Option<&ManuallyDrop<RVec<RValue>>> {
         if self.kind == RValKind::List {
             Some(unsafe { &self.val._lst })
@@ -81,6 +90,7 @@ impl RValue {
         }
     }
 
+    // TODO: Add doc-test
     pub fn obj(&self) -> Option<&ManuallyDrop<RVec<RKeyPair>>> {
         if self.kind == RValKind::Obj {
             Some(unsafe { &self.val._obj })
@@ -312,6 +322,7 @@ impl RMap {
         Self { pairs }
     }
 
+    // TODO: Add doc-test
     pub fn merge_mut(&mut self, other: Self) {
         self.pairs.append(
             &mut other
