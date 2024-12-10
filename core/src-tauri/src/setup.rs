@@ -1,22 +1,26 @@
-use crate::statics::{NMIDE_PLUGIN_DIR, NMLUGS, PLUGINS};
-use anyhow::Result;
+//! The [setup](crate::setup) module, for initializing the statics from [static](crate::static),
+//! used by [ide](crate::ide) and [server](crate::server).
+
+use crate::statics::APP_DATA_DIR;
+use crate::statics::{NMIDE_PLUGIN_DIR, NMLUGS};
 use core_plugin_lib::Nmlugin;
+use std::fs;
 use std::path::PathBuf;
-use std::{collections::HashMap, fs};
 use tokio::sync::RwLock;
 
-use crate::statics::{APP_CACHE_DIR, APP_DATA_DIR};
-
-pub fn setup(paths: (PathBuf, PathBuf, PathBuf)) -> Result<()> {
-    let (app_data, app_cache, nmide_plugin) = paths;
+/// Ensures the static variables are initialized before used.
+///
+/// See [static](crate::static)
+///
+/// # Panics
+///
+/// Panics if $APPDATA, $APPCACHE or $APPDATA/plugins does not exist.
+pub fn setup(paths: (PathBuf, PathBuf)) {
+    let (app_data, nmide_plugin) = paths;
 
     APP_DATA_DIR
         .set(RwLock::new(app_data))
-        .expect("Initialization of NMIDE_PLUGIN_DIR should always succeed");
-
-    APP_CACHE_DIR
-        .set(RwLock::new(app_cache))
-        .expect("Initialization of NMIDE_PLUGIN_DIR should always succeed");
+        .expect("Initialization of APP_DATA_DIR should always succeed");
 
     NMIDE_PLUGIN_DIR
         .set(nmide_plugin)
@@ -60,20 +64,5 @@ pub fn setup(paths: (PathBuf, PathBuf, PathBuf)) -> Result<()> {
                 })
             })
             .collect()
-    })?;
-
-    PLUGINS.set({
-        let plugins = NMLUGS.get().expect("Should already be Initialized");
-
-        let mut map = HashMap::new();
-        for plugin in plugins {
-            map.insert(plugin.name().to_string(), plugin);
-        }
-
-        println!("{map:?}");
-
-        map
-    })?;
-
-    Ok(())
+    }).expect("Reading from the plugin directory should not fail");
 }

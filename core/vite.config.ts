@@ -12,7 +12,9 @@ export default defineConfig({
     // if the host Tauri is expecting is set, use it
     host: host || false,
     port: 5173,
-    // TODO: Remove when @nmide/js-utils is stable
+    // TODO: Remove when @nmide/js-utils is stable.
+    // Because @nmide/js-utils is _installed_ by referencing
+    // it as a path, it needs to be installed for the core to work.
     fs: {
       allow: [".."],
     }
