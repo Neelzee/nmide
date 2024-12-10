@@ -1,7 +1,12 @@
+//! RAttr
+
+// TODO: Add doc-string
+
 use crate::msg::rmsg::RMsg;
 use abi_stable::{std_types::RString, StableAbi};
 use std::mem::ManuallyDrop;
 
+// TODO: Add doc-string
 #[repr(C)]
 #[derive(StableAbi)]
 pub struct RAttr {
@@ -10,7 +15,13 @@ pub struct RAttr {
 }
 
 impl RAttr {
+    // TODO: Add doc-test
+    /// Gets a possible [`RString`] value from the RAttr.
+    /// This will only be `Some` if the RAttr is of type `Id`, `Class` or `Style`
+    ///
+    /// [`RString`]: https://docs.rs/abi_stable/latest/abi_stable/std_types/struct.RString.html
     pub fn str(&self) -> Option<ManuallyDrop<RString>> {
+        // TODO: Ensure this holds for all Attributes.
         match self.kind {
             RAttrKind::Id | RAttrKind::Class | RAttrKind::Style => {
                 Some(unsafe { self.val._str.clone() })
@@ -19,6 +30,9 @@ impl RAttr {
         }
     }
 
+    // TODO: Add doc-test
+    /// Gets a possible [`Bool`] value from the RAttr.
+    /// This will only be [`Some`] if the RAttr is of type `Checked`.
     pub fn bool(&self) -> Option<bool> {
         match self.kind {
             RAttrKind::Checked => Some(unsafe { self.val._bool.clone() }),
@@ -26,6 +40,11 @@ impl RAttr {
         }
     }
 
+    // TODO: Add doc-test
+    /// Gets a possible [`RMsg`] value from the RAttr.
+    /// This will only be [`Some`] if the RAttr is of type `OnClick` or `OnInput`
+    ///
+    /// [`RMsg`]: ../msg/rmsg.rs
     pub fn msg(&self) -> Option<ManuallyDrop<RMsg>> {
         match self.kind {
             RAttrKind::OnClick => Some(unsafe { self.val._msg.clone() }),
@@ -33,6 +52,8 @@ impl RAttr {
         }
     }
 
+    // TODO: Add doc-test
+    /// Creates a new `Src` RAttr
     pub fn new_src(src: RString) -> Self {
         Self {
             kind: RAttrKind::Src,
@@ -42,6 +63,8 @@ impl RAttr {
         }
     }
 
+    // TODO: Add doc-test
+    /// Creates a new `ID` RAttr
     pub fn new_id(id: RString) -> Self {
         Self {
             kind: RAttrKind::Id,
@@ -51,6 +74,8 @@ impl RAttr {
         }
     }
 
+    // TODO: Add doc-test
+    /// Creates a new `Class` RAttr
     pub fn new_class(class: RString) -> Self {
         Self {
             kind: RAttrKind::Class,
@@ -60,6 +85,8 @@ impl RAttr {
         }
     }
 
+    // TODO: Add doc-test
+    /// Creates a new `OnClick` RAttr
     pub fn new_click(rmsg: RMsg) -> Self {
         Self {
             kind: RAttrKind::OnClick,
@@ -69,6 +96,8 @@ impl RAttr {
         }
     }
 
+    // TODO: Add doc-test
+    /// Creates a new `OnInput` RAttr
     pub fn new_on_input(rmsg: RMsg) -> Self {
         Self {
             kind: RAttrKind::OnInput,
@@ -78,6 +107,8 @@ impl RAttr {
         }
     }
 
+    // TODO: Add doc-test
+    /// Creates a new `EmitInput` RAttr
     pub fn new_emit_input(rmsg: RString) -> Self {
         Self {
             kind: RAttrKind::EmitInput,

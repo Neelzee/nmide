@@ -1,11 +1,6 @@
-#![warn(
-    clippy::all,
-    clippy::restriction,
-    clippy::pedantic,
-    clippy::nursery,
-    clippy::cargo
-)]
+#![warn(clippy::all, clippy::pedantic)]
 
+/// Init, Update and View functions
 pub mod handlers;
 #[cfg(feature = "ide")]
 pub mod ide;

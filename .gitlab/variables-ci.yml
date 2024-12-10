@@ -1,4 +1,0 @@
-variables:
-  CORE_OUT_DIR: "core/src-tauri/target/release/*"
-  ENABLED: true
-  CC: "gcc"

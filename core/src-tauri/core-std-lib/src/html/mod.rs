@@ -1,5 +1,14 @@
+//! *Html
+//!
+//! An Html type is an representation of an HTML-Element. This mapping is close to total.
+
+#[cfg(feature = "c")]
+/// C-Html
 pub mod chtml;
+/// Rust-Html
 pub mod rhtml;
+#[cfg(feature = "ts")]
+/// TypeScript Html
 pub mod thtml {
     use crate::{
         attr::tattr::TAttr,

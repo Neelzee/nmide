@@ -1,4 +1,11 @@
+//! *Msg
+
+// TODO: Add doc-string
+
+/// Rust-Msg
 pub mod rmsg;
+#[cfg(feature = "ts")]
+/// TypeScript Msg
 pub mod tmsg {
     use super::rmsg::RMsg;
     use crate::map::tmap::TValue;

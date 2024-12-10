@@ -1,36 +1,64 @@
 # Nmide
 
-A zero-core IDE.
+A zero core IDE.
 
-## Development
+This is repository contains my master project and thesis, under the working
+title `Creating a Modular IDE`. This project was started, because a research
+group at the University of Bergen is developing an experimental research
+programming language. Being an experimental language, and having all of it's
+tooling, like the compiler is still under development, poses a unique challenge
+for developing an IDE for it, so flexibility is key. To achieve this, this IDE
+is _zero core_. The only functionality it has, is to load and manage plugins.
 
-![latest release](https://git.app.uib.no/Nils.Fitjar/nmide/-/badges/release.svg)
+Everything, from the file explorer, to editor, are features one or more plugins
+has to create.
 
-### CI
+Rust was chosen, because it is low-level, so the idea was it would allow for an
+easier way to create bindings to other languages like C, to eventually allow for
+a language agnostic plugin architecture. This has yet to be implemented.
+
+Currently, the IDE only supports Plugins made in JavaScript or Rust. It does
+achieves this by using the [Tauri](https://tauri.app/) framework. Wherein one of
+the features is being able to implement the frontend using JavaScript. This
+makes it very easy to implement a system for JavaScript Plugins.
+
+
+## Installation
+
+### Prerequisites
+
+- [Rust](https://www.rust-lang.org/)
+- [Tauri](https://tauri.app/start/prerequisites/)
+- [NodeJS](https://nodejs.org/en)
+
+After installing all the prerequisites run these two commands:
+
+```shell
+cd libs/js-utils && npm i
+```
+```shell
+cd core/ && npm i && npm run tauri build -- -- features ide
+```
+
+## CI
 
 > [!WARNING]
-> Due to inadequate GitLab-Runner, pipelines are not in-use.
-
-Pipeline-main: ![main pipeline status](https://git.app.uib.no/Nils.Fitjar/nmide/badges/dev/pipeline.svg)
-Pipeline-dev: ![dev pipeline status](https://git.app.uib.no/Nils.Fitjar/nmide/badges/dev/pipeline.svg)
-
-### Git Commit Convention
-
-Follow [this](https://www.conventionalcommits.org/en/v1.0.0/#summary)
+> Due to recent migration from GitLab to GitHub, workflow/pipelines are not up to date.
 
 
-### Plugin Development
+## Plugin Development
 
-A plugin (`Nmlugin`), in Nmide is either a library or a JavaScript file. Either
-way, it follows the same architecture, inspired by the
+A plugin is either a library or a JavaScript file. Either way, it
+follows the same architecture, inspired by the
 [Elm Architecture](https://guide.elm-lang.org/architecture/). Using `init`,
-`update`, and `update` functions, the plugins will mutate the state (`model`)
-of the IDE.
+`update`, and `update` functions, the plugins will mutate the state (`model`) of
+the IDE.
 
-Plugins are considered to be pure, so should not have their own internal state.
+Plugins are considered to be pure, so should not have their own internal state,
+any guarantees the IDE gives, hinges on this.
 
 
-#### Examples
+### Plugin Examples
 
 #### JavaScript
 
@@ -39,44 +67,22 @@ Minimal JavaScript Plugin
 window.plugins.set(
   "PluginName",
   {
-    // Sets the initial state
-    init: () => {
-      return [];
-    },
-    // Renders based on the state
-    view: (model) => {
+    init: () => [],
+    view: _ => {
       return { kind: "Frag", kids: [], attrs: [], text: null },
     },
-    // Returns changes to be made to the state.
-    update: (msg, model) => {
-      return [];
-    }
+    update: (_, __) => []
   }
 );
 ```
 
-For a more thorough example, see `nmide-core/plugins`.
+For a more thorough example, see [core/plugins](https://github.com/Neelzee/nmide/tree/main/plugins).
 
 
 #### Rust
 
 Minimal Rust Plugin
-
 ```rust
-use abi_stable::{
-    export_root_module,
-    prefix_type::PrefixTypeTrait,
-    rvec, sabi_extern_fn,
-    std_types::{ROption, RString, RVec},
-};
-use nmide_std_lib::{
-    attr::rattr::RAttr,
-    html::rhtml::RHtml,
-    map::rmap::RMap,
-    msg::rmsg::RMsg,
-    NmideStandardLibrary_Ref, NmideStdLib,
-};
-
 #[export_root_module]
 pub fn get_library() -> NmideStandardLibrary_Ref {
     NmideStdLib { init, view, update }.leak_into_prefix()
@@ -101,50 +107,5 @@ pub fn update(msg: RMsg, model: RMap) -> RMap {
 The Rust example contains an extra function, and some annotations, but this is
 to avoid undefined behavior that can be caused by Rust ABI.
 
-For a move in depth example see the `nmide-plugin` folder.
+For a more thorough example, see [core/plugins](https://github.com/Neelzee/nmide/tree/main/plugins).
 
-
-## Installation
-
-> [!WARNING]
-> None of these binaries are signed
-
-The recommended way of installing this app, is the [Manual](#manual) way.
-
-### Windows
-
-- [MSI](TBA)
-- [NSIS](TBA)
-
-
-### Linux
-
-- [AppImage](TBA)
-- [Deb](TBA)
-- [RPM](TBA)
-
-
-### macOS
-
-- [DMG](TBA)
-
-### Manual
-
-#### Prerequisites
-
-- [Rust](https://www.rust-lang.org/)
-- [Tauri](https://tauri.app/start/prerequisites/)
-- [NodeJS](https://nodejs.org/en)
-
-> [!NOTE]
-> Instead of installing NodeJS directly, I recommend installing it using
-> [nvm](https://github.com/nvm-sh/nvm)
-
-
-After installing all the prerequisites just run:
-
-```shell
-cd nmide-core/ && npm i && npm run tauri build
-```
-
-And find the binary in: `nmide-core/src-tauri/target/release/bundle`

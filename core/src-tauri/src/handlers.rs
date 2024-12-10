@@ -1,3 +1,6 @@
+//! The [handlers](crate::handlers) module contains the three functions that make up the zero core
+//! IDE.
+
 use crate::statics::NMLUGS;
 use core_std_lib::{
     html::thtml::THtml,
@@ -6,17 +9,18 @@ use core_std_lib::{
 };
 use log::info;
 
+// TODO: Add doc-string
 pub async fn init() -> Vec<(String, TMap)> {
     info!("Backend: init");
-    let model = NMLUGS
+    NMLUGS
         .get()
         .expect("Plugins are already initialized at this point")
         .iter()
         .map(|p| (p.name().to_string(), p.init().into()))
-        .collect();
-    model
+        .collect()
 }
 
+// TODO: Add doc-string
 pub async fn view(tmodel: TMap) -> Vec<(String, THtml)> {
     info!("Backend: view");
     let model: RMap = tmodel.into();
@@ -25,9 +29,10 @@ pub async fn view(tmodel: TMap) -> Vec<(String, THtml)> {
         .unwrap()
         .iter()
         .map(|p| (p.name().to_string(), p.view(&model).into()))
-        .collect::<Vec<(String, THtml)>>()
+        .collect()
 }
 
+// TODO: Add doc-string
 pub async fn update(tmsg: TMsg, tmodel: TMap) -> Vec<(String, TMap)> {
     info!("Backend: update");
     let fmap: RMap = tmodel.into();
@@ -39,7 +44,7 @@ pub async fn update(tmsg: TMsg, tmodel: TMap) -> Vec<(String, TMap)> {
                 .unwrap()
                 .iter()
                 .map(|p| (p.name().to_string(), p.update(&rmsg, &fmap).into()))
-                .collect::<Vec<(String, TMap)>>()
+                .collect()
         }
     }
 }
