@@ -216,6 +216,10 @@ impl RKeyPair {
             .to_string()
             .eq_ignore_ascii_case(&key.to_string())
     }
+
+    pub fn val(&self) -> &RValue {
+        &self.val
+    }
 }
 
 #[rstest]

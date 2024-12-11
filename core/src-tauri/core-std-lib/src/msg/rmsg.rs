@@ -34,6 +34,12 @@ impl RMsg {
         let s = key.to_string();
         unsafe { self.val.msg.0 == s }
     }
+
+    pub fn get_msg(&self) -> &RString {
+        match self.kind() {
+            RMsgKind::Msg => unsafe { &self.val.msg.0 },
+        }
+    }
 }
 
 impl Clone for RMsg {
