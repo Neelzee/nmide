@@ -20,7 +20,25 @@ is the bane of my existence. Fixing it should be easy, but I don't think I will
 prioritize it in the coming days. I learned that after I am done with my
 education at UIB, they will delete my account, and therefore my repository. So
 I think as part of my redo/fix my CI/CD-job, I'll also look into migrating from
-GitLab to GitHub. Once that has been completed, I need to plan the IDE-Plugin's
+GitLab to GitHub. Once that has been completed, I need to plan the IDE-Plugins
 I am going to make, I need a plan, not only to make the development easier, but
 also so, in case I do not have anything substantial to showcase, I can instead
 say, oh this? This is just a prototype of my awesome plan.
+
+
+\section{24.12.11}
+
+For the rest of the week, I need to figure out what features my IDE-Plugin
+-Ecosystem are going to offer. The idea behind IDE-Plugin-Ecosystem, are the
+plugins needed to turn the application into an IDE. I would like for the
+majority of these plugins to be pure, but we'll see what happens.
+
+There is a lot of functionality that is missing on the Rust side, that exist on
+the JSPS side. This is mostly due to the lack of plugin development happening in
+Rust, and will probably not catch up. This is because debugging JSP is easier
+than Rust Plugins, since I can just add a console.log in the Plugin, and then
+restart the application. If I were to do something similar in Rust, I would
+have to re-compile the plugin, move it to the plugin folder, and then restart
+the application. I think the only place the Rust Plugin Experience could ever
+excel, is the writing of Models/Html, by utilizing macros. But developing such
+macros would take more time than I am currently willing to invest.
