@@ -6,7 +6,7 @@ function create_doc() {
   local name="${fullname%.*}"
   mkdir -p "nmide.wiki/$path"
   touch "nmide.wiki/$path/$name.md"
-  pandoc $1 --to Markdown >"nmide.wiki/$path/$name.md"
+  pandoc $1 --to gfm >"nmide.wiki/$path/$name.md"
 }
 
 for file in $(find "./" -type f -name "*.tex"); do
