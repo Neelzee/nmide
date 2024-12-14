@@ -46,6 +46,10 @@ pub fn run() {
 
 /// Gets the needed paths to $APPDATA and the plugin directory.
 ///
+/// # Panics
+///
+/// If $APPDATA does not exist
+///
 /// # Errors
 ///
 /// If either $APPDATA or $APPDATA/Plugins cannot be canonicalized.
@@ -72,8 +76,10 @@ fn ide_setup(app: &mut tauri::App) -> Result<(PathBuf, PathBuf)> {
             .context("Should have permissions to read app_data_dir")?
             .join("plugins");
 
-        fs::remove_dir_all(&plugin_folder)
-            .expect("Should be able to remove directory and it's content");
+        // Ignoring the result of this function, because it only fails if the plugin_directory does
+        // not exist, which is the case on the first ever run
+        let _ = fs::remove_dir_all(&plugin_folder);
+
         fs::create_dir_all(&plugin_folder)
             .expect("Should have permissions to create plugins folder");
 

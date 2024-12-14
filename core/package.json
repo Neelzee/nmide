@@ -16,9 +16,7 @@
     "@tauri-apps/plugin-log": "^2.0.0",
     "@tauri-apps/plugin-shell": "^2.0.0",
     "fp-ts": "^2.16.9",
-    "io-ts": "^2.2.21",
-    "purescript": "^0.15.15",
-    "spago": "^0.21.0"
+    "io-ts": "^2.2.21"
   },
   "devDependencies": {
     "@eslint/js": "^9.16.0",
