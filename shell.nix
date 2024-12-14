@@ -8,6 +8,7 @@ pkgs.mkShell {
     cargo
     cargo-tauri
     nodejs
+    rust-analyzer
   ];
 
   buildInputs = with pkgs;[
