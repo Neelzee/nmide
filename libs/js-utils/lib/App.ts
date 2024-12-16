@@ -3,7 +3,11 @@ import { TMap } from "./TMap";
 import { TMsg } from "./TMsg";
 import * as Decoder from "./Decoder";
 import { THtml } from "./THtml";
-import { Either } from "fp-ts/lib/Either";
+import * as E from "fp-ts/lib/Either";
+import * as A from "fp-ts/lib/Array";
+import { pipe } from "fp-ts/lib/function";
+import { fst } from "fp-ts/Tuple";
+import { ModelOverwrite } from "./Utils";
 
 export interface AppOption {
   cleanup?: [string, (() => void)][];
@@ -17,6 +21,8 @@ export interface AppOption {
   emit?: <T>(event: string, payload?: T) => Promise<void>,
   getPluginPaths?: Promise<string[]>,
   pluginInstallers?: ((path: string) => Promise<string | undefined>)[],
+  filterPluginState: (xs: [string, E.Either<Error, TMap>][]) => [string, TMap][],
+  coalcePluginState: (xs: E.Either<[string, [string, TMap][]], TMap>[]) => TMap,
 }
 
 export interface Payload<T> {
@@ -78,7 +84,7 @@ export type NmideClient = <
 >(
   cmd: K,
   args?: A,
-) => Promise<Either<Error, NmideDecodedType<K>>>;
+) => Promise<E.Either<Error, NmideDecodedType<K>>>;
 
 
 export const defaultConfig: AppConfig = {
@@ -96,6 +102,37 @@ export const defaultConfig: AppConfig = {
   emit: (_: any, __?: any) => new Promise(r => r()),
   getPluginPaths: new Promise(r => r([])),
   pluginInstallers: [(_: string) => new Promise(r => r(undefined))],
+  filterPluginState: (xs: [string, E.Either<Error, TMap>][]): [string, TMap][] => pipe(
+    xs,
+    A.map<[string, E.Either<Error, TMap>], [string, TMap]>(
+      ([pln, e]) => [pln, E.getOrElse<Error, TMap>(err => {
+        window.log.error(`Error on plugin state, from plugin: ${pln}`, err);
+        return [];
+      })(e)]
+    ),
+  ),
+  coalcePluginState: (xs: E.Either<[string, [string, TMap][]], TMap>[]) => pipe(
+    xs,
+    A.map<E.Either<[string, [string, TMap][]], TMap>, TMap>(
+      E.getOrElse<[string, [string, TMap][]], TMap>(([field, ys]) => {
+        const plugins = pipe(
+          ys,
+          A.map(fst),
+          A.reduce("", (a, b) => `${a}\n${b}`),
+        );
+        const state = A.map<[string, TMap], string>(
+          ([p, s]) => `Plugin: ${p}, state: ${JSON.stringify(s)}`
+        )(ys);
+        window.log.error(
+          `Error on coalecing plugin state, on field: ${field}`
+          + `. Affected plugins: ${plugins}`
+          + `. State: ${state}`, ys
+        );
+        return [];
+      })
+    ),
+    A.reduce([], ModelOverwrite)
+  ),
 };
 
 export const getOpts = (opts?: AppOption): AppConfig => {
