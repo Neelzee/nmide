@@ -1,3 +1,4 @@
+// TODO: Add docs
 export const cssInstaller = async (src: string): Promise<string | undefined> => {
   if (!src.endsWith(".css")) return src;
   let name = src.split("%2F").pop()?.split(".")[0];

@@ -6,6 +6,7 @@ import { TMap, Decoder, TMsg } from "@nmide/js-utils";
 
 const { DViewDecoder, DInitDecoder, DUpdateDecoder } = Decoder;
 
+// TODO: Add docs
 export type NmideArgs = {
   "init": {
     args: undefined,
@@ -30,6 +31,7 @@ export type NmideArgs = {
   }
 }
 
+// TODO: Add docs
 export const NmideDecoder = {
   "init": DInitDecoder,
   "view": DViewDecoder,
@@ -40,11 +42,13 @@ export const NmideDecoder = {
   "get_plugins": t.array(t.string),
 }
 
+// TODO: Add docs
 export type NmideDecodedType<
   K extends keyof NmideArgs
   & keyof typeof NmideDecoder
 > = t.TypeOf<typeof NmideDecoder[K]>
 
+// TODO: Add docs
 export const NmideInvoker = <
   K extends keyof NmideArgs & keyof typeof NmideDecoder,
   A extends InvokeArgs & NmideArgs[K]["args"]
@@ -58,6 +62,7 @@ export const NmideInvoker = <
     .catch(err => E.left(new Error(err)));
 
 
+// TODO: Add docs
 const NmideClient = <
   K extends keyof NmideArgs & keyof typeof NmideDecoder,
   A extends InvokeArgs & NmideArgs[K]["args"]

@@ -1,6 +1,6 @@
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
-// (path: string) => Promise<string | undefined>)
+// TODO: Add docs
 export const InstallHtmlPlugin = async (url: string): Promise<string | undefined> => {
   if (!url.endsWith(".wb.html")) return url;
   let name = url.split("%2F").pop()?.split(".")[0];
