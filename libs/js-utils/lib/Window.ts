@@ -17,7 +17,7 @@ declare global {
      */
     cleanup: [string, (() => void)][];
     /**
-     * Parses the THtml using `parseHtml`, creating a corresponding HTMLElement, 
+     * Parses the THtml using `parseHtml`, creating a corresponding HTMLElement,
      * which is set as a child of `window.root`.
      *
      * Returns undefined if the supplied THtml is of kind `Frag` and childless.
@@ -82,22 +82,12 @@ declare global {
      */
     pluginInstallers: ((path: string) => Promise<string | undefined>)[],
     /**
-     * All plugin actions in the frontend are unsafe, so everytime `init`,
-     * `update` or `view` are called on a plugin, it can either return an Error,
-     * if the plugin threw an exception, or the actual result.
-     *
-     * - `xs`: List of pluginNames, and their corresponding result from either
-     *   `init` or `update`. The standard way to deal with errors, is to just
-     *   `window.log.error` them.
-     */
-    filterPluginState: (xs: [string, Either<Error, TMap>][]) => [string, TMap][],
-    /**
      * After every `init` and `update`, the new plugin state is coalced into a
      * single state. Before this, we check if any of the states have a
      * collision. A collision between two states occurs if they contain the same
-     * field. The standard way to deal with a collision is to log it using 
+     * field. The standard way to deal with a collision is to log it using
      * `window.log.error`, and drop it.
      */
-    coalcePluginState: (xs: Either<[string, [string, TMap][]], TMap>[]) => TMap,
+    coalcePluginState: [(xs: Either<[[string, TMap][], string], [string, TMap]>[]) => [string, TMap][]],
   }
 }
