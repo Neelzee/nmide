@@ -1,0 +1,185 @@
+\documentclass[runningheads]{llncs}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{graphicx}
+
+\usepackage{newclude}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,positioning,shapes.symbols}
+
+\title{Everyone Is Better At Development Than Me\\
+\large{Developing Nn Modular IDE}
+}
+
+\author{Nils Michael Fitjar\inst{1}
+}
+
+\authorrunning{Nils Michael Fitjar}
+
+\institute{University of Bergen
+\email{nfi005@uib.no}
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+  This paper introduces a modular Integrated Development Environment (IDE) for
+  experimental programming languages, addressing limitations in traditional
+  IDEs. While standard IDEs are crucial in software development, their support
+  for experimental languages is often inadequate, especially if these
+  experimental languages introduce. This project proposes a modular IDE to
+  extend its lifespan and enhance support for experimental languages. Analyzing
+  the essential features of traditional IDEs and the need for adaptability to
+  new paradigms and tools. Magnolia, a generic programming language developed at
+  the University of Bergen, serves as a case study, highlighting its unique
+  characteristics and the necessity for a specialized IDE.
+  %% TODO: rewrite this part, as there are no plugins which implements this.
+  The primary research question explores how
+  modularization facilitates the design and implementation of experimental
+  programming languages. Specific modules tailored for experimental languages,
+  including Abstract Semantic Representation (ASR) Transformation,
+  Term Algebras, MoA translation, and Syntactic Theory Functor (STF), are
+  outlined.
+  %% TODO: Write about how modularity eventually leads to a zero-core-app
+  \keywords{Modularization \and IDE \and Magnolia.}
+\end{abstract}
+
+\section{Introduction}
+
+Standard Integrated Development Environments (IDEs) are indispensable tools in
+software development, offering many features. However, these IDEs may not
+adequately support the unique demands of experimental programming languages. An
+example of this, is the research language Magnolia, being developed at the University
+in Bergen, by the research group Bergen Language Design Laboratory. They have
+developed an IDE for Magnolia, but this was in ???, so there is a need for an
+new IDE.
+%% TODO: Should I write about the tech-stack here? Unsure.
+
+%% TODO: Should probably mention this in the introduction
+Magnolia is
+used by students at the university, so there is a need for an IDE
+response, this project proposes a zero-core application solution.
+
+\section{Background}
+
+%% TODO: Rewrite, IDE's where made to solve the problem of setting up
+%% development for different developers, ensuring they have similar
+%% environments, to avoid trivial "it works on my machine, problems."
+Traditional IDEs encompass essential features such as syntax highlighting, code
+navigation, and hover-help, playing a crucial role in the software development
+process. However, their limitations become apparent when working with
+experimental languages.
+%% TODO: Rewrite, maybe? Should mention something about software longevity.
+The paper advocates for modularization and composability
+as key design principles, demonstrating their ability to extend the operational
+lifespan of software by adapting to new paradigms and tools. The discussion
+revolves around Magnolia, a generic programming language developed at UIB, as a
+case study illustrating the need for a specialized IDE. It is a way to
+experiment with generic programming. And too achieve this in a sufficient
+manner, a more specialized IDE is required.
+
+\section{Research questions}
+
+%% TODO: Should probably expand here?
+Exploring how modularization can facilitate the design and implementation of
+experimental programming languages.
+
+%% TODO: Write about how the current IDE is obsolete, (is this the right word?)
+%% Also mention why create an entire new IDE, instead of writing plugins of an
+%% existing one.
+\section{Why develop an new IDE?}
+
+%% TODO: Write about current user experience, mention install times/complexity
+\section{Things to learn from the current Magonlia IDE}
+
+%% TODO: Write about why the need for modularity, why not do what everyone else
+%% is doing, and fork vscode and add AI?
+\section{Why create an modular IDE?}
+
+%% TODO: Mention the uniqueness of Magnolia, which standard features like LSP
+%% cannot totally fulfill.
+\subsection{Challenges due to Magnolia}
+
+%% TODO: While unlikely, changing of Magnolias scope could happen, as it is
+%% still under development, so features "hard-coded" into the application, could
+%% be obsolete/outdated. If everything is "hard-coded", it will make it harder
+%% for future developers to update/correct this. Having modularity as a first
+%% -class feature, will mitigate this.
+\subsection{Challenges due to possible changing scope}
+
+%% TODO: Write about what makes an IDE, an IDE.
+\section{What is an IDE, really?}
+%% TODO: Mention difficulties with getting developers started on new projects
+%% due to missing environment variables, libraries or scripts needed to make
+%% large projects work, and how IDE's fixed that problem.
+\subsection{The solution to the problem}
+%% TODO: Mention how before woke, a developer only needed two things.
+%% 1. An editor.
+%% 2. A compiler.
+\subsection{Expected Features}
+
+%% TODO: Describe features that are available due to this modular design.
+\section{Features}
+%% TODO: Mention long-living-software like Vim, which are very modular.
+%% And mention how future proofing is something all developers should
+%% strive for.
+\subsection{Future Proof}
+%% TODO: Exstensibility is a wanted feature for advanced users, because reasons.
+\subsection{Exstensible}
+%% TODO: Easy to install is necessary when technology-illiterate people use your
+%% software.
+\subsection{Easy to install}
+
+%% TODO: Mention different plugin architecture, and how and why they fall short.
+%% Especially when it comes to languages like Magnolia.
+%% TODO: Mention the tech-stack here, maybe?
+\section{Plugin Architecture}
+%% TODO: Mention why one wants a language agnostic plugin architecture
+\subsection{Language Agnostic Plugins}
+%% TODO: Why is pureness good?
+\subsection{Pureness in Plugins}
+%% TODO: JSPS and RPS are similar, but different.
+\subsubsection{Differences in JSPS and RPS}
+%% TODO: What guarantees does the IDE have? What is voided when a user does not
+%% uphold this contract?
+\subsection{Guarantees}
+%% TODO: Modularity is preferred over pureness, as pureness does not directly
+%% affect software longevity.
+\subsection{Modularity over pureness}
+%% TODO: Mention how pureness could be achieved by adding the DOM or a DOM-like
+%% object to the type signature to the plugin, which would mitigate some of the
+%% differences between JSPS and RPS, but this would quickly lead to bloat.
+\subsection{Optimalization over pureness}
+
+%% TODO: Mention how when writing such an extreme modular application is created
+%% it is no longer a specific application, but something that can be extended to
+%% the wanted design.
+\section{Modular Application}
+%% TODO: Somehow get this into the thesis, because it is funny to mention X,
+%% (formerly known as Twitter), because Elon is a dumbass.
+%% Could be an excuse to mention how the application could "easily" be turned
+%% into an web-based IDE, due to the tech-stack chosen.
+\subsection{The everything app}
+%% TODO: Mention the plugins which are made, which combined, give the everything
+%% app the functionality needed to be considered an IDE.
+\section {IDE-Plugins}
+%% TODO: List the functionalities given by this plugin family.
+\subsection{Features}
+%% TODO: Mention how granularity helps a plugin developer develop useful
+%% plugins, as granularity is an important concept in modular design.
+%% I guess I could find litreature in modular design.
+\subsection{Granularity}
+
+%% TODO: Funny to have this as a title, but the idea behind it is to mention how
+%% while developing this application, I have had different "hats"; kept
+%% different kinds of users in mind. But luckily, due to the modularity of my
+%% design, it was easy to switch context.
+\section{Different hats}
+\subsection{The Developer Experience}
+\subsection{The Plugin Developer Experience}
+\subsection{User Experience Challenges}
+
+\end{document}
