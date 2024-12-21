@@ -1,5 +1,6 @@
 import "@nmide/js-utils";
 
+// TODO: Add docs
 export const InstallPlugins = async () => {
   let plugins = await window.getPluginPaths;
   const installers = window.pluginInstallers;
@@ -12,4 +13,3 @@ export const InstallPlugins = async () => {
     plugins = newPlugins;
   }
 };
-
