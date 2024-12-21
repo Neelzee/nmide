@@ -37,7 +37,7 @@ jobs:
         with:
           fetch-depth: 20
           lfs: true
-      - uses: actions/download-artifact@v4.1.0
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: nmide-core-test-build
       - run: cargo --version
@@ -54,7 +54,7 @@ jobs:
         with:
           fetch-depth: 20
           lfs: true
-      - uses: actions/download-artifact@v4.1.0
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: nmide-core-test-build
       - run: npm --version
@@ -72,7 +72,7 @@ jobs:
         with:
           fetch-depth: 20
           lfs: true
-      - uses: actions/download-artifact@v4.1.0
+      - uses: actions/download-artifact@v4.1.7
       - run: npm --version
       - run: cd core
       - run: pwd
