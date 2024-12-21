@@ -1,5 +1,5 @@
 %% Calling C Code in Rust
-\begin{tikzpicture}asynchronous
+\begin{tikzpicture}
   % Nodes
   \node (RS) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (0, 0) {Rust-Test};
   \node (C) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (4, 0) {C-Interface};
@@ -16,7 +16,7 @@
 \hfill \break %% newline
 
 %% RS can *use* C results
-\begin{tikzpicture}asynchronous
+\begin{tikzpicture}
   % Nodes
   \node (RS) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (0, 0) {Rust-Test};
   \node (C) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (4, 0) {C-Interface};
@@ -33,7 +33,7 @@
 \hfill \break %% newline
 
 %% Converting C types to Rust types
-\begin{tikzpicture}asynchronous
+\begin{tikzpicture}
   % Nodes
   \node (C) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (0, 0) {C-Test};
   \node (RS-TEST) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (4, 0) {Rust-Middle-Test};
@@ -50,7 +50,7 @@
 \hfill \break %% newline
 
 %% Calling Rust Plugins
-\begin{tikzpicture}asynchronous
+\begin{tikzpicture}
   % Nodes
   \node (C) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (0, 0) {C-Test};
   \node (RS-TEST) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (4, 0) {Rust-Middle-Test};
@@ -70,7 +70,7 @@
 \hfill \break %% newline
 
 %% Calling * Plugins
-\begin{tikzpicture}asynchronous
+\begin{tikzpicture}
   % Nodes
   \node (C) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (0, 0) {C-Test};
   \node (-TEST) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (4, 0) {*-Middle-Test};
@@ -86,5 +86,3 @@
   % Dashed lines
   \draw[dashed, thick, rounded corners] (-1.3, -0.75) rectangle (9.75, 0.75);
 \end{tikzpicture}
-
-
