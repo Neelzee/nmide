@@ -91,17 +91,46 @@ experimental programming languages.
 %% Also mention why create an entire new IDE, instead of writing plugins of an
 %% existing one.
 \section{Why develop an new IDE?}
+The current Magnolia IDE was made with Eclipse, version ???, using now
+deprecrated plugins. %% TODO: List these plugins
 
 %% TODO: Write about current user experience, mention install times/complexity
-\section{Things to learn from the current Magonlia IDE}
+\subsection{Things to learn from the current Magonlia IDE}
+To install the IDE, you have to follow this guide:
+%% TODO: Add the guide
+
+Which sometimes works. But when teaching ???, two weeks is used to ensure all
+students have access to the Magnolia IDE.
+
+%% TODO: If there are any other known issues, list them here
+
+So an IDE is needed to improve the IDE experience. But why modular?
 
 %% TODO: Write about why the need for modularity, why not do what everyone else
 %% is doing, and fork vscode and add AI?
 \section{Why create an modular IDE?}
+Why is an modular IDE is preferred over an \textit{regular} IDE? A lot of the
+standard features
+%% TODO: add footnote or something about how we will expand what features are
+%% standard in an IDE, later.
+in an IDE, cover the basic needs of Magnolia. So an exstension to an existing,
+popular, IDE would cover some of the goals.
+%% TODO: Somehow mention earlier, what the goals of this new IDE is.
+But, while choosing something as popular like Visual Studio Code would be good,
+since it contains a lot of the basic necessities for an IDE, and it will most
+likely not deprecrate it's own plugins\/functionality used in creating the new
+%% TODO: Should probably make this point more clear.
+Magnolia IDE, it cannot, support all the wanted features. %% TODO: Uhm source?
+
+The best guarantee to not deprecrate functionality, or if deprecrating,
+%% TODO: Would like to say "opensource", but vscode is opensource, so need to
+%% find another way to say opensource.
+replacing it, is to have an inhouse application.
 
 %% TODO: Mention the uniqueness of Magnolia, which standard features like LSP
 %% cannot totally fulfill.
 \subsection{Challenges due to Magnolia}
+%% TODO: Explain Magnolia
 
 %% TODO: While unlikely, changing of Magnolias scope could happen, as it is
 %% still under development, so features "hard-coded" into the application, could
@@ -109,55 +138,422 @@ experimental programming languages.
 %% for future developers to update/correct this. Having modularity as a first
 %% -class feature, will mitigate this.
 \subsection{Challenges due to possible changing scope}
+Magnolia as a language, still under development, and all of the tooling that are
+common in languages, are also under development. The compiler for Magnolia and
+the IDE is being developed in parallel. So, while unlikely, there is the chance
+of some \textit{breaking} change occurring in the future, which a developer
+needs to keep in mind.
 
 %% TODO: Write about what makes an IDE, an IDE.
 \section{What is an IDE, really?}
+What is an IDE? It is an integrated development environment; it is an
+application, inwhich an user can develop, compile and run the project they are
+working on. This is easier said than done.
+
 %% TODO: Mention difficulties with getting developers started on new projects
 %% due to missing environment variables, libraries or scripts needed to make
 %% large projects work, and how IDE's fixed that problem.
 \subsection{The solution to the problem}
-%% TODO: Mention how before woke, a developer only needed two things.
-%% 1. An editor.
-%% 2. A compiler.
-\subsection{Expected Features}
+%% TODO: Explain dynamic linking
+If using a language like C, which uses dynamic linking, it is necessary to
+ensure that all libraries are present. Before IDE's where a thing, this was
+managed by using build-scripts, like CMake, but this can quickly get
+complicated, especially onboarding new developers on an existing project, or
+when developing, leading to the popular adage: \textit{it worked on my machine}.
 
-%% TODO: Describe features that are available due to this modular design.
+This was solved by creating an application, inwhich the entire development
+environment was a part of the application itself. Eclipse for example, allowed
+for a lot of exstensibility, with its \textit{Plug-in Architecture}, which
+allowed users to configure their IDE to their liking, with superficial features
+like keybinds, themes, and similar, but also features aimed at improving the
+developer experience, like syntax highlighting, compiling and execution of the
+program available inside the IDE, and debugging.
+
+\subsection{Expected Features}
+Today, an IDE has a lot of functionality that are expected by a user.
+%% TODO: Explain these features
+\begin{enumerate}
+  \item Syntax Highlighting
+  \item Error stuff %% TODO: What is a good way to say: "shows me errors"
+  \item Text edititing
+  \item File Explorer
+  \item Project management
+  \item VCS integration
+  \item Integrated Debugger
+  \item LSP
+  \item a plugin system
+\end{enumerate}
+
+%% TODO: Ensure that there is a good explanation for why modular design is used.
 \section{Features}
+%% TODO: Describe features that are available due to this modular design.
+Going for a modular design, allows for:
+
 %% TODO: Mention long-living-software like Vim, which are very modular.
 %% And mention how future proofing is something all developers should
 %% strive for.
 \subsection{Future Proof}
+As mentioned, one of the criteria for this new Magnolia IDE, is future proofing
+it. In this context, future proofing an application, means ensuring longevity of
+%% TODO: Rewrite this to "flow" better
+%% TODO: Is it long living, or long-living?
+it. This can be achieved by looking at existing long-living applications. An
+application can be long-living due to many reasons, not all good. If it is the
+only application that fulfills the role, it will be long-living due to
+necessity, it is the only application that does what I need, so I have to use
+it. A lot of legacy software falls under this category. Being the only
+application that fulfills a role, does not make it good.
+
+Another way for an application to be long-living, is if it is beloved by its
+users. Applications like Vim falls under this category. One of the reason it is
+ %% TODO: Uhm, source!?
+beloved by users, is due to its excellent keybinds, called vim-motions. Infact,
+it is so popular, that all other IDE's with a plugin system, has a plugin that
+adds vim-motions. One can also argue that users enjoy using Vim because they can
+configure it, exstensibly.
+%% TODO: Write about how awesome the Vim plugins are.
+
+%% TODO: should this be here? I do not know, I have lost the red-thread.
+Furthermore, a modular design approach suits well for projects who will have a
+\textit{quick} rotation of developers. This being the result of a students
+master thesis, most likely, the next person working on this application, will be
+another student. Having a modular design philosophy to this project can ensure
+faster development time in the future, given that each \textit{module} created,
+are \textit{self-contained}, and do not \textit{bleed} into other modules. So,
+if another developer wants to expand on the \textit{editor} module, they don not
+have to understand what the \textit{file-explorer} module is doing.
+
 %% TODO: Exstensibility is a wanted feature for advanced users, because reasons.
 \subsection{Exstensible}
+
+Exsensibility is cool, because then I, as a developer, can make all IDEs like
+Vim, which is the editor I like the most.
+
 %% TODO: Easy to install is necessary when technology-illiterate people use your
 %% software.
 \subsection{Easy to install}
+%% TODO: This is a good point. How do I counter it? Make a plugin!
+By being modular, the application is not necessary easy to install. While the
+base application is minimal, it would still be a hassle to install all the
+different modules needed to turn the application into an IDE.
 
 %% TODO: Mention different plugin architecture, and how and why they fall short.
 %% Especially when it comes to languages like Magnolia.
 %% TODO: Mention the tech-stack here, maybe?
-\section{Plugin Architecture}
+%% TODO: Is it plugin or module? Are there any differences? Can I use them
+%% interchangeably, like I have been doing?
+\section{Designing the Module Architecture}
+
+%% TODO: Why did I choose a calling-module approach, instead of module-calling?
+%% should also give examples about other IDEs/applications
+When creating a modular application, there are two different ways to think about
+the modules which will extend the application. Are they calling the application,
+or is the application calling them?
+
+%% TODO: Why did I end up choosing init-update-view setup? Should figure out a
+%% way to properly integrate this, red-thread-wise, into this section.
+
+Starting with Model-View-Controller, one has a good abstraction on how an
+application behaves. There is some state, (the model), which is rendered as a
+view, and then the user interacts with this view, changing the state.
+
+%% TODO: Mention the first idea, maybe? It was not really well thought out, but
+%% it is something to mention. I think it was something about a message-based
+%% system, where plugins would listen for messages and then do some action.
+%% Like when you click this button, open a file.
+
+This is a good starting point for a modular architecture. A plugin is called to
+render the view, the view being everything inside the window of the application,
+and when the user makes an interaction, the plugin is called. But where does the
+state live? In the plugin? Or in the application? If the state lives in the
+plugin, how does a plugin share their state with another one? Do they need to?
+The more modular approach would be to allow interop between different plugins.
+%% TODO: Write this: Its like only being able to build around the core, or build
+%% several different layers around the core. It can be messy; plugins can bleed
+%% out, if the plugin developers are not careful, but if done correctly it will
+%% benefit the plugin developer more, to be able to do deep interop between
+%% plugins.
+%% But in a smart way.
+
+%% TODO: Find a way to signal, we ended up keeping the state in the plugin, but
+%% coalecing it into a _super-state_ in the core. Allowing plugins to share
+%% states, kinda.
+
+With this method, plugins need initialize their own state, and update it. This
+could be written as a singular method, as the result is just a state, but it is
+a better plugin developer experience to strictly specify when the plugin is
+first called, i.e. initialized, and when it is doing the \textit{n}th update.
+
+%% TODO: Expand on this.
+Now all that is left is the view. This, offcourse, depends on the state.
+
+%% TODO: Is there a way to tie these two sections together?
+
+So, we end up with something like this:
+A plugin needs these three functions
+\begin{itemize}
+  \item init
+  \item update
+  \item view
+\end{itemize}
+Where init is called at the start of the application, to set the state, then
+after all plugins have been initialized, view is called, to set the view of the
+application. Everytime a user interacts with the application, it updates the
+state, which inturn updates the view.
+
+%% TODO: Tie all this together, somehow.
+
+To fully utilize the modular approach, a zero core IDE was preferable. In this
+context, zero core, means the IDE has only the necessary functionality to load
+modules, also called plugins. This is an extreme approach, as this means
+everything, meaning all functionality, needs to be supplied as a plugin. One
+could create a mega-plugin, which encapsulates all needed features to qualify as
+an IDE, but this would not fully utilize the features available by choosing a
+modular approach.
+To fully utilize the modular approach, one should keep in mind
+\textit{granularity}, when designing plugins. When designing an IDE there are
+certain functionalities that can be reused by other plugins. An example, in
+an IDE like Visual Studio Code, there is something called an `file-explorer`.
+%% TODO: Add picture of a file explorer
+As shown in the picture above, it is a window which renders the project the
+user is currently working on, as a tree-like structure, which enables the
+user to quickly navigate between files. Similarly, most IDEs have indexed the
+project they are working on, so that a user can quickly search for the files
+available in the working directory. Both of these functionalities could be
+supplied by the same plugin, or broken into three different ones.
+%% TODO: Explain this better.
+One for the file explorer, and one for searching for files. Both of which uses
+the last plugin to figure out what to render, or what file to suggest.
+
+Regardless if the plugin is a mega-plugin, or a family of smaller ones, a
+question remains, how does a plugin work?
+
 %% TODO: Mention why one wants a language agnostic plugin architecture
 \subsection{Language Agnostic Plugins}
+As this is a new application, it lacks plugins. And, as mentioned, a good way
+to ensure software longevity, is to ensure exstensibility, which plugins are
+needed for. A good way to ensure the existence of plugins, is to either make
+the scripting-language plugins are made in, good, meaning the tooling around the
+language is good. Or ensure the possible plugin developer can make the plugin in
+their favourite language. This is not an easy feat to achieve, but it is
+possible.
+%% TODO: Should probably rewrite this, to sound smarter.
+The easiest way to be technically language agnostic, is to allow for
+plugins made in C. As all \textit{serious} languages have bindings to C. So if
+a plugin can be written in C, it is technically language agnostic. So this is
+the way.
+
 %% TODO: Why is pureness good?
-\subsection{Pureness in Plugins}
+\subsection{Pureness In Plugins}
+The current specification of a plugin is vague enough to allow for some
+restricting improvements. Among them being \textit{pureness}. Since a plugin is
+called in easily determinable fashions, init first, then view, and then
+everytime \textit{something} happens, update, and then view, repeating ad
+infinitum. Introducing pureness opens up the possibility of many things.
+Pureness, means that a plugin has no side-effect. A trivial example is the init
+function of a plugin. Since it does not take any input, it is, or should be, a
+constant function, the output is the same everytime. The same should hold for
+the update and view function aswell.
+%% TODO: Find a good way to explain why pureness is good without making
+%% concrete examples, like with unit testing, E2E testing, and similar.
+
+\subsection{The Tools}
+As mentioned earlier, one of the goals of the new IDE is to allow for a
+language agnostic plugin architecture, (LAPA), by allowing for plugins to be
+written in C. The easiest way to allow this, is to write the entire application
+in C, as C can dynamically load a library during runtime.
+%% TODO: Not for me, atleast
+This is not feasible. But another low-level system language could help achieve
+this. Rust is a programming language with a rich type system and ownership
+model, that can guarantee memory-safety and thread-safety, both of which are
+important factors when it comes to creating an application with plugin
+capabilities. Using the Tauri framework, which enables application development
+to be done both in Rust and JavaScript, for business logic and UI respectively,
+one gets two languages for free; it allows for plugins to be written in
+JavaScript and Rust. And Rust being a low level system languages, has bindings
+to both use, and be used by C libraries ensures a good starting point for the
+LAPA.
+
+%% TODO: Tie these two paragraphs better together
+
+Using Tauri, allows the application to be divided into two parts. The
+\textit{Frontend} and \textit{Backend}. The Frontend can be written in any
+JavaScript framework, and the Backend is written in Rust. It uses a similar
+concept as Electron, %% TODO: Uhm, sauce!?
+where one basically creates a standard frontend-backend architecture, usually
+keeping the business logic in the backend, and keeping the frontend concern to
+just rendering the responses from the backend. Using \textit{crates} like Serde
+%% TODO: Uhm, source?
+structs can be easily serialized and deserialized to JSON, ensuring easy
+communication between the Frontend and Backend.
+
+%% TODO: Mention the TMap/TValue types created
+
+Due to \textit{abi_stable}, there is no need to handle exceptions, the types are
+always correct, so the results from calling foreign code is always valid. The
+only possible way to have a \textit{panic}, is, as mentioned, having the plugin
+be out-of-date. If this is due to a minor or major change on the
+\textit{core-std-lib}, which is backwards compatibale, all that's needed to
+correct this, is to recompile the plugin with the updated version.
+
+%% TODO: This could probably be in another section, but I am just putting it
+%% here
+%% TODO: Maybe both `Rust Plugin System` and `JavaScript Plugin System` could be
+%% sections under `Frontend` and `Backend`, that way I can more easily tie in
+%% the technology stack, and all of the, "exposing", I've done on the Frontend.
+\subsubsection{Rust Plugin System}
+This was the first plugin system designed. In this context, a plugin system is
+the management of plugins, loading, calling them, and handling exceptions or
+errors. In Rust, this is not quite straight forward. One could write a Rust
+plugin in standard Rust, with no problem, if the compiler used to compiler the
+core and the plugin is on the same version, not same minor version, but same
+patch version. %% TODO: Add some clarification about semver notation.
+This is due to the fact that the Application Binary Interface, (ABI), in Rust
+is not protected by the semver notation. That is to say, a stable ABI is not
+something Rust guarantees.
+This is because Rust does a lot of optimilizations on the layout of data in
+memory. In C, for example, if one declare this struct:
+%% TODO: Insert some C example of a struct with poorly optimized memory layout.
+
+It will have this layout in memory:
+
+%% TODO: Insert example of C struct in memory
+
+It will have the same layout in memory. If, however, one creates a similar
+struct in Rust:
+%% TODO: Insert a Rust struct example, similar to the C one.
+
+It will be optimized to this one:
+
+%% TODO: Insert example of Rust struct in memory
+
+Different memory optimalizations can occur on different patches of the Rust
+compiler, RustC. Which means the ABI is not stable. To guarantee stability, one
+can use other Rust libraries, called \textit{crates}, to achieve this.
+
+%% TODO: Write about abi_stable and macros
+
+With this implemented, the Rust Plugin System, (RPS), can now be implemented.
+A Rust project can be compiled to a C library, shared object file, which, by the
+utilizes provided by \textit{abi_stable}, means we can safely load it. If the
+%% TODO: Meantion the core-std-lib earlier.
+plugin is out-of-date, meaning it compiled when the \textit{core-std-lib} had an
+earlier version, it will simply error, instead of possibly causing undefined
+behavior. If it is the correct version, it will be collected into a list of all
+loaded plugins, and whenever the core application is in init, view or update
+state, the Rust plugins will be called with the corresponding function, their
+response mapped with the plugin name, (which is just the name of the file), and
+returned to the Frontend, which is where the state is kept.
+
+%% TODO: Rewrite this to better tie it in.
+So this is the trivial example of a Rust Plugin:
+%% TODO: Insert the trivial Rust Plugin
+%% TODO: Make a note on how imports are left out. To make the example cleaner.
+
+This section in update and view: `model: &RMap`, means that the function only
+has a reference to the supplied model, effectively meaning only read access to
+the model, since, for the update example, it only needs to return the field to
+be updated, and not the entire model. This safes memory, in case the model is
+very large, meaning it has many fields, we don't have to copy it everytime we
+pass it to the plugin.
+
+%% TODO: Write stuff
+\subsubsection{JavaScript Plugin System}
+Since the Frontend is written in TypeScript, it is trivial to install and manage
+JavaScript Plugins, (JSPs).
+
+Here is the trivial JSP:
+%% TODO: Insert the trivial JavaScript Plugin
+It is different from a Rust Plugin, since as shown here:
+%% TODO: Insert code for `window.plugins`
+It \textit{loads} itself. %% TODO: define the vernacular used.
+Other than that, it is quite simple, for a plugin developer, atleast. For the
+core it is more complex, since, loading and executing a JSP is more unsafe, than
+that of RP.
+
+\begin{enumerate}
+  \item Throw an exception
+  \item Plugin can be invalid
+  \item Data from the plugin can be invalid
+\end{enumerate}
+
+The first two points is solved by wrapping plugin invocations in
+\textit{try-catch}, which at minimum, ensures an invalid plugin will not crash
+the entire application. The last point is tricker, as doing it the naive way
+could quickly lead to the entire core being full of nested if-statements like:
+`if ("field" in obj)`. Luckily this can be avoided by using \textit{io-ts}, a
+TypeScript library made to safely decode \textit{unknown} data received from a
+third party.
+Simply declare your expected type like this: %% TODO: Insert io-ts example
+
+And use it like so: %% TODO: Insert decoding io-ts example
+
+Which returns an `Validation<T>`, where `T` is the expected type. This, is a
+wrapper around `Either<E, T>`, where `E` is a validation error. This validation
+is also done on the results from the Backend.
+%% TODO: Rewrite this
+This is not strictly necessary, due to the strict type system Rust has, but
+during development, it would catch issues with changing types, since, as
+mentioned, the types are defined in the Backend.
+
 %% TODO: JSPS and RPS are similar, but different.
 \subsubsection{Differences in JSPS and RPS}
+In theory, the JSPS and RPS are the same, but in practice, they are not. JSPs
+have direct access to the DOM, and can change it outside of the standard plugin
+cycle. This inturn would render the plugin impure, which voids some of the
+guarantees the core gives.
+%% TODO: Should I mention this? Feels like I kinda say my system is not good in
+%% practice...
+In practice, this does not matter. An example of this is a \textit{framework}
+plugin. A framework plugin is a plugin who only creates a framework of HTML
+which other plugins can take advantage off.
+%% TODO: This should be worded better
+In the way rendering works, it would be tricky to design each plugin to render
+exactly where they are supposed to be. This can be solved by doing this:
+%% TODO: Add short example of removing a plugins ability to call view.
+Now, instead of calling other plugins view, the view is only rendered when the
+framework plugins view is called, and when that happens:
+%% TODO: Show example of framework-plugins view
+
+Using the \textit{class}-attribute, the framework plugin looks for classnames of
+the variation `location-*`, where `*` should correspond to an \textit{id} of an
+existing HTML element. Then the HTML is rendered as a child. This is not pure,
+since the framework plugin renders HTML as a side-effect of calling `init`. But
+this is a sacrifice to allow for easier time of rendering different plugins as
+components of an IDE.
+
 %% TODO: What guarantees does the IDE have? What is voided when a user does not
 %% uphold this contract?
+%% TODO: Maybe talk about the guarantees before `Differences in JSPS and RPS`?
 \subsection{Guarantees}
+%% TODO: Is this it?
+\begin{enumerate}
+  \item Calling order
+  \item DOM order
+\end{enumerate}
+
 %% TODO: Modularity is preferred over pureness, as pureness does not directly
 %% affect software longevity.
 \subsection{Modularity over pureness}
+%% TODO: Kinda mentioned this in `Differences between JSPS and RPS`.
+
 %% TODO: Mention how pureness could be achieved by adding the DOM or a DOM-like
 %% object to the type signature to the plugin, which would mitigate some of the
 %% differences between JSPS and RPS, but this would quickly lead to bloat.
 \subsection{Optimalization over pureness}
+%% TODO: I can mention optimalization, even though I have not done it, since by
+%% exposing the functionality like I have, other plugins could do this
+%% optimalization.
 
 %% TODO: Mention how when writing such an extreme modular application is created
 %% it is no longer a specific application, but something that can be extended to
 %% the wanted design.
 \section{Modular Application}
+%% TODO: Granularity is important here, as if the family of plugins are granular
+%% enough, it lowers the bar for turning the application from something that
+%% solves A, to B. Especially if A and B are similar. An example could be
+%% turning the IDE into an audio editor program, like Audacity.
+
 %% TODO: Somehow get this into the thesis, because it is funny to mention X,
 %% (formerly known as Twitter), because Elon is a dumbass.
 %% Could be an excuse to mention how the application could "easily" be turned
@@ -166,18 +562,60 @@ experimental programming languages.
 %% TODO: Mention the plugins which are made, which combined, give the everything
 %% app the functionality needed to be considered an IDE.
 \section {IDE-Plugins}
+The easiest way to turn the everything app into a specific one, is by creating a
+\textit{family} of plugins. This means, a group of plugins which work together
+to give the necessary functionality to the application. Here is an example for a
+basic IDE: %% TODO: Show a diagram of the IDE-Plugin-Family
+
 %% TODO: List the functionalities given by this plugin family.
 \subsection{Features}
+
+%% TODO: Rewrite this list
+\begin{itemize}
+  \item Plugin Debugger
+  \begin{itemize}
+    \item Display State
+    \item Display Msg's being sent
+    \item Check if there are state collisions
+    \item Check if there are Msg collisions
+  \end{itemize}
+  \item Dependency Viewer
+  \begin{itemize}
+    \item Showcase JS
+  \end{itemize}
+  \item File Explorer
+  \item Text Editor
+  \begin{itemize}
+    \item Use existing JS
+  \end{itemize}
+  \item Rendering Framework
+  \begin{itemize}
+    \item Facilitate ease of pre-DOM-manipulation
+  \end{itemize}
+\end{itemize}
+
 %% TODO: Mention how granularity helps a plugin developer develop useful
 %% plugins, as granularity is an important concept in modular design.
 %% I guess I could find litreature in modular design.
 \subsection{Granularity}
+%% TODO: Kinda mentioned this already, if I need to write more on this topic, it
+%% should be on a section earlier.
 
 %% TODO: Funny to have this as a title, but the idea behind it is to mention how
 %% while developing this application, I have had different "hats"; kept
 %% different kinds of users in mind. But luckily, due to the modularity of my
 %% design, it was easy to switch context.
+%% TODO: This section should probably be earlier.
 \section{Different hats}
+When developing an zero core modular IDE, there are several different userbases
+to keep track off.
+
+\begin{enumerate}
+  \item The developer who is going to use the IDE
+  \item The plugin developer who is going to create the plugins for the application
+  \item The developer who is going to maintain/expand the core application
+\end{enumerate}
+
 \subsection{The Developer Experience}
 \subsection{The Plugin Developer Experience}
 \subsection{User Experience Challenges}
