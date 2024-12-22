@@ -6,6 +6,7 @@ import { DirEntry, readDir } from "@tauri-apps/plugin-fs";
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { convertFileSrc } from "@tauri-apps/api/core";
 
+// TODO: Add docs
 export const getPaths = async (): Promise<string[]> => {
   const pluginDir = await appDataDir()
     .then(p => join(p, "plugins"));

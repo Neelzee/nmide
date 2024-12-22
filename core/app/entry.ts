@@ -7,22 +7,26 @@ import { jspInstaller } from "./lib/jspInstaller";
 import { cssInstaller } from "./lib/cssInstaller";
 import { App } from "./App";
 
+// TODO: Add docs
 document.addEventListener("DOMContentLoaded", () => {
   App({
-    cleanup: [],
-    pluginAssets: [],
-    renderHtml,
-    parseHtml,
-    root: document.body,
-    client,
-    log: {
-      info: console.log,
-      error: console.error,
-    },
-    listen,
-    emit,
-    getPluginPaths: getPaths(),
-    pluginInstallers: [InstallHtmlPlugin, jspInstaller, cssInstaller],
+      cleanup: [],
+      pluginAssets: [],
+      renderHtml,
+      parseHtml,
+      root: document.body,
+      client,
+      log: {
+          info: console.log,
+          error: console.error,
+      },
+      listen,
+      emit,
+      getPluginPaths: getPaths(),
+      pluginInstallers: [InstallHtmlPlugin, jspInstaller, cssInstaller],
+      // TODO: Implement this
+      filterPluginState: undefined,
+      // TODO: Implement this
+      coalcePluginState: undefined
   });
 })
-

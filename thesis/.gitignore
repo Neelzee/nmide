@@ -5,3 +5,7 @@
 **.toc
 **.nav
 **.out
+**.fls
+**.fdb_latexmk
+**.dvi
+**.eps

@@ -4,17 +4,17 @@ use abi_stable::{
     rvec, sabi_extern_fn,
     std_types::{ROption, RString, RVec},
 };
-use nmide_std_lib::{
+use core_std_lib::{
     attr::rattr::RAttr,
     html::rhtml::RHtml,
     map::rmap::RMap,
     msg::rmsg::{RMsg, RMsgKind, RMsgUnion},
-    NmideStandardLibrary_Ref, NmideStdLib,
+    NmideStandardLibraryRef, NmideStdLib,
 };
 use std::str::FromStr;
 
 #[export_root_module]
-pub fn get_library() -> NmideStandardLibrary_Ref {
+pub fn get_library() -> NmideStandardLibraryRef {
     NmideStdLib { init, view, update }.leak_into_prefix()
 }
 
@@ -24,7 +24,7 @@ pub fn init() -> RMap {
 }
 
 #[sabi_extern_fn]
-pub fn view(model: RMap) -> RHtml {
+pub fn view(model: &RMap) -> RHtml {
     let count = model
         .lookup("counter")
         .and_then(|v| ROption::RSome(v.int().unwrap_or_default()))
@@ -45,7 +45,7 @@ pub fn view(model: RMap) -> RHtml {
 }
 
 #[sabi_extern_fn]
-pub fn update(msg: RMsg, model: RMap) -> RMap {
+pub fn update(msg: RMsg, model: &RMap) -> RMap {
     if !msg.is_msg("increment") {
         return model;
     }
@@ -53,5 +53,5 @@ pub fn update(msg: RMsg, model: RMap) -> RMap {
         .lookup("counter")
         .map(|v| v.int().unwrap_or_default())
         .unwrap_or_default();
-    model.insert("counter", count + 1)
+    RMap::new().insert("counter", count + 1)
 }

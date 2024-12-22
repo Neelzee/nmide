@@ -1,3 +1,4 @@
+// TODO: Add docs
 export const jspInstaller = async (src: string): Promise<string | undefined> => {
   if (!src.endsWith(".js")) return src;
   let name = src.split("%2F").pop()?.split(".")[0];

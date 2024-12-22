@@ -1,8 +1,15 @@
-import { AppConfig, AppOption, defaultConfig, GetOrElse, ModelOverwrite, THtml, TMap, TMsg } from "@nmide/js-utils";
+import {
+  AppConfig,
+  AppOption,
+  defaultConfig,
+  ModelOverwrite,
+  THtml,
+  TMsg
+} from "@nmide/js-utils";
 import { InstallPlugins } from "./lib/InstallPlugins";
 import { Init } from "./lib/Init";
 import "@nmide/js-utils";
-import { constant, pipe } from "fp-ts/lib/function";
+import { pipe } from "fp-ts/lib/function";
 import * as M from "fp-ts/Map";
 import * as A from "fp-ts/Array";
 import * as S from "fp-ts/string";
@@ -10,6 +17,7 @@ import { View } from "./lib/View";
 import { Update } from "./lib/Update";
 import { setTimeout } from "timers/promises";
 
+// TODO: Add docs
 export const App = (opts?: AppOption): void => {
 
   if (opts === undefined) {
@@ -34,29 +42,22 @@ export const App = (opts?: AppOption): void => {
   window.getPluginPaths = config.getPluginPaths;
   window.pluginInstallers = config.pluginInstallers;
   window.client = config.client;
+  window.coalcePluginState = config.coalcePluginState;
 
   window.listen<TMsg>("msg", ({ payload: msg }) => {
     const plugins = M.toArray(S.Ord)(window.plugins);
     const prevState = window.state;
-    Update(prevState, msg, plugins)
-      .then(state => pipe(
-        state,
-        GetOrElse<[TMap, [string, TMap][]]>([[], []]),
-        ([state, collisions]) => A.isEmpty(collisions)
-          ? state
-          : pipe(
-            collisions,
-            A.map(([pln, model]) => {
-              window.log.error(`Collisions from: ${pln}, with model: `, model);
-            }),
-            constant(state),
-          ),
-      ))
+    Update(msg, plugins, prevState)
       .then(newState => {
         window.state = ModelOverwrite(prevState, newState);
         window.emit("nmide://update").catch(err => window.log.error("emit update: ", err));
         return window.state;
       })
+      // HACK: Try-Catch on cleanup, because it is exsposed to other plugins.
+      // But should we care? If a plugin introduces a new clean-up, is this
+      // pure? Maybe. Should look into this. If this is the case, then we should
+      // handle this better, i.e outside `App.ts`, and only keep the _happy_
+      // path here.
       .then(state => {
         window.cleanup.forEach(([pln, clean]) => {
           try {
@@ -83,22 +84,17 @@ export const App = (opts?: AppOption): void => {
   });
 
   InstallPlugins()
+    // HACK: This timeout is here, because a plugin is installed by adding a
+    // script-tag, and after this document has finished loading, it will be
+    // added to `window.plugins`, currently there is no way to guarantee that
+    // a plugin has finished _installing_. With the current test-plugins, a
+    // timeout of `250 ms`, has a 100% success rate, but if a Plugin is larger
+    // or does something that takes longer than `250 ms`-post loading, it will
+    // result in the plugin not being loaded, and therefore not being loaded
+    // when the `init`-state happens.
     .then(_ => setTimeout(250))
     .then(_ => M.toArray(S.Ord)(window.plugins))
     .then(plugins => Init(plugins))
-    .then(init => pipe(
-      init,
-      GetOrElse<[TMap, [string, TMap][]]>([[], []]),
-      ([state, collisions]) => A.isEmpty(collisions)
-        ? state
-        : pipe(
-          collisions,
-          A.map(([pln, model]) => {
-            window.log.error(`Collisions from: ${pln}, with model: `, model);
-          }),
-          _ => state,
-        ),
-    ))
     .then(state => {
       window.state = state;
       window.emit("nmide://init").catch(err => window.log.error("emit init: ", err));
@@ -120,4 +116,3 @@ export const App = (opts?: AppOption): void => {
       window.emit("nmide://view").catch(err => window.log.error("emit view: ", err));
     });
 };
-
