@@ -1,8 +1,15 @@
-import { AppConfig, AppOption, defaultConfig, GetOrElse, ModelOverwrite, THtml, TMap, TMsg } from "@nmide/js-utils";
+import {
+  AppConfig,
+  AppOption,
+  defaultConfig,
+  ModelOverwrite,
+  THtml,
+  TMsg
+} from "@nmide/js-utils";
 import { InstallPlugins } from "./lib/InstallPlugins";
 import { Init } from "./lib/Init";
 import "@nmide/js-utils";
-import { constant, pipe } from "fp-ts/lib/function";
+import { pipe } from "fp-ts/lib/function";
 import * as M from "fp-ts/Map";
 import * as A from "fp-ts/Array";
 import * as S from "fp-ts/string";
