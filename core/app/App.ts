@@ -77,6 +77,14 @@ export const App = (opts?: AppOption): void => {
   });
 
   InstallPlugins()
+    // HACK: This timeout is here, because a plugin is installed by adding a
+    // script-tag, and after this document has finished loading, it will be
+    // added to `window.plugins`, currently there is no way to guarantee that
+    // a plugin has finished _installing_. With the current test-plugins, a
+    // timeout of `250 ms`, has a 100% success rate, but if a Plugin is larger
+    // or does something that takes longer than `250 ms`-post loading, it will
+    // result in the plugin not being loaded, and therefore not being loaded
+    // when the `init`-state happens.
     .then(_ => setTimeout(250))
     .then(_ => M.toArray(S.Ord)(window.plugins))
     .then(plugins => Init(plugins))
