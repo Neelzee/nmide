@@ -3,7 +3,6 @@ let
 in
 pkgs.mkShell {
   name = "nmide-shell";
-
   # During build
   nativeBuildInputs = with pkgs; [
     pkg-config
@@ -34,5 +33,10 @@ pkgs.mkShell {
     biber # For bibliography management
     tectonic # Alternative LaTeX engine
     imagemagick # For image processing if needed
+  ];
+  packages = [
+    (pkgs.python3.withPackages (python-pkgs: [
+      python-pkgs.pygments
+    ]))
   ];
 }
