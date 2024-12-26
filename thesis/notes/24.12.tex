@@ -116,3 +116,9 @@ collision occurring post coalecing, as if two different plugins work on the same
 field, they both return two states that can collide. Currently, this is
 mitigated by keeping the first instance, i.e. the first state found, this can
 probably be improved.
+
+\section{24.12.25}
+
+latexmk -c && TEXINPUTS=../../themes/UiB: latexmk -interaction=nonstopmode -latexoption=-shell-escape-flag -pdflatex=lualatex -pdf main.tex
+
+^ for making the slides
