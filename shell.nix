@@ -33,6 +33,8 @@ pkgs.mkShell {
     biber # For bibliography management
     tectonic # Alternative LaTeX engine
     imagemagick # For image processing if needed
+    git-cliff # For CHANGELOG
+    xdotool # For keypresses
   ];
   packages = [
     (pkgs.python3.withPackages (python-pkgs: [
