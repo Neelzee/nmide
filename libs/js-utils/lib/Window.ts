@@ -1,4 +1,5 @@
-import { AsyncNmluginUnknown, NmluginUnknown as Nmlugin } from "./Nmlugin";
+import { AsyncNmluginUnknown } from "./Nmlugin";
+import { ModuleUnknown as Module } from "./Module";
 import { THtml } from "./THtml";
 import { TMap } from "./TMap";
 import { NmideClient, NmideLogger, Payload } from "./App";
@@ -41,7 +42,8 @@ declare global {
     /**
      * Map of all JSPs loaded.
      */
-    plugins: Map<string, Nmlugin>;
+    plugins: Map<string, Module>;
+    moduleCount: number;
     /**
      * TBD
      */
