@@ -1,6 +1,7 @@
 import * as t from "io-ts";
 import { TValue } from "./TMap";
 import { THtml } from "./THtml";
+import { Node } from "./tree";
 
 export const DValue: t.RecursiveType<any, TValue> = t.recursion("DValue", () =>
   t.union([
@@ -39,14 +40,43 @@ export const DHtmlKind = t.union([
   t.literal("tbody"),
   t.literal("main"),
 ]);
-export const DHtml: t.RecursiveType<any, THtml> = t.recursion("DHtml", () => t.type({
-  kind: DHtmlKind,
-  kids: t.array(DHtml),
-  text: t.union([t.string, t.null]),
-  attrs: t.array(DAttrs),
-}));
+export const DHtml: t.RecursiveType<any, THtml> = t.recursion("DHtml",
+  () => t.type({
+    kind: DHtmlKind,
+    kids: t.array(DHtml),
+    text: t.union([t.string, t.null]),
+    attrs: t.array(DAttrs),
+  }));
 export const DMap = t.array(t.tuple([t.string, DValue]));
 export const DMapArr = t.array(DMap);
 export const DUpdateDecoder = t.array(t.tuple([t.string, DMap]));
 export const DInitDecoder = DUpdateDecoder;
 export const DViewDecoder = t.array(t.tuple([t.string, DHtml]));
+export const DEvent = t.type({
+  event: t.string,
+  module: t.string,
+});
+const DNodeImpl = <T extends t.Mixed>(type: T): t.RecursiveType<any, Node<t.TypeOf<typeof type>>> => t.recursion(
+  "DNodeImpl",
+  () => t.type({
+    id: t.string,
+    kids: t.array(DNodeImpl<T>(type)),
+  })
+);
+export const DNode = <T extends t.Mixed>(type: T) => t.intersection([
+  DNodeImpl(type),
+  type,
+]);
+export const DIns = <T extends t.Mixed>(type: T) => t.union([
+  t.type({ node: DNode<T>(type) }, "DRemIns"),
+  t.type({ node: DNode<T>(type), f: t.Function }, "RModIns")
+]);
+export const DInsArr = <T extends t.Mixed>(type: T) => t.array(DIns<T>(type));
+export const DCore = t.type({
+  ui: DHtml,
+  uiModifications: DInsArr(DHtml),
+  state: DMap,
+  stateModifications: DInsArr(DValue),
+  events: t.array(DEvent),
+  eventModifications: DInsArr(DEvent),
+});
