@@ -7,6 +7,7 @@ import * as T from "fp-ts/Task";
 type ModuleInstaller = ((path: string) => Promise<string | undefined>);
 
 // TODO: Add docs
+// NOTE: Installation has side-effects!
 /**
 * Since all of these promises come from the _outside_, they cannot be
 * trusted. `Promise.all` cannot be used, because that would mean all
@@ -57,7 +58,10 @@ const moduleInstallerWrapper = (modules: string[]) =>
     modules,
     A.map(m => pipe(
       TE.tryCatch(
-        () => f(m),
+        () => f(m).then(v => {
+          window.moduleCount++;
+          return v;
+        }),
         (reason) => new Error(
           `Error on module installation: ${reason}, from module: ${m}`
         )
