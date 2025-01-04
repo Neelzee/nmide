@@ -5,7 +5,7 @@ import { pipe } from "fp-ts/lib/function";
 
 export default class TreeManager<T> {
   private instructions: Ins<T>[] = [];
-  private tree: Tree<Node<T>>;
+  public tree: Tree<Node<T>>;
   constructor(tree: Tree<Node<T>>) {
     this.tree = tree;
   }
@@ -38,6 +38,10 @@ export default class TreeManager<T> {
     this.instructions.push({
       node,
     });
+  }
+
+  public modifications(): Ins<T>[] {
+    return this.instructions;
   }
 }
 

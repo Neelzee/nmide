@@ -5,9 +5,9 @@ import { Ins, isModIns } from "./instruction";
 import { Node, Tree } from "./tree";
 
 // TODO: Add docs
-export const evalTree = <T>(t: Tree<Node<T>>, ins: Ins<T>[]): Tree<Node<T>> => pipe(
+export const evalTree = <T>(t: Tree<T>, ins: Ins<T>[]): Tree<T> => pipe(
   ins,
-  A.reduce<Ins<T>, Tree<Node<T>>>(t, (accTree, i) =>
+  A.reduce<Ins<T>, Tree<T>>(t, (accTree, i) =>
     isModIns(i)
       ? pipe(
         accTree.root,
