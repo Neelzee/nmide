@@ -10,28 +10,9 @@ import { fst } from "fp-ts/Tuple";
 
 export interface AppOption {
   /**
-     * List of clean up functions. The app calls the supplied function to clean
-     * up the HTML that the plugin has rendered. If anything goes wrong calling
-     * this function, it will be logged, with the supplied plugin name.
-     */
-  cleanup?: [string, (() => void)][];
-  /**
      * List of path to all plugins, [pluginName, pluginPath].
      */
   pluginAssets?: [string, string][];
-  /**
-     * Parses the THtml using `parseHtml`, creating a corresponding HTMLElement,
-     * which is set as a child of `window.root`.
-     *
-     * Returns undefined if the supplied THtml is of kind `Frag` and childless.
-     */
-  renderHtml?: (html: THtml) => HTMLElement | undefined;
-  /**
-     * Parses the THtml, creating a corresponding HTMLElement, returning it.
-     *
-     * Returns undefined if the supplied THtml is of kind `Frag` and childless.
-     */
-  parseHtml?: (html: THtml) => HTMLElement | undefined;
   /**
      * The HTMLElement that all THtml are children off. Corresponds to
      * document.body
@@ -77,14 +58,6 @@ export interface AppOption {
      */
   pluginInstallers?: ((path: string) => Promise<string | undefined>)[],
 
-  /**
-     * After every `init` and `update`, the new plugin state is coalced into a
-     * single state. Before this, we check if any of the states have a
-     * collision. A collision between two states occurs if they contain the same
-     * field. The standard way to deal with a collision is to log it using
-     * `window.log.error`, and drop it.
-     */
-  coalcePluginState: [(xs: E.Either<[[string, TMap][], string], [string, TMap]>[]) => [string, TMap][]],
 }
 
 export interface Payload<T> {
@@ -150,10 +123,7 @@ export type NmideClient = <
 
 
 export const defaultConfig: AppConfig = {
-  cleanup: [],
   pluginAssets: [],
-  renderHtml: (_: THtml) => undefined,
-  parseHtml: (_: THtml) => undefined,
   root: document.body,
   client: (_: any, __: any) => new Promise(() => { }),
   log: {
@@ -164,28 +134,6 @@ export const defaultConfig: AppConfig = {
   emit: (_: any, __?: any) => new Promise(r => r()),
   getPluginPaths: new Promise(r => r([])),
   pluginInstallers: [(_: string) => new Promise(r => r(undefined))],
-  coalcePluginState: [(xs: E.Either<[[string, TMap][], string], [string, TMap]>[]) => pipe(
-    xs,
-    A.map<E.Either<[[string, TMap][], string], [string, TMap]>, [string, TMap]>(
-      E.getOrElse<[[string, TMap][], string], [string, TMap]>(([plgs, field]) => {
-        const plugins = pipe(
-          plgs,
-          A.map(fst),
-          A.reduce("", (a, b) => `${a}\n${b}`)
-        );
-        const state = A.map<[string, TMap], string>(
-          ([p, s]) => `Plugin: ${p}, state: ${JSON.stringify(s)}`
-        )(plgs);
-        window.log.error(
-          `Error on coalecing plugin state, on field: ${field}`
-            + `. Affected plugins: ${plugins}`
-            + `. State: ${state}`, plgs
-        );
-        return ["", []];
-      })
-    ),
-    el => el,
-  )],
 };
 
 export const getOpts = (opts?: AppOption): AppConfig => {
