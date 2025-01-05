@@ -1,8 +1,8 @@
-import { Core } from "./Core";
+import { Core, CoreModification } from "./Core";
 
 
 export interface Module {
-  init: (core: Core) => Promise<Core>;
+  init: (core: Core) => Promise<CoreModification>;
 };
 
 /**

@@ -5,6 +5,7 @@ import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/lib/function";
 import { Eq } from "fp-ts/string";
 import { Node } from "./tree";
+import { THtml } from "./THtml";
 
 export type Ins<T>
   = RemIns<T>
@@ -72,7 +73,6 @@ export const collisionDetection = <T>(
     _ => E.right([...aIns, ...bIns])
   ),
 );
-
 
 const getKids = <T>({ kids }: Node<T>): Node<T>[] =>
   [...kids, ...A.flatMap(getKids)(kids)];

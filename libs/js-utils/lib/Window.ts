@@ -1,12 +1,12 @@
-import { AsyncNmluginUnknown } from "./Nmlugin";
 import { ModuleUnknown as Module } from "./Module";
 import { THtml } from "./THtml";
 import { TMap } from "./TMap";
 import { NmideClient, NmideLogger, Payload } from "./App";
-import { Either } from "fp-ts/lib/Either";
+import { Core } from "./Core";
 
 declare global {
   interface Window {
+    core: Core;
     /**
      * List of path to all plugins, [pluginName, pluginPath].
      */
@@ -45,10 +45,6 @@ declare global {
     plugins: Map<string, Module>;
     moduleCount: number;
     /**
-     * TBD
-     */
-    async_plugins: Map<string, AsyncNmluginUnknown>;
-    /**
      * Client used to call the `backend`. In the IDE configuration, this
      * corresponds to the Tauri client, with a wrapper to decode the response.
      *
@@ -62,6 +58,10 @@ declare global {
      * console.error, respectively.
      */
     log: NmideLogger;
+    // TODO: This returns an cleanup function, which is not used, as all Events
+    // used by this `listen`, are designed to exist for the entirety of the
+    // applications lifetime, there is no need for this cleanup function to
+    // exist
     /**
      * Used by the application to listen for the `Msg`-event.
      */
@@ -83,13 +83,5 @@ declare global {
      * it exist outside the init-update-view-loop.
      */
     pluginInstallers: ((path: string) => Promise<string | undefined>)[],
-    /**
-     * After every `init` and `update`, the new plugin state is coalced into a
-     * single state. Before this, we check if any of the states have a
-     * collision. A collision between two states occurs if they contain the same
-     * field. The standard way to deal with a collision is to log it using
-     * `window.log.error`, and drop it.
-     */
-    coalcePluginState: [(xs: Either<[[string, TMap][], string], [string, TMap]>[]) => [string, TMap][]],
   }
 }

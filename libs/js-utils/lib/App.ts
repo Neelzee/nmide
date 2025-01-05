@@ -2,11 +2,7 @@ import * as t from "io-ts";
 import { TMap } from "./TMap";
 import { TMsg } from "./TMsg";
 import * as Decoder from "./Decoder";
-import { THtml } from "./THtml";
 import * as E from "fp-ts/lib/Either";
-import * as A from "fp-ts/lib/Array";
-import { pipe } from "fp-ts/lib/function";
-import { fst } from "fp-ts/Tuple";
 
 export interface AppOption {
   /**

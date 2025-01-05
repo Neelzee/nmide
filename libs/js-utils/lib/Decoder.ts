@@ -13,6 +13,7 @@ export const DValue: t.RecursiveType<any, TValue> = t.recursion("DValue", () =>
     t.type({ "obj": t.array(t.tuple([t.string, DValue])) }),
   ])
 );
+export const DValueArr = t.array(DValue);
 export const DMsg = t.type({ "msg": t.tuple([t.string, DValue]) });
 export const DAttrs = t.union([t.type({ "id": t.string }),
 t.type({ "class": t.string }),
@@ -71,12 +72,14 @@ export const DIns = <T extends t.Mixed>(type: T) => t.union([
   t.type({ node: DNode<T>(type) }, "DRemIns"),
   t.type({ node: DNode<T>(type), f: t.Function }, "RModIns")
 ]);
+export const DEventHandler = t.type({
+  handler: t.Function,
+  module: t.string,
+});
 export const DInsArr = <T extends t.Mixed>(type: T) => t.array(DIns<T>(type));
-export const DCore = t.type({
-  ui: DHtml,
+export const DCoreModification = t.type({
   uiModifications: DInsArr(DHtml),
-  state: DMap,
   stateModifications: DInsArr(DValue),
-  events: t.array(DEvent),
   eventModifications: DInsArr(DEvent),
+  newEventHandlers: t.array(t.tuple([t.string, DEventHandler]))
 });

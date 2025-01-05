@@ -2,14 +2,21 @@
 
 import { pipe } from "fp-ts/lib/function";
 import { THtml } from "./THtml";
-import { TMap, TValue } from "./TMap";
+import { TValue } from "./TMap";
 import { Ins } from "./instruction";
-import { tObj } from "./Types";
 import TreeManager, { toNode, Node } from "./tree";
 import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
 
-export type EventHandler = (c: Core, ...args: TValue[]) => Promise<unknown>;
+export type EventHandler = {
+  handler: (c: Core, ...args: TValue[]) => Promise<Core>;
+  module: string;
+};
+
+export type EventHandlerUnknown = {
+  handler: Function,
+  module: string;
+};
 
 export type Event = {
   // Event name
@@ -22,23 +29,27 @@ export type Core = {
   /**
    * UI Hierarchy
    */
-  readonly ui: THtml;
-  readonly uiModifications: Ins<THtml>[];
+  readonly ui: Node<THtml>;
   /**
    * State of the application
    */
-  readonly state: TMap;
-  readonly stateModifications: Ins<TValue>[];
+  readonly state: Node<TValue>;
   /**
    * List of events
    */
-  readonly events: Event[],
+  readonly events: Node<Event>;
+  readonly eventThrower: (evt: Event) => void;
+  readonly eventHandlers: Map<string, EventHandler[]>;
+};
+
+export type CoreModification = {
+  readonly uiModifications: Ins<THtml>[];
+  readonly stateModifications: Ins<TValue>[];
   readonly eventModifications: Ins<Event>[];
+  readonly newEventHandlers: [string, EventHandlerUnknown][];
 };
 
 export class CoreManager {
-  private core: Core;
-
   private ui: TreeManager<THtml>;
 
   // HACK: Since the state is just a list of tuples, with fields and their
@@ -52,33 +63,12 @@ export class CoreManager {
   // root to allow for a unified collision solver
   private events: TreeManager<Event>;
 
+  private newEventHandlers: [string, EventHandler][] = [];
+
   public constructor(core: Core) {
-    this.core = core;
-    this.ui = new TreeManager({ root: toNode(core.ui) });
-    const id = "root";
-    this.state = new TreeManager({
-      root: {
-        id,
-        kids: pipe(
-          core.state,
-          A.map(([field, value]) => {
-            return { id: field, kids: [] as Node<TValue>[], ...value };
-          })
-        ),
-        ...tObj([])
-      }
-    });
-    this.events = new TreeManager({
-      root: {
-        id,
-        kids: pipe(
-          core.events,
-          A.map(toNode)
-        ),
-        event: "",
-        module: ""
-      }
-    });
+    this.ui = new TreeManager({ root: core.ui });
+    this.state = new TreeManager({ root: core.state });
+    this.events = new TreeManager({ root: core.events });
   }
 
   private traverseTree<T>(
@@ -169,9 +159,9 @@ export class CoreManager {
     );
   }
 
-  public modifyField(f: (n: TValue) => boolean, g: (n: TValue) => TValue): CoreManager {
+  public modifyField(field: string, g: (n: TValue) => TValue): CoreManager {
     return pipe(
-      this.traverseTree<TValue>(this.state.tree.root, f),
+      this.traverseTree<TValue>(this.state.tree.root, ({ id }) => id === field),
       O.map(({ id }) => this.state.modifyNode(id, old => {
         const { id: kid, ...node } = old;
         return { ...toNode(g(node)), id: kid };
@@ -232,9 +222,14 @@ export class CoreManager {
     );
   }
 
-  public build(): Core {
+  public addEventHandler(event: string, handler: EventHandler): CoreManager {
+    this.newEventHandlers.push([event, handler]);
+    return this;
+  }
+
+  public build(): CoreModification {
     return {
-      ...this.core,
+      newEventHandlers: this.newEventHandlers,
       uiModifications: this.ui.modifications(),
       stateModifications: this.state.modifications(),
       eventModifications: this.events.modifications(),
