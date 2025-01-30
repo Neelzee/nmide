@@ -38,12 +38,18 @@
                 ];
                 FONTCONFIG_FILE = fontsConf;
                 src = ./.;
+                pics = ../pics;
+                themes = ../themes;
               }
               # Added the export line to solve this error:
               # https://discourse.nixos.org/t/fontconfig-error-no-writable-cache-directories/34447
               ''
                 export XDG_CACHE_HOME="$(mktemp -d)"
                 cp -r $src/* ./
+                mkdir ./pics
+                cp -r $pics/* ./pics/
+                mkdir ./themes
+                cp -r $themes/* ./
                 mkdir $out
                 ${pkgs.pandoc}/bin/pandoc \
                   --pdf-engine=xelatex \
