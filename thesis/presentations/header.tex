@@ -1,5 +1,5 @@
 \usepackage{amsmath, amsfonts, amssymb}
-\usetheme{UiB}
+\usetheme{../themes/UiB}
 \usepackage[sfdefault]{FiraSans}
 \usepackage{FiraMono}
 
@@ -14,12 +14,12 @@
 % \setmonofont{ipag.ttf}
 
 % Add TOC at the beginning of each section
-\AtBeginSection[]{
-    \begin{frame}
-        \frametitle{Outline}
-        \tableofcontents[currentsection, currentsubsection, subsectionstyle=show/shaded/hide]
-    \end{frame}
-}
+%\AtBeginSection[]{
+%    \begin{frame}
+%        \frametitle{Outline}
+%        \tableofcontents[currentsection, currentsubsection, subsectionstyle=show/shaded/hide]
+%    \end{frame}
+%}
 
 % Toggle text font between Sans Serif & Serif (math mode font unchanged)
 %   \renewcommand{\familydefault}{}           # sans serif
@@ -48,11 +48,6 @@
 
 \newcommand{\dialabel[1]}{\ensuremath\langle#1\rangle}
 \newcommand{\boxlabel[1]}{\ensuremath[#1]}
-
-\definecolor{DeepBlue}{RGB}{0, 0, 78}
-\setbeamercolor{title}{fg=DeepBlue}
-\setbeamercolor{frametitle}{bg=DeepBlue}
-\setbeamercolor{structure}{bg=DeepBlue}
 
 % A footnote that does not have a marker, nor does it change the counter.
 % https://tex.stackexchange.com/a/347247

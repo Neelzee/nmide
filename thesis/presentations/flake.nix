@@ -1,6 +1,6 @@
 {
   description = ''
-    LaTeX Beamer for Nmide thesis
+    LaTeX Beamer for Nmide slides
 
     Based on https://ubikium.gitlab.io/portfolio/latex-beamer-flake.html .
   '';
@@ -29,7 +29,7 @@
       rec {
         packages = {
           slides =
-            pkgs.runCommand "latex-beamer-demo"
+            pkgs.runCommand "slides"
               {
                 buildInputs = [
                   pkgs.coreutils
