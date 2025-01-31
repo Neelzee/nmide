@@ -27,31 +27,10 @@
           inherit src;
 
           buildInputs = with pkgs; [
-            (texlive.combine {
-              inherit (texlive)
-                scheme-full
-                beamer
-                pgf
-                xcolor
-                fontspec
-                unicode-math
-                lualatex-math
-                fira
-                firamath
-                firamath-otf
-                fandol
-                noto
-                libertinus
-                libertinus-fonts
-                libertinus-otf
-                libertinus-type1
-                libertinust1math
-                ;
-            })
+            texlive.combined.scheme-full
             biber
             tectonic
             imagemagick
-
             (pkgs.python3.withPackages (python-pkgs: [
               python-pkgs.pygments
             ]))
@@ -64,11 +43,11 @@
 
             latexmk -C
 
-            # Copy pictures, code, and figures into the build directory
             mkdir -p pics code figures
             cp -r ${../../pics}/* pics/
             cp -r ${../../code}/* code/
             cp -r ${../../figures}/* figures/
+            cp -r ${./sections}/* sections/
 
             # Build the slides with latexmk
             latexmk -interaction=nonstopmode \
@@ -77,8 +56,7 @@
           '';
           installPhase = ''
             mkdir -p $out
-            cp main.pdf $out/ || true # to get logfile
-            cp main.log $out/
+            cp main.pdf $out/
           '';
         };
     };

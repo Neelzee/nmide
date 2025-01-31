@@ -1,0 +1,122 @@
+\section{Task}
+\SectionPage
+
+\begin{frame}
+  \frametitle{Task}
+  \begin{itemize}
+    \item Develop a new, \textit{modular}, IDE for Magnolia
+    \begin{itemize}
+      \item What is Magnolia?
+      \item What is an IDE?
+      \item Why create a \textit{new} IDE?
+      \item Why modular?
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\section{What is Magnolia?}
+\SectionPage
+
+\begin{frame}
+  \frametitle{Magnolia}
+  \begin{itemize}
+    \item A research programming language being developed by
+      Bergen Language Design Laboratory at the University of Bergen
+    \item Uses something called \textit{concepts}
+    \item Similar to an Java interface.
+    \item A concept declares
+    \begin{itemize}
+      \item Types
+      \item Operations on those Types
+      \item Axioms that specify the behavior of the Operations
+    \end{itemize}
+    \item A concept can use other concepts, and rename the Types and Operations
+      in the concept, this is called renaming
+    % TODO: Source?
+    \item It is useful for a Magnolia Developer to be able to see the different
+      renamings of a concept
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Simple Semigroup example}
+    TODO: Add this
+\end{frame}
+
+\section{What is an IDE?}
+\SectionPage
+
+\begin{frame}
+  \frametitle{The Solution To The Problem}
+  \begin{quote}
+    "It works on my machine." \textemdash Intern
+  \end{quote}
+  \begin{itemize}
+    % TODO: Insert The Good, The Bad, and The Ugly picture, maybe?
+    \item The Terminal, The Text Editor and The Compiler
+    \pause
+    \item Missing/incomplete:
+    \begin{itemize}
+      \item Libraries
+      \item Environment variables
+      \item Configurations
+      \item Scripts
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Integrated Development Environment}
+  \begin{itemize}
+    \item Easier to onboard new developers
+    \item Other quality of life improvements
+    \begin{itemize}
+      \item File explorer
+      \item Project manager
+      \item Version Control System integration
+      \item Syntax Highlighting
+      \item Integrated debugging
+      \item \dots
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\section{Why create a \textit{new} IDE?}
+\SectionPage
+
+\begin{frame}
+    \frametitle{If It Ain't Broke}
+    % TODO: Could probably expand this
+    The current Magnolia IDE
+    \begin{itemize}
+        \item Made using an old version of Eclipse
+        \item Uses deprecrated Eclupse plugins
+        \item Installation process is complex
+        \item In INF220, two weeks is set aside for students to install it
+        \item Integrated with the Magnolia Compiler
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Forking VSCode And Adding AI}
+  \begin{itemize}
+    \item Current IDEs cannot have good support for experimental programming
+      languages
+    \item VSCode or similar IDEs could deprecrate needed functionality
+    \item The installation process would then be complex
+    \item Deep understanding of the used IDE is needed
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Why Modular?}
+  \begin{itemize}
+    \item Magnolia is still in development
+    \item The Magnolia toolchain is being developed in parallel
+    \item Nothing to create an integrated development environment with, yet.
+    \item Modularity allows for future discoveries to be quickly adopted into
+      the IDE
+    \item Lowers the onboarding time for future maintainers
+    % TODO: Add more
+  \end{itemize}
+\end{frame}

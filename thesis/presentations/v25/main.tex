@@ -12,6 +12,7 @@
 
 % Syntax Highlighting in code snippet
 \usepackage{minted}
+\usepackage[svgnames]{xcolor}
 
 % Presentation metadata
 \title{Everyone Is Better at Coding Than Me}
@@ -26,27 +27,15 @@
 \begin{frame}
     \frametitle{Topics}
     \begin{itemize}
-      \item What an IDE is
-      \item Why a create a new IDE
-      \item Features
-      \item Modularization
-      \item Techstack
-      \item Module Families and Granularity
+      \item Task
+      \item Planning
+      \item Implementation
       \item Conclusion
     \end{itemize}
 \end{frame}
 
-\section{What Is An IDE?}
-\SectionPage
+\input{./sections/task}
 
-\begin{frame}
-  \frametitle{The Solution To The Problem}
-  \begin{quote}
-    "It works on my machine." \textemdash Intern
-  \end{quote}
-  \begin{itemize}
-    % TODO: Insert The Good, The Bad, and The Ugly picture, maybe?
-    \item The Terminal, The Text Editor and The Compiler
-  \end{itemize}
-\end{frame}
+\input{./sections/planning}
+
 \end{document}
