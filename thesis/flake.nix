@@ -1,5 +1,5 @@
 {
-  description = "Nmide Thesis Builder";
+  description = "Nmide Thesis";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     flake-utils.url = "github:numtide/flake-utils";
@@ -16,6 +16,7 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         tex = pkgs.texlive.combined.scheme-full;
+        file = "main";
       in
       rec {
         packages = {
@@ -25,6 +26,7 @@
             buildInputs = [
               pkgs.coreutils
               tex
+              pkgs.biber
             ];
             phases = [
               "unpackPhase"
@@ -35,12 +37,14 @@
               export PATH="${pkgs.lib.makeBinPath buildInputs}";
               mkdir -p .cache/texmf-var
               env TEXMFHOME=.cache TEXMFVAR=.cache/texmf-var \
-                latexmk -interaction=nonstopmode -pdf -lualatex \
-                main.tex
+                pdflatex "${file}.tex"
+              biber ${file}
+              pdflatex "${file}.tex"
+              pdflatex "${file}.tex"
             '';
             installPhase = ''
               mkdir -p $out
-              cp main.pdf $out/
+              cp "${file}".pdf $out/
             '';
           };
         };
