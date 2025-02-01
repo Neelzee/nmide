@@ -1,0 +1,76 @@
+% packages and settings for UiB thesis
+
+% Define the margin dimensions based on paper format
+\newcommand{\setmargins}{%
+	\ifdim\paperwidth=\pdfpagewidth
+	% A4 format
+	\usepackage[margin=40mm]{geometry}
+	\else
+	% B5 format
+	\usepackage[margin=25mm]{geometry}
+	\fi
+}
+\setmargins
+
+\usepackage[british]{babel}
+\usepackage{titling,graphicx,verbatim,pdfpages,enumerate,multicol}
+
+\usepackage{subcaption}
+\usepackage[utf8]{inputenc}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,positioning,shapes.symbols}
+
+\renewcommand{\baselinestretch}{1.06} % stretch distance between baselines
+\frenchspacing
+
+\newcommand{\University}{University of Bergen, Norway}
+\newcommand{\Thesisdesc}{Dissertation for the degree of MA science}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancypagestyle{plain}{% first page of chapter
+	\fancyhf{} % comment to keep the normal header
+	\renewcommand{\headrulewidth}{0pt} % comment to keep rule
+	\fancyfoot{} % comment to put page number at bottom
+}
+\setlength{\headheight}{15pt}
+\renewcommand{\chaptermark}[1]{\markboth{\small #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\small \thesection\ #1}{}}
+\renewcommand{\headrulewidth}{0.6pt}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[LO]{\rightmark}
+\fancyhead[RE]{\leftmark}
+\fancyfoot{} % no footer
+
+\usepackage{microtype,booktabs}
+\usepackage{mathptmx,amsmath}
+% For citations and reference
+
+
+\usepackage{enumitem}
+
+\usepackage[colorlinks,urlcolor=blue,citecolor=blue,linkcolor=black]{hyperref}
+
+\usepackage{cleveref}
+
+\Crefname{figure}{Figure}{Figures}
+\Crefname{equation}{Equation}{Equations}
+\Crefname{table}{Table}{Tables}
+\crefname{figure}{Fig.}{Figs.}
+\crefname{equation}{Eq.}{Eqs.}
+\crefname{table}{Table}{Tables}
+
+\graphicspath{{figures/}} % this is where the pictures are
+
+% For citations
+\usepackage[
+backend=biber,
+style=numeric-verb,
+]{biblatex}
+\usepackage{csquotes}
+
+\addbibresource{references.bib}
+
+\setcounter{tocdepth}{3}
