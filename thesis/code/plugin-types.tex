@@ -1,0 +1,16 @@
+\begin{minted}{haskell}
+data Value
+  = VInt Int
+  | VStr String
+  | VBool Bool
+  | VFloat Float
+  | VLst [Value]
+  | VObj [(String, Value)]
+
+newtype Map = [(String, Value)]
+
+data Msg = Msg
+  { msg :: String
+  , val :: Value
+  }
+\end{minted}
