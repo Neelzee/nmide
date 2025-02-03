@@ -11,4 +11,11 @@
 # Used to get syntax highlighting in code snippets
 **.pyg
 result
-main.pdf
+**.bbl
+**.bcf
+**.blg
+**.lol
+**.lot
+**.lof
+**.pdf
+**.run.xml

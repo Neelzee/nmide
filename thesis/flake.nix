@@ -16,7 +16,7 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         tex = pkgs.texlive.combined.scheme-full;
-        file = "main";
+        file = "report";
       in
       rec {
         packages = {
@@ -37,10 +37,10 @@
               export PATH="${pkgs.lib.makeBinPath buildInputs}";
               mkdir -p .cache/texmf-var
               env TEXMFHOME=.cache TEXMFVAR=.cache/texmf-var \
-                pdflatex "${file}.tex"
+                pdflatex "${file}.tex" -f
               biber ${file}
-              pdflatex "${file}.tex"
-              pdflatex "${file}.tex"
+              pdflatex "${file}.tex" -f
+              pdflatex "${file}.tex" -f
             '';
             installPhase = ''
               mkdir -p $out
