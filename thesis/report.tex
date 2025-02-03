@@ -5,6 +5,7 @@
 
 \documentclass[12pt,oneside,final,a4paper]{report}
 \usepackage{generators/imports}
+\addbibresource{generators/refs.bib}
 \include{generators/glossary}
 \begin{document}
 \include{generators/frontpage} % This is the titlepage
@@ -16,13 +17,17 @@
 
 \include{chapters/000_introduction}
 
-\include{chapters/001_research_question}
+\include{chapters/001_background}
 
-\include{chapters/002_modules}
+\include{chapters/002_research_question}
 
-\include{chapters/003_implementation}
+\include{chapters/003_research_method}
 
-\include{chapters/004_architecture}
+\include{chapters/004_engineering_method}
+
+\include{chapters/005_results}
+
+\include{chapters/006_conclusion}
 
 % Include more chapters as required.
 %%=========================================

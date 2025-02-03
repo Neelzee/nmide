@@ -1,3 +1,13 @@
+\chapter{Engineering method}
+
+\section{Modularity}
+
+\subsection{Granularity}
+
+\subsection{Module families}
+
+\section{Tech Stack}
+
 \section{Architecture}
 
 % TODO: Some explanation on why this is an issue
@@ -19,6 +29,9 @@ core itself. The core invokes all modules, all of which, should have these three
 functions defined:
 
 % TODO: Add haskell code example of this
+
+\input{./code/plugin-types}
+
 \begin{itemize}
   \item init :: Model -> Model
   \item view :: Model -> [(Html, Location)]

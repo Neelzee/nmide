@@ -27,6 +27,9 @@
               pkgs.coreutils
               tex
               pkgs.biber
+              (pkgs.python3.withPackages (python-pkgs: [
+                python-pkgs.pygments
+              ]))
             ];
             phases = [
               "unpackPhase"
@@ -37,10 +40,9 @@
               export PATH="${pkgs.lib.makeBinPath buildInputs}";
               mkdir -p .cache/texmf-var
               env TEXMFHOME=.cache TEXMFVAR=.cache/texmf-var \
-                pdflatex "${file}.tex" -f
-              biber ${file}
-              pdflatex "${file}.tex" -f
-              pdflatex "${file}.tex" -f
+              latexmk -interaction=nonstopmode \
+                    -latexoption=-shell-escape \
+                    -pdf -f "${file}".tex
             '';
             installPhase = ''
               mkdir -p $out
