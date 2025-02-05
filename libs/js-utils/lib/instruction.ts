@@ -1,78 +1,92 @@
 /// TODO: Add docs
 
-import * as E from "fp-ts/Either";
-import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/lib/function";
-import { Eq } from "fp-ts/string";
-import { Node } from "./tree";
-import { THtml } from "./THtml";
+import * as A from "fp-ts/Array";
+import * as O from "fp-ts/Option";
 
-export type Ins<T>
+export type Ins<T extends object, G extends keyof T = keyof T>
   = RemIns<T>
-  | ModIns<T>
+  | ModIns<T, G>
 
-export type RemIns<T> = {
-  node: Node<T>,
+// Delete
+export type RemIns<T>
+  = {
+    /**
+     * Delete the first `node` that fulfills the predicate
+     */
+    f: (t: T) => boolean
+  };
+
+// Modify
+export type ModIns<T extends object, G extends keyof T = keyof T>
+  = {
+    /**
+     * Apply `g` on field `G` on the first `node` that fulfills the predicate
+     */
+    f: (t: T) => boolean
+    , field: G
+    , g: (o: T[G]) => T[G]
+  };
+
+export type UIns
+  = URemIns
+  | UModIns
+
+// Delete
+export type URemIns
+  = {
+    /**
+     * Delete the first `node` that fulfills the predicate
+     */
+    f: Function
+  };
+
+// Modify
+export type UModIns
+  = {
+    /**
+     * Apply `g` on field `G` on the first `node` that fulfills the predicate
+     */
+    f: Function
+    , field: string
+    , g: Function
+  };
+
+export const isModIns = <
+  T extends object,
+  G extends keyof T = keyof T,
+>(
+  i: Ins<T, G>
+): i is ModIns<T, G> => "field" in i;
+
+
+// NOTE: Wrapper type for _graphifying_ objects
+// TODO: Add docs
+export type Box<T extends object> = {
+  box: T,
+  getKids: (b: Box<T>) => Box<T>[],
+  addKids: (box: Box<T>, ...kids: Box<T>[]) => Box<T>,
 };
 
-export type ModIns<T> = {
-  node: Node<T>,
-  f: (old: Node<T>) => Node<T>,
-};
-
-export const isModIns = <T>(n: Ins<T>): n is ModIns<T> =>
-  "node" in n
-  && "field" in n
-  && "value" in n;
-
-
-export type InsSet<T> = {
-  instructions: Ins<T>[],
-  module: string,
-};
-
-/**
- * Returns either, an Error if any `collision` occurred in the instruction sets,
- * or the combined instruction set, as if there is no collision, the order of
- * the `a` or `b` instruction set does not matter.
- *
- * **Collision**:
- * Occurs if:
- * - Two instructions modify the same Node, on the same field
- * - An instruction modify a Node which is related to another Node that has been
- *   removed.
- * _Modify_ in this context cover all instructions that affect a Node.
- */
-export const collisionDetection = <T>(
-  { instructions: aIns, module: a }: InsSet<T>,
-  { instructions: bIns, module: b }: InsSet<T>,
-  //
-): E.Either<Error, Ins<T>[]> => pipe(
-  aIns,
-  A.map<Ins<T>, [Ins<T>, string]>(ia => [ia, a]),
-  A.concat(A.map<Ins<T>, [Ins<T>, string]>(ib => [ib, b])(bIns)),
-  A.flatMap<[Ins<T>, string], [Node<T>, string]>(([i, m]) => {
-    if (isModIns(i)) {
-      return [[i.node, m]];
-    } else {
-      return A.map<Node<T>, [Node<T>, string]>(n => [n, m])([...getKids(i.node)]);
-    }
-  }),
-  A.map<[Node<T>, string], [string, string]>(([n, m]) => [n.id, m]),
-  A.reduce<[string, string], E.Either<Error, string[]>>(E.right([]), (b, [n, _]) => pipe(
-    b,
-    E.match(
-      E.left,
-      arr => A.elem(Eq)(n)(arr)
-        ? E.left(new Error("Collision"))
-        : E.right([...arr, n])
-    ),
-  )),
-  E.match(
-    E.left,
-    _ => E.right([...aIns, ...bIns])
-  ),
-);
-
-const getKids = <T>({ kids }: Node<T>): Node<T>[] =>
-  [...kids, ...A.flatMap(getKids)(kids)];
+export const findInBox = <T extends object>(f: (t: T) => boolean) =>
+  ({ box, getKids, ...xs }: Box<T>): O.Option<T> => f(box)
+    ? O.some(box)
+    : pipe(
+      { box, getKids, ...xs },
+      getKids,
+      ys => pipe(
+        ys,
+        A.findFirst(({ box }) => f(box)),
+        O.match<Box<T>, O.Option<T>>(
+          () => pipe(
+            ys,
+            // NOTE: This is stupid
+            A.filterMap(findInBox(f)),
+            zs => A.isEmpty(zs)
+              ? O.none
+              : O.some(zs[0]),
+          ),
+          ({ box }) => O.some(box),
+        ),
+      )
+    );

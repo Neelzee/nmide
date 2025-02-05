@@ -5,7 +5,7 @@ import * as A from "fp-ts/Array";
 import * as T from "fp-ts/Tuple";
 import * as NA from "fp-ts/NonEmptyArray";
 import { pipe } from "fp-ts/function";
-import { TMap, TValue } from "./TMap";
+import { TMap, TState, TValue } from "./TMap";
 import { Monoid } from "fp-ts/Monoid";
 import {
   isTBool,
@@ -46,6 +46,16 @@ export const tLookup = <T extends TValue = TValue>(k: string): ((xs: TMap) => O.
       () => O.none,
       el => isT<T>(el) ? O.some(el) : O.none,
     ),
+  );
+
+export const sLookup = <T extends TValue = TValue>(k: string) =>
+  (xs: TState) => pipe(
+    xs[k],
+    O.fromNullable,
+    O.match(
+      () => O.none,
+      x => isT<T>(x) ? O.some(x) : O.none,
+    )
   );
 
 export const tLookupOr = <T extends TValue = TValue>(k: string) =>
@@ -235,3 +245,9 @@ export const ModelOverwrite = (
 
 
 export const emptyHtml = (): THtml => new HtmlBuilder().build();
+
+export const getId = ({ attrs }: THtml): O.Option<string> => pipe(
+  attrs,
+  A.findFirst(a => "id" in a),
+  O.map(({ id }) => id),
+);
