@@ -5,16 +5,15 @@ import { InstallHtmlPlugin } from "./ide/htmlInstaller";
 import { jspInstaller } from "./lib/jspInstaller";
 import { cssInstaller } from "./lib/cssInstaller";
 import { App } from "./App";
-import { emptyHtml, tObj } from "@nmide/js-utils";
-import { toNode } from "@nmide/js-utils/lib/tree";
+import { emptyHtml } from "@nmide/js-utils";
 
 // TODO: Add docs
 document.addEventListener("DOMContentLoaded", () => {
   App(
     {
-      ui: toNode(emptyHtml()),
-      state: { id: "root", kids: [], ...tObj([]), },
-      events: { id: "root", kids: [], event: "", module: "", },
+      ui: emptyHtml(),
+      state: {},
+      events: [{ event: "", module: "", }],
       eventThrower: evt => {
         emit(evt.event, evt);
       },
