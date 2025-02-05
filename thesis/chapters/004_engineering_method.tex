@@ -44,7 +44,7 @@ Generally, the first plan was this:
 
 This was the \textit{easier} way to work, because I could model it of existing
 % TODO: Add references here
-\glspl{ide} like \textit{Visual Studio Code}. Another advantage is that when
+IDEs like \textit{Visual Studio Code}. Another advantage is that when
 implementing the application, I got a better understand of how eventual modules
 should extend the application, like, the general architecture. But this was not
 % TODO: Mention how modularity was not a concern when creating the application
@@ -52,13 +52,13 @@ modular. Anything created this way, would be subpar to existing software.
 
 \subsection{Module V.2}
 
-After 7 \dash 8 months of working on this, everything was scrapped for this new plan:
+After 7–8 months of working on this, everything was scrapped for this new plan:
 \begin{enumerate}
     % TODO: Add footnote
   \item Everything* is a module
 \end{enumerate}
 
-Inspired by Elm and \gls{mvc}, the new module architecture would work like this:
+Inspired by Elm and MVC, the new module architecture would work like this:
 
 \subsection{Architecture}
 \begin{figure}
@@ -88,7 +88,7 @@ the state can only grow.
 
 This setup is also not really modular, as a single module cannot invoke another
 module, without being impure. The only way to invoke/trigger another module, is
-to throw a \textit{Msg}, which would trigger an update \to view \dash cycle. So
+to throw a \textit{Msg}, which would trigger an update -> view - cycle. So
 a module cannot \textit{listen} for a single message, all modules are triggered
 by the same \textit{Msg}, and handled accordingly.
 
@@ -112,15 +112,68 @@ the same update-cycle. This issue also occurs when folding two states.
 
 Was \textit{solved} with this:
 
-\begin{minted}[haskell]
+\begin{minted}{haskell}
   stateUpdateHandler :: [(String, Value)] -> [(String, Value)] -> [(String, TValue)]
   stateUpdateHandler fs bs = map foldPartition (group (fs ++ bs))
 \end{minted}
 
-\begin{minted}[haskell]
+\begin{minted}{haskell}
   foldPartition :: ([(String, Value)], [(String, [(String, Value)])]) -> ([String, [(String, Value)]]) -> (Tmap, [(String, [(String, Value)])])
   foldPartition acc cur = (map snd (head cur) : fst acc, tail cur : snd acc)
 \end{minted}
+
+Takes list of states from all plugins, checks for collisions. It returns a
+list of `Either [(String, TMap)] ([(String, TMap)], String)`. If it is a
+collision, then it's a `Right ([(String, TMap)], String)`, which is a tuple
+where the first element is a list of tuples, being the plugin and their
+state, and the last element being the field that the collision occurred on.
+The other value: `Left [(String, TMap)]`, are the plugin state that has no
+collision.
+
+\paragraph{Collision} A collision between two states occurs if they share the same
+field.
+
+Example of the code in Haskell
+
+\input{./code/state-collision}
+
+There are several different ways to correct a collision between two
+states:
+
+\begin{enumerate}
+  \item If the states are of same type:
+    \begin{enumerate}
+      \item If the value from one of the colliders are unchanged from the previous state:
+        \begin{enumerate}
+          \item Keep the new value OR Keep the old value
+        \end{enumerate}
+      \item Else
+        \begin{enumerate}
+          \item Apply the types' semigroup operator to the fields.
+        \end{enumerate}
+    \end{enumerate}
+  \item Else
+    \begin{enumerate}
+      \item If the value from one of the colliders are unchanged from the previous state:
+        \begin{enumerate}
+          \item Keep the new value OR Keep the old value
+        \end{enumerate}
+      \item Else
+        \begin{enumerate}
+          \item Keep the lhs value OR Keep the rhs value
+        \end{enumerate}
+    \end{enumerate}
+\end{enumerate}
+
+Since the states are ordered by the name of the Plugin they come from, we
+have a consistent ordering of lhs and rhs, so if the same plugins give a
+collisionon the same input, given that all plugins are pure, the resulting
+state will be the same every time.
+The problem is that applying some function on the values could be an
+unwanted way to resolve collisions. So the standard way, will be to log
+the collision, and then drop both states. So even if two states have A and B
+amount of fields, and just one collision, we will drop A + B amount of fields.
+Therefore, for a plugin developer, they should avoid `collisions`.
 
 \subsection{Module V.3}
 
