@@ -1,0 +1,46 @@
+\section{25.01.04}
+
+Good start of the new year, working on a rewrite of my project. I've run into
+some possible issues, only issues because I would like stuff to be simple for
+module developers, but I think I'll start by doing it the \textit{naive} way,
+which is easier for me, as a maintainer/core-developer to do now, and maybe
+change in the future. I don't think any of these possible future changes will be
+as major as this, anyway. The issue with module loading, where I had a timeout
+to wait until all modules where loaded, by just waiting 250 ms, is solved, in a
+smart way, I think, atleast. Everytime an installer \textit{installs} a module,
+it increments a global counter. Everytime a module is loaded, (pushed to a map),
+the same global counter is decremented. Finally, every 50 ms the core checks if
+the counter is 0. The only way for it to be less than 0, is if a single script,
+\textit{installs}/\textit{loads} more than one module, which can be noted in the
+wiki as \bold{DONT}. So that is a module developer skill issue.
+
+Thought I was close to finished with the rework, but I forgot to make my
+instruction set, (the tree-DSL), JSON-safe, (something that can be represented
+using just JSON). I have to rework that system, because originally, it was just
+two instructions, removing a node, and modifying a node. Removing a node just
+needs the id of the node to be removed, while modifying the node, had a function
+which is applied to the original node. I had something earlier, where the modify
+instruction had the field and value of the node, but this did not work, or I
+gave that up, since I needed/wanted the tree-system to be generic, and for that,
+the user needs to supply their own function, which, offcourse cannot be done
+with JSON. The reason I did this, was because I could not find an easy way to
+type the modify instruction, such that the value and field that the module
+supplied is constrained to a valid type on the node. For example, if I want to
+modify the state, on the field "errors", which is a list, I could only supply a
+new array, not just the element I want to append, or if I wanted to filter it, I
+could not do that either. It is possible to just have it like that, where the
+module supplies the new value, and handles the contamination on their own, but
+how can I do that, while keeping the instruction system? Maybe I could let the
+modules directly manipulate the nodes, and just diffing the nodes? That's the
+same problem to the tree one, just on the leaves instead. The main issue, I
+think is the attributes field on THtml, because that is what I see as something
+a module wanting to change the most.
+Now that I am thinking about it, I don't think I've really thought out how
+communication between the Core and modules should be. And especially not about
+how a future backend is supposed to supply their own modules.
+
+Or do they? Say hello to my new favourite module:
+\textit{all_i_do_is_call_the_backend.js}. Then stuff can be the same, and the
+supplied function to the modify instruction is \textit{JSON-safe}. But not
+really, because we don't care about that. Just have to change the modify
+instruction to return a promise instead. Or the Task type.

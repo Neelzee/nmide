@@ -17,6 +17,9 @@ import {
 } from "./Types";
 import { NmluginUnknown as Nmlugin } from "./Nmlugin";
 import { GroupBy, PartialTMapFieldOrd } from "./Utils";
+import { THtml } from "./THtml";
+import { TAttr } from "./TAttr";
+import { TMsg } from "./TMsg";
 
 
 /**
@@ -94,3 +97,49 @@ export const NmluginEq: Eq<[string, Nmlugin]> = fromEquals(
   (x, y) => StringEq.equals(T.fst(x), T.fst(y))
 );
 
+export const THtmlEq: Eq<THtml> = fromEquals(
+  (
+    {
+      kind: xkind
+      , kids: xkids
+      , text: xtext
+      , attrs: xattrs
+    },
+    {
+      kind: ykind
+      , kids: ykids
+      , text: ytext
+      , attrs: yattrs
+    }) => StringEq.equals(xkind, ykind)
+    && pipe(
+      xkids,
+      A.zip(ykids),
+      A.foldMap(MonoidAll)(([a, b]) => THtmlEq.equals(a, b))
+    )
+    && (
+      (xtext === null && ytext === null)
+      || (xtext !== null && ytext !== null && StringEq.equals(xtext, ytext))
+    )
+    && pipe(
+      xattrs,
+      A.zip(yattrs),
+      A.foldMap(MonoidAll)(([a, b]) => TAttrEq.equals(a, b))
+    )
+);
+
+export const TAttrEq: Eq<TAttr> = fromEquals(
+  (x, y) => ("id" in x && "id" in y && StringEq.equals(x.id, y.id))
+    || ("class" in x && "class" in y && StringEq.equals(x.class, y.class))
+    || ("style" in x && "style" in y && StringEq.equals(x.style, y.style))
+    || ("type" in x && "type" in y && StringEq.equals(x.type, y.type))
+    || ("checked" in x && "checked" in y && BooleanEq.equals(x.checked, y.checked))
+    || ("onClick" in x && "onClick" in y && TMsgEq.equals(x.onClick, y.onClick))
+    || ("onInput" in x && "onInput" in y && TMsgEq.equals(x.onInput, y.onInput))
+    || ("emitInput" in x && "emitInput" in y && StringEq.equals(x.emitInput, y.emitInput))
+    || ("src" in x && "src" in y && StringEq.equals(x.src, y.src))
+);
+
+export const TMsgEq: Eq<TMsg> = fromEquals(
+  ({ msg: [xk, xv] }, { msg: [yk, yv] }) => StringEq.equals(xk, yk)
+    && TValueEq.equals(xv, yv)
+);

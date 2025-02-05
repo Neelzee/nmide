@@ -1,4 +1,3 @@
-import { parseHtml, renderHtml } from "./lib/renderHtml";
 import client from "./lib/NmideClient";
 import { emit, listen } from "@tauri-apps/api/event";
 import { getPaths } from "./ide/getPaths";
@@ -6,27 +5,31 @@ import { InstallHtmlPlugin } from "./ide/htmlInstaller";
 import { jspInstaller } from "./lib/jspInstaller";
 import { cssInstaller } from "./lib/cssInstaller";
 import { App } from "./App";
+import { emptyHtml } from "@nmide/js-utils";
 
 // TODO: Add docs
 document.addEventListener("DOMContentLoaded", () => {
-  App({
-      cleanup: [],
+  App(
+    {
+      ui: emptyHtml(),
+      state: {},
+      events: [{ event: "", module: "", }],
+      eventThrower: evt => {
+        emit(evt.event, evt);
+      },
+      eventHandlers: new Map(),
+    },
+    {
       pluginAssets: [],
-      renderHtml,
-      parseHtml,
       root: document.body,
       client,
       log: {
-          info: console.log,
-          error: console.error,
+        info: console.log,
+        error: console.error,
       },
       listen,
       emit,
       getPluginPaths: getPaths(),
       pluginInstallers: [InstallHtmlPlugin, jspInstaller, cssInstaller],
-      // TODO: Implement this
-      filterPluginState: undefined,
-      // TODO: Implement this
-      coalcePluginState: undefined
-  });
+    });
 })
