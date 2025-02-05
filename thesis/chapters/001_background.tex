@@ -8,12 +8,43 @@ as key design principles, demonstrating their ability to extend the operational
 lifespan of software by adapting to new paradigms and tools. The discussion
 revolves around Magnolia, a generic programming language developed at UIB, as a
 case study illustrating the need for a specialized IDE. It is a way to experiment
-with generic programming. And too achieve this in a sufficient manner, a more
+with generic programming. And to achieve this in a sufficient manner, a more
 specialized IDE is required.
 
 \section{Magnolia}
 
-What is it?
+\begin{itemize}
+  \item A research programming language being developed by
+    Bergen Language Design Laboratory at the University of Bergen
+
+  \item Introduces something called \textit{concepts}
+
+  \item Similar to an Java interface.
+
+  \item A concept declares
+    \begin{itemize}
+      \item Types
+
+      \item Operations on those Types
+
+      \item Axioms that specify the behavior of the Operations
+    \end{itemize}
+
+  \item A concept can use other concepts, and rename the Types and Operations
+    in the concept, this is called renaming
+    % TODO: Source?
+
+  \item It is useful for a Magnolia Developer to be able to see the different
+    renaming's of a concept
+\end{itemize}
+
+\begin{center}
+  \input{./code/binop}
+\end{center}
+
+\begin{center}
+  \input{./code/semigroup}
+\end{center}
 
 % The point of this sub-section, is to explain what happened previously at UIB, and
 % why this is the best way to do it

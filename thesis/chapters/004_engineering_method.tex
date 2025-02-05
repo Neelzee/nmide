@@ -4,7 +4,7 @@ Intro to what will be discussed in this chapter?
 
 \section{Modularity}
 
-Modularity is when legos
+Modularity is when Legos
 
 \subsection{Granularity}
 
@@ -20,141 +20,137 @@ Started with Rust, because a \textit{low-level} language was assumed to be
 necessary, to facilitate ease of C integration, which would allow for an
 extendable application, which was language agnostic.
 
-\section{Architecture}
+Now just JavaScript, because nobody cares. With an \textit{agnostic} frontend,
+which should be all frontends
 
-% TODO: Some explanation on why this is an issue
-% Also talk about what we tried first
+But now the application can do this:
+
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.5]{./pics/doom}
+  \caption{Application running Doom}
+\end{figure}
 
 \subsection{Module V.1}
 
-
 First attempt was to create a Visual Studio Code Copy. This would've worked, but
 would've created a lot of extra work.
+Generally, the first plan was this:
+\begin{enumerate}
+  \item Create an IDE
+  \item Extend the IDE, to allow for a module architecture
+  \item Modules call the application using some DSL
+\end{enumerate}
 
-
-\begin{itemize}
-  \item First plan
-
-    \begin{enumerate}
-      \item Create an IDE
-
-      \item Extend the IDE, to allow for a module architecture
-
-      \item Modules call the application using some DSL
-
-    \end{enumerate}
-  \item Pros
-
-    \begin{itemize}
-      \item \textit{Easy} to implement
-
-      \item Get a good understanding of what features might be needed
-
-    \end{itemize}
-  \item Cons
-
-    \begin{itemize}
-      \item Not really modular
-
-      \item Will be subpar compared to existing software
-    \end{itemize}
-\end{itemize}
+This was the \textit{easier} way to work, because I could model it of existing
+% TODO: Add references here
+\glspl{ide} like \textit{Visual Studio Code}. Another advantage is that when
+implementing the application, I got a better understand of how eventual modules
+should extend the application, like, the general architecture. But this was not
+% TODO: Mention how modularity was not a concern when creating the application
+modular. Anything created this way, would be subpar to existing software.
 
 \subsection{Module V.2}
 
+After 7 \dash 8 months of working on this, everything was scrapped for this new plan:
+\begin{enumerate}
+    % TODO: Add footnote
+  \item Everything* is a module
+\end{enumerate}
 
-\begin{itemize}
-  \item Second plan
+Inspired by Elm and \gls{mvc}, the new module architecture would work like this:
 
-    \begin{enumerate}
-        % TODO: Add footnote
-      \item Everything* is a module
-    \end{enumerate}
+\subsection{Architecture}
+\begin{figure}
+  \centering
+  \input{./figures/plugin-architecture}
+  \caption{Module Architecture}
+\end{figure}
 
-    \begin{itemize}
-      \item A module exposes three functions, that are invoked by the core
+To achieve this, a module would expose three methods, to be invoked by the core
+application.
 
-        \begin{itemize}
-          \item Init - Returns a set of fields, which are added to the core state
+\paragraph{Init} Returns a collection of key-value-pairs, which represent
+the state of the core.
 
-          \item Update - Returns a set of fields which are updated
+\paragraph{Update} Returns a collection of key-value-pairs, which
+overwrite existing key-value-pairs in the state, or are appended to the state.
+Invoked every time a \textit{Msg} is sent.
 
-          \item View - Returns a set which represents HTML, which is rendered by
-            the Core
-        \end{itemize}
+\paragraph{View} Returns a collection which represents \gls{html},
+which is rendered by the core.
 
-      \item Pros
+This enables \textit{pureness}, if a module is pure, the whole application is
+easier to reason about.
 
-        \begin{itemize}
-          \item Easy to keep modules pure
+With this setup, however, the state is appending/overwriting -only, which means
+the state can only grow.
 
-          \item Optimization is possible due to the pureness of modules
+This setup is also not really modular, as a single module cannot invoke another
+module, without being impure. The only way to invoke/trigger another module, is
+to throw a \textit{Msg}, which would trigger an update \to view \dash cycle. So
+a module cannot \textit{listen} for a single message, all modules are triggered
+by the same \textit{Msg}, and handled accordingly.
 
-          \item Easy to reason about module cooperation
-        \end{itemize}
-
-      \item Cons
-
-        \begin{itemize}
-          \item State is append-only
-
-          \item State can only grow
-
-          \item Not really modular
-        \end{itemize}
-    \end{itemize}
-\end{itemize}
-
-\input{./code/plugin-types-state}
-
+\begin{center}
+  \input{./code/plugin-types-state}
+\end{center}
 
 \input{./code/plugin-types}
 
+\begin{center}
+  \input{./code/plugin-architecture}
+\end{center}
 
+\subsection{State Collision}
 
-\input{./code/plugin-architecture}
+A state collision occurs when two or more modules updates the same field, during
+% NOTE: Because backend-state and frontend-state was a thing
+the same update-cycle. This issue also occurs when folding two states.
+
+% TODO: Make this less code and more text
+
+Was \textit{solved} with this:
+
+\begin{minted}[haskell]
+  stateUpdateHandler :: [(String, Value)] -> [(String, Value)] -> [(String, TValue)]
+  stateUpdateHandler fs bs = map foldPartition (group (fs ++ bs))
+\end{minted}
+
+\begin{minted}[haskell]
+  foldPartition :: ([(String, Value)], [(String, [(String, Value)])]) -> ([String, [(String, Value)]]) -> (Tmap, [(String, [(String, Value)])])
+  foldPartition acc cur = (map snd (head cur) : fst acc, tail cur : snd acc)
+\end{minted}
+
 \subsection{Module V.3}
 
-\begin{itemize}
-  \item Third, and hopefully the final plan
+Third, and hopefully the final plan:
 
-    \begin{enumerate}
-        % TODO: Add footnote
-      \item Everything* is a module
+\begin{enumerate}
+    % TODO: Add footnote
+  \item Everything* is a module
+  \item Modules can \textit{invoke} modules
+\end{enumerate}
 
-      \item Modules can \textit{invoke} modules
+A module only exposes a singular function:
 
-    \end{enumerate}
-    \begin{itemize}
-      \item Init - Returns a set of modifications
-    \end{itemize}
+\paragraph{Init} Returns a collection of modifications
 
-  \item Pros
+\begin{center}
+  \input{./code/module-example}
+\end{center}
 
-    \begin{itemize}
-      \item Modular
+\begin{center}
+  \input{./code/module-example-event}
+\end{center}
 
-      \item Modules can \textit{invoke} other modules
-    \end{itemize}
+\begin{center}
+  \input{./code/module-example-counter}
+\end{center}
 
-  \item Cons
-    \begin{itemize}
-
-      \item Complex to implement
-    \end{itemize}
-\end{itemize}
-
-\input{./code/module-example}
-
-
-\input{./code/module-example-event}
-
-
-\input{./code/module-example-counter}
-
-
-\input{./code/module-example-counter-handler}
-
+\begin{center}
+  \input{./code/module-example-counter-handler}
+\end{center}
 
 \subsection{Elm-Architecture}
 
@@ -169,13 +165,9 @@ functions defined:
 
 % TODO: Add haskell code example of this
 
-\input{./code/plugin-types}
-
-\begin{itemize}
-  \item init :: Model -> Model
-  \item view :: Model -> [(Html, Location)]
-  \item update :: Msg -> Model -> Model
-\end{itemize}
+\begin{center}
+  \input{./code/plugin-types}
+\end{center}
 
 Firstly, the types.
 
