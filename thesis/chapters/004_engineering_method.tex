@@ -1,20 +1,159 @@
 \chapter{Engineering method}
 
+Intro to what will be discussed in this chapter?
+
 \section{Modularity}
+
+Modularity is when legos
 
 \subsection{Granularity}
 
+Granularity is the average? Size of the module community
+
 \subsection{Module families}
 
+A collection of modules that can be treated as a singular module
+
 \section{Tech Stack}
+
+Started with Rust, because a \textit{low-level} language was assumed to be
+necessary, to facilitate ease of C integration, which would allow for an
+extendable application, which was language agnostic.
 
 \section{Architecture}
 
 % TODO: Some explanation on why this is an issue
 % Also talk about what we tried first
 
+\subsection{Module V.1}
+
+
 First attempt was to create a Visual Studio Code Copy. This would've worked, but
 would've created a lot of extra work.
+
+
+\begin{itemize}
+  \item First plan
+
+    \begin{enumerate}
+      \item Create an IDE
+
+      \item Extend the IDE, to allow for a module architecture
+
+      \item Modules call the application using some DSL
+
+    \end{enumerate}
+  \item Pros
+
+    \begin{itemize}
+      \item \textit{Easy} to implement
+
+      \item Get a good understanding of what features might be needed
+
+    \end{itemize}
+  \item Cons
+
+    \begin{itemize}
+      \item Not really modular
+
+      \item Will be subpar compared to existing software
+    \end{itemize}
+\end{itemize}
+
+\subsection{Module V.2}
+
+
+\begin{itemize}
+  \item Second plan
+
+    \begin{enumerate}
+        % TODO: Add footnote
+      \item Everything* is a module
+    \end{enumerate}
+
+    \begin{itemize}
+      \item A module exposes three functions, that are invoked by the core
+
+        \begin{itemize}
+          \item Init - Returns a set of fields, which are added to the core state
+
+          \item Update - Returns a set of fields which are updated
+
+          \item View - Returns a set which represents HTML, which is rendered by
+            the Core
+        \end{itemize}
+
+      \item Pros
+
+        \begin{itemize}
+          \item Easy to keep modules pure
+
+          \item Optimization is possible due to the pureness of modules
+
+          \item Easy to reason about module cooperation
+        \end{itemize}
+
+      \item Cons
+
+        \begin{itemize}
+          \item State is append-only
+
+          \item State can only grow
+
+          \item Not really modular
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\input{./code/plugin-types-state}
+
+
+\input{./code/plugin-types}
+
+
+
+\input{./code/plugin-architecture}
+\subsection{Module V.3}
+
+\begin{itemize}
+  \item Third, and hopefully the final plan
+
+    \begin{enumerate}
+        % TODO: Add footnote
+      \item Everything* is a module
+
+      \item Modules can \textit{invoke} modules
+
+    \end{enumerate}
+    \begin{itemize}
+      \item Init - Returns a set of modifications
+    \end{itemize}
+
+  \item Pros
+
+    \begin{itemize}
+      \item Modular
+
+      \item Modules can \textit{invoke} other modules
+    \end{itemize}
+
+  \item Cons
+    \begin{itemize}
+
+      \item Complex to implement
+    \end{itemize}
+\end{itemize}
+
+\input{./code/module-example}
+
+
+\input{./code/module-example-event}
+
+
+\input{./code/module-example-counter}
+
+
+\input{./code/module-example-counter-handler}
 
 
 \subsection{Elm-Architecture}
@@ -51,9 +190,10 @@ application, so it looks like this:
 
 % TODO: Should probably explain before-hand that the core uses webview to
 % display stuff.
-So, the way any module inserts HTML into the IDE, is by sending a tuple, of the
-HTML, and Location, which is where the HTML element should be inserted. Main
-corresponds to the <main>-tag in a standard HTML document, like so:
+So, the way any module inserts \gls{html} into the IDE, is by sending a tuple,
+of the \gls{html}, and Location, which is where the HTML element should be
+inserted. Main corresponds to the <main>-tag in a standard \gls{html} document,
+like so:
 
 html > body > main
 
@@ -62,8 +202,8 @@ For example, a module could act as a framework, and therefore needs to only be
 loaded once, creating new locations, with styling.
 
 
-\paragraph{HTML}
-Just a representation of HTML
+\paragraph{*HTML}
+Just a representation of \gls{html}
 % TODO: Expand
 
 
@@ -76,5 +216,6 @@ Just a type-alias for String, to ensure type-safety
 Modules create Msg-s, that are sent to all other plugins that subscribe to them.
 
 For example, if a module creates some Button, that when pressed sends
-Msg "\textit{btn\-clicked}", then any module that are listening for this message, can pick
-it up, when a user clicks on the button, and then optionally change the Model.
+Msg "\textit{btn\-clicked}", then any module that are listening for this message,
+can pick it up, when a user clicks on the button, and then optionally change the
+Model.

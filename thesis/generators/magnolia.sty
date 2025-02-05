@@ -1,0 +1,135 @@
+\RequirePackage{color}
+\RequirePackage{listings}
+
+\definecolor{codebackground}{rgb}{0.98,0.98,0.98}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{keyword}{rgb}{0.5,0.0,0.5}
+\definecolor{emph}{rgb}{0.3,0.0,0.0}
+\definecolor{string}{rgb}{0.5,0.3,0.2}
+\definecolor{comment}{rgb}{0.3,0.5,0.3}
+\definecolor{code}{rgb}{0.0,0.0,0.3}
+\definecolor{static}{rgb}{0.0,0.0,0.3}
+\definecolor{highlight}{rgb}{1.0,0.0,0.3}
+
+
+\lstloadlanguages{Java, Lisp, XML, Pascal}
+
+
+\lstset{%
+  % allows (rudimentary) use of utf-8
+  extendedchars=\true,inputencoding=utf8x,
+  fontadjust=true,
+  showstringspaces=false,
+  %\small\ttfamily,% test: \color{red},
+  basicstyle=\tt,
+  %\underbar,%
+  keywordstyle=\color{keyword}\bf,
+  %\rmfamily\itshape\footnotesize,% alternate: commentstyle=\sl\color{black},
+  commentstyle=\color{comment}\sl,
+  %\itshape,%
+  stringstyle=\color{string}\rm,
+  %\slshape,%
+  emphstyle=\color{emph}\sl,
+  % moredelim=[is][\color{highlight}]{|_}{|_}, % Does not work from here,
+  % intention is that everything between these will be highlighted.
+  columns=flexible,
+  backgroundcolor=\color{codebackground},
+  escapeinside={\%*}{*)},
+  tabsize=2,
+  aboveskip=1.2\smallskipamount,
+  belowskip=1.2\smallskipamount,
+  % texcl=true, mathescape=true,
+  }
+  \newcommand{\lstinlinedefaults}{\lstset{
+    % where to put the line-numbers: left none
+    numbers=none
+  }}
+  \newcommand{\lstinlinebreaks}{\lstinlinedefaults\lstset{%
+    breaklines=true,breakatwhitespace=true,literate={\_}{}{0\discretionary{\_}{}{\_}}{\\\-}{}{0\discretionary{-}{}{}}
+    }}
+    \newcommand{\lstenvironmentdefaults}{\lstset{
+      % where to put the line-numbers: left none
+      numbers=none,
+      % the style that is used for the line-numbers
+      numberstyle=\small\color{gray},
+      % the step between two line-numbers
+      stepnumber=1,
+      % how far the line-numbers are from the code
+      numbersep=3pt,
+    }}
+
+    % break anywhere
+    \newcommand\lstinlinebra{\lstset{breaklines=true,breakatwhitespace=false}\lstinline}
+    % break at hyphen
+    \newcommand\lstinlinebrh{\lstset{breaklines=true,breakatwhitespace=true,literate={\-}{}{0\discretionary{-}{\\}{}}}\lstinline}
+    \newcommand\lstinlinehyp{\lstset{literate={\\\-}{}{0\discretionary{-}{}{}}}\lstinline}
+
+    \def\highlightbox#1{\setlength{\fboxsep}{0pt}\colorbox{yellow}{\strut#1}}
+    \lstdefinestyle{highlightstyle}{moredelim=[is][\highlightbox]{[|}{|]}}
+
+
+    % Using standard C++ as the base language
+    \lstdefinelanguage{CodeLanguage}[ISO]{C++}{
+      % Additional keywords not in the base language
+      morekeywords={
+        concept,implication,satisfy,theorem,by,qed,axiom,requires,
+        assert,assertPre,assertPost,classInvariant,assert_axiom,
+        assert_induction,base,step,assertDecl,
+        procedure,boolean,super,likeThis,old,
+        types,interface,opns
+      },
+    }
+    % Deals with all symbols, does not colour the background, cannot be used in math mode.
+    \newcommand{\bcode}{\lstset{language=CodeLanguage,}\lstinline}
+    % As \bcode, breaks lines if they are too long.
+    \newcommand{\bcodebr}{\lstinlinebreaks\lstset{language=CodeLanguage}\lstinline}
+    % Colours the background, some UTF-8 math symbols, no trailing spaces in argument.
+    \newcommand{\lcode}[1]{\lstset{language=CodeLanguage,}\colorbox{codebackground}{\lstinline{#1}}}
+    % Colours the background, no highlighting, distorts some UTF-8 math symbols, does math.
+    \newcommand{\mcode}[1]{\colorbox{codebackground}{\ensuremath{\mathtt{#1}}}}
+    % Environment: Deals with all symbols, colours background, numbers the lines.
+    \lstnewenvironment{code}{\lstenvironmentdefaults\lstset{language=CodeLanguage}}{}
+    % Environment as above, highlights between _| and |_
+    \lstnewenvironment{codehl}{\lstenvironmentdefaults\lstset{language=CodeLanguage,moredelim=[is][\color{highlight}]{_|}{|_}}}{}
+
+
+
+
+    \lstdefinelanguage{Magnolia}{%
+      keywords={%
+        package,imports,%
+        program,implementation,signature,concept,satisfaction,models,morphism,protect,%
+        +,++,@,@@,**,=>,%&&,||,
+        times,union,retain,define,hide,reveal,requires,%
+        require,requires,approximates,extend,defines,external,with,on,by,
+        use,value,alert,alerts,leave,leaves,precond,throw,throws,handler,unless,pre,post,invariant,assert,throwing,%
+        predicate,procedure,function,axiom,theorem,proof,class,type,struct,default,override,guard,%
+        call,const,var,assert,open,new,preserve,generate,free,initial,partition,renaming,homomorphism,%
+        datainvariant,subalgebra,congruence,quotient,full,declared,%
+        rule,transform,forall,exists,name,skip,FALSE,TRUE,recover,%
+        obs,upd,out,del,giv,nrm,expr,%
+        break,case,continue,default,do,else,for,if,then,end,let,return,switch,while,repeat,along,from,in%
+        },%
+        sensitive,%
+        morecomment=[s]{/*}{*/},%
+        morecomment=[l]//,% nonstandard
+        morestring=[b]",%
+        numbers=none,
+        frame=none,
+        literate={\\\$}{\$}{1},%
+        backgroundcolor = \color{white},
+        keywordstyle = \color{purple},
+        }[keywords,comments,strings]
+
+        % Deals with all symbols, does not colour the background, cannot be used in math mode.
+        \newcommand{\bmagnolia}{\lstset{language=Magnolia,}\lstinline}
+        % As \bcode, breaks lines if they are too long.
+        \newcommand{\bmagnoliabr}{\lstinlinebreaks\lstset{language=Magnolia}\lstinline}
+        % Colours the background, some UTF-8 math symbols, no trailing spaces in argument.
+        \newcommand{\lmagnolia}[1]{\lstset{language=Magnolia,}\colorbox{codebackground}{\lstinline{#1}}}
+        % Colours the background, no highlighting, distorts some UTF-8 math symbols, does math.
+        \newcommand{\mmagnolia}[1]{\colorbox{codebackground}{\ensuremath{\mathtt{#1}}}}
+        \lstnewenvironment{magnolia}{\lstenvironmentdefaults\lstset{language=Magnolia}}{}
+        \lstnewenvironment{magnoliahl}{\lstenvironmentdefaults\lstset{language=Magnolia,moredelim=[is][\color{highlight}]{_|}{|_}}}{}
+        \newcommand{\magno}{\bmagnolia}
+        \newcommand{\magnobr}{\bmagnoliabr}
