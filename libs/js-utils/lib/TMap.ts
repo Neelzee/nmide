@@ -2,4 +2,6 @@
 
 export type TMap = Array<[string, TValue]>;
 
+export type TState = Record<string, TValue>;
+
 export type TValue = { "int": number } | { "float": number } | { "bool": boolean } | { "str": string } | { "list": Array<TValue> } | { "obj": Array<[string, TValue]> };

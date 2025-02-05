@@ -1,54 +1,43 @@
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/lib/function";
-import { MonoidAny } from "fp-ts/boolean";
-import { Ins, isModIns } from "./instruction";
-import { Node, Tree } from "./tree";
+import { Box, Ins, isModIns, ModIns, RemIns } from "./instruction";
 
 // TODO: Add docs
-export const evalTree = <T>(t: Tree<T>, ins: Ins<T>[]): Tree<T> => pipe(
+export const evalTree = <T extends object, G extends keyof T = keyof T>(b: Box<T>, ins: Ins<T, G>[]) => pipe(
   ins,
-  A.reduce<Ins<T>, Tree<T>>(t, (accTree, i) =>
-    isModIns(i)
-      ? pipe(
-        accTree.root,
-        traverseAndApply(findById<T>(i.node.id))(i.f),
-        root => { return { root } },
-      )
-      : pipe(
-        accTree.root,
-        traverseAndApply(findParent(i.node))(removeKid(i.node)),
-        root => { return { root } },
-      )
+  A.reduce(b, (accBox, ins) => isModIns<T, G>(ins)
+    ? modifyInstruction<T, G>(accBox, ins)
+    : removeInstruction<T>(accBox, { f: ins.f })
   )
 );
 
-const removeKid = <T>({ id }: Node<T>) => (parent: Node<T>): Node<T> => {
-  return {
-    ...parent,
-    kids: pipe(
-      parent.kids,
-      A.filter(({ id: kid }) => kid !== id),
-    ),
-  };
-};
+const removeInstruction = <T extends object>(
+  { box, getKids, addKids }: Box<T>,
+  { f }: RemIns<T>
+): Box<T> => pipe(
+  { box, getKids, addKids },
+  getKids,
+  A.filter(({ box: b }) => !f(b)),
+  A.map(k => removeInstruction(k, { f })),
+  xs => addKids({ box, getKids, addKids }, ...xs),
+);
 
-// NOTE: ID must be unique
-const findById = <T>(nid: string) => (n: Node<T>): boolean => nid === n.id;
-
-// TODO: Add docs
-// NOTE: `f` must be injective!
-const traverseAndApply = <T>(f: ((n: Node<T>) => boolean)) =>
-  (g: ((n: Node<T>) => Node<T>)) =>
-    (n: Node<T>): Node<T> => f(n)
-      ? g(n)
-      : {
-        ...n,
-        kids: A.map(traverseAndApply(f)(g))(n.kids),
-      }
-
-// TODO: Add docs
-const findParent = <T>({ id: kid }: Node<T>) =>
-  (n: Node<T>): boolean => pipe(
-    n.kids,
-    A.foldMap(MonoidAny)(({ id }) => id === kid),
-  );
+const modifyInstruction = <
+  T extends object,
+  G extends keyof T = keyof T,
+>(
+  { box, getKids, addKids }: Box<T>,
+  { f, field, g }: ModIns<T, G>
+): Box<T> => f(box)
+    ? pipe(
+      box,
+      box => {
+        box[field] = g(box[field]);
+        return { box, getKids, addKids };
+      },
+    )
+    : pipe(
+      getKids({ box, getKids, addKids }),
+      A.map(k => modifyInstruction(k, { f, field, g })),
+      kids => addKids({ box, addKids, getKids }, ...kids),
+    );

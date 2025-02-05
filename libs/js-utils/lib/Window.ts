@@ -2,7 +2,7 @@ import { ModuleUnknown as Module } from "./Module";
 import { THtml } from "./THtml";
 import { TMap } from "./TMap";
 import { NmideClient, NmideLogger, Payload } from "./App";
-import { Core } from "./Core";
+import { Core, Event, EventHandler } from "./Core";
 
 declare global {
   interface Window {
@@ -83,5 +83,9 @@ declare global {
      * it exist outside the init-update-view-loop.
      */
     pluginInstallers: ((path: string) => Promise<string | undefined>)[],
+
+    uiMap: Map<THtml, HTMLElement>;
+    events: Event[];
+    eventHandlers: Map<string, EventHandler[]>;
   }
 }
