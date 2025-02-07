@@ -3,7 +3,7 @@
 Traditional IDEs encompass essential features such as syntax highlighting, code
 navigation, and hover-help, playing a crucial role in the software development
 process. However, their limitations become apparent when working with
-experimental languages. The paper advocates for modularization and composability
+experimental languages. The paper advocates for modularization and \textit{composability}
 as key design principles, demonstrating their ability to extend the operational
 lifespan of software by adapting to new paradigms and tools. The discussion
 revolves around Magnolia, a generic programming language developed at UIB, as a
@@ -16,35 +16,37 @@ specialized IDE is required.
 \begin{itemize}
   \item A research programming language being developed by
     Bergen Language Design Laboratory at the University of Bergen
-
   \item Introduces something called \textit{concepts}
-
-  \item Similar to an Java interface.
-
+  \item Similar to a Java interface.
   \item A concept declares
     \begin{itemize}
       \item Types
-
       \item Operations on those Types
-
       \item Axioms that specify the behavior of the Operations
     \end{itemize}
-
   \item A concept can use other concepts, and rename the Types and Operations
     in the concept, this is called renaming
-    % TODO: Source?
-
-  \item It is useful for a Magnolia Developer to be able to see the different
-    renaming's of a concept
 \end{itemize}
 
-\begin{center}
+\begin{figure}
+  \centering
   \input{./code/binop}
-\end{center}
+  \caption{Binary Operation concept in Magnolia}
+\end{figure}
 
-\begin{center}
+\begin{figure}
+  \centering
   \input{./code/semigroup}
-\end{center}
+  \caption{Semigroup concept in Magnolia}
+\end{figure}
+
+
+\subsection{Abstract Semantic Representation Transformation}
+
+The ASR of a language, is an extension of a normal Abstract Syntax Tree (AST),
+but with extra information. This representation of the syntax is handy when
+developing. Specifically for Magnolia, the interest is in the transformation of
+this ASR; the flattened version.
 
 % The point of this sub-section, is to explain what happened previously at UIB, and
 % why this is the best way to do it
@@ -52,8 +54,8 @@ specialized IDE is required.
 
 % TODO: Some paragraphs about what happened before
 The current IDE for Magnolia, is an (old?) version of Eclipse, using some
-plugins/features that was outdated (around some date). This IDE's lifetime was
-limited by external plugins/features that where not maintained by UIB. This
+modules/features that was outdated (around some date). This IDE's lifetime was
+limited by external modules/features that where not maintained by UIB. This
 meant that for future development of Magnolia, an outdated IDE was needed, with
 outdated software and (other reasons this was not good). A solution could be to
 use something like "Visual Studio Code", which is a very popular IDE (source?),
@@ -62,7 +64,7 @@ more popular than Eclipse (source?).
 % TODO: Why not VS-Code?
 % TODO: Add some mentions of open-source
 Then new development of the new IDE, then, would be turned around, instead of
-maintaining an IDE, the plugins for the IDE would be maintained. While it is
+maintaining an IDE, the modules for the IDE would be maintained. While it is
 unlikely that "Visual Studio Code" will be deprecated in the near future, it
 could still happen. The best solution is to keep everything internal.
 
@@ -71,38 +73,10 @@ But creating any IDE would still limit the lifetime of the application. The best
 example of a long living active IDE, or, atleast editor, is Vim (source?). Vim
 is not a feature full editor, but it is simple, lightweight, and works. But most
 people use it, for how easy it is to extend; It's lifetime has been greatly
-extended by the ease of modularization. Any popular plugin for Vim is
-open-source, and therefore, if any plugin had an active community around it, if
-the \textit{lead} developer of the plugin stopped developing it, that community
-continue developing the plugin, either by getting maintenance access to the
-repository, or by forking it. Ensuring the lifetime of the plugin.
-
-% TODO: Red-thread is missing, find it
-% TODO: Should probably also expand on what we mean by limiting (i.e. limiting
-% in the sense of plugins being developed)
-% TODO: Rewrite to be more academic enough
-\paragraph{Language Agnostic} The largest limiting factor in plugin oriented
-applications, is the \textit{language barrier} Most applications limit what
-language one can extend an application with, like in "Visual Studio Code", where
-it's \textit{just} JavaScript/HTML/CSS. Or IntelliJ, where one can use Java or
-Kotlin. But what does language agnostic mean in the context of programming
-languages? It is, and always will be (sorry Rust): C. Any language worth a damn,
-can create some bindings with C. So, for an plugin application to be Language
-Agnostic, it must be able to use C Plugins. This just means that the application
-must be able to call function from a C library.
-
-So, to get the best application (lifetime-vise), it should fulfill all these criteria:
-
-\begin{enumerate}
-  \item Modular
-  \item Open Sourced
-    \begin{enumerate}
-      \item Both for Plugins
-      \item and for the Application
-    \end{enumerate}
-  \item Language Agnostic
-  \item Easy to extend
-  \item Easy to develop modules for
-\end{enumerate}
+extended by the ease of modularization. Any popular module for Vim is
+open-source, and therefore, if any module had an active community around it, if
+the \textit{lead} developer of the module stopped developing it, that community
+continue developing the module, either by getting maintenance access to the
+repository, or by forking it. Ensuring the lifetime of the module.
 
 \section{Current Magnolia IDE}
