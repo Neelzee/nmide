@@ -1,4 +1,3 @@
-\begin{minted}{haskell}
 newType EventHandler = Event -> Core -> CoreModification
 
 data Event = Event
@@ -6,5 +5,3 @@ data Event = Event
   , eventName :: String
   , arguments :: Maybe Value
   }
-
-\end{minted}

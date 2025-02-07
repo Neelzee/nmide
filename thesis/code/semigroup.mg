@@ -1,4 +1,3 @@
-\begin{lstlisting}[language=magnolia]
 concept Semigroup = {
   use Binop;
   // a + (b + c) == (a + b) + c
@@ -9,4 +8,3 @@ concept Semigroup = {
       binop(binop(a, b), c);
   }
 };
-\end{lstlisting}

@@ -1,4 +1,3 @@
-\begin{lstlisting}[language=magnolia]
 concept Binop = {
   // Some type T
   type T;
@@ -6,4 +5,3 @@ concept Binop = {
   // Some binary operation
   function binop(a: T, b: T): T;
 };
-\end{lstlisting}

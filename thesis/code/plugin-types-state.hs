@@ -1,4 +1,3 @@
-\begin{minted}{haskell}
 data Value
   = VInt Int
   | VStr String
@@ -8,4 +7,3 @@ data Value
   | VObj [(String, Value)]
 
 newtype State = [(String, Value)]
-\end{minted}

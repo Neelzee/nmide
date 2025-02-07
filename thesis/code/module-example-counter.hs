@@ -1,4 +1,3 @@
-\begin{minted}{haskell}
 module :: Module
 module = Module { name = "Counter", init }
 
@@ -17,4 +16,3 @@ init core = emptyCoreModification
   , stateModification = [AddField "Counter" (ValInt 0)]
   , eventHandler = [("Counter", evtHdl)]
   }
-\end{minted}

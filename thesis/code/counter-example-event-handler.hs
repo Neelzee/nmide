@@ -1,4 +1,3 @@
-\begin{minted}{haskell}
 eventHandler :: Event -> Core -> CoreModification
 eventHandler (Event "BtnClick" val) core
   = emptyCoreModification
@@ -16,4 +15,3 @@ eventHandler (Event "BtnClick" val) core
     ]
   }
 eventHandler _ _ = emptyCoreModification
-\end{minted}

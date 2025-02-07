@@ -1,4 +1,3 @@
-\begin{minted}{haskell}
 data Msg = Msg
   { msg :: String
   , val :: Value
@@ -14,4 +13,3 @@ data Attributes
   = OnClick Msg
   | Id String
   -- ...
-\end{minted}

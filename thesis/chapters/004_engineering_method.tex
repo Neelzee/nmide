@@ -31,11 +31,9 @@ functions defined:
 
 % TODO: Add haskell code example of this
 
-\begin{figure}
-  \centering
-  \input{./code/plugin-types}
-  \caption{Module Types}
-\end{figure}
+\begin{center}
+  \lstinputlisting[language=Haskell,caption={Module Types}]{./code/plugin-types.hs}
+\end{center}
 
 Firstly, the types.
 
@@ -162,7 +160,6 @@ Inspired by Elm and MVC, the new module architecture would work like this:
 \begin{figure}
   \centering
   \input{./figures/plugin-architecture}
-  \caption{Module Architecture}
 \end{figure}
 
 To achieve this, a module would expose three methods, to be invoked by the core
@@ -190,23 +187,18 @@ to throw a \textit{Msg}, which would trigger an update -> view - cycle. So
 a module cannot \textit{listen} for a single message, all modules are triggered
 by the same \textit{Msg}, and handled accordingly.
 
-\begin{figure}
-  \centering
-  \input{./code/plugin-types-state}
-  \caption{Module State Types}
-\end{figure}
+\begin{center}
+  \lstinputlisting[language=Haskell, caption={Module State Types}, label=Listing]{./code/plugin-types-state.hs}
+\end{center}
 
-\begin{figure}
+\begin{center}
   \centering
-  \input{./code/plugin-types}
-  \caption{Module Types: Msg, HTML and Attributes}
-\end{figure}
+  \lstinputlisting[language=Haskell, caption={Module Types: Msg, HTML and Attributes State Types}, label=Listing]{./code/plugin-types.hs}
+\end{center}
 
-\begin{figure}
-  \centering
- \input{./code/plugin-architecture}
-  \caption{Module Architecture}
-\end{figure}
+\begin{center}
+ \lstinputlisting[language=Haskell, caption={Module Architecture}, label=Listing]{./code/plugin-architecture.hs}
+\end{center}
 
 \subsection{State Collision}
 
@@ -238,11 +230,9 @@ field.
 
 Example of the code in Haskell
 
-\begin{figure}
-  \centering
-  \input{./code/state-collision}
-  \caption{State Collision}
-\end{figure}
+\begin{center}
+  \lstinputlisting[language=Haskell, caption={State Collision}, label=Listing]{./code/state-collision.hs}
+\end{center}
 
 There are several different ways to correct a collision between two
 states:
@@ -328,26 +318,18 @@ to instructions. These instructions can then be analyzed for possible
 collisions. This solves the edge-case of a non-colliding modification of an
 object in the state.
 
-\begin{figure}
-  \centering
-  \input{./code/module-example}
-  \caption{Module Type}
-\end{figure}
+\begin{center}
+  \lstinputlisting[language=Haskell, caption={Module Type}, label=Listing]{./code/module-example.hs}
+\end{center}
 
-\begin{figure}
-  \centering
-  \input{./code/module-example-event}
-  \caption{Module Event Type}
-\end{figure}
+\begin{center}
+  \lstinputlisting[language=Haskell, caption={Module Event Type}, label=Listing]{./code/module-example-event.hs}
+\end{center}
 
-\begin{figure}
-  \centering
-  \input{./code/module-example-counter}
-  \caption{Module Counter Example}
-\end{figure}
+\begin{center}
+  \lstinputlisting[language=Haskell, caption={Module Counter Example}, label=Listing]{./code/module-example-counter.hs}
+\end{center}
 
-\begin{figure}
-  \centering
-  \input{./code/module-example-counter-handler}
-  \caption{Module Counter Example Event Handler}
-\end{figure}
+\begin{center}
+  \lstinputlisting[language=Haskell, caption={Module Counter Example Event Handler}, label=Listing]{./code/module-example-counter-handler.hs}
+\end{center}

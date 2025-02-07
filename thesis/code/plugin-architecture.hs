@@ -1,4 +1,3 @@
-\begin{minted}{haskell}
 init :: Map
 init = [("counter", ValInt 0)]
 
@@ -14,4 +13,3 @@ view :: Map -> Html
 view model = Div [] [Text "Hello, World!"
   , Btn [OnClick $ PluginMsg "counter" (ValInt 1)] []
   , Text $ putStrLn $ lookup "counter" model
-\end{minted}

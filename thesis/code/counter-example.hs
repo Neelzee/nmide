@@ -1,4 +1,3 @@
-\begin{minted}{haskell}
 init :: CoreModification
 init = emptyCoreModification
   { uiModification =
@@ -11,4 +10,3 @@ init = emptyCoreModification
     ]
   , eventHandlers = [("BtnClick", eventHandler)]
   }
-\end{minted}

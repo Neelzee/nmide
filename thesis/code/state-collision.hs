@@ -1,4 +1,3 @@
-\begin{minted}{haskell}
   stateHandler :: [(String, TMap)] -> [Either [(String, TMap)] ([(String, TMap)], String)]
   stateHandler xs = map partitionStateCollision (groupBy stateCollision xs)
   where
@@ -20,4 +19,3 @@
   partitionStateCollision [] = []
   partitionStateCollision ([ys]:xs) = Left ys : partitionStateCollision xs
   partitionStateCollision (ys:xs) =  Right (ys, getCollisionField ys) : partitionStateCollision xs
-\end{minted}

@@ -1,4 +1,3 @@
-\begin{minted}{haskell}
 data CoreModification = CoreModification
   { uiModification :: [UIMod]
   , stateModification :: [StateMod]
@@ -10,4 +9,3 @@ data Core = Core
   , ui :: HTML
   , throwEvent :: Event -> IO ()
   }
-\end{minted}
