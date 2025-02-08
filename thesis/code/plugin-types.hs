@@ -5,7 +5,7 @@ data Msg = Msg
 
 data HTML
   = Div [Attributes] [HTML]
-  | Btn [Attributes] [ Html]
+  | Btn [Attributes] [HTML]
   | Text String
   -- ...
 

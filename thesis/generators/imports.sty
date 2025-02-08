@@ -36,6 +36,7 @@ style=numeric-verb,
 \usetikzlibrary{shapes.geometric,positioning,shapes.symbols}
 \renewcommand{\labelenumii}{\theenumii}
 \renewcommand{\theenumii}{\theenumi.\arabic{enumii}.}
+\usepackage{generators/javascript}
 
 \usepackage{hyperref}
 \tolerance=1000
@@ -46,23 +47,10 @@ style=numeric-verb,
 \usepackage{fullpage}
 \graphicspath{{figures/}}
 
+\usepackage[dvipsnames]{xcolor}
 \usepackage{listings}
 \usepackage{generators/listings-golang}
-\lstset{
-    frame=single,
-    basicstyle=\linespread{0.8}\footnotesize\ttfamily,
-    keywordstyle=\color{red},
-    numbers=left,
-    numbersep=5pt,
-    showstringspaces=false,
-    stringstyle=\color{blue},
-    commentstyle=\color{gray},
-    breakatwhitespace=true,
-    breaklines=true,
-    postbreak=\mbox{\textcolor{violet}{$\hookrightarrow$}\space},
-    tabsize=4,
-    language=Golang
-}
+\usepackage{generators/listings-haskell}
 
 \newlength\glsdescwidth
   \setlength{\glsdescwidth}{1\hsize}

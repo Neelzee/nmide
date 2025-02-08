@@ -10,41 +10,87 @@ Intro to what will be discussed in this chapter?
 
 Modularity is when Legos
 
+Mention how modularity can be achieved
+
 \subsection{Granularity}
 
 Granularity is the average? Size of the module community
+Mention how granularity is a concept that comes forward in a super modular
+system.
 
 \subsection{Module families}
 
-A collection of modules that can be treated as a singular module
+A collection of modules that can be treated as a singular module. A good example
+would be a text-editor.
+\begin{figure}
+  \centering
+  \input{./figures/text-editor-simple}
+  \caption{Text Editor Module Family}
+  \label{fig:textEditorSimple}
+\end{figure}
 
+In figure \ref{fig:textEditorSimple}, an input file is parsed to some structure
+which is used to translate user actions, into cursor movements. The cursor being
+the place in the file where text is written to by the user.
+
+% TODO: This section should probably be a subsection of Module V.2
 \subsection{Elm-Architecture}
 
-% TODO: Insert the elm-lang architecture graph
-% TODO: Also explain elm-lang
+An inspiration for a module architecture is Elm-Lang. Elm is a functional
+language, aimed at frontend web development, but its architecture is quite
+% TODO: Maybe add some elm-lang papers? Should probably read some
+interesting. As one can see in figure \ref{fig:elmArchitecture}, is used by some
+runtime, which translates the Elm code into \gls{dom} manipulations, and translates
+\gls{dom} events into \textit{Msg} which is handled by the Elm code. This was the
+inspiration for the new module architecture. A module is managed by the runtime,
+which is the \textit{core} application. But with some inspiration from
+\gls{mvc}, where instead of the module keeping its own state, this is again
+managed by the core, allowing for multiple modules to read and react to states
+updated by other modules, allowing for more interactivity between modules, and
+therefore being more modular.
+
+% TODO: Add source: https://guide.elm-lang.org/effects/
+\begin{figure}
+  \centering
+  \input{./figures/elm-architecture}
+  \caption{Elm Architecture}
+  \label{fig:elmArchitecture}
+\end{figure}
 
 \subsection{Module Architecture}
 
 In this application, the Elm-box is a module, while the runtime system, is the
 core itself. The core invokes all modules, all of which, should have these three
-functions defined:
-
-% TODO: Add haskell code example of this
+functions defined in listing \ref{lst:moduleTypes}
 
 \begin{center}
-  \lstinputlisting[language=Haskell,caption={Module Types}]{./code/plugin-types.hs}
+  \lstinputlisting
+    [ language=Haskell
+    , caption={Module Types}
+    , label=lst:moduleTypes
+    ]{./code/plugin-types.hs}
 \end{center}
 
 Firstly, the types.
 
-% TODO: Rename `Model` to `State` or something similar
-\paragraph{Model}
-Model is the \textit{state} of the application. In this case, it has the same
+\paragraph{State}
+State is the \textit{state} of the application. In this case, it has the same
 structure as a JSON object. A few values are set at the start of the
-application, so it looks like this:
+application, an example of the state can be seen in listing
+\ref{lst:moduleState}
 
-% TODO: Insert some code-snippet that showcases the model
-% \text{\{ "location": \{ "main": \[ \] \} \}}
+\begin{lstlisting}[language=JavaScript, caption={State Example}, label=lst:moduleState]
+  {
+    "field": 0,
+    "field-1": [1, 2, 3],
+    "object": {
+      "nested-object": {
+        "field": [1, 2, 3]
+      },
+      "object-field": "foobar"
+    }
+  }
+\end{lstlisting}
 
 % TODO: Should probably explain before-hand that the core uses webview to
 % display stuff.
@@ -97,12 +143,14 @@ Framework I chose was Tauri, UI components can be created using JavaScript.
 Now just JavaScript, because nobody cares. With an \textit{agnostic} frontend,
 which should be all frontends
 
-But now the application can do this:
+But now the application can use existing JavaScript libraries, which as shown in
+figure \ref{fig:doom}, means it can run Doom.
 
 \begin{figure}
   \centering
   \includegraphics[scale=0.5]{./pics/doom}
   \caption{Application running Doom}
+  \label{fig:doom}
 \end{figure}
 
 % TODO: Rewrite this to better connect to the previous section
@@ -147,6 +195,8 @@ modular. Anything created this way, would be subpar to existing software.
 \subsection{Module V.2}
 
 % TODO: Mention JS-MS and RS-MS
+% TODO: Mention the backend-frontend that was introduced in this plan
+% TODO: Mention the troubles with backend-frontend state coalecing.
 
 After 7–8 months of working on this, everything was scrapped for this new plan:
 \begin{enumerate}
@@ -154,12 +204,15 @@ After 7–8 months of working on this, everything was scrapped for this new plan
   \item Everything* is a module
 \end{enumerate}
 
-Inspired by Elm and MVC, the new module architecture would work like this:
+Inspired by Elm and MVC, the new module architecture is shown in figure
+\ref{fig:moduleArchitecture}
 
 \subsection{Architecture}
 \begin{figure}
   \centering
   \input{./figures/plugin-architecture}
+  \caption{Example Module Architecture}
+  \label{fig:moduleArchitecture}
 \end{figure}
 
 To achieve this, a module would expose three methods, to be invoked by the core
@@ -187,17 +240,65 @@ to throw a \textit{Msg}, which would trigger an update -> view - cycle. So
 a module cannot \textit{listen} for a single message, all modules are triggered
 by the same \textit{Msg}, and handled accordingly.
 
+An example of the module types can be shown in listing
+\ref{lst:moduleTypesState}. These are the types used in the state. The reason
+for representing a JSON object as a list of key-value pairs, is that this could
+be easily translated to a Rust representation of the same type, using the
+\textit{Serde} crate. This allows for creating Rust structs which represents
+JSON objects, and creates an automatic encoder/decoder between Rust and JSON.
+This ensures a good cooperation between the \textit{frontend} and
+\textit{backend}.
+% TODO: Rewrite this, I didn't discuss this with anyone
+% TODO: Also expand on the module-validation part, third-party-code, and all
+% that.
+Before the finalization of this state representation, there was some
+discussion, on how best to represent a number. Because, in JavaScript, there is
+no distinction between a floating-point number, and a decimal number. But this
+\textit{leakage} was stopped by adding extra validation in the core, using the
+\textit{io-fp} library, which validates data sent from a module, regardless if
+its from the frontend or backend.
+
 \begin{center}
-  \lstinputlisting[language=Haskell, caption={Module State Types}, label=Listing]{./code/plugin-types-state.hs}
+  \lstinputlisting
+    [ language=Haskell
+    , caption={Module State Types}
+    , label=lst:moduleTypesState]{./code/plugin-types-state.hs}
 \end{center}
+
+Listing \ref{lst:moduleMsg} is the \textit{Msg} representation. The general idea
+was that for each possible \gls{dom}-event, there would exist a way to send a
+Msg. Each Msg contains a Msg name, and some value, which enabled pattern
+matching on Msg, similar to Elm, for modules, so each module could choose to act
+on a Msg or not.
 
 \begin{center}
   \centering
-  \lstinputlisting[language=Haskell, caption={Module Types: Msg, HTML and Attributes State Types}, label=Listing]{./code/plugin-types.hs}
+  \lstinputlisting
+    [ language=Haskell
+    , caption={Module Types: Msg
+    , HTML and Attributes State Types}
+    , label=lst:moduleMsg]{./code/plugin-types.hs}
 \end{center}
 
+In listing \ref{lst:pluginCounterExample}, an example of a counter module can be
+seen. This module initializes a state, containing the field
+\lstinline[language=Haskell]{"counter"}, with the value
+\lstinline[language=Haskell]{VInt 0}.
+
+The \textit{update} function the module exposes, matches on a
+\lstinline[language=Haskell]{"counter"} msg, with a
+\lstinline[language=Haskell]{VInt i} value. If the given Msg matches this, then
+the module adds to the \lstinline[language=Haskell]{"counter"}-field, the value
+from the Msg, which is 1.
+
+Finally, the \textit{view} function, renders a button, which when pushed by a
+user, sends the \textit{counter-Msg}.
+
 \begin{center}
- \lstinputlisting[language=Haskell, caption={Module Architecture}, label=Listing]{./code/plugin-architecture.hs}
+  \lstinputlisting
+    [ language=Haskell
+    , caption={Module Architecture}
+    , label=lst:pluginCounterExample]{./code/plugin-counter-example.hs}
 \end{center}
 
 \subsection{State Collision}
@@ -217,12 +318,21 @@ Was \textit{solved} with this:
   foldPartition acc cur = (map snd (head cur) : fst acc, tail cur : snd acc)
 \end{minted}
 
+% TODO: Rewrite the code-snippet here, adding a newtype for the collision reporting
+
+\begin{lstlisting}[language=Haskell]
+  {- Field the collision occurred on, list of modules, and the state with the
+     collision
+  -}
+  newtype CollisionReport = (String, [(String, State)])
+\end{lstlisting}
+
 Takes list of states from all modules, checks for collisions. It returns a
-list of `Either [(String, State)] ([(String, State)], String)`. If it is a
-collision, then it's a `Right ([(String, State)], String)`, which is a tuple
+list of \lstinline[language=Haskell]{Either [(String, State)] ([(String, State)], String)}. If it is a
+collision, then it's a \lstinline[language=Haskell]{Right ([(String, State)], String)}, which is a tuple
 where the first element is a list of tuples, being the module and their
 state, and the last element being the field that the collision occurred on.
-The other value: `Left [(String, State)]`, are the module state that has no
+The other value: \lstinline[language=Haskell]{Left [(String, State)]}, are the module state that has no
 collision.
 
 \paragraph{Collision} A collision between two states occurs if they share the same
@@ -319,17 +429,33 @@ collisions. This solves the edge-case of a non-colliding modification of an
 object in the state.
 
 \begin{center}
-  \lstinputlisting[language=Haskell, caption={Module Type}, label=Listing]{./code/module-example.hs}
+  \lstinputlisting
+   [ language=Haskell
+   , caption={Module Type}
+   , label=Listing
+   ]{./code/module-example.hs}
 \end{center}
 
 \begin{center}
-  \lstinputlisting[language=Haskell, caption={Module Event Type}, label=Listing]{./code/module-example-event.hs}
+  \lstinputlisting
+    [ language=Haskell
+    , caption={Module Event Type}
+    , label=Listing
+    ]{./code/module-example-event.hs}
 \end{center}
 
 \begin{center}
-  \lstinputlisting[language=Haskell, caption={Module Counter Example}, label=Listing]{./code/module-example-counter.hs}
+  \lstinputlisting
+    [ language=Haskell
+    , caption={Module Counter Example}
+    , label=Listing
+    ]{./code/module-example-counter.hs}
 \end{center}
 
 \begin{center}
-  \lstinputlisting[language=Haskell, caption={Module Counter Example Event Handler}, label=Listing]{./code/module-example-counter-handler.hs}
+  \lstinputlisting
+    [ language=Haskell
+    , caption={Module Counter Example Event Handler}
+    , label=Listing
+    ]{./code/module-example-counter-handler.hs}
 \end{center}
