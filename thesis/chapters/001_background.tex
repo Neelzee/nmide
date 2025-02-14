@@ -65,11 +65,9 @@ but with extra information. This representation of the syntax is handy when
 developing. Specifically for Magnolia, the interest is in the transformation of
 this ASR; the flattened version.
 
-% The point of this sub-section, is to explain what happened previously at UIB, and
-% why this is the best way to do it
 \section{Background at UIB}
 
-%\todo{Some paragraphs about what happened before}
+\todo{Some paragraphs about what happened before}
 The current IDE for Magnolia, is an (old?) version of Eclipse, using some
 modules/features that was outdated (around some date). This IDE's lifetime was
 limited by external modules/features that where not maintained by UIB. This
@@ -85,7 +83,7 @@ maintaining an IDE, the modules for the IDE would be maintained. While it is
 unlikely that "Visual Studio Code" will be deprecated in the near future, it
 could still happen. The best solution is to keep everything internal.
 
-\todo{Rewrite to be more academic enough}
+\todo{Rewrite to be more academic}
 But creating any IDE would still limit the lifetime of the application. The best
 example of a long living active IDE, or, at least editor, is Vim (source?). Vim
 is not a feature full editor, but it is simple, lightweight, and works. But most
@@ -98,26 +96,35 @@ repository, or by forking it. Ensuring the lifetime of the module.
 
 \section{Current Magnolia IDE}
 
-\todo{Expand this}
-\begin{itemize}
-  \item Made using an old version of Eclipse
-  \item Uses deprecated Eclipse plugins
-  \item Installation process is complex
-  \item In INF220, two weeks is set aside for students to install it
-  \item Integrated with the Magnolia Compiler
-\end{itemize}
+As mentioned earlier, experimental languages might have features which are not
+possible to be fully used in current \gls{ide}s. This is also the case for the
+current Magnolia \gls{ide}. The compiler for Magnolia, syntax highlighting,
+error reporting, and hover-functionality are functionality made in the Eclipse
+\gls{ide}, by using its plug-in architecture. Some of the functionality/plug-ins
+this implementation used, have been deprecated in later version of Eclipse. This
+means the Magnolia \gls{ide} is locked to an old version of Eclipse, which, as
+time passes, increases the complexity of installation, as the surrounding
+tooling and libraries needed by this version of Eclipse also becomes deprecated.
+Currently, in INF220, at UIB, two weeks are set aside for students to be able to
+install it.
 
+\todo{Read/add reference to Anya's paper?}
+
+As mentioned, the compiler is integrated with the \gls{ide}, this means that a
+new \gls{ide} is needed regardless, as a new compiler is being created in
+parallel.
+\todo{Expand this}
 
 \section{Software Longevity}
 
-%\todo{Should rewrite this to sound less like "I mean/feel this", to "I've observed this"}
+\todo{
+  Should rewrite this to sound less like "I mean/feel this", to "I've
+  observed this"
+}
 There are two interconnected reasons for a piece of software to last a long
 time, it is either due to necessity, or due to popularity.
 
-\todo{Find an example of software that sucks, but is still use, that is *not*}
-\todo{the current Magnolia IDE. Maybe mention COBOL? It is by today's standards}
-\todo{outdated, and only in use to existing projects. I don't think many new}
-\todo{projects are started in COBOL, but this is not software.}
+\todo{Find an example of software that sucks}
 
 \todo{Explain what is meant by popular, maybe a chance to add graphs? O.o}
 \todo{Find a source for this claim.}
@@ -129,3 +136,25 @@ commands a Vim-user can do, to effectively edit text files. \textit{Vim-Motions}
 is such popular feature, that all other popular, IDEs either implement an option
 which enables this, or has an extension-system which enables other users to
 create this functionality.
+
+\section{Language Server}
+
+\todo{Should hammer in the importance of LSP in today's development experience}
+\todo{
+  Could probably add some sentences about the history of LSP, to get more words
+  in.
+}
+
+The most important features in an \gls{ide} are possible due to the \gls{lsp}.
+\gls{lsp} is a protocol for a language server and editor to use to communicate,
+allowing for features like code completion, syntax highlighting, marking of
+warnings and errors, as well as refactoring routines. This is the limiting
+factor when it comes to supporting experimental languages, as not only does a
+new set of protocols need to be appended to a language server, the editor itself
+needs to be changes to actually use these protocols. Which creates a lot of
+work, for both the \gls{ide} developer and for the compiler developer. Here is
+where a modular approach can help both. If some new functionality or feature is
+added to the experimental language, this off course means the
+compiler/interpreter has to be expanded/modified, but for the \gls{ide}, a
+module could be added/modified to utilize this change, instead of having to
+change the entire application.

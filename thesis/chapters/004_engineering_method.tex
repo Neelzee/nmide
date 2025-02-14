@@ -1,14 +1,12 @@
 \chapter{Engineering method}
 
-Intro to what will be discussed in this chapter?
-
 In this chapter, we will discuss the different ways to achieve modularity within
 an application. We will also point out different behaviors that arise from such
 a setup.
+\todo{Add more filler here}
 
 \section{Modularity}
 
-\todo{Has this been mentioned?}
 As mentioned previously, modularity, or a modular application, is an application
 which can be extended by other pieces of software. This extensibility is useful,
 in the sense that features that the original developers of the application did
@@ -16,6 +14,23 @@ not think about, can be added, and if this module architecture is well-designed,
 without changing the core application. This way of designing software can be
 taken to the extreme, a zero-core application, where the only functionality the
 application provides, is a way to extend the core functionality with modules.
+
+\subsection{How to extend an application}
+
+There are different ways an application can be extended. The most popular one
+\todo{Sauce???} uses so-called \textit{live-reload}, in which, if a module
+drastic changes the functionality of an application, the application has to be
+restarted, or if it is a \textit{minor} change, the module is simply loaded.
+This method is extending of the application during runtime, which is a common
+user experience, and is the method which is most accepted. Another one would be
+\textit{compile-time-extension}. So modules are added before the application
+itself is compiled. There are some advantages and disadvantage in both
+approaches, but for most users, the idea of compiling their program is bad.
+\todo{Rewrite to be more academic}
+
+However, in a large organization, if everyone is working on the same
+project, a pre-compiled application can be handed out, where all the needed
+modules are already added.
 
 \subsection{Granularity}
 
@@ -46,6 +61,10 @@ In figure \ref{fig:textEditorSimple}, an input file is parsed to some structure
 which is used to translate user actions, into cursor movements. The cursor being
 the place in the file where text is written to by the user.
 
+This is a feature that naturally shows up in a \textit{true} modular system,
+which eventually is treated as a singular module by external module developers.
+\todo{Expand upon this}
+
 \subsection{Module V.1}
 
 \todo{Rewrite}
@@ -53,19 +72,23 @@ the place in the file where text is written to by the user.
 First attempt was to create a Visual Studio Code Copy. This would've worked, but
 would've created a lot of extra work.
 Generally, the first plan was this:
+
 \begin{enumerate}
-  \item Create an IDE
-  \item Extend the IDE, to allow for a module architecture
+  \item Create an \gls{ide}
+  \item Extend the \gls{ide}, to allow for a module architecture
   \item Modules call the application using some DSL
 \end{enumerate}
 
 This was the \textit{easier} way to work, because I could model it of existing
 \todo{Add references here}
-IDEs like \textit{Visual Studio Code}. Another advantage is that when
+\gls{ide}s, like \textit{Visual Studio Code}. Another advantage is that when
 implementing the application, I got a better understand of how eventual modules
 should extend the application, like, the general architecture. But this was not
 \todo{Mention how modularity was not a concern when creating the application}
 modular. Anything created this way, would be subpar to existing software.
+
+Furthermore, it would add a lot of complexity, which the next \gls{ide}
+maintainer would have to deal with.
 
 \todo{Rewrite tech stack}
 \subsubsection{Tech Stack}
@@ -74,15 +97,30 @@ Started with Rust, because a \textit{low-level} language was assumed to be
 necessary, to facilitate ease of C integration, which would allow for an
 extendable application, which was language agnostic.
 
-Framework I chose was Tauri, UI components can be created using JavaScript.
-\todo{Mention security that is given by using Tauri}
+Furthermore, using Rust in this low-level environment, gives the added advantage
+of the compiler knowing then a value is unused, and automatically
+\textit{de-allocating} this memory. This helps avoid memory leakage. Further
+safety can be encoding in Rust robust type system, avoiding dangling pointers
+and null references.
 
-\todo{Expand}
-\begin{itemize}
-  \item Compiler knows when a value is unused
-  \item Automatically \textit{dropped}
-  \item No dangling pointers/null references
-\end{itemize}
+Framework I chose was Tauri, UI components can be created using JavaScript. This
+framework gives a lot of security which is needed in an application which runs
+third party code.
+\todo{Expand upon the security aspect}
+
+As mentioned, the UI of the application is rendered using \gls{html} and
+JavaScript, making development of the UI similar to standard web development.
+This enabled a low development time of UI components, since this is something
+that a lot of UI and UX designers have looked into. So existing code for this
+already exists and can be used.
+
+Since any JavaScript frontend framework could be used, React was chosen, one of
+the reason for this choice was due to its popularity, which again, would speed
+up the development time of the application, but also due to the way React
+renders. Between two different re-renders of the application, React can check
+the difference between the \gls{vdom}, which is React's representation of the
+\gls{dom}. It then only changes what is needed in the \gls{dom}, instead of
+re-creating the entire \gls{dom}, which makes the render time quick.
 
 \todo{Rewrite this to better connect to the previous section}
 Communication between the Rust and JavaScript parts is JSON-RPC, which,
@@ -93,7 +131,21 @@ targets the JavaScript environment, and one that targets Rust, with the
 possibility to create bindings from Rust to C, enabling a whole sleuth of other
 languages to be used.
 
-\todo{Rewrite tech stack}
+This also allows for usage of existing JavaScript libraries, which can be used
+with the \gls{npm}. In the \gls{npm} registry, there are around
+\textit{34 million} libraries, all of which are usable in this architecture. If
+the functionality that these libraries are useful for the application, is
+another question. But this functionality allows for quick development time for
+modules, which means features that are standard in \gls{ide} can be quickly and
+easily added. A concrete example of this, is the text editor. A text editor in
+itself is quite complex, especially if one needs the added functionality of
+\gls{lsp} support. This can be solved quite easily by adding the
+\textit{Monaco} library, which is the VS Code text editor, with integrated
+\gls{lsp} client support.
+
+While this is not the best approach to implementing a text editor, a more
+modular approach, by turning the text editor into a module family would be more
+effective, it is good enough as a stop-gap.
 
 \subsection{Module V.2}
 
@@ -112,7 +164,7 @@ After 7–8 months of working on this, everything was scrapped for this new plan
 
 An inspiration for the new module architecture is Elm-Lang. Elm is a functional
 language, aimed at frontend web development, but its architecture is quite
-\todo{Maybe add some elm-lang papers? Should probably read some}
+\todo{Maybe add some Elm-lang papers? Should probably read some}
 interesting. As one can see in figure \ref{fig:elmArchitecture}, is used by some
 runtime, which translates the Elm code into \gls{dom} manipulations, and translates
 \gls{dom} events into \textit{Msg} which is handled by the Elm code. This was the
@@ -183,13 +235,14 @@ application, an example of the state can be seen in listing
     ]{./code/plugin-types.hs}
 \end{center}
 
-\todo{Should probably explain beforehand that the core uses web view to display stuff.}
-So, the way any module inserts \gls{html} into the IDE, is by sending a tuple,
-of the \gls{html}, and Location, which is where the HTML element should be
-inserted. Main corresponds to the <main>-tag in a standard \gls{html} document,
-like so:
+The way rendering worked in the core application, was to \textit{parse} the
+\gls{html}-representation given by a module, and translating it into actual
+\gls{html} which was added to the \gls{dom}.
 
-html > body > main
+\todo{
+  The implementation of this was more complex, and relied on the pureness of
+  modules, which should be mentioned.
+}
 
 But this introduces a possibility for some hierarchy in the module ecosystem.
 For example, a module could act as a framework, and therefore needs to only be
@@ -373,16 +426,17 @@ on, and which modules tried to modify that field.
 \subsubsection{Tech Stack}
 
 The new plan did not change the tech stack, but the change in mindset,
-\todo{Don't use mindset}
-\textit{everything is a module}, pushed for a modularization between the then
-tightly coupled parts, the \textit{frontend} and \textit{backend}. As mentioned,
-having two different languages could allow for easier support of modules written
-in different programming languages, but for this to work in an optimal way, both
+\todo{Don't use mindset} \textit{everything is a module}, pushed for a
+modularization between the then tightly coupled parts, the \textit{frontend} and
+\textit{backend}. As mentioned, having two different languages could allow for
+easier support of modules written in different programming languages, but for
+this to work in an optimal way, both
 \todo{Should make a concrete point in why language agnosticism is good.}
 the \textit{frontend} and \textit{backend} should be loosely coupled. This lead
-to the development of two systems. \gls{rsms} and \gls{jsms}. It was necessary
-to distinguish the different module systems, due to the way they would be loaded
-by the core application.
+to the development of two systems. \gls{rsms} and \gls{jsms}.
+\todo{Mention in the next section how RSMS and JSMS are just backend frontend}
+It was necessary to distinguish the different module systems, due to the way
+they would be loaded by the core application.
 \todo{Mention different methods of loading modules}
 The \gls{rsms}, being written in Rust, meant it needed extra safeguards, as
 loading of shared object files, during runtime, could lead to undefined
@@ -414,6 +468,16 @@ if there is a way to recover from the error. The \textit{standard} way for the
 core to \textit{correct} this error, is to \textit{just} log the error. But this
 turns an unrecoverable error into a recoverable one, given that it is an
 acceptable result to \textit{ignore} the error.
+
+One thing did change, however, instead of using React as the frontend framework,
+TypeScript was chosen, which simplified the integration between the backend and
+frontend, as the complexity of React's state management could be avoided, along
+with React's hydration. Given the rendering now was more \textit{hands-on}, the
+core could expose a lot of the functionality for rendering, which modules could
+change. This would increase the difference between the \gls{jsms} and
+\gls{rsms}, as the backend was not privy to this API, but this was not seen as
+an issue, as this API would turn module non-pure.
+\todo{Mention earlier pureness}
 
 \begin{center}
   \lstinputlisting
@@ -447,15 +511,17 @@ acceptable result to \textit{ignore} the error.
     ]{./code/jsms-handling-view.ts}
 \end{center}
 
-Given that the application uses a web view to render, and modules can be written
-in JavaScript, it means that existing JavaScript libraries can be used in the
-application.
+As mentioned earlier, given that the application uses a web view to render, and
+modules can be written in JavaScript, it means that existing JavaScript
+libraries can be used in the application. This, with the implementation of the
+\gls{jsms}, meant that this could be actually tested out.
+
 \todo{Find more examples}
 
 \begin{figure}
   \centering
   \includegraphics[scale=0.5]{./pics/doom}
-  \caption{Application running Doom}
+  \caption{Application running Doom using js-dos}
   \label{fig:doom}
 \end{figure}
 
@@ -463,9 +529,8 @@ application.
 
 The third and hopefully final, plan:
 
-\todo{Add footnote}
 \begin{enumerate}
-  \item Everything* is a module
+  \item Everything is a module
   \item Modules can \textit{invoke} modules
 \end{enumerate}
 
@@ -517,15 +582,57 @@ object in the state.
   \lstinputlisting
    [ language=Haskell
    , caption={Module Type}
-   , label=Listing
+   , label=lst:moduleType
    ]{./code/module-example.hs}
 \end{center}
+
+As one can see in listing \ref{lst:moduleType}, a module only exposes its name,
+and an \lstinline[language=haskell]{init} function, which takes the
+\lstinline[language=haskell]{Core} \textit{ADT}, which is a representation of
+the core application shown in listing \ref{lst:coreAdt}.
+
+\begin{center}
+  \lstinputlisting
+   [ language=Haskell
+   , caption={Module Unverified Type}
+   , label=lst:moduleTypeUnverified
+   ]{./code/module-unverified-example.ts}
+\end{center}
+
+This architecture also has the issue about verification of modules, but only on
+functions, as simple fields can be validated using the
+\lstinline[language=JavaScript]{typeof} operator. It is possible to do
+\textit{some} verification on functions in TypeScript, but this is only a) Is it
+a function, and b) does it have the correct amount of arguments, in this case,
+one. Nothing about the typing of the function can be ascertained at runtime,
+without explicitly invoking the function.
+
+\begin{center}
+  \lstinputlisting
+    [ language=Haskell
+    , caption={Core ADT}
+    , label=lst:coreAdt
+    ]{./code/module-example-core.hs}
+\end{center}
+
+In listing \ref{moduleEvent}, one can see the structure of an
+\lstinline[language=Haskell]{Event} \textit{ADT}. This allows for modules to
+pattern match on specific \lstinline[language=Haskell]{Event}s, and as in the
+previous version, only react to specific \lstinline[language=Haskell]{Event}s.
+What is different, is as shown in the \ref{lst:moduleCounter} listing, is that
+each module registers an \lstinline[language=Haskell]{EventHandler} which is
+\textit{only} invoked when the specific \lstinline[language=Haskell]{Event} it
+is registered with, is called. This ensures a more direct form of
+module-to-module communication, as a module can directly \textit{invoke} another
+module. This changes the structure of the module architecture to go from one
+wherein the core is a terminal object, to a more \textit{complicated} one, in
+which module families can form.
 
 \begin{center}
   \lstinputlisting
     [ language=Haskell
     , caption={Module Event Type}
-    , label=Listing
+    , label=lst:moduleEvent
     ]{./code/module-example-event.hs}
 \end{center}
 
@@ -533,7 +640,7 @@ object in the state.
   \lstinputlisting
     [ language=Haskell
     , caption={Module Counter Example}
-    , label=Listing
+    , label=lst:moduleCounter
     ]{./code/module-example-counter.hs}
 \end{center}
 
@@ -541,6 +648,15 @@ object in the state.
   \lstinputlisting
     [ language=Haskell
     , caption={Module Counter Example Event Handler}
-    , label=Listing
+    , label=lst:moduleEventHandler
     ]{./code/module-example-counter-handler.hs}
 \end{center}
+
+The module example shown in listing \ref{lst:moduleCounter} and
+\ref{lst:moduleEventHandler}, is again, a simple counter example, where the
+module registers a \lstinline[language=Haskell]{CoreModification}, changing the
+UI-hierarchy, by adding a button which throws an
+\lstinline[language=Haskell]{Event} that is handled by the
+\lstinline[language=Haskell]{EventHandler} shown in
+\ref{lst:moduleEventHandler}, which again, modifies the core by changing the
+counter field with the value from the \lstinline[language=Haskell]{Event}.
