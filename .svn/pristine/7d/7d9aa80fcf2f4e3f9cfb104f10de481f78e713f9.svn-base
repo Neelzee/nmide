@@ -1,0 +1,6 @@
+{
+\tableofcontents 
+\let\cleardoublepage\clearpage \listoffigures 
+\let\cleardoublepage\clearpage \listoftables 
+\let\cleardoublepage\clearpage \lstlistoflistings
+}

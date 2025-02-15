@@ -1,0 +1,85 @@
+name: nmide
+on:
+  push:
+  workflow_dispatch:
+concurrency:
+  group: "${{ github.ref }}"
+  cancel-in-progress: true
+jobs:
+  nmide-core-test-build:
+    runs-on:
+      - self-hosted
+      - nmide-core
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4.1.0
+        with:
+          fetch-depth: 20
+          lfs: true
+      - run: cargo --version
+      - run: npm --version
+      - run: cd core/src-tauri
+      - run: cargo build
+      - uses: actions/upload-artifact@v4.1.0
+        if: success()
+        with:
+          name: "${{ github.job }}"
+          retention-days: 1
+          path: core/src-tauri/target
+  test-nmide-core-backend:
+    needs: nmide-core-test-build
+    runs-on:
+      - self-hosted
+      - nmide-core
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4.1.0
+        with:
+          fetch-depth: 20
+          lfs: true
+      - uses: actions/download-artifact@v4.1.7
+        with:
+          name: nmide-core-test-build
+      - run: cargo --version
+      - run: cd core/src-tauri
+      - run: cargo test --workspace
+  test-nmide-core-frontend:
+    needs: nmide-core-test-build
+    runs-on:
+      - self-hosted
+      - nmide-core
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4.1.0
+        with:
+          fetch-depth: 20
+          lfs: true
+      - uses: actions/download-artifact@v4.1.7
+        with:
+          name: nmide-core-test-build
+      - run: npm --version
+      - run: cd core
+      - run: npm i
+      - run: npm run test
+  debian-build:
+    runs-on:
+      - self-hosted
+      - nmide-core
+    if: github.event_name == 'workflow_dispatch'
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4.1.0
+        with:
+          fetch-depth: 20
+          lfs: true
+      - uses: actions/download-artifact@v4.1.7
+      - run: npm --version
+      - run: cd core
+      - run: pwd
+      - run: npm i
+      - run: npm run tauri build
+      - uses: actions/upload-artifact@v4.1.0
+        if: success()
+        with:
+          name: "${{ github.job }}"
+          path: "core/src-tauri/target/release/*"

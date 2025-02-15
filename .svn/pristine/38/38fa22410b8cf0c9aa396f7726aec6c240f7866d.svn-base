@@ -1,0 +1,278 @@
+\section{24.12.01}
+
+Using Monaco will be more difficult that I first imagined. And by that, I mean
+I can't simply wrap a trivial plugin around the library, and then use it. There
+are some extra functionality/configurations that are needed, which I do not
+know. Hopefully I'll figure this out, but I'll postpone this work until later,
+since I'd rather not mess around with that this year. But I probably will. I
+should create extensive documentation on the core IDE functionality, so that I
+have something to write about, and to see if I have thought of everything.
+Having to explain everything, will make it easier to see if I have made the
+right decision, or just a decision.
+
+I think today, I'll quickly look at turning the IDE into a server
+
+\section{24.12.07}
+
+I've almost turned the IDE into a server, got some CORS-issues, which as usual
+is the bane of my existence. Fixing it should be easy, but I don't think I will
+prioritize it in the coming days. I learned that after I am done with my
+education at UIB, they will delete my account, and therefore my repository. So
+I think as part of my redo/fix my CI/CD-job, I'll also look into migrating from
+GitLab to GitHub. Once that has been completed, I need to plan the IDE-Plugins
+I am going to make, I need a plan, not only to make the development easier, but
+also so, in case I do not have anything substantial to showcase, I can instead
+say, oh this? This is just a prototype of my awesome plan.
+
+\section{24.12.11}
+
+For the rest of the week, I need to figure out what features my IDE-Plugin
+-Ecosystem are going to offer. The idea behind IDE-Plugin-Ecosystem, are the
+plugins needed to turn the application into an IDE. I would like for the
+majority of these plugins to be pure, but we'll see what happens.
+
+There is a lot of functionality that is missing on the Rust side, that exist on
+the JSPS side. This is mostly due to the lack of plugin development happening in
+Rust, and will probably not catch up. This is because debugging JSP is easier
+than Rust Plugins, since I can just add a console.log in the Plugin, and then
+restart the application. If I were to do something similar in Rust, I would
+have to re-compile the plugin, move it to the plugin folder, and then restart
+the application. I think the only place the Rust Plugin Experience could ever
+excel, is the writing of Models/Html, by utilizing macros. But developing such
+macros would take more time than I am currently willing to invest.
+
+\section{24.12.13}
+
+I need to figure out what unique features Magnolia has, and by unique, I mean
+concepts that are not supported under the LSP-specification. I know some stuff,
+like renaming, but I do not have a concrete grasp on what is needed to enhance
+the developer experience. But I do have some ideas about general features for
+enhancing the developer experience.
+
+\section{24.12.15}
+
+I have a general outline for my thesis.
+
+\begin{enumerate}
+  \item Why create an IDE
+  \item Things to learn from previous Magnolia IDE
+  \item Why create a modular IDE?
+  \begin{enumerate}
+    \item Challenges due to Magnolia
+    \item Challenges due to possible changing scope
+  \end{enumerate}
+  \item Features
+  \begin{enumerate}
+    \item Future Proof
+    \item Exstensible
+    \item Easy to install
+  \end{enumerate}
+  \item Plugin Architecture
+  \begin{enumerate}
+    \item Language Agnostic Plugins
+    \item Pureness in Plugins
+    \begin{enumerate}
+      \item Differences in JSPS and RPS
+    \end{enumerate}
+    \item Modularity over pureness
+    \item Optimalization over pureness
+  \end{enumerate}
+  \item Modular Application
+    \begin{enumerate}
+      \item The everything app
+    \end{enumerate}
+  \item IDE-Plugins
+    \begin{enumerate}
+      \item Features
+      \item Granularity
+    \end{enumerate}
+  \item The Developer Experience
+  \item The Plugin Developer Experience
+  \item User Experience Challenges
+\end{enumerate}
+
+I think this is a good start, I just need to find out where to stuff references
+to other literature
+
+\section{24.12.20}
+
+I can rework my entire plugin handling system. Because, it's all the same. I
+call a plugin, give it arguments, (or not), carch any errors, decode the output,
+ensuring it is valid, and then return it, or an error. Especially for init and
+update, I can use the exact same logic for handling collisions, but I can also
+include view.
+
+\section{24.12.21}
+
+There are still improvements needed, since there is some duplicated code on init
+and view, but this can wait. Plugins can now add a function to turn a possible
+collision into an allowed one, by fields. They get this input:
+[Either ([(string, TMap)], string) (string, TMap)], which is a list of Either
+a collision, which is a tuple, where the first element is a list of plugins and
+their corresponding model, and the second element is the field they collided on.
+The function, is a partial mapping, so only the wanted values are kept. The
+default is to drop all `Left` values. There is still the possibility of a
+collision occurring post coalecing, as if two different plugins work on the same
+field, they both return two states that can collide. Currently, this is
+mitigated by keeping the first instance, i.e. the first state found, this can
+probably be improved.
+
+\section{24.12.25}
+
+latexmk -c && TEXINPUTS=../../themes/UiB: latexmk -interaction=nonstopmode
+-latexoption=-shell-escape-flag -pdflatex=lualatex -pdf main.tex
+
+\^ for making the slides
+
+\section{24.12.27}
+
+I've been working on a Cmd/Sub system, similar to Elm. The reason for this is
+two-fold.
+
+\begin{enumerate}
+  \item Allow for integrated keypresses to be used by plugins from
+    the core, instead of plugins having to overload the Msg system, leading to
+    unnecessary update-view-cycles.
+  \item Better inter-plugin-communication, as plugins could directly call
+    eachother, where a plugin exposes a Cmd that another plugin can use
+\end{enumerate}
+
+This is still something I am thinking/designing, currently the Msg/Sub is
+overloaded, there might be unnecessary features there, or features that could be
+covered by plugins.
+While doing this \textit{research}, I've discovered that the \texit{abi\_stable}
+crate I've been using has not been updated in over a year, so I might be looking
+for something else to get a stable ABI, like \textit{stabby}. It seems that it
+has similar capabilities as \texit{abi\_stable} has, when it comes to this
+modular approach I am aiming for.
+
+\section{24.12.28}
+
+I think maybe a refactor of the module system is in order. That, and as
+mentioned a more structured theory, on what I am doing. Since I have been
+working on the shortform-thesis and presentation for March, I've been thinking
+on what I am actually doing. And there is room for a lot of confusion, since
+most of my ideas are just that, and have not been laid in \textit{stone}, (or
+bits, I guess). Either way, my current module architecture could be better. It
+does not really have the module-on-module action I \textit{long} for. The only
+way modules can, and by that I mean, should, and by that I mean, for the core
+to upholds it's guarantees, and by that I mean, pureness, is by using the Msg
+system. This does not really work well in a community of modules. As having to
+do a state-cycle for each Msg seems unnecessary. I think I should do some
+\textit{DOM}-representation, passing a DOM-like structure to my modules, to
+allow for more pure control of the view-state. I think the best way for this, is
+if every module that wants to read the DOM, has to explicitly do so. Unsure how
+I can achieve this in the Rust world, as this would mean a thighter coupling
+between a module and the core, since it would both have to call the core, when
+it wants to read the DOM, and be called by the core, when doing an update. Or I
+could change the entirty of the core, having it only be called, acting more as a
+state and DOM store, where everything, and by that I mean \textit{everything} is
+a module.
+In the counter example, a module would be installed by the core, or well, the
+installer is a module itself, but it would, once loaded, call the core, and add
+the wanted HTML to the DOM. The button click, would be an event which the module
+subscribes to, meaning a custom event. How does a module subscribe to an event?
+It can pass an effectful function, callback, which the core calls once the event
+is fired. I think this is possible to achieve in Rust, in my head it is trivial
+to achieve in JavaScript.
+
+I think I might have to move away from Rust, mostly because of the lack of a
+stable ABI. I think I can avoid it, by removing the support for Rust modules all
+together, since this is where the issue is coming from, and just allow JS
+modules. Or I could move to another framework, like Electron, and use
+PureScript, but this would be the same as abandoning all my code, since all the
+remaining code, would be written in TypeScript. I could also try C, and not have
+any framework, but this would kill the remaining hope for an actual product by
+the end of this coming semester. I think it would be fun, but I'll end up with
+a lot more work.
+I could also use threepenny gui, a Haskell framework, similar to Tauri, which
+allows for JavaScript interop, but I am unsure on how to do Haskell FFI, or
+Haskell-Haskell interop. I think this communication would have to occur through
+the FFI, which is also another option for the current Rust project. I could go
+for a pure JavaScript Module System, and or include WASM, but then the Cmd/Sub
+system in the core application has to be larger, to allow for fs/os operations.
+
+I think I'll have to pivot the concept of the application. The whole core is a
+module. Modules will now be async, so that the \textit{Backend}s using the core
+can supply their own modules. This will unfortunately mean that my thesis is no
+longer a \textit{Rust Project}, but a \textit{JavaScript Project}. Well, only
+technically, I could still write it with something like \texit{Fay}, which
+is Haskell that compiles to JavaScript, or PureScript. This also means that the
+expansion of the core architecture is \textit{Frontend} specific.
+
+\section{24.12.29}
+
+Been messing around with the new architecture. With the new plans, we can have
+similar issues to the UI-hierarchy, that we have with the state. If two modules
+changes the view-tree, in such a way that it causes a collision, how should that
+be resolved? How do we detect this? Because implementing this, naivly, the
+collision will be ignored? No, wait, we need some kind of semigroup function,
+which works on trees. And this collision also depends on the severity.
+If two modules adds HTML to the same parent node, which one should be first?
+This is only an issue if both put their element at the beginning or end, but we
+can probably avoid this, by just saying there is an issue if two modules modify
+the same field.
+The way I have bene thinking about this, is instead of analyzing the differences
+between the two trees, is to create some wrapper function, that translates the
+modifications a module makes to an tree, into some kind of expression-language;
+a DSL, such that I can analyze/evaluate the resulting expressions, and check for
+collisions.
+As a side note, I have been starting to call plugins, modules, because when
+writing my draft for the shortform thesis and presentations, that is the
+language I used. I think I've mentioned this before, but I should really write
+down the \textit{theory} I have, meaning the general structure and nomenclature
+I am using, in my head, which is leaking into my notes, issues and
+documentation. It would be difficult for another developer to pick up the work
+after me.
+Going back to the DSL, should I do something similar for the state? This is a
+really niche problem, which probably does not need to be solved by such a
+complex system, but it feels like something other people have encountered, and
+probably written about. Especially since it is about tree structures. I'll do
+some research.
+
+There are some stuff, but it feels complex, might be because it is a complex
+issue, I'll look for this later, and just continue with the DSL-plan, since I
+end up with, at minimum, two different instruction sets, which can be easily
+analyzed for collisions. Both instruction sets has to mention the same Node and
+the same Field, or if it is a Delete Instruction, the deleted Node has to be
+related to the others target Node. This is very doable, and not very
+complicated, as I am leaving the handling of such a collision, up to the module
+developer.
+Also, merging will be easy, since all \textit{merging} is, in this context, is
+applying both instruction sets on the same tree, and due to the collision check
+that is done earlier, it should not matter which instruction set is applied
+first. Not even if either module reads the tree, because the reading of the tree
+occurs in the generation of the instruction sets, meaning before any changes
+have been made. Cool. A similar approach could be applied to the state, but this
+seems like overkill, maybe. Well, it would be good for larger states. And since
+everything is supposed to be a state, maybe it should be implemented, especially
+if it's part of the plan to keep the entire contents of a file in the state.
+Which I think is the plan. I think I can keep the same instruction set for both
+\textit{trees}, since the state can be seen as a \textit{list of roots}. And
+changes made to a Node is just given a function \textit{f}, which applies to
+only \texit{one} unique Node, apply the function \textit{g}.
+The instruction set should then be something like:
+\begin{itemize}
+  \item Add Node to Node
+  \item Modify Field on Node
+  \item Remove Node
+\end{itemize}
+I can also do early verification, because of a module tries to modify a Node or
+field which does not exist, I can throw an error or something similar.
+
+\section{24.12.30}
+
+I've been working on trees. The add-node instruction, is really just a modify
+parents child-field instruction, so there is just two instruction. Modify a
+field, or remove a Node. The problem I am running into, is that if I want to be
+able to just \textit{add} values to existing fields, I need, if I am doing it
+generic for both the state and ui, to be able to somehow encode the semigroup
+function which enables me to add. I don't want to do a bunch of
+\textit{if-statements}, checking the type of the field. It should be possible
+to encode this in the type system. But this is unnesecarry, I could just limit
+the system by just having setters and getters, so if one wants to add something,
+remember to add the old value aswell. So something like:
+set(get() + 1), instead of add(1). That might be reasonable.
+
+Simplifying what can be done, simplifies the complexity of the implementation,
+crazy.

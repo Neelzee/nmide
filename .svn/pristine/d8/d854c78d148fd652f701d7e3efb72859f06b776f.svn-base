@@ -1,0 +1,9 @@
+node_modules/
+docs/
+.next/
+output
+.spago
+index.js
+.psci_modules
+setup.js
+target/

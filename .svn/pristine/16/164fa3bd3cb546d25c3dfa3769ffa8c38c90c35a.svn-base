@@ -1,0 +1,18 @@
+package:
+  name: purs-utils
+  dependencies:
+    - arrays
+    - console
+    - effect
+    - maybe
+    - nullable
+    - prelude
+    - strings
+    - tuples
+  test:
+    main: Test.Main
+    dependencies: []
+workspace:
+  packageSet:
+    registry: 61.2.0
+  extraPackages: {}
