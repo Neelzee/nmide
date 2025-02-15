@@ -1,2 +1,0 @@
-/usr/bin/ar qc libnmiden.a CMakeFiles/nmiden.dir/nmide.c.o CMakeFiles/nmiden.dir/html/html.c.o CMakeFiles/nmiden.dir/html/css.c.o
-/usr/bin/ranlib libnmiden.a
