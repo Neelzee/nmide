@@ -1,0 +1,12 @@
+\begin{tikzpicture}
+  % Nodes
+  \node (p) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (0, 0) {Elm};
+  \node (i) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (4, 0) {Runtime System};
+  \node (d) [rectangle, draw, minimum height=0.5cm, minimum width=1cm] at (7, 0) {DOM};
+  % Arrow
+  \draw[->] (p.north) to[out=60, in=120] node[midway, above] {Html} (i.north);
+  \draw[->] (i.south) to[out=-120, in=-60] node[midway, above] {Msg} (p.south);
+  \draw[->] (i.south) to[out=-120, in=-60] node[midway, above] {Msg} (p.south);
+  \draw[] (i) -- (d) node[midway, above] {};
+  % Header
+\end{tikzpicture}

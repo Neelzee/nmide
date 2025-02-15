@@ -1,0 +1,77 @@
+\chapter{Introduction}
+
+Standard \gls{ide}s are indispensable tools in software development, offering features
+like early bug reporting, project outline visualization, code highlighting, and
+code completion However, these \gls{ide}s may not adequately support the unique
+demands of experimental programming languages.
+To solve this, a modular approach is used to designed and \gls{ide}.
+\todo{Rewrite this}
+
+\section{Experimental Languages}
+
+Experimental languages introduce new needs that modern \gls{ide}s might not
+handle, today's solution to handle this, is to look at the needs of the
+language in question, and solve it on a case by case basis. This means that
+experimental concepts cannot be easily tested, because time has to be
+invested into an \gls{ide} to investigate the changes needed, if that is
+even possible, to enable this experimental concept to be used in the \gls{ide}.
+
+Abstract Semantic Representation (ASR) Transformation,
+Term Algebras, Mathematics of Arrays, Syntactic Theory Functor (STF) and other
+concepts that experimental languages might introduce, which might not be
+supported by standard IDE features.
+
+\todo{
+  Do I need to introduce these here? Maybe, they are concrete examples from
+  Magnolia
+}
+
+\section{Integrated Development Environment}
+
+\todo{Rewrite this}
+An \gls{ide}, aids a developer, as all the
+needed tools for development are integrated into one application. There are
+different kinds of \gls{ide}, generic and specialized.
+
+A specialized \gls{ide} is one targeted towards a specific language, like
+Eclipse, (reference?), or IntelliJ (reference?), which target Java/JVM. It
+contains specialized features like the following:
+
+\todo{Rewrite the following paragraphs}
+
+\paragraph{Syntax Highlighting} Highlighting important keywords, identifiers
+and more, makes the language easier to read for the developer, allowing them to
+spot easy to miss errors, like misspelling of keywords.
+
+\paragraph{Code Autocompletion} Suggesting keywords, method names or even entire
+code snippets, is a powerful tool an \gls{ide} can have. This is possible to
+achieve, in some form, without being specialized, by for example, suggesting
+text that already exist in the document, but is most useful if it is
+specialized, and can suggest built-in methods. This allows a developer to not
+having to remember exactly how methods are named, is the method to split a
+string by some delimiter, \textit{split\_by} or \textit{split\_on}? As long as
+the developer writes \textit{split}, the correct method name will be suggested.
+
+\paragraph{Go-To-Definitions} Being able to quickly navigate to methods and read
+their implementation is a useful tool for a developer, as less time has to be
+spent navigating the project structure, to figure out where some method was
+implemented, and more time can be spent actually developing.
+
+A lot of these features are possible due to \textit{Language Server Protocols},
+which allow for a standardized way for compilers to give code-support to
+\gls{ide}'s.
+
+\todo{Connect these better}
+
+A generic \gls{ide} contains the features that are common among development in
+any programming language, like:
+
+\paragraph{File Explorer} Most project nowadays is larger than one file, so
+being able to visualize the project in a tree-like-structure, and navigate that,
+is useful. This feature usually comes with the ability to manipulate the project
+structure, by adding files, folders, moving files around, and deleting them.
+
+\todo{
+  A lot of these claims are \textit{vibes} based, and should probably be more
+  academic sounding
+}

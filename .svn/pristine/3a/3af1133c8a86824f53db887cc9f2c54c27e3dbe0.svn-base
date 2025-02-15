@@ -1,0 +1,40 @@
+productName = "nmide"
+mainBinaryName = "nmide"
+version = "1.0.0"
+identifier = "no.nilsmf.uib"
+
+[build]
+beforeDevCommand = "npm run dev"
+beforeBuildCommand = "npm run build"
+devUrl = "http://localhost:5173"
+frontendDist = "../dist"
+
+[bundle]
+active = true
+targets = "all"
+longDescription = "A simple modular Integrated Development Environment"
+icon = [
+  "../../core/src-tauri/icons/32x32.png",
+  "../../core/src-tauri/icons/128x128.png",
+  "../../core/src-tauri/icons/128x128@2x.png",
+  "../../core/src-tauri/icons/icon.icns",
+  "../../core/src-tauri/icons/icon.ico",
+]
+resources = []
+category = "DeveloperTool"
+shortDescription = "A simple IDE"
+
+[plugins]
+
+[app.security]
+csp = "asset: https://asset.localhost; connect-src ipc: http://ipc.localhost"
+capabilities = ["../../core/src-tauri/capabilities/nmide-capabilities"]
+
+[app.security.assetProtocol]
+scope = ["$APPDATA/plugins/*"]
+enable = true
+
+[[app.windows]]
+title = "nmide"
+width = 800
+height = 600

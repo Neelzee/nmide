@@ -1,0 +1,22 @@
+\chapter{Conclusion}
+
+\todo{Expand and rewrite}
+
+\section{Making an IDE is hard}
+
+An \gls{ide} has many features, which are needed to enhance the developer
+experience. To achieve this, the modular approach enables future users to
+enhance the application.
+
+\begin{figure}
+  \centering
+  \input{./figures/text-editor}
+  \caption{Text Editor Module Family}
+  \label{fig:extendedModuleFamily}
+\end{figure}
+
+In the figure \ref{fig:extendedModuleFamily}, the \textit{cursor} is the place
+at which text is placed when the user writes. If the user clicks someplace in
+the document, the cursor \textit{jumps} to that place. If the user uses the
+arrow-keys to move around, the cursor moves one character to left or right, or
+one line up and down, depending on which arrow-key was pressed.

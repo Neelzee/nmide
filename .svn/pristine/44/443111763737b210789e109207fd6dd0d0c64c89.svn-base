@@ -1,0 +1,140 @@
+\section{25.01.04}
+
+Good start of the new year, working on a rewrite of my project. I've run into
+some possible issues, only issues because I would like stuff to be simple for
+module developers, but I think I'll start by doing it the \textit{naive} way,
+which is easier for me, as a maintainer/core-developer to do now, and maybe
+change in the future. I don't think any of these possible future changes will be
+as major as this, anyway. The issue with module loading, where I had a timeout
+to wait until all modules where loaded, by just waiting 250 ms, is solved, in a
+smart way, I think, atleast. Everytime an installer \textit{installs} a module,
+it increments a global counter. Everytime a module is loaded, (pushed to a map),
+the same global counter is decremented. Finally, every 50 ms the core checks if
+the counter is 0. The only way for it to be less than 0, is if a single script,
+\textit{installs}/\textit{loads} more than one module, which can be noted in the
+wiki as \bold{DONT}. So that is a module developer skill issue.
+
+Thought I was close to finished with the rework, but I forgot to make my
+instruction set, (the tree-DSL), JSON-safe, (something that can be represented
+using just JSON). I have to rework that system, because originally, it was just
+two instructions, removing a node, and modifying a node. Removing a node just
+needs the id of the node to be removed, while modifying the node, had a function
+which is applied to the original node. I had something earlier, where the modify
+instruction had the field and value of the node, but this did not work, or I
+gave that up, since I needed/wanted the tree-system to be generic, and for that,
+the user needs to supply their own function, which, offcourse cannot be done
+with JSON. The reason I did this, was because I could not find an easy way to
+type the modify instruction, such that the value and field that the module
+supplied is constrained to a valid type on the node. For example, if I want to
+modify the state, on the field "errors", which is a list, I could only supply a
+new array, not just the element I want to append, or if I wanted to filter it, I
+could not do that either. It is possible to just have it like that, where the
+module supplies the new value, and handles the contamination on their own, but
+how can I do that, while keeping the instruction system? Maybe I could let the
+modules directly manipulate the nodes, and just diffing the nodes? That's the
+same problem to the tree one, just on the leaves instead. The main issue, I
+think is the attributes field on THtml, because that is what I see as something
+a module wanting to change the most.
+Now that I am thinking about it, I don't think I've really thought out how
+communication between the Core and modules should be. And especially not about
+how a future backend is supposed to supply their own modules.
+
+Or do they? Say hello to my new favourite module:
+\textit{all_i_do_is_call_the_backend.js}. Then stuff can be the same, and the
+supplied function to the modify instruction is \textit{JSON-safe}. But not
+really, because we don't care about that. Just have to change the modify
+instruction to return a promise instead. Or the Task type.
+
+\section{25.01.08}
+
+I have to rework my rework. Kinda, I've forgotten what I was working on, what's
+missing and such.
+
+This sucks. The complexity of the \textit{everything-is-a-tree-system} keeps
+bubbling up to the module developer. I think I have to have one instruction set
+for each field, instead of the generic one I have, so that I can \textit{easily}
+coalece the ui, state and events after a core modification, and as an MVP, I'll
+just pretend everything is always good, and just drop all modifications that
+gives any issues.
+
+\section{25.01.09}
+
+I have to timebox the rework. I am breaking my brain trying to do it
+\textit{functionally} with fp-ts, in Typescript. Everything is overly
+complicated and confusing. If I don't have anything by the end of the 18th, I'll
+\sout{kms} remove fp-ts from dependencies, (move verification of input to own
+library), and write the Core using just pure Typescript, no libraries. Which
+will suck, and not be fun, but I can't spend all my time doing this useless
+work, and I can't get my setup to work with purescript, or fay, so I am stuck
+with Typescript until I hand this in. I have definitively prioritized my time
+wrong. Should've spent more time actually \textit{developing} modules, and not
+adding support for other languages. No one cares about that.
+
+\section{25.01.24}
+
+Long time since I've written anything, little less time since I've been doing
+anything. Nothing works. I need to find a better way to do what I am trying to
+do, so that stuff works, but it's been a while so I don't really know what I
+wanted to do, or what I am doing.
+
+Rendering does not work, I don't know how to fix it.
+
+
+\section{25.01.29}
+
+I have to find something to do. I am feeling burned out. I don't want to work
+anymore. I guess I could go back to working on my proto- thesis and presentation,
+that is due to march. Maybe I'll get some inspiration to work on code again.
+
+
+\section{25.01.30}
+
+I started a little bit on the shortform/proto- thesis and presentation during
+the christmas holiday. This is was the general layout for the presentation:
+
+\begin{itemize}
+  \item What an IDE is
+  \item Why a create a new IDE
+  \item Features
+  \item Modularization
+  \item Techstack
+  \item Module Families and Granularity
+  \item Conclusion
+\end{itemize}
+
+Which I want to expand/revise to this:
+
+\begin{itemize}
+  \item Creating an IDE
+  \begin{itemize}
+    \item Why create a new IDE
+    \item Why modular
+  \end{itemize}
+  \item Features
+  \begin{itemize}
+    \item Modularization
+    \item Tech stack
+  \end{itemize}
+  \item Challenges
+  \begin{itemize}
+    \item Refactoring
+    \begin{itemize}
+      \item Granularity
+      \item Module Families
+    \end{itemize}
+  \end{itemize}
+  \item Conclusion
+\end{itemize}
+
+I'll timebox this work til the end of Februrary, only because the shorterm-stuff
+is due to 4th of March, so it is timeboxed. I kinda wanna learn nix so that I
+can build my pdf and slides with it, instead of having to memorize a latex build
+command. I think that will be a nice \textit{break} from doing actual work.
+
+\section{25.01.31}
+
+I haven't really done much, except the nix stuff. Which has been fun, and I can
+now build both my slides and thesis, reproducibly. Now I just have to actually
+write stuff. Much of what I wrote during the holiday break, has to be
+re-written, which is not surprising, but it is demotivating. Most of it was bad
+regardless, the structure and all that.
