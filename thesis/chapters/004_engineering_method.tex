@@ -1,54 +1,48 @@
 \chapter{Engineering method}
 
-In this chapter, we will discuss the different ways to achieve modularity within
-an application. We will also point out different behaviors that arise from such
-a setup.
 \todo{Add more filler here}
 
 \section{Modularity}
 
 As mentioned previously, modularity, or a modular application, is an application
-which can be extended by other pieces of software. This extensibility is useful,
-in the sense that features that the original developers of the application did
-not think about, can be added, and if this module architecture is well-designed,
-without changing the core application. This way of designing software can be
-taken to the extreme, a zero-core application, where the only functionality the
-application provides, is a way to extend the core functionality with modules.
+which can be extended by other pieces of software. This extensibility is useful
+as features that the original developers of the application did not think about,
+can be added. If this module architecture is well-designed, then this extension
+can be added without changing the core application. This way of designing
+software can be taken to the extreme, a zero-core application, where the only
+functionality the application provides, is a way to extend the core functionality
+with modules.
 
 \subsection{How to extend an application}
 
-There are different ways an application can be extended. The most popular one
+There are different methods an application can be extended. The most popular one
 \todo{Sauce???} uses so-called \textit{live-reload}, in which, if a module
 drastic changes the functionality of an application, the application has to be
 restarted, or if it is a \textit{minor} change, the module is simply loaded.
 This method is extending of the application during runtime, which is a common
-user experience, and is the method which is most accepted. Another one would be
-\textit{compile-time-extension}. So modules are added before the application
-itself is compiled. There are some advantages and disadvantage in both
-approaches, but for most users, the idea of compiling their program is bad.
+user experience, and is the method most commonly accepted. Another method
+would be \textit{compile-time-extension}, in which modules are added before the
+application itself is compiled. There are some advantages and disadvantage in
+both approaches.
 \todo{Rewrite to be more academic}
-
-However, in a large organization, if everyone is working on the same
-project, a pre-compiled application can be handed out, where all the needed
-modules are already added.
 
 \subsection{Granularity}
 
-When designing modules, the \textit{granularity} of the module has to be
-considered. An example, if one where to extend the zero-core application with
-the needed functionality for it to be considered an \gls{ide}, this could be
+\todo{
+  This is an example of granularity, change to an explanation of granularity
+}
+When designing modules, the \textit{granularity} of the combined modules has to
+be considered. As an example, if one where to extend the zero-core application
+with the needed functionality for it to be considered an \gls{ide}, this could be
 achieved by creating a singular module which does all the work. However, this
 is not a modular approach, as if one wants to change some specific feature in
 the \gls{ide}-module, one would have to re-create the whole module with that
-specific feature implemented. If, however, this functionality was granular,
+specific feature implemented. Instead, if this functionality was granular,
 that is to say, split into several modules, that together enable the needed
 features, then it would be \textit{simpler} to modify the needed modules to
 achieve the wanted feature.
 
 \subsection{Module Family}
-
-A collection of modules that can be treated as a singular module. A good example
-would be a text-editor.
 
 \begin{figure}
   \centering
@@ -135,7 +129,7 @@ This also allows for usage of existing JavaScript libraries, which can be used
 with the \gls{npm}. In the \gls{npm} registry, there are around
 \textit{34 million} libraries, all of which are usable in this architecture. If
 the functionality that these libraries are useful for the application, is
-another question. But this functionality allows for quick development time for
+another question. This functionality allows for quick development time for
 modules, which means features that are standard in \gls{ide} can be quickly and
 easily added. A concrete example of this, is the text editor. A text editor in
 itself is quite complex, especially if one needs the added functionality of
@@ -269,7 +263,7 @@ With this setup, however, the state is appending/overwriting -only, which means
 the state can only grow.
 
 This setup is also not really modular, as a single module cannot invoke another
-module, without being impure. The only way to invoke/trigger another module, is
+module without being impure. The only way to invoke/trigger another module, is
 to throw a \textit{Msg}, which would trigger an update -> view - cycle. So
 a module cannot \textit{listen} for a single message, all modules are triggered
 by the same \textit{Msg}, and handled accordingly.
@@ -286,10 +280,10 @@ This ensures a good cooperation between the \textit{frontend} and
 \todo{Also expand on the module-validation part, third-party-code, and all that.}
 Before the finalization of this state representation, there was some
 discussion, on how best to represent a number. Because, in JavaScript, there is
-no distinction between a floating-point number, and a decimal number. But this
+no distinction between a floating-point number, and a decimal number. This
 \textit{leakage} was stopped by adding extra validation in the core, using the
 \textit{io-fp} library, which validates data sent from a module, regardless if
-its from the frontend or backend. But this will be discussed more in the next
+its from the frontend or backend This will be discussed more in the next
 section.
 
 \begin{center}
@@ -325,7 +319,7 @@ The \textit{update} function the module exposes, matches on a
 the module adds to the \lstinline[language=Haskell]{"counter"}-field, the value
 from the Msg, which is 1.
 
-Finally, the \textit{view} function, renders a button, which when pushed by a
+Finally, the \textit{view} function renders a button, which when pushed by a
 user, sends the \textit{counter-Msg}.
 
 \begin{center}
@@ -406,18 +400,18 @@ states:
 \end{enumerate}
 
 Since the states are ordered by the name of the module they come from, we
-have a consistent ordering of left-hand side and right-hand side, so if the same
-modules give a collision on the same input, given that all modules are pure, the
+have a consistent ordering of left-hand side and right-hand side. If the same
+modules give a collision on the same input, (given that all modules are pure), the
 resulting state will be the same every time. The problem is that applying some
-function on the values could be an unwanted way to resolve collisions. So the
-standard way, will be to log the collision, and then drop both states. So even
+function on the values could be an unwanted way to resolve collisions. The
+standard way will be to log the collision, and then drop both states. Even
 if two states have A and B amount of fields, and just one collision, we will
-drop A + B amount of fields. Therefore, for a module developer, they should avoid
+drop A + B amount of fields. Therefore, a module developer should avoid
 collisions.
 
 \todo{Mention how updating two fields on the same object also counts as a collision}
 
-This problem of resolving state collision only occurs due because each module
+This problem of resolving state collision only occurs because each module
 returns a subtree of the state. We then have to analyze the new coalesced tree
 for each new subtree that is added, to figure out if there occurs any collision.
 And then notifying the module developer of which field this collision occurred
@@ -469,10 +463,10 @@ core to \textit{correct} this error, is to \textit{just} log the error. But this
 turns an unrecoverable error into a recoverable one, given that it is an
 acceptable result to \textit{ignore} the error.
 
-One thing did change, however, instead of using React as the frontend framework,
+One thing did change, however. Instead of using React as the frontend framework,
 TypeScript was chosen, which simplified the integration between the backend and
 frontend, as the complexity of React's state management could be avoided, along
-with React's hydration. Given the rendering now was more \textit{hands-on}, the
+with React's hydration. Given the rendering was now more \textit{hands-on}, the
 core could expose a lot of the functionality for rendering, which modules could
 change. This would increase the difference between the \gls{jsms} and
 \gls{rsms}, as the backend was not privy to this API, but this was not seen as
@@ -511,10 +505,10 @@ an issue, as this API would turn module non-pure.
     ]{./code/jsms-handling-view.ts}
 \end{center}
 
-As mentioned earlier, given that the application uses a web view to render, and
-modules can be written in JavaScript, it means that existing JavaScript
-libraries can be used in the application. This, with the implementation of the
-\gls{jsms}, meant that this could be actually tested out.
+Given that the application uses a web view to render, and modules can be written
+in JavaScript, it means that existing JavaScript libraries can be used in the
+application. This, with the implementation of the \gls{jsms}, meant that this
+could be actually tested out.
 
 \todo{Find more examples}
 
@@ -603,7 +597,7 @@ This architecture also has the issue about verification of modules, but only on
 functions, as simple fields can be validated using the
 \lstinline[language=JavaScript]{typeof} operator. It is possible to do
 \textit{some} verification on functions in TypeScript, but this is only a) Is it
-a function, and b) does it have the correct amount of arguments, in this case,
+a function, and b) does it have the correct amount of arguments. In this case,
 one. Nothing about the typing of the function can be ascertained at runtime,
 without explicitly invoking the function.
 

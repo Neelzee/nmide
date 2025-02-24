@@ -1,37 +1,31 @@
 \chapter{Introduction}
 
-Standard \gls{ide}s are indispensable tools in software development, offering features
-like early bug reporting, project outline visualization, code highlighting, and
-code completion However, these \gls{ide}s may not adequately support the unique
-demands of experimental programming languages.
-To solve this, a modular approach is used to designed and \gls{ide}.
+Standard \gls{ide} is an indispensable tool in software development, offering
+features like early bug reporting, project outline visualization, code
+highlighting, and code completion However, these \gls{ide}s may not adequately
+support the unique demands of experimental programming languages. To solve this,
+a modular approach is used to designed an \gls{ide}.
 \todo{Rewrite this}
 
 \section{Experimental Languages}
 
-Experimental languages introduce new needs that modern \gls{ide}s might not
-handle, today's solution to handle this, is to look at the needs of the
-language in question, and solve it on a case by case basis. This means that
+Experimental languages introduce new concepts like \gls{asr} Transformation,
+Term Algebras, Mathematics of Arrays, and \gls{stf}. These are concepts from the
+academic community, and are not common in \textit{mainstream} languages, and
+thus, have little to now support in modern \gls{ide}s. For researches developing
+these experimental languages, work arounds are needed, mostly in the form of
+creating addons to the application, that gives it the capabilities needed to
+partially or fully support the concept being introduced. This means that
 experimental concepts cannot be easily tested, because time has to be
 invested into an \gls{ide} to investigate the changes needed, if that is
 even possible, to enable this experimental concept to be used in the \gls{ide}.
 
-Abstract Semantic Representation (ASR) Transformation,
-Term Algebras, Mathematics of Arrays, Syntactic Theory Functor (STF) and other
-concepts that experimental languages might introduce, which might not be
-supported by standard IDE features.
-
-\todo{
-  Do I need to introduce these here? Maybe, they are concrete examples from
-  Magnolia
-}
 
 \section{Integrated Development Environment}
 
-\todo{Rewrite this}
-An \gls{ide}, aids a developer, as all the
-needed tools for development are integrated into one application. There are
-different kinds of \gls{ide}, generic and specialized.
+An \gls{ide}, aids a developer, as all the needed tools for development are
+integrated into one application. There are two different kinds of \gls{ide}s,
+generic and specialized. \todo{Source}
 
 A specialized \gls{ide} is one targeted towards a specific language, like
 Eclipse, (reference?), or IntelliJ (reference?), which target Java/JVM. It
@@ -75,3 +69,23 @@ structure, by adding files, folders, moving files around, and deleting them.
   A lot of these claims are \textit{vibes} based, and should probably be more
   academic sounding
 }
+
+But creating any \gls{ide} would still limit the lifetime of the application. The best
+example of a long living active \gls{ide}, or, at least editor, is Vim (source?). Vim
+is not a feature full editor, but it is simple, lightweight, and works. But most
+people use it, for how easy it is to extend; It's lifetime has been greatly
+extended by the ease of modularization. Any popular module for Vim is
+open-source, and therefore, if any module had an active community around it, if
+the \textit{lead} developer of the module stopped developing it, that community
+continue developing the module, either by getting maintenance access to the
+repository, or by forking it. Ensuring the lifetime of the module.
+
+
+The proposed modular IDE includes specific modules tailored for experimental
+languages, such as ASR Transformation, Term Algebras, MoA translation, and STF.
+As a part of this project, these plugins will be implemented to verify the
+functionality of the modularization of the IDE.
+
+We will discuss the different ways to achieve modularity within
+an application. We will also point out different behaviors that arise from such
+a setup.
