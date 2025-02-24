@@ -13,10 +13,10 @@ achieve this in a sufficient manner, a more specialized IDE is required.
 
 \section{Magnolia}
 
-Magnolia is an experimental research language being developed Bergen Language
-Design Laboratory (BLDL) at the University of Bergen. Magnolia is designed to support
-a high level of abstraction and ease of reasoning. This is achieved by
-\textit{concepts}, \textit{axioms} and \textit{implementations}.
+Magnolia is an experimental research language being developed \gls{bldl} at the
+University of Bergen. Magnolia is designed to support a high level of abstraction
+and ease of reasoning. This is achieved by \textit{concepts}, \textit{axioms} and
+\textit{implementations}.
 
 The example code shown in listing \ref{lst:binop}, showcases a concept
 representation a binary operation, which has one function, \textit{binop}, which
@@ -45,38 +45,33 @@ with the added property of associativity.
     , label=lst:semigroup]{./code/semigroup.mg}
 \end{center}
 
-If an implementation of the \textit{Semigroup} concept does not uphold the axiom
-provided, then it is an \textit{invalid} implementation.
-
 \section{Existing Magnolia IDE}
 
-The current \gls{ide} for Magnolia, is an (old?) version of Eclipse, using some
-modules/features that was outdated (around some date). This \gls{ide}s lifetime was
-limited by external modules/features that where not maintained by BLDL. This
-meant that for future development of Magnolia, an outdated \gls{ide} was needed, with
-outdated software and (other reasons this was not good). A solution could be to
-use something like "Visual Studio Code", which is a very popular \gls{ide} (source?),
-more popular than Eclipse (source?).
+The current \gls{ide} for Magnolia, is an (old?) version of Eclipse, using modules
+and functionality from the core application, that has been outdated since
+(around some date). This \gls{ide}s lifetime was limited by external modules and
+features that where not maintained by \gls{bldl}. This meant that for future
+development of Magnolia, an outdated \gls{ide} was needed, with outdated software
+and (other reasons this was not good).
 
 \todo{Add some mentions of open-source}
 Modularization will help to mitigate some of the issues with the current
-Magnolia \gls{ide}. Instead of maintaining an \gls{ide}, the modules for the
-\gls{ide} would be maintained.
+Magnolia \gls{ide}. Instead of maintaining an entire application, the needed and
+wanted features of the application can be maintained instead.
 
 Experimental languages might have features which are not possible to be fully
 used in current \gls{ide}s. This is also the case for the current Magnolia
 \gls{ide}. The compiler for Magnolia, syntax highlighting, error reporting, and
 hover-functionality are functionality made in the Eclipse \gls{ide}, by using
-its plug-in architecture. Some of the functionality/plug-ins this implementation
-used, have been deprecated in later version of Eclipse. This means the Magnolia
-\gls{ide} is locked to an old version of Eclipse, which, as time passes,
-increases the complexity of installation, as the surrounding tooling and
-libraries needed by this version of Eclipse also becomes deprecated. Currently,
-in INF220, at the university, two weeks are set aside for students to be able to
-install it.
+its plug-in architecture. Some of the functionality and plug-ins this
+implementation used, have been deprecated in later version of Eclipse. This
+means the Magnolia \gls{ide} is locked to an old version of Eclipse, which, as
+time passes, increases the complexity of installation, as the surrounding
+tooling and libraries needed by this version of Eclipse also becomes deprecated.
+Currently, in INF220, at the university, two weeks are set aside for students to
+be able to install it.
 
 \todo{Read/add reference to Anya's paper?}
-
 \todo{Expand this}
 
 \section{Software Longevity}
@@ -89,14 +84,20 @@ There are two interconnected reasons for a piece of software to last a long
 time, it is either due to necessity, or due to popularity.
 
 \todo{Find an example of software that sucks}
-
 \todo{Explain what is meant by popular, maybe a chance to add graphs? O.o}
 \todo{Find a source for this claim.}
-Most examples of \textit{popular} software, are open source, like Vim.
+Most examples of \textit{popular} software, are open source, like \gls{vim}.
+\gls{vim} is a text editor which has been in use since 1991. There are several
+factors behind this success, but the ones being highlighted here, are due to its
+extensibility and due to it being open-sourced. Being open sourced, allows for a
+rotating cast of maintainers, ensuring the core application has the features its
+users wants. The users of \gls{vim} can be split into two categories,
+\textit{standard users}, and \textit{plugin developers}. \gls{vim} has an
+extensive plugin ecosystem, which can extend \gls{vim}s functionality from a
+text editor, to a fully fledged \gls{ide}.
 
 \section{Language Server}
 
-\todo{Should hammer in the importance of LSP in today's development experience}
 \todo{
   Could probably add some sentences about the history of LSP, to get more words
   in.

@@ -19,18 +19,18 @@ There are different methods an application can be extended. The most popular one
 \todo{Sauce???} uses so-called \textit{live-reload}, in which, if a module
 drastic changes the functionality of an application, the application has to be
 restarted, or if it is a \textit{minor} change, the module is simply loaded.
-This method is extending of the application during runtime, which is a common
-user experience, and is the method most commonly accepted. Another method
-would be \textit{compile-time-extension}, in which modules are added before the
-application itself is compiled. There are some advantages and disadvantage in
-both approaches.
-\todo{Rewrite to be more academic}
+This method is extending of the application during runtime, which is the method
+most commonly accepted. Another method would be \textit{compile-time-extension},
+in which modules are added before the application itself is compiled. There are
+some advantages and disadvantage in both approaches.
+
+As an example, a standard user of a zero-core application will expect the
+application to come bundled with all the needed functionality. This is best
+achieved with the \textit{compile-time-extension} method, since the application
+can be installed with the expected modules.
 
 \subsection{Granularity}
 
-\todo{
-  This is an example of granularity, change to an explanation of granularity
-}
 When designing modules, the \textit{granularity} of the combined modules has to
 be considered. As an example, if one where to extend the zero-core application
 with the needed functionality for it to be considered an \gls{ide}, this could be
@@ -55,17 +55,17 @@ In figure \ref{fig:textEditorSimple}, an input file is parsed to some structure
 which is used to translate user actions, into cursor movements. The cursor being
 the place in the file where text is written to by the user.
 
-This is a feature that naturally shows up in a \textit{true} modular system,
-which eventually is treated as a singular module by external module developers.
-\todo{Expand upon this}
+This is a feature that naturally shows up in a \textit{true} modular system. If
+several modules together enable some feature, then those modules can be treated
+as a singular module by an external module developer, depending on what they
+want to extend.
 
 \subsection{Module V.1}
 
-\todo{Rewrite}
-
-First attempt was to create a Visual Studio Code Copy. This would've worked, but
-would've created a lot of extra work.
-Generally, the first plan was this:
+We did not attempt at first, to create a zero core application; this was a
+\textit{natural} conclusion to the existing problem. The first attempt was a
+simple generic \gls{ide}, in which the module architecture was a concern from
+day one of development. The general plan was this:
 
 \begin{enumerate}
   \item Create an \gls{ide}
@@ -73,18 +73,16 @@ Generally, the first plan was this:
   \item Modules call the application using some DSL
 \end{enumerate}
 
-This was the \textit{easier} way to work, because I could model it of existing
-\todo{Add references here}
-\gls{ide}s, like \textit{Visual Studio Code}. Another advantage is that when
-implementing the application, I got a better understand of how eventual modules
-should extend the application, like, the general architecture. But this was not
-\todo{Mention how modularity was not a concern when creating the application}
-modular. Anything created this way, would be subpar to existing software.
+This was the more straight forward way to work, because as we could model it of
+existing \gls{ide}s, like \textit{Visual Studio Code} or \textit{Eclipse}.
+Another advantage is that when implementing the application, one necessarily
+gets a better understand of how eventual modules should extend the application.
+This approach did unfortunately not lead to a truly modular application. Similar
+issues to existing \gls{ide}s, how does one allow for \textit{everything}?
+Furthermore, anything created this way, would be subpar to existing software,
+which would lead to the next maintainer having to fix the core application. This
+in turn, would add a lot of complexity, which the maintainers would have to deal with.
 
-Furthermore, it would add a lot of complexity, which the next \gls{ide}
-maintainer would have to deal with.
-
-\todo{Rewrite tech stack}
 \subsubsection{Tech Stack}
 
 Started with Rust, because a \textit{low-level} language was assumed to be
@@ -97,7 +95,7 @@ of the compiler knowing then a value is unused, and automatically
 safety can be encoding in Rust robust type system, avoiding dangling pointers
 and null references.
 
-Framework I chose was Tauri, UI components can be created using JavaScript. This
+Framework we chose was Tauri, UI components can be created using JavaScript. This
 framework gives a lot of security which is needed in an application which runs
 third party code.
 \todo{Expand upon the security aspect}
