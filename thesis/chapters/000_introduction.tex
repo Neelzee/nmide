@@ -1,24 +1,15 @@
 \chapter{Introduction}
 
-Standard \gls{ide} is an indispensable tool in software development, offering
-features like early bug reporting, project outline visualization, code
-highlighting, and code completion However, these \gls{ide}s may not adequately
+Standard \gls{ide}s are indispensable tools in modern software development,
+offering features like early bug reporting, project outline visualization, code
+highlighting, and code completion, however, these \gls{ide}s may not adequately
 support the unique demands of experimental programming languages. To solve this,
-a modular approach is used to designed an \gls{ide}.
-\todo{Rewrite this}
+a modular approach is used to design, develop and implement an \gls{ide}.
 
-\section{Experimental Languages}
-
-Experimental languages introduce new concepts like \gls{asr} Transformation,
-Term Algebras, Mathematics of Arrays, and \gls{stf}. These are concepts from the
-academic community, and are not common in \textit{mainstream} languages, and
-thus, have little to now support in modern \gls{ide}s. For researches developing
-these experimental languages, work arounds are needed, mostly in the form of
-creating addons to the application, that gives it the capabilities needed to
-partially or fully support the concept being introduced. This means that
-experimental concepts cannot be easily tested, because time has to be
-invested into an \gls{ide} to investigate the changes needed, if that is
-even possible, to enable this experimental concept to be used in the \gls{ide}.
+We will discuss the different ways to achieve modularity within an application.
+We will also point out different behaviors that arise from such a setup. The
+target language will be Magnolia, an experimental research language being
+developed by \gls{bldl} at the University of Bergen.
 
 
 \section{Integrated Development Environment}
@@ -30,8 +21,6 @@ generic and specialized. \todo{Source}
 A specialized \gls{ide} is one targeted towards a specific language, like
 Eclipse, (reference?), or IntelliJ (reference?), which target Java/JVM. It
 contains specialized features like the following:
-
-\todo{Rewrite the following paragraphs}
 
 \paragraph{Syntax Highlighting} Highlighting important keywords, identifiers
 and more, makes the language easier to read for the developer, allowing them to
@@ -55,8 +44,6 @@ A lot of these features are possible due to \textit{Language Server Protocols},
 which allow for a standardized way for compilers to give code-support to
 \gls{ide}'s.
 
-\todo{Connect these better}
-
 A generic \gls{ide} contains the features that are common among development in
 any programming language, like:
 
@@ -65,27 +52,37 @@ being able to visualize the project in a tree-like-structure, and navigate that,
 is useful. This feature usually comes with the ability to manipulate the project
 structure, by adding files, folders, moving files around, and deleting them.
 
-\todo{
-  A lot of these claims are \textit{vibes} based, and should probably be more
-  academic sounding
-}
-
 But creating any \gls{ide} would still limit the lifetime of the application. The best
 example of a long living active \gls{ide}, or, at least editor, is Vim (source?). Vim
-is not a feature full editor, but it is simple, lightweight, and works. But most
-people use it, for how easy it is to extend; It's lifetime has been greatly
-extended by the ease of modularization. Any popular module for Vim is
-open-source, and therefore, if any module had an active community around it, if
-the \textit{lead} developer of the module stopped developing it, that community
-continue developing the module, either by getting maintenance access to the
-repository, or by forking it. Ensuring the lifetime of the module.
+is not a feature full editor, but it is simple, lightweight, and works on any
+operating system. But most people use it, for how easy it is to extend; Its
+lifetime has been greatly extended by the ease of modularization. Any popular
+module for Vim is open-source, and therefore, if any module had an active
+community around it, if the \textit{lead} developer of the module stopped
+developing it, that community can continue to develop the module, either by
+getting maintenance access to the repository, or by forking it. Ensuring the
+lifetime of the module is extended.
 
+\section{Experimental Languages}
 
-The proposed modular IDE includes specific modules tailored for experimental
-languages, such as ASR Transformation, Term Algebras, MoA translation, and STF.
-As a part of this project, these plugins will be implemented to verify the
-functionality of the modularization of the IDE.
+Experimental languages introduce new concepts like \gls{asr} Transformation,
+Term Algebras, \gls{moa}, and \gls{stf}. These are concepts from the
+academic community, and are not common in \textit{mainstream} languages, and
+as such, have little to no support in modern \gls{ide}s. For researches
+developing these experimental languages, work arounds are needed, mostly in the
+form of creating ad-hoc addons to the application, that gives it the capabilities
+needed to partially or fully support the concept being introduced. This is done
+by utilizing the existing module architecture the application exposes, which is
+a common feature among modern \gls{ide}s. This means that experimental concepts
+cannot be easily tested, because time has to be invested into an \gls{ide} to
+investigate the changes needed, if that is even possible, to enable this
+experimental concept to be used in the \gls{ide}.
 
-We will discuss the different ways to achieve modularity within
-an application. We will also point out different behaviors that arise from such
-a setup.
+A modular \gls{ide} would assist in this. Even if a new feature from an
+experimental language is introduced, it is unlikely that this feature has no
+relation to existing features, and as such, it is easier to extend the
+application in such a manner to facilitate this new feature, with help of
+existing modules.
+If, however it is the case that this feature is paradigm-shifting, then there
+will still be existing functionality that can be used, re-used or extended to
+facilitate this.
