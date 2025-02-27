@@ -13,6 +13,7 @@ software can be taken to the extreme, a zero-core application, where the only
 functionality the application provides, is a way to extend the core functionality
 with modules.
 
+
 \subsection{How to extend an application}
 
 There are different methods an application can be extended. The most popular one
@@ -29,6 +30,7 @@ application to come bundled with all the needed functionality. This is best
 achieved with the \textit{compile-time-extension} method, since the application
 can be installed with the expected modules.
 
+
 \subsection{Granularity}
 
 When designing modules, the \textit{granularity} of the combined modules has to
@@ -41,6 +43,7 @@ specific feature implemented. Instead, if this functionality was granular,
 that is to say, split into several modules, that together enable the needed
 features, then it would be \textit{simpler} to modify the needed modules to
 achieve the wanted feature.
+
 
 \subsection{Module Family}
 
@@ -60,7 +63,7 @@ several modules together enable some feature, then those modules can be treated
 as a singular module by an external module developer, depending on what they
 want to extend.
 
-\subsection{Module V.1}
+\section{Module V.1}
 
 We did not attempt at first, to create a zero core application; this was a
 \textit{natural} conclusion to the existing problem. The first attempt was a
@@ -83,7 +86,7 @@ Furthermore, anything created this way, would be subpar to existing software,
 which would lead to the next maintainer having to fix the core application. This
 in turn, would add a lot of complexity, which the maintainers would have to deal with.
 
-\subsubsection{Tech Stack}
+\subsection{Tech Stack}
 
 Started with Rust, because a \textit{low-level} language was assumed to be
 necessary, to facilitate ease of C integration, which would allow for an
@@ -91,7 +94,7 @@ extendable application, which was language agnostic.
 
 Furthermore, using Rust in this low-level environment, gives the added advantage
 of the compiler knowing then a value is unused, and automatically
-\textit{de-allocating} this memory. This helps avoid memory leakage. Further
+\textit{deallocating} this memory. This helps avoid memory leakage. Further
 safety can be encoding in Rust robust type system, avoiding dangling pointers
 and null references.
 
@@ -131,32 +134,29 @@ another question. This functionality allows for quick development time for
 modules, which means features that are standard in \gls{ide} can be quickly and
 easily added. A concrete example of this, is the text editor. A text editor in
 itself is quite complex, especially if one needs the added functionality of
-\gls{lsp} support. This can be solved quite easily by adding the
-\textit{Monaco} library, which is the VS Code text editor, with integrated
-\gls{lsp} client support.
+\gls{lsp} support. This can be solved quite easily by adding the \textit{Monaco}
+library, which is the VS Code text editor, with integrated \gls{lsp} client
+support.
 
 While this is not the best approach to implementing a text editor, a more
 modular approach, by turning the text editor into a module family would be more
 effective, it is good enough as a stop-gap.
 
-\subsection{Module V.2}
+\section{Module V.2}
 
-\todo{Mention JS-MS and RS-MS}
-\todo{Mention the backend-frontend that was introduced in this plan}
 \todo{Mention the troubles with backend-frontend state coalescing.}
 
 After 7–8 months of working on this, everything was scrapped for this new plan:
 
-\todo{Add footnote}
 \begin{enumerate}
-  \item Everything* is a module
+  \item Everything is a module
 \end{enumerate}
 
 \subsection{Elm-Architecture}
 
 An inspiration for the new module architecture is Elm-Lang. Elm is a functional
 language, aimed at frontend web development, but its architecture is quite
-\todo{Maybe add some Elm-lang papers? Should probably read some}
+\todo{Add reference to Elm-lang}
 interesting. As one can see in figure \ref{fig:elmArchitecture}, is used by some
 runtime, which translates the Elm code into \gls{dom} manipulations, and translates
 \gls{dom} events into \textit{Msg} which is handled by the Elm code. This was the
@@ -327,38 +327,37 @@ user, sends the \textit{counter-Msg}.
     , label=lst:pluginCounterExample]{./code/plugin-counter-example.hs}
 \end{center}
 
-\subsubsection{State Collision}
+\subsection{State Collision}
 
 A state collision occurs when two or more modules updates the same field, during
 the same update-cycle. This issue also occurs when folding two states.
 
 Was \textit{solved} with this:
 
-\todo{The types here are wrong}
 \begin{minted}{haskell}
-  stateUpdateHandler :: State -> State -> State
-  stateUpdateHandler fs bs = map foldPartition (group (fs ++ bs))
-
-  foldPartition :: (State, [(String, State)]) -> ([String, State]) -> (State, [(String, [State])])
-  foldPartition acc cur = (map snd (head cur) : fst acc, tail cur : snd acc)
-\end{minted}
-
-\todo{Rewrite the code-snippet here, adding a newtype for the collision reporting}
-
-\begin{lstlisting}[language=Haskell]
   {- Field the collision occurred on, list of modules, and the state with the
      collision
   -}
-  newtype CollisionReport = (String, [(String, State)])
-\end{lstlisting}
+  newtype CollisionReport = (State, [(String, [(String, State)])])
+  -- A Module, and its corresponding State
+  newtype ModuleState = (String, State)
+  -- Combines frontend and backend states, removing all collisions
+  stateUpdateHandler :: [ModuleState] -> [ModuleState] -> State
+  stateUpdateHandler fs bs = first $ map foldPartition (group (fs ++ bs))
+  -- Gets the
+  foldPartition :: CollisionReport -> [String, State] -> CollisionReport
+  foldPartition acc cur = (map snd (head cur) : fst acc, tail cur : snd acc)
+\end{minted}
 
 Takes list of states from all modules, checks for collisions. It returns a
-list of \lstinline[language=Haskell]{Either [(String, State)] ([(String, State)], String)}. If it is a
-collision, then it's a \lstinline[language=Haskell]{Right ([(String, State)], String)}, which is a tuple
-where the first element is a list of tuples, being the module and their
+list of
+\lstinline[language=Haskell]{Either [(String, State)] ([(String, State)], String)}.
+If it is a collision, then it's a
+\lstinline[language=Haskell]{Right ([(String, State)], String)}, which is a
+tuple where the first element is a list of tuples, being the module and their
 state, and the last element being the field that the collision occurred on.
-The other value: \lstinline[language=Haskell]{Left [(String, State)]}, are the module state that has no
-collision.
+The other value: \lstinline[language=Haskell]{Left [(String, State)]}, are the
+module state that has no collision.
 
 \paragraph{Collision} A collision between two states occurs if they share the same
 field.
@@ -415,7 +414,7 @@ for each new subtree that is added, to figure out if there occurs any collision.
 And then notifying the module developer of which field this collision occurred
 on, and which modules tried to modify that field.
 
-\subsubsection{Tech Stack}
+\subsection{Tech Stack}
 
 The new plan did not change the tech stack, but the change in mindset,
 \todo{Don't use mindset} \textit{everything is a module}, pushed for a
@@ -513,11 +512,11 @@ could be actually tested out.
 \begin{figure}
   \centering
   \includegraphics[scale=0.5]{./pics/doom}
-  \caption{Application running Doom using js-dos}
+  \caption{Application running Doom using \textit{js-dos}}
   \label{fig:doom}
 \end{figure}
 
-\subsection{Module V.3}
+\section{Module V.3}
 
 The third and hopefully final, plan:
 
@@ -528,9 +527,18 @@ The third and hopefully final, plan:
 
 A module only exposes a singular function:
 
-\paragraph{Init} Returns a collection of modifications
+\paragraph{Init} Returns a collection of core modifications
 
-\subsubsection{Tech Stack}
+In the previous architecture version, each module directly changed the state,
+which caused issues. Instead, each modification a module does, \textit{acts}, as
+a direct modification, but is in fact, translated to a DSL which can be analyzed
+for possible collisions. This was discovered to be a need, as in the new
+version, the \gls{ui} was also restructured, to allow for less re-rendering, and
+this restructuring, made it clear that changing the state, or changing the
+\gls{ui} is just tree manipulations, which will be discussed more later.
+
+
+\subsection{Tech Stack}
 
 As mentioned in the previous section, the tech stack splits the application into
 two, loosely coupled parts. The \textit{frontend} and \textit{backend}. This
@@ -549,7 +557,7 @@ system. This plan would still keep the support for external JavaScript
 libraries, not made with the application in mind, to be used, which also would
 greatly reduce the development time.
 
-\subsubsection{Tree Manipulation}
+\subsection{Tree Manipulation}
 
 \todo{Mention how state and UI manipulation is equivalent to tree manipulation}
 
@@ -607,7 +615,7 @@ without explicitly invoking the function.
     ]{./code/module-example-core.hs}
 \end{center}
 
-In listing \ref{moduleEvent}, one can see the structure of an
+In listing \ref{lst:moduleEvent}, one can see the structure of an
 \lstinline[language=Haskell]{Event} \textit{ADT}. This allows for modules to
 pattern match on specific \lstinline[language=Haskell]{Event}s, and as in the
 previous version, only react to specific \lstinline[language=Haskell]{Event}s.
