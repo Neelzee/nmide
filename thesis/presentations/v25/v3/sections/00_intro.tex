@@ -5,17 +5,33 @@
 % specifically pointing out how _rigorus_ development and builiding is, as most
 % developers do not take into account of changing priorities when developing.
 \begin{frame}
-  \frametitle{Topic}
+  \frametitle{Software development}
   \begin{itemize}
-    \item Developing a Modular IDE for Magnolia
+    \item Like building a house
     \pause
-    \item What is an IDE
+    \begin{itemize}
+      \item Strong foundation
+      \pause
+      \item Built for a purpose
+      \pause
+      \item Renovations/remodeling is expensive
+      \pause
+    \end{itemize}
+    \item Change of:
     \pause
-    \item Magnolia
+    \begin{itemize}
+      \item Guards
+      \pause
+      \item Scope
+      \pause
+      \item Priorities
+      \pause
+    \end{itemize}
+    \item Leads to an expensive refactoring
     \pause
-    \item Why modular?
+    \item Or expensive rebuilding
     \pause
-    \item Challenges
+    \item A concrete example is an IDE
   \end{itemize}
 \end{frame}
 
@@ -80,8 +96,7 @@
 \begin{frame}
   \frametitle{Bergen Language Design Laboratory}
   \begin{itemize}
-    \item Researches at BLDL are experimenting with a research programming
-      language called Magnolia
+    \item Experimenting with a research programming language called Magnolia
     \pause
     \item Takes inspiration from
     \pause
@@ -96,7 +111,6 @@
       \pause
     \end{itemize}
     \item Created to experiment with novel language features
-    \pause
     \begin{itemize}
       \item Functionalization
       \pause
@@ -107,9 +121,7 @@
       \item Type partitions
       \pause
       \item \dots
-      \pause
     \end{itemize}
-  \item Which may be out-of-scope for IDEs
   \end{itemize}
 \end{frame}
 
@@ -136,43 +148,15 @@
 
 \begin{frame}
   \frametitle{Magma example in mathematical notation}
-  \begin{equation}
-    M = \{ a, b, c, \dots \}
-  \end{equation}
-  \begin{equation}
-    (M, \bullet)
-  \end{equation}
-  \begin{equation}
-    \forall a, \forall b \in M \implies a \bullet b \in M
-  \end{equation}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Group example in mathematical notation}
-  \begin{equation}
-    \forall a, \forall b \in M \implies a \bullet b \in M
-  \end{equation}
-  \begin{equation}
-    \forall a, \forall b, \forall c \in M \implies
-    (a \bullet b) \bullet c = a \bullet (b \bullet c)
-  \end{equation}
-  \begin{equation}
-    \forall a, \exists e \in M \implies a \bullet e = a
-  \end{equation}
-  \begin{equation}
-    \forall a, \exists b \in M \implies a \bullet b = e
-  \end{equation}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Group is a Magma with more properties}
   \begin{itemize}
-    \item Magma is trivial to implement in Java
-    \item Group is more complicated
-    \item Group \textit{extends} monoid \textit{extends} semigroup
-      \textit{extends} magma
-    \item With \textit{inverse element}, \textit{identity}, and
-      \textit{associativity} respectively
+    \item Magma
+    \begin{itemize}
+      \item Set $M$
+      \item Binary operation $\bullet$
+      \begin{equation}
+        \forall a, \forall b \in M \implies a \bullet b \in M
+      \end{equation}
+    \end{itemize}
   \end{itemize}
 \end{frame}
 
@@ -195,6 +179,24 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{Semigroup example in mathematical notation}
+  \begin{itemize}
+    \item Semigroup
+    \begin{itemize}
+      \item Set $M$
+      \item Binary operation $\bullet$
+      \begin{equation}
+       \forall a, \forall b \in M \implies a \bullet b \in M
+      \end{equation}
+      \begin{equation}
+        \forall a, \forall b, \forall c \in M \implies
+        (a \bullet b) \bullet c = a \bullet (b \bullet c)
+      \end{equation}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
     \frametitle{Semigroup example in Java}
     \begin{center}
       \lstinputlisting
@@ -213,6 +215,27 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{Monoid example in mathematical notation}
+  \begin{itemize}
+    \item Monoid
+    \begin{itemize}
+      \item Set $M$
+      \item Binary operation $\bullet$
+      \begin{equation}
+       \forall a, \forall b \in M \implies a \bullet b \in M
+      \end{equation}
+      \begin{equation}
+        \forall a, \forall b, \forall c \in M \implies
+        (a \bullet b) \bullet c = a \bullet (b \bullet c)
+      \end{equation}
+      \begin{equation}
+        \forall a, \exists e \in M \implies a \bullet c = a
+      \end{equation}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
     \frametitle{Monoid example in Java}
     \begin{center}
       \lstinputlisting
@@ -228,6 +251,30 @@
       [ language=Magnolia
       ]{./code/monoid.mg}
     \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Group example in mathematical notation}
+  \begin{itemize}
+    \item Group
+    \begin{itemize}
+      \item Set $M$
+      \item Binary operation $\bullet$
+      \begin{equation}
+       \forall a, \forall b \in M \implies a \bullet b \in M
+      \end{equation}
+      \begin{equation}
+        \forall a, \forall b, \forall c \in M \implies
+        (a \bullet b) \bullet c = a \bullet (b \bullet c)
+      \end{equation}
+      \begin{equation}
+        \forall a, \exists e \in M \implies a \bullet e = a
+      \end{equation}
+      \begin{equation}
+        \forall a, \exists b \in M \implies a \bullet b = e
+      \end{equation}
+    \end{itemize}
+  \end{itemize}
 \end{frame}
 
 \begin{frame}

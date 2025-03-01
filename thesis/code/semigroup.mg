@@ -1,5 +1,5 @@
 concept Semigroup = {
-  use Binop;
+  use Magma;
 
   axiom associative(a: T, b: T, c: T) {
     assert
