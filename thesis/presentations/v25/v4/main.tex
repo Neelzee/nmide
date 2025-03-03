@@ -1,0 +1,35 @@
+\documentclass{beamer}
+
+% Use the UiB theme
+\usetheme{UiB}
+% For strikethrough text using \sout
+\usepackage[normalem]{ulem}
+
+% For figures
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,positioning,shapes.symbols,overlay-beamer-styles}
+
+\usepackage{listings}
+\usepackage{generators/listings-golang}
+\usepackage{generators/listings-haskell}
+\usepackage{generators/listings-magnolia}
+\usepackage{amsmath}
+
+% Presentation metadata
+\title{Everyone Is Better at Coding Than Me}
+\subtitle{Developing A Modular IDE for Magnolia}
+\author{Nils Michael Fitjar}
+\institute{University of Bergen}
+\date{\today}
+
+\begin{document}
+\input{./sections/00_intro}
+
+\input{./sections/01_planning}
+
+\input{./sections/02_implementation}
+
+\input{./sections/03_conclusion}
+
+\end{document}
