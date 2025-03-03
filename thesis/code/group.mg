@@ -1,8 +1,8 @@
 concept Group = {
-  use Monoid;
+  use Monoid[T => K, binop => op];
 
-  axiom inverse(a: T, b: T, c: T) {
-    assert binop(a, b) == unit();
-    assert binop(a, c) != unit();
-  }
+  axiom inverse(a: K, b: K, c: K) {
+    assert op(a, b) == unit();
+    assert op(a, c) != unit();
+  };
 };

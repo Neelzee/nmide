@@ -1,26 +1,24 @@
 \section{Introduction}
 \SectionPage
 
-% NOTE: This is a vague simili on software development and building a house,
-% specifically pointing out how _rigorus_ development and builiding is, as most
-% developers do not take into account of changing priorities when developing.
 \begin{frame}
   \frametitle{Topic}
   \begin{itemize}
     \item Developing a Modular IDE for Magnolia
     \pause
-    \item What is an IDE
+      \begin{itemize}
+        \item Magne Haveraaen and Mikhail Barash
+      \end{itemize}
     \pause
-    \item Magnolia
-    \pause
-    \item Why modular?
-    \pause
+    \item What an IDE is
+    \item About Magnolia
+    \item The why's
     \item Challenges
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{The Solution To The Problem}
+  \frametitle{The solution to the problem}
   \begin{quote}
     "It works on my machine." \textemdash Intern
   \end{quote}
@@ -28,22 +26,17 @@
     \item The text editor, the compiler, and the terminal,
     \pause
     \item Eventually needed build scripts for large projects
-    \pause
     \begin{itemize}
       \item Lead to more complex build scripts
-      \pause
       \item Eventually ending up with applications like Gradle and Maven
-      \pause
     \end{itemize}
+    \pause
     \item Missing/incomplete:
     \pause
     \begin{itemize}
       \item Libraries
-      \pause
       \item Environment variables
-      \pause
       \item Configurations
-      \pause
       \item Scripts
       \pause
     \end{itemize}
@@ -54,21 +47,16 @@
 \begin{frame}
   \frametitle{Integrated Development Environment}
   \begin{itemize}
-    \item Easier to onboard new developers
     \pause
+    \item Easier to onboard new developers
     \item Other quality of life improvements
     \pause
     \begin{itemize}
       \item File explorer
-      \pause
       \item Project manager
-      \pause
       \item Version Control System integration
-      \pause
       \item Syntax Highlighting
-      \pause
       \item Integrated debugging
-      \pause
       \item \dots
     \end{itemize}
   \end{itemize}
@@ -84,28 +72,19 @@
       language called Magnolia
     \pause
     \item Takes inspiration from
-    \pause
     \begin{itemize}
       \item Generic programming
-      \pause
       \item Algebraic specifications
-      \pause
       \item Theory of institutions
-      \pause
       \item And other languages like CafeOBJ and Maude
-      \pause
     \end{itemize}
     \item Created to experiment with novel language features
     \pause
     \begin{itemize}
       \item Functionalization
-      \pause
       \item Mutification
-      \pause
       \item Generated types
-      \pause
       \item Type partitions
-      \pause
       \item \dots
       \pause
     \end{itemize}
@@ -117,17 +96,13 @@
   \frametitle{Magnolia}
   \begin{itemize}
     \item Introduces something called \textit{concepts}
-    \pause
-    \item Similar to an Java interface.
+    \item Similar to a Java interface.
     \pause
     \item A concept declares
     \begin{itemize}
       \item Types
-      \pause
       \item Operations on those types
-      \pause
       \item Axioms that specify the behavior of the operations
-      \pause
     \end{itemize}
     \item A concept can use other concepts, and rename the types and operations
       in the concept, this is called renaming
@@ -152,13 +127,16 @@
   \begin{equation}
     \forall a, \forall b \in M \implies a \bullet b \in M
   \end{equation}
+  Associativity
   \begin{equation}
     \forall a, \forall b, \forall c \in M \implies
     (a \bullet b) \bullet c = a \bullet (b \bullet c)
   \end{equation}
+  Identify
   \begin{equation}
     \forall a, \exists e \in M \implies a \bullet e = a
   \end{equation}
+  Invertability
   \begin{equation}
     \forall a, \exists b \in M \implies a \bullet b = e
   \end{equation}
@@ -177,11 +155,26 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Magma example in Java}
+    \frametitle{Magma to Group example in Java}
     \begin{center}
       \lstinputlisting
       [ language=Java
       ]{./code/magma.java}
+    \end{center}
+    \begin{center}
+      \lstinputlisting
+      [ language=Java
+      ]{./code/semigroup.java}
+    \end{center}
+    \begin{center}
+      \lstinputlisting
+      [ language=Java
+      ]{./code/monoid.java}
+    \end{center}
+    \begin{center}
+      \lstinputlisting
+      [ language=Java
+      ]{./code/group.java}
     \end{center}
 \end{frame}
 
@@ -195,15 +188,6 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Semigroup example in Java}
-    \begin{center}
-      \lstinputlisting
-      [ language=Java
-      ]{./code/semigroup.java}
-    \end{center}
-\end{frame}
-
-\begin{frame}
     \frametitle{Semigroup example in Magnolia}
     \begin{center}
       \lstinputlisting
@@ -213,29 +197,11 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Monoid example in Java}
-    \begin{center}
-      \lstinputlisting
-      [ language=Java
-      ]{./code/monoid.java}
-    \end{center}
-\end{frame}
-
-\begin{frame}
     \frametitle{Monoid example in Magnolia}
     \begin{center}
       \lstinputlisting
       [ language=Magnolia
       ]{./code/monoid.mg}
-    \end{center}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Group example in Java}
-    \begin{center}
-      \lstinputlisting
-      [ language=Java
-      ]{./code/group.java}
     \end{center}
 \end{frame}
 
@@ -271,7 +237,7 @@
 \begin{frame}
   \frametitle{Forking VS Code And Adding AI}
   \begin{itemize}
-    \item Current IDEs cannot have good support for all experimental programming
+    \item Current IDEs cannot have good support for experimental programming
       languages
       \pause
       \begin{itemize}
@@ -281,11 +247,10 @@
           IDE
           \pause
       \end{itemize}
-    \item The host IDE could deprecate needed functionality
-      \pause
-    \item The installation process would then be complex
-      \pause
     \item Deep understanding of the host IDE is needed
+      \pause
+    \item The host IDE could deprecate needed functionality
+    \item The installation process would then be complex
   \end{itemize}
 \end{frame}
 

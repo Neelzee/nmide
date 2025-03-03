@@ -5,5 +5,5 @@ concept Monoid = {
 
   axiom identity(a: T) {
     assert binop(a, unit()) == a;
-  }
+  };
 };

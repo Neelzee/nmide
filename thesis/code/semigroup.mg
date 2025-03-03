@@ -6,5 +6,5 @@ concept Semigroup = {
       binop(a, binop(b, c))
         ==
       binop(binop(a, b), c);
-  }
+  };
 };

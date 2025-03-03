@@ -1,0 +1,12 @@
+\begin{tikzpicture}
+  % Nodes
+  \node (p0) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (0, 1.5) {Module 0};
+  \node (dots) [] at (0, 0) {\dots};
+  \node (dsl) [] at (2, 0) {DSL};
+  \node (p1) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (0, -1.5) {Module $N$};
+  \node (i) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (4, 0) {IDE};
+  % Arrow
+  \draw[<-] (i) to node[midway, above] {} (p0);
+  \draw[<-] (i) to node[midway, above] {} (p1);
+  % Header
+\end{tikzpicture}
