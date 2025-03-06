@@ -23,9 +23,19 @@ export const InstallPlugins: T.Task<string[]> = pipe(
     .then(modulePaths => pipe(
       window.pluginInstallers,
       A.flatMap<ModuleInstaller, T.Task<string | undefined>>(
-        moduleInstallerWrapper(modulePaths)
+        (mi, i) => {
+          window.log.info("Running installer: ", i);
+          return moduleInstallerWrapper(modulePaths)(mi);
+        }
       ),
-      A.append<T.Task<string | undefined>>(resolveOnInstallation),
+      //A.append<T.Task<string | undefined>>(resolveOnInstallation),
+      // TODO: Remove
+      A.append<T.Task<string | undefined>>(() => new Promise(resolve => {
+        const checkInterval = setInterval(() => {
+          clearInterval(checkInterval);
+          resolve(undefined);
+        }, 450);
+      })),
       T.sequenceArray,
     ))
   ),
@@ -44,17 +54,21 @@ export const InstallPlugins: T.Task<string[]> = pipe(
 // solve this issue.
 const resolveOnInstallation: T.Task<string | undefined> = () =>
   new Promise(resolve => {
+    const c = { count: 0 };
     const checkInterval = setInterval(() => {
       if (window.moduleCount === 0) {
         clearInterval(checkInterval);
         resolve(undefined);
+      } else {
+        c.count += 1;
+        window.log.info(`Resolve Count: ${c.count}, Module Count: ${window.moduleCount}`);
       }
     }, 50);
   })
 
 // TODO: Add docs
 const moduleInstallerWrapper = (modules: string[]) =>
-  (f: ModuleInstaller) => pipe(
+  (f: ModuleInstaller): T.Task<string | undefined>[] => pipe(
     modules,
     A.map(m => pipe(
       TE.tryCatch(
@@ -67,7 +81,7 @@ const moduleInstallerWrapper = (modules: string[]) =>
         )
       ),
     )),
-    A.map(TE.fold<Error, string | undefined, string | undefined>(
+    A.map(TE.fold(
       err => {
         window.log.error(`Module Installation:`, err);
         return T.of(undefined);

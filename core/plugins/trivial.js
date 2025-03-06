@@ -1,9 +1,10 @@
 window.plugins.set("trivial", {
-  init: (_) => {
+  init: async (_) => {
     return {
       uiModifications: [],
       stateModifications: [],
       eventModifications: [],
+      newEventHandlers: [],
     };
   },
 });
