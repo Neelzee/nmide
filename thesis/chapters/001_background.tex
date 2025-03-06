@@ -1,50 +1,99 @@
 \chapter{Background}
 
-Traditional IDEs encompass essential features such as syntax highlighting, code
+Traditional \gls{ide}s encompass essential features such as syntax highlighting, code
 navigation, and hover-help, playing a crucial role in the software development
 process. However, their limitations become apparent when working with
-experimental languages. The paper advocates for modularization and \textit{composability}
-as key design principles, demonstrating their ability to extend the operational
-lifespan of software by adapting to new paradigms and tools. The discussion
-revolves around Magnolia, a generic programming language developed at UIB, as a
-case study illustrating the need for a specialized IDE. It is a way to experiment
-with generic programming. And to achieve this in a sufficient manner, a more
-specialized IDE is required.
+experimental languages. This paper advocates for modularization and
+\textit{composability} as key design principles, demonstrating their ability to
+extend the operational lifespan of software by allowing for ease-of adoption to
+new paradigms and tools. The discussion revolves around Magnolia, an
+experimental research programming language developed by \gls{bldl} at the
+University of Bergen. Magnolia will act as a case study illustrating the need for
+a specialized \gls{ide}. It is a way to experiment with novel language features.
+And to achieve this in a sufficient manner, a more specialized \gls{ide} is
+required.
 
 \section{Magnolia}
 
-\begin{itemize}
-  \item A research programming language being developed by
-    Bergen Language Design Laboratory at the University of Bergen
-  \item Introduces something called \textit{concepts}
-  \item Similar to a Java interface.
-  \item A concept declares
-    \begin{itemize}
-      \item Types
-      \item Operations on those Types
-      \item Axioms that specify the behavior of the Operations
-    \end{itemize}
-  \item A concept can use other concepts, and rename the Types and Operations
-    in the concept, this is called renaming
-\end{itemize}
+Magnolia is an experimental research language being developed \gls{bldl} at the
+University of Bergen. Magnolia is designed to support a high level of abstraction
+and ease of reasoning. This is achieved by \textit{concepts}, \textit{axioms} and
+\textit{implementations}.
 
-The example code shown in listing \ref{lst:binop}, showcases a concept
-representation a binary operation, which has one function, \textit{binop}, which
+Sets with specific operations acting on those elements, known as algebraic
+structures, showcase the usage of concepts. Magma consists of a set with just a
+singular binary operation, that must be closed by definition. A semigroup is an
+extension of magma, with the added property that the binary operation is
+associative. A monoid is an extension of a semigroup, with the added property
+wherein an element in the set, \textit{C}, sometimes called a \textit{unit}, or
+the \textit{identity}. This \textit{identity} ensures the following equation
+holds, where the binary operation is $ \oplus $, and $ a, C $ are elements of the set.
+
+\begin{equation}
+  a \oplus C = a
+\end{equation}
+
+This, again, can be extended with an additional property, namely,
+\textit{inverse element}.
+
+\begin{equation}
+  \forall a, \exists b, \in M \implies a \oplus b = C
+\end{equation}
+
+Assuming associativity.
+
+This structure could be implemented in something like Java, an Object-Oriented
+Language, as shown in listings \ref{lst:jmagma}, \ref{lst:jsemigroup},
+\ref{lst:jmonoid}, and \ref{lst:jgroup}. Note the empty interfaces; there is
+nothing that enforces the different laws on the properties. This can only be
+done by unit testing, which is not enforced on a consumer of the \gls{api}.
+
+\begin{center}
+  \lstinputlisting
+    [ language=Java
+    , caption={Magma concept in Java}
+    , label=lst:jmagma]{./code/magma.java}
+\end{center}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Java
+    , caption={Semigroup concept in Java, can only be upheld using unit tests}
+    , label=lst:jsemigroup]{./code/semigroup.java}
+\end{center}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Java
+    , caption={Monoid concept in Java, can only be upheld using unit tests}
+    , label=lst:jmonoid]{./code/monoid.java}
+\end{center}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Java
+    , caption={Group concept in Java, can only be upheld using unit tests}
+    , label=lst:jgroup]{./code/group.java}
+\end{center}
+
+In Magnolia, however, this can be enforced on the \textit{interface}-level. The
+example code shown in listing \ref{lst:magma}, showcases a concept
+representation a binary operation, which has one function, \textit{magma}, which
 takes in two values of type \textit{T}, and returns \textit{T}. Note that the
 actual implementation of this function is missing. This is because a concept
 encodes the properties of a users code. The actual implementation of the
-\textit{binop} function needs to uphold the properties of the concept that is
-being implemented. In this case, it is \textit{just} that the input and output
+\textit{magma} function needs to uphold the properties of the concept that is
+being implemented. In this case, it is just that the input and output
 of the function are of the same types.
 
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
-    , caption={Binary Operation concept in Magnolia}
-    , label=lst:binop]{./code/binop.mg}
+    , caption={Magma concept in Magnolia}
+    , label=lst:magma]{./code/magma.mg}
 \end{center}
 
-In the example code shown in listing \ref{lst:semigroup}, the \textit{Binop}
+In the example code shown in listing \ref{lst:semigroup}, the \textit{magma}
 concept has been expanded upon, still following the same rules as before, but
 with the added property of associativity.
 
@@ -55,106 +104,70 @@ with the added property of associativity.
     , label=lst:semigroup]{./code/semigroup.mg}
 \end{center}
 
-If an implementation of the \textit{Semigroup} concept does not uphold the axiom
-provided, then it is an \textit{invalid} implementation.
+\begin{center}
+  \lstinputlisting
+    [ language=Magnolia
+    , caption={Monoid concept in Magnolia}
+    , label=lst:monoid]{./code/monoid.mg}
+\end{center}
 
-\subsection{Abstract Semantic Representation Transformation}
+\begin{center}
+  \lstinputlisting
+    [ language=Magnolia
+    , caption={Group concept in Magnolia}
+    , label=lst:group]{./code/group.mg}
+\end{center}
 
-The ASR of a language, is an extension of a normal Abstract Syntax Tree (AST),
-but with extra information. This representation of the syntax is handy when
-developing. Specifically for Magnolia, the interest is in the transformation of
-this ASR; the flattened version.
+\section{Existing Magnolia IDE}
 
-\section{Background at UIB}
+The current \gls{ide} for Magnolia, is a many-years-old version of Eclipse,
+using modules and functionality from the core Eclipse application, that has
+since been outdated. The \gls{ide}s lifetime was limited by a dependency on
+external modules and features that where not maintained by \gls{bldl}. This
+meant that for future development of Magnolia, an outdated \gls{ide} was needed,
+with outdated tooling. Furthermore, the Magnolia compiler was implemented as an
+Eclipse module, which means that development is limited to Eclipse, and only
+Eclipse, as a developer cannot compile Magnolia code without it.
 
-\todo{Some paragraphs about what happened before}
-The current IDE for Magnolia, is an (old?) version of Eclipse, using some
-modules/features that was outdated (around some date). This IDE's lifetime was
-limited by external modules/features that where not maintained by UIB. This
-meant that for future development of Magnolia, an outdated IDE was needed, with
-outdated software and (other reasons this was not good). A solution could be to
-use something like "Visual Studio Code", which is a very popular IDE (source?),
-more popular than Eclipse (source?).
+Having the entire application available \textit{in-house}, will also help, as
+open source; availability to the source code helps when developing niche
+modules.
 
-\todo{Why not VS-Code?}
-\todo{Add some mentions of open-source}
-Then new development of the new IDE, then, would be turned around, instead of
-maintaining an IDE, the modules for the IDE would be maintained. While it is
-unlikely that "Visual Studio Code" will be deprecated in the near future, it
-could still happen. The best solution is to keep everything internal.
+Modularization will help to mitigate some of the issues with the current
+Magnolia \gls{ide}. Instead of maintaining an entire application, the needed and
+wanted features of the application can be maintained instead.
 
-\todo{Rewrite to be more academic}
-But creating any IDE would still limit the lifetime of the application. The best
-example of a long living active IDE, or, at least editor, is Vim (source?). Vim
-is not a feature full editor, but it is simple, lightweight, and works. But most
-people use it, for how easy it is to extend; It's lifetime has been greatly
-extended by the ease of modularization. Any popular module for Vim is
-open-source, and therefore, if any module had an active community around it, if
-the \textit{lead} developer of the module stopped developing it, that community
-continue developing the module, either by getting maintenance access to the
-repository, or by forking it. Ensuring the lifetime of the module.
-
-\section{Current Magnolia IDE}
-
-As mentioned earlier, experimental languages might have features which are not
-possible to be fully used in current \gls{ide}s. This is also the case for the
-current Magnolia \gls{ide}. The compiler for Magnolia, syntax highlighting,
-error reporting, and hover-functionality are functionality made in the Eclipse
-\gls{ide}, by using its plug-in architecture. Some of the functionality/plug-ins
-this implementation used, have been deprecated in later version of Eclipse. This
+Experimental languages might have features which are not possible to be fully
+used in current \gls{ide}s. This is also the case for the current Magnolia
+\gls{ide}. The compiler for Magnolia, syntax highlighting, error reporting, and
+hover-functionality are functionality made in the Eclipse \gls{ide}, by using
+its plug-in architecture. Some of the functionality and plug-ins this
+implementation used, have been deprecated in later version of Eclipse. This
 means the Magnolia \gls{ide} is locked to an old version of Eclipse, which, as
 time passes, increases the complexity of installation, as the surrounding
 tooling and libraries needed by this version of Eclipse also becomes deprecated.
-Currently, in INF220, at UIB, two weeks are set aside for students to be able to
-install it.
+Currently, in INF220, at the university, two weeks are set aside for students to
+be able to install it.
 
-\todo{Read/add reference to Anya's paper?}
+\todo{Reference Anya's paper}
 
-As mentioned, the compiler is integrated with the \gls{ide}, this means that a
-new \gls{ide} is needed regardless, as a new compiler is being created in
-parallel.
-\todo{Expand this}
+\section{Software Lifetimes}
+
+Software in general, lasts around 30 years (source). This is quite a long time,
+but, this statistic is about more \textit{rigid} applications, which have an
+unchanging scope. In more \textit{chaotic} fields, this number is reduced, as
+paradigm shifts within certain fields, which results in the need for drastic
+changes in the existing applications, where the needed work to change the code,
+can be more than to create a new application.
 
 \section{Software Longevity}
 
-\todo{
-  Should rewrite this to sound less like "I mean/feel this", to "I've
-  observed this"
-}
-There are two interconnected reasons for a piece of software to last a long
-time, it is either due to necessity, or due to popularity.
-
-\todo{Find an example of software that sucks}
-
-\todo{Explain what is meant by popular, maybe a chance to add graphs? O.o}
-\todo{Find a source for this claim.}
-Most examples of \textit{popular} software, are open source, like Vim. Vim is an
-open source terminal text editor, in its pure form, that is to say, without
-extensions, called plugins in Vim, it is still fairly popular, due to its so
-called \textit{Vim-Motions}. \textit{Vim-Motions} are the several key binds and
-commands a Vim-user can do, to effectively edit text files. \textit{Vim-Motions}
-is such popular feature, that all other popular, IDEs either implement an option
-which enables this, or has an extension-system which enables other users to
-create this functionality.
-
-\section{Language Server}
-
-\todo{Should hammer in the importance of LSP in today's development experience}
-\todo{
-  Could probably add some sentences about the history of LSP, to get more words
-  in.
-}
-
-The most important features in an \gls{ide} are possible due to the \gls{lsp}.
-\gls{lsp} is a protocol for a language server and editor to use to communicate,
-allowing for features like code completion, syntax highlighting, marking of
-warnings and errors, as well as refactoring routines. This is the limiting
-factor when it comes to supporting experimental languages, as not only does a
-new set of protocols need to be appended to a language server, the editor itself
-needs to be changes to actually use these protocols. Which creates a lot of
-work, for both the \gls{ide} developer and for the compiler developer. Here is
-where a modular approach can help both. If some new functionality or feature is
-added to the experimental language, this off course means the
-compiler/interpreter has to be expanded/modified, but for the \gls{ide}, a
-module could be added/modified to utilize this change, instead of having to
-change the entire application.
+Most examples of \textit{popular} software, are open source, like \gls{vim}.
+\gls{vim} is a text editor which has been in use since 1991. There are several
+factors behind this success, but the ones being highlighted here, are due to its
+extensibility and due to it being open-sourced. Being open sourced, allows for a
+rotating cast of maintainers, ensuring the core application has the features its
+users wants. The users of \gls{vim} can be split into two categories,
+\textit{standard users}, and \textit{plugin developers}. \gls{vim} has an
+extensive plugin ecosystem, which can extend \gls{vim}s functionality from a
+text editor, to a fully fledged \gls{ide}.

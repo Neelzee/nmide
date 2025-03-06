@@ -1,6 +1,3 @@
-module :: Module
-module = Module { name = "Counter", init }
-
 counterEvent :: Event
 counterEvent = Event
   { moduleName = "CounterModule"
@@ -11,7 +8,11 @@ counterEvent = Event
 init :: Core -> CoreModification
 init core = emptyCoreModification
   { uiModification =
-    [ AddUI $ Btn [Id "CounterBtn", OnClick counterEvent] [Text "Click"]
+    [ AddUI $ Btn
+      [ Id "CounterBtn"
+      , OnClick $ mkEmptyEvent "CounterModule" "Counter"
+      ]
+      [ Text "Click" ]
     ]
   , stateModification = [AddField "Counter" (ValInt 0)]
   , eventHandler = [("Counter", evtHdl)]

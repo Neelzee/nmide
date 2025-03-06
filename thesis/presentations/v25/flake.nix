@@ -41,13 +41,12 @@
           buildPhase = ''
             export TEXMFCACHE=$(mktemp -d)
 
-            latexmk -C
-
-            mkdir -p pics code figures
+            mkdir -p pics code figures generators
             cp -r ${../../pics}/* pics/
             cp -r ${../../code}/* code/
             cp -r ${../../figures}/* figures/
             cp -r ${./sections}/* sections/
+            cp -r ${../../generators}/* generators/
 
             # Build the slides with latexmk
             latexmk -interaction=nonstopmode \

@@ -1,43 +1,57 @@
 \chapter{Introduction}
 
-Standard \gls{ide}s are indispensable tools in software development, offering features
-like early bug reporting, project outline visualization, code highlighting, and
-code completion However, these \gls{ide}s may not adequately support the unique
-demands of experimental programming languages.
-To solve this, a modular approach is used to designed and \gls{ide}.
-\todo{Rewrite this}
+Standard \gls{ide}s are indispensable tools in modern software development,
+offering features like early bug reporting, project outline visualization, code
+highlighting, and code completion, however, these \gls{ide}s may not adequately
+support the unique demands of experimental programming languages. Experimental
+languages could introduce new concepts like \gls{asr} Transformation, Term
+Algebras, \gls{moa}, \gls{stf}, or other novel programming features. These are
+concepts from the academic community, and are not common in \textit{mainstream}
+languages, and as such, have little to no support in modern \gls{ide}s. To solve
+this, researchers need ad hoc solutions for existing \gls{ide}s, adding the
+needed functionality to test out their language features. If this ad hoc
+solution is too extreme; outside of the standard functionality supported by the
+developers of the application, then the solution might be short lived. As the
+\gls{ide} is maintained, updated and improved, the features used to solve the
+niche needs of the experimental language might be deprecated.
 
-\section{Experimental Languages}
+A modular \gls{ide} would assist in this. Even if a new feature from an
+experimental language is introduced, it is unlikely that this feature has no
+relation to existing features, and as such, it is easier to extend the
+application in such a manner to facilitate this new feature, with help of
+existing modules.
+If, however it is the case that this feature is paradigm-shifting, then there
+will still be existing functionality that can be used, re-used or extended to
+facilitate this.
 
-Experimental languages introduce new needs that modern \gls{ide}s might not
-handle, today's solution to handle this, is to look at the needs of the
-language in question, and solve it on a case by case basis. This means that
-experimental concepts cannot be easily tested, because time has to be
-invested into an \gls{ide} to investigate the changes needed, if that is
-even possible, to enable this experimental concept to be used in the \gls{ide}.
-
-Abstract Semantic Representation (ASR) Transformation,
-Term Algebras, Mathematics of Arrays, Syntactic Theory Functor (STF) and other
-concepts that experimental languages might introduce, which might not be
-supported by standard IDE features.
-
-\todo{
-  Do I need to introduce these here? Maybe, they are concrete examples from
-  Magnolia
-}
+If, however, the \gls{ide} has integrated support for extending the standard
+functionality of the application, then the ad hoc solution is more stable. Such
+a system is known by many names. Plug-in architecture, exstension \gls{api}, or
+plugin system, to name a few. The common factor amongst these system, is that
+some component, be it a plug-in, an exstension, or a plugin, can extend the
+functionality of the application. This is a modular approach to extending the
+life time of an application; extending its software longevity. In many of these
+systems, these components, are composable, allowing for multiple components to
+work together in a modular fashion to add extra features to an application. This
+is way of adding functionality to an application is commonly used in \gls{ide}s,
+and can be taken to the extreme. If an application is designed to be modular
+from the start, then features not thought of, by the original developers can be
+integrated into the application, and be stable. If an experimental research
+language introduces some paradigm shifting concept, then this can easily tested
+in such a modular \gls{ide}. This will be the focus point of this paper,
+designing, developing and implementing an modular \gls{ide}. The target language
+will be Magnolia, an experimental research language being developed by
+\gls{bldl} at the University of Bergen.
 
 \section{Integrated Development Environment}
 
-\todo{Rewrite this}
-An \gls{ide}, aids a developer, as all the
-needed tools for development are integrated into one application. There are
-different kinds of \gls{ide}, generic and specialized.
+An \gls{ide}, aids a developer, as all the needed tools for development are
+integrated into one application. There are two different kinds of \gls{ide}s,
+generic and specialized. \todo{Source}
 
 A specialized \gls{ide} is one targeted towards a specific language, like
 Eclipse, (reference?), or IntelliJ (reference?), which target Java/JVM. It
 contains specialized features like the following:
-
-\todo{Rewrite the following paragraphs}
 
 \paragraph{Syntax Highlighting} Highlighting important keywords, identifiers
 and more, makes the language easier to read for the developer, allowing them to
@@ -61,8 +75,6 @@ A lot of these features are possible due to \textit{Language Server Protocols},
 which allow for a standardized way for compilers to give code-support to
 \gls{ide}'s.
 
-\todo{Connect these better}
-
 A generic \gls{ide} contains the features that are common among development in
 any programming language, like:
 
@@ -71,7 +83,42 @@ being able to visualize the project in a tree-like-structure, and navigate that,
 is useful. This feature usually comes with the ability to manipulate the project
 structure, by adding files, folders, moving files around, and deleting them.
 
-\todo{
-  A lot of these claims are \textit{vibes} based, and should probably be more
-  academic sounding
-}
+But creating any \gls{ide} would still limit the lifetime of the application.
+The best example of a long living active \gls{ide}, or, at least editor, is Vim
+(source?). Vim is not a feature full editor, but it is simple, lightweight, and
+works on any operating system. But most people use it, for how easy it is to
+extend; Its lifetime has been greatly extended by the ease of modularization.
+Any popular module for Vim is open-source, and therefore, if any module had an
+active community around it, if the \textit{lead} developer of the module stopped
+developing it, that community can continue to develop the module, either by
+getting maintenance access to the repository, or by forking it. Ensuring the
+lifetime of the module is extended.
+
+
+\section{Language Server}
+
+The most important features in a modern \gls{ide} are possible due to the
+\gls{lsp}. \gls{lsp} is a protocol for a language server and editor,
+(the client), with which they communicate, allowing for features like code
+completion, syntax highlighting, marking of warnings and errors, as well as
+refactoring routines. This client-server architecture, in \gls{ide}s are a
+more recent development (2020s), as previously, support for the features
+mentioned, were only possible due to specific modules being written for
+specific \gls{ide}s. \gls{lsp} being the norm, is a sign of modularity being
+preferred, as now a single \gls{lsp} can be created, and used across several
+different applications, like IntelliJ, VS Code and Vim. While useful for
+\textit{standard} language, this is the limiting factor when it comes to
+supporting experimental languages, as not only does a new set of protocols need
+to be appended to a language server, the editor itself needs to be changed to
+actually use these protocols. This creates a lot of work, for both the \gls{ide}
+developer and for the compiler developer. Here is where a modular approach can
+help both. If some new functionality or feature is added to the experimental
+language, this off course means the compiler/interpreter has to be expanded
+and/or modified, but for the \gls{ide}, a module could be added/modified to
+utilize this change, instead of having to change the entire application.
+
+In this paper, we will start by discussing some background around modularity,
+software longevity, and Magnolia (chapter 2). We will also discuss the different
+ways to achieve modularity within an application, and point out different
+behaviors that arise from such a setup (chapter 4). Finally, we will discuss the
+results (chapter 5), and conclusions (chapter 6).

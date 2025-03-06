@@ -1,54 +1,51 @@
 \chapter{Engineering method}
 
-In this chapter, we will discuss the different ways to achieve modularity within
-an application. We will also point out different behaviors that arise from such
-a setup.
 \todo{Add more filler here}
 
 \section{Modularity}
 
 As mentioned previously, modularity, or a modular application, is an application
-which can be extended by other pieces of software. This extensibility is useful,
-in the sense that features that the original developers of the application did
-not think about, can be added, and if this module architecture is well-designed,
-without changing the core application. This way of designing software can be
-taken to the extreme, a zero-core application, where the only functionality the
-application provides, is a way to extend the core functionality with modules.
+which can be extended by other pieces of software. This extensibility is useful
+as features that the original developers of the application did not think about,
+can be added. If this module architecture is well-designed, then this extension
+can be added without changing the core application. This way of designing
+software can be taken to the extreme, a zero-core application, where the only
+functionality the application provides, is a way to extend the core functionality
+with modules.
+
 
 \subsection{How to extend an application}
 
-There are different ways an application can be extended. The most popular one
+There are different methods an application can be extended. The most popular one
 \todo{Sauce???} uses so-called \textit{live-reload}, in which, if a module
 drastic changes the functionality of an application, the application has to be
 restarted, or if it is a \textit{minor} change, the module is simply loaded.
-This method is extending of the application during runtime, which is a common
-user experience, and is the method which is most accepted. Another one would be
-\textit{compile-time-extension}. So modules are added before the application
-itself is compiled. There are some advantages and disadvantage in both
-approaches, but for most users, the idea of compiling their program is bad.
-\todo{Rewrite to be more academic}
+This method is extending of the application during runtime, which is the method
+most commonly accepted. Another method would be \textit{compile-time-extension},
+in which modules are added before the application itself is compiled. There are
+some advantages and disadvantage in both approaches.
 
-However, in a large organization, if everyone is working on the same
-project, a pre-compiled application can be handed out, where all the needed
-modules are already added.
+As an example, a standard user of a zero-core application will expect the
+application to come bundled with all the needed functionality. This is best
+achieved with the \textit{compile-time-extension} method, since the application
+can be installed with the expected modules.
+
 
 \subsection{Granularity}
 
-When designing modules, the \textit{granularity} of the module has to be
-considered. An example, if one where to extend the zero-core application with
-the needed functionality for it to be considered an \gls{ide}, this could be
+When designing modules, the \textit{granularity} of the combined modules has to
+be considered. As an example, if one where to extend the zero-core application
+with the needed functionality for it to be considered an \gls{ide}, this could be
 achieved by creating a singular module which does all the work. However, this
 is not a modular approach, as if one wants to change some specific feature in
 the \gls{ide}-module, one would have to re-create the whole module with that
-specific feature implemented. If, however, this functionality was granular,
+specific feature implemented. Instead, if this functionality was granular,
 that is to say, split into several modules, that together enable the needed
 features, then it would be \textit{simpler} to modify the needed modules to
 achieve the wanted feature.
 
-\subsection{Module Family}
 
-A collection of modules that can be treated as a singular module. A good example
-would be a text-editor.
+\subsection{Module Family}
 
 \begin{figure}
   \centering
@@ -61,17 +58,17 @@ In figure \ref{fig:textEditorSimple}, an input file is parsed to some structure
 which is used to translate user actions, into cursor movements. The cursor being
 the place in the file where text is written to by the user.
 
-This is a feature that naturally shows up in a \textit{true} modular system,
-which eventually is treated as a singular module by external module developers.
-\todo{Expand upon this}
+This is a feature that naturally shows up in a \textit{true} modular system. If
+several modules together enable some feature, then those modules can be treated
+as a singular module by an external module developer, depending on what they
+want to extend.
 
-\subsection{Module V.1}
+\section{Module V.1}
 
-\todo{Rewrite}
-
-First attempt was to create a Visual Studio Code Copy. This would've worked, but
-would've created a lot of extra work.
-Generally, the first plan was this:
+We did not attempt at first, to create a zero core application; this was a
+\textit{natural} conclusion to the existing problem. The first attempt was a
+simple generic \gls{ide}, in which the module architecture was a concern from
+day one of development. The general plan was this:
 
 \begin{enumerate}
   \item Create an \gls{ide}
@@ -79,19 +76,17 @@ Generally, the first plan was this:
   \item Modules call the application using some DSL
 \end{enumerate}
 
-This was the \textit{easier} way to work, because I could model it of existing
-\todo{Add references here}
-\gls{ide}s, like \textit{Visual Studio Code}. Another advantage is that when
-implementing the application, I got a better understand of how eventual modules
-should extend the application, like, the general architecture. But this was not
-\todo{Mention how modularity was not a concern when creating the application}
-modular. Anything created this way, would be subpar to existing software.
+This was the more straight forward way to work, because as we could model it of
+existing \gls{ide}s, like \textit{Visual Studio Code} or \textit{Eclipse}.
+Another advantage is that when implementing the application, one necessarily
+gets a better understand of how eventual modules should extend the application.
+This approach did unfortunately not lead to a truly modular application. Similar
+issues to existing \gls{ide}s, how does one allow for \textit{everything}?
+Furthermore, anything created this way, would be subpar to existing software,
+which would lead to the next maintainer having to fix the core application. This
+in turn, would add a lot of complexity, which the maintainers would have to deal with.
 
-Furthermore, it would add a lot of complexity, which the next \gls{ide}
-maintainer would have to deal with.
-
-\todo{Rewrite tech stack}
-\subsubsection{Tech Stack}
+\subsection{Tech Stack}
 
 Started with Rust, because a \textit{low-level} language was assumed to be
 necessary, to facilitate ease of C integration, which would allow for an
@@ -99,11 +94,11 @@ extendable application, which was language agnostic.
 
 Furthermore, using Rust in this low-level environment, gives the added advantage
 of the compiler knowing then a value is unused, and automatically
-\textit{de-allocating} this memory. This helps avoid memory leakage. Further
+\textit{deallocating} this memory. This helps avoid memory leakage. Further
 safety can be encoding in Rust robust type system, avoiding dangling pointers
 and null references.
 
-Framework I chose was Tauri, UI components can be created using JavaScript. This
+Framework we chose was Tauri, UI components can be created using JavaScript. This
 framework gives a lot of security which is needed in an application which runs
 third party code.
 \todo{Expand upon the security aspect}
@@ -135,36 +130,33 @@ This also allows for usage of existing JavaScript libraries, which can be used
 with the \gls{npm}. In the \gls{npm} registry, there are around
 \textit{34 million} libraries, all of which are usable in this architecture. If
 the functionality that these libraries are useful for the application, is
-another question. But this functionality allows for quick development time for
+another question. This functionality allows for quick development time for
 modules, which means features that are standard in \gls{ide} can be quickly and
 easily added. A concrete example of this, is the text editor. A text editor in
 itself is quite complex, especially if one needs the added functionality of
-\gls{lsp} support. This can be solved quite easily by adding the
-\textit{Monaco} library, which is the VS Code text editor, with integrated
-\gls{lsp} client support.
+\gls{lsp} support. This can be solved quite easily by adding the \textit{Monaco}
+library, which is the VS Code text editor, with integrated \gls{lsp} client
+support.
 
 While this is not the best approach to implementing a text editor, a more
 modular approach, by turning the text editor into a module family would be more
 effective, it is good enough as a stop-gap.
 
-\subsection{Module V.2}
+\section{Module V.2}
 
-\todo{Mention JS-MS and RS-MS}
-\todo{Mention the backend-frontend that was introduced in this plan}
 \todo{Mention the troubles with backend-frontend state coalescing.}
 
 After 7–8 months of working on this, everything was scrapped for this new plan:
 
-\todo{Add footnote}
 \begin{enumerate}
-  \item Everything* is a module
+  \item Everything is a module
 \end{enumerate}
 
 \subsection{Elm-Architecture}
 
 An inspiration for the new module architecture is Elm-Lang. Elm is a functional
 language, aimed at frontend web development, but its architecture is quite
-\todo{Maybe add some Elm-lang papers? Should probably read some}
+\todo{Add reference to Elm-lang}
 interesting. As one can see in figure \ref{fig:elmArchitecture}, is used by some
 runtime, which translates the Elm code into \gls{dom} manipulations, and translates
 \gls{dom} events into \textit{Msg} which is handled by the Elm code. This was the
@@ -269,7 +261,7 @@ With this setup, however, the state is appending/overwriting -only, which means
 the state can only grow.
 
 This setup is also not really modular, as a single module cannot invoke another
-module, without being impure. The only way to invoke/trigger another module, is
+module without being impure. The only way to invoke/trigger another module, is
 to throw a \textit{Msg}, which would trigger an update -> view - cycle. So
 a module cannot \textit{listen} for a single message, all modules are triggered
 by the same \textit{Msg}, and handled accordingly.
@@ -286,10 +278,10 @@ This ensures a good cooperation between the \textit{frontend} and
 \todo{Also expand on the module-validation part, third-party-code, and all that.}
 Before the finalization of this state representation, there was some
 discussion, on how best to represent a number. Because, in JavaScript, there is
-no distinction between a floating-point number, and a decimal number. But this
+no distinction between a floating-point number, and a decimal number. This
 \textit{leakage} was stopped by adding extra validation in the core, using the
 \textit{io-fp} library, which validates data sent from a module, regardless if
-its from the frontend or backend. But this will be discussed more in the next
+its from the frontend or backend This will be discussed more in the next
 section.
 
 \begin{center}
@@ -325,7 +317,7 @@ The \textit{update} function the module exposes, matches on a
 the module adds to the \lstinline[language=Haskell]{"counter"}-field, the value
 from the Msg, which is 1.
 
-Finally, the \textit{view} function, renders a button, which when pushed by a
+Finally, the \textit{view} function renders a button, which when pushed by a
 user, sends the \textit{counter-Msg}.
 
 \begin{center}
@@ -335,38 +327,37 @@ user, sends the \textit{counter-Msg}.
     , label=lst:pluginCounterExample]{./code/plugin-counter-example.hs}
 \end{center}
 
-\subsubsection{State Collision}
+\subsection{State Collision}
 
 A state collision occurs when two or more modules updates the same field, during
 the same update-cycle. This issue also occurs when folding two states.
 
 Was \textit{solved} with this:
 
-\todo{The types here are wrong}
 \begin{minted}{haskell}
-  stateUpdateHandler :: State -> State -> State
-  stateUpdateHandler fs bs = map foldPartition (group (fs ++ bs))
-
-  foldPartition :: (State, [(String, State)]) -> ([String, State]) -> (State, [(String, [State])])
-  foldPartition acc cur = (map snd (head cur) : fst acc, tail cur : snd acc)
-\end{minted}
-
-\todo{Rewrite the code-snippet here, adding a newtype for the collision reporting}
-
-\begin{lstlisting}[language=Haskell]
   {- Field the collision occurred on, list of modules, and the state with the
      collision
   -}
-  newtype CollisionReport = (String, [(String, State)])
-\end{lstlisting}
+  newtype CollisionReport = (State, [(String, [(String, State)])])
+  -- A Module, and its corresponding State
+  newtype ModuleState = (String, State)
+  -- Combines frontend and backend states, removing all collisions
+  stateUpdateHandler :: [ModuleState] -> [ModuleState] -> State
+  stateUpdateHandler fs bs = first $ map foldPartition (group (fs ++ bs))
+  -- Gets the
+  foldPartition :: CollisionReport -> [String, State] -> CollisionReport
+  foldPartition acc cur = (map snd (head cur) : fst acc, tail cur : snd acc)
+\end{minted}
 
 Takes list of states from all modules, checks for collisions. It returns a
-list of \lstinline[language=Haskell]{Either [(String, State)] ([(String, State)], String)}. If it is a
-collision, then it's a \lstinline[language=Haskell]{Right ([(String, State)], String)}, which is a tuple
-where the first element is a list of tuples, being the module and their
+list of
+\lstinline[language=Haskell]{Either [(String, State)] ([(String, State)], String)}.
+If it is a collision, then it's a
+\lstinline[language=Haskell]{Right ([(String, State)], String)}, which is a
+tuple where the first element is a list of tuples, being the module and their
 state, and the last element being the field that the collision occurred on.
-The other value: \lstinline[language=Haskell]{Left [(String, State)]}, are the module state that has no
-collision.
+The other value: \lstinline[language=Haskell]{Left [(String, State)]}, are the
+module state that has no collision.
 
 \paragraph{Collision} A collision between two states occurs if they share the same
 field.
@@ -406,24 +397,24 @@ states:
 \end{enumerate}
 
 Since the states are ordered by the name of the module they come from, we
-have a consistent ordering of left-hand side and right-hand side, so if the same
-modules give a collision on the same input, given that all modules are pure, the
+have a consistent ordering of left-hand side and right-hand side. If the same
+modules give a collision on the same input, (given that all modules are pure), the
 resulting state will be the same every time. The problem is that applying some
-function on the values could be an unwanted way to resolve collisions. So the
-standard way, will be to log the collision, and then drop both states. So even
+function on the values could be an unwanted way to resolve collisions. The
+standard way will be to log the collision, and then drop both states. Even
 if two states have A and B amount of fields, and just one collision, we will
-drop A + B amount of fields. Therefore, for a module developer, they should avoid
+drop A + B amount of fields. Therefore, a module developer should avoid
 collisions.
 
 \todo{Mention how updating two fields on the same object also counts as a collision}
 
-This problem of resolving state collision only occurs due because each module
+This problem of resolving state collision only occurs because each module
 returns a subtree of the state. We then have to analyze the new coalesced tree
 for each new subtree that is added, to figure out if there occurs any collision.
 And then notifying the module developer of which field this collision occurred
 on, and which modules tried to modify that field.
 
-\subsubsection{Tech Stack}
+\subsection{Tech Stack}
 
 The new plan did not change the tech stack, but the change in mindset,
 \todo{Don't use mindset} \textit{everything is a module}, pushed for a
@@ -469,10 +460,10 @@ core to \textit{correct} this error, is to \textit{just} log the error. But this
 turns an unrecoverable error into a recoverable one, given that it is an
 acceptable result to \textit{ignore} the error.
 
-One thing did change, however, instead of using React as the frontend framework,
+One thing did change, however. Instead of using React as the frontend framework,
 TypeScript was chosen, which simplified the integration between the backend and
 frontend, as the complexity of React's state management could be avoided, along
-with React's hydration. Given the rendering now was more \textit{hands-on}, the
+with React's hydration. Given the rendering was now more \textit{hands-on}, the
 core could expose a lot of the functionality for rendering, which modules could
 change. This would increase the difference between the \gls{jsms} and
 \gls{rsms}, as the backend was not privy to this API, but this was not seen as
@@ -511,21 +502,21 @@ an issue, as this API would turn module non-pure.
     ]{./code/jsms-handling-view.ts}
 \end{center}
 
-As mentioned earlier, given that the application uses a web view to render, and
-modules can be written in JavaScript, it means that existing JavaScript
-libraries can be used in the application. This, with the implementation of the
-\gls{jsms}, meant that this could be actually tested out.
+Given that the application uses a web view to render, and modules can be written
+in JavaScript, it means that existing JavaScript libraries can be used in the
+application. This, with the implementation of the \gls{jsms}, meant that this
+could be actually tested out.
 
 \todo{Find more examples}
 
 \begin{figure}
   \centering
   \includegraphics[scale=0.5]{./pics/doom}
-  \caption{Application running Doom using js-dos}
+  \caption{Application running Doom using \textit{js-dos}}
   \label{fig:doom}
 \end{figure}
 
-\subsection{Module V.3}
+\section{Module V.3}
 
 The third and hopefully final, plan:
 
@@ -536,9 +527,18 @@ The third and hopefully final, plan:
 
 A module only exposes a singular function:
 
-\paragraph{Init} Returns a collection of modifications
+\paragraph{Init} Returns a collection of core modifications
 
-\subsubsection{Tech Stack}
+In the previous architecture version, each module directly changed the state,
+which caused issues. Instead, each modification a module does, \textit{acts}, as
+a direct modification, but is in fact, translated to a DSL which can be analyzed
+for possible collisions. This was discovered to be a need, as in the new
+version, the \gls{ui} was also restructured, to allow for less re-rendering, and
+this restructuring, made it clear that changing the state, or changing the
+\gls{ui} is just tree manipulations, which will be discussed more later.
+
+
+\subsection{Tech Stack}
 
 As mentioned in the previous section, the tech stack splits the application into
 two, loosely coupled parts. The \textit{frontend} and \textit{backend}. This
@@ -557,7 +557,7 @@ system. This plan would still keep the support for external JavaScript
 libraries, not made with the application in mind, to be used, which also would
 greatly reduce the development time.
 
-\subsubsection{Tree Manipulation}
+\subsection{Tree Manipulation}
 
 \todo{Mention how state and UI manipulation is equivalent to tree manipulation}
 
@@ -603,7 +603,7 @@ This architecture also has the issue about verification of modules, but only on
 functions, as simple fields can be validated using the
 \lstinline[language=JavaScript]{typeof} operator. It is possible to do
 \textit{some} verification on functions in TypeScript, but this is only a) Is it
-a function, and b) does it have the correct amount of arguments, in this case,
+a function, and b) does it have the correct amount of arguments. In this case,
 one. Nothing about the typing of the function can be ascertained at runtime,
 without explicitly invoking the function.
 
@@ -615,7 +615,7 @@ without explicitly invoking the function.
     ]{./code/module-example-core.hs}
 \end{center}
 
-In listing \ref{moduleEvent}, one can see the structure of an
+In listing \ref{lst:moduleEvent}, one can see the structure of an
 \lstinline[language=Haskell]{Event} \textit{ADT}. This allows for modules to
 pattern match on specific \lstinline[language=Haskell]{Event}s, and as in the
 previous version, only react to specific \lstinline[language=Haskell]{Event}s.
