@@ -1,12 +1,14 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
-
 module Nmide where
 
 import qualified Graphics.UI.Threepenny as UI
 import Graphics.UI.Threepenny.Core
-import Module (Core (..), CoreModification (..), Html (..), Mod (..), appendChild)
-import qualified Module as M
+import Mod ( Mod(..) )
+import Core ( Core(..), CoreModification(..) )
+import Value (Value)
+import Html (Html (..))
+import qualified Event as E
 
 start :: Int -> IO ()
 start port = do
@@ -39,7 +41,7 @@ startCore _w =
     , events = []
     }
   where
-    throwEvent :: M.Event -> IO ()
+    throwEvent :: E.Event -> IO ()
     throwEvent _ = putStrLn "Event thrown"
 
 foldMod :: CoreModification -> CoreModification -> CoreModification
@@ -57,12 +59,7 @@ applyMod c cm = c
   }
   where
     applyUIMod :: Core -> [Mod Html] -> Core
-    applyUIMod c' mods = case mods of
-      ((Add x) : xs) -> applyUIMod c' {ui = appendChild (ui c') x} xs
-      _ -> c'
+    applyUIMod c' _ = c'
 
-    applyStateMod :: Core -> [Mod M.Value] -> Core
-    applyStateMod c' mods = case mods of
-      -- TODO: Correct this to ensure state works
-      ((Add x) : xs) -> applyStateMod c' { state = ("", x) : state c' } xs
-      _ -> c'
+    applyStateMod :: Core -> [Mod Value] -> Core
+    applyStateMod c' _ = c'

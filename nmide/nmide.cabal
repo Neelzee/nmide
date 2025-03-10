@@ -65,6 +65,11 @@ executable nmide
     other-modules:    Nmide
                     , Module
                     , Render
+                    , Mod
+                    , Core
+                    , Html
+                    , Value
+                    , Event
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:

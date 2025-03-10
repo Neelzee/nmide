@@ -3,7 +3,8 @@ module Render where
 import Graphics.UI.Threepenny (element)
 import qualified Graphics.UI.Threepenny as UI
 import Graphics.UI.Threepenny.Core (Element, UI, on, set, (#), (#+))
-import Module (Attr (..), Event (..), Html (..))
+import Html (Html(..), Attr(..))
+import Event (eventName)
 
 render :: Html -> UI Element
 render (Text s) = UI.p # set UI.text s
