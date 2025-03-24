@@ -1,0 +1,63 @@
+\section{25.03.10}
+
+I've been doing very little coding, even though the \textit{due} date for the
+refactor is coming. (I've put it to the end of March). I think I am a little
+frozen, with the amount of work I have. Although, I don't think it's that much
+work, I just want to do other stuff. When I get the feedback for my first draft,
+I will probably drop coding to fix that. Anyway, my general plan is this:
+
+\begin{itemize}
+  \item Modules are now a compile-time-inclusion
+  \item Do the project in Haskell
+  \item Figure out a way to do the new architecture
+\end{itemize}
+
+I think if the last point fails, I can still use what I learned in the failure,
+to implement a shitty version in TypeScript, in the existing project. Because
+no matter what I do, I need threads. This can be done in JavaScript, with
+\textit{Web Workers}, but I would prefer to do it in Haskell, because that's the
+language I \textit{think} in. (Not to brag or anything, but I think). My idea
+about the thread stuff is that for each part of the Core, a thread runs,
+managing that part. So one thread for the state, ui and event handlers.
+
+I think these can exist independently, so using some library or something for
+threading, to aid this, would be smart. Because any update in the thread is due
+to an event, I could develop, say, the state thread first, and test it by
+sending in some state modifications, which it immediately updates the state
+with. Unsure if it should be per modification, or per event, atm.
+
+
+\section{25.03.12}
+
+I think the dual state/ui management is unnecessary. The reason I had it like
+that, was due to the necessity of being able to convert between the State
+representation in the Core, and to JSON for the modules, but now that I've moved
+away from JSON communication between modules, I don't need that mapping, and can
+therefore change how is the State is represented, like by removing Object, and
+just having [(String, Value)], where if someone has an object, it is still field
+and value, but with a separator, like normal JavaScript Object indexing.
+
+
+\section{25.03.13}
+
+Integrate the Event Handler into the Module?
+
+\section{25.03.14}
+
+Had a presentation yesterday, at BLDL, went okay, got some good questions which
+I should've written down, but now I've forgotten the specifics. They were
+something along the lines of:
+
+\begin{itemize}
+  \item How does modules communicate?
+  \item Does keeping a module \textit{pure} increase the complexity for a module
+    developer?
+  \item What has been done by keeping bad-actors from executing scripts?
+\end{itemize}
+
+
+\section{25.03.19}
+
+Code is not working, and I am not sure if I'll ever get it too work. If not,
+I'll be going back to Rust, make some shitty code, and write for the rest of the
+time I am at UIB.
