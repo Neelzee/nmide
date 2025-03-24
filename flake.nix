@@ -25,7 +25,10 @@
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
             # TAURI START
+            gcc
             pkg-config
+            rustup
+            rustPlatform.rustLibSrc
             gobject-introspection
             cargo
             cargo-tauri
@@ -58,13 +61,12 @@
             gdk-pixbuf
             harfbuzz
             # HASKELL END
-
             haskellPackages.ghc
             haskellPackages.cabal-install
             haskellPackages.haskell-language-server
             haskellPackages.threepenny-gui
+            haskellPackages.stm
           ];
-
         };
       }
     );
