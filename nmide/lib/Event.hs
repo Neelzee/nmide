@@ -7,3 +7,4 @@ data Event = Event
   , eventName :: String
   , arguments :: Maybe Value
   }
+  deriving (Show, Eq)

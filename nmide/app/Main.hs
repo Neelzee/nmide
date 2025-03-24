@@ -1,7 +1,7 @@
 module Main where
 
-import Nmide (start)
-import System.Environment (getArgs)
+import Nmide ( start )
+import System.Environment ( getArgs )
 import System.IO
 
 main :: IO ()
