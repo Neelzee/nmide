@@ -48,6 +48,10 @@ pub mod map;
 /// Module containing *-Msg-Types
 pub mod msg;
 
+pub mod core;
+
+pub mod event;
+
 #[repr(C)]
 #[derive(StableAbi)]
 #[sabi(kind(Prefix(prefix_ref = NmideStandardLibraryRef)))]

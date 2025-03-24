@@ -85,4 +85,13 @@ impl RHtml {
             attrs,
         }
     }
+
+    pub fn empty() -> Self {
+        Self {
+            kind: RHtmlKind::Div,
+            kids: RVec::new(),
+            text: ROption::RNone,
+            attrs: RVec::new(),
+        }
+    }
 }

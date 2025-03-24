@@ -8,3 +8,5 @@ pub mod ide;
 pub mod server;
 pub mod setup;
 pub mod statics;
+
+pub mod core;
