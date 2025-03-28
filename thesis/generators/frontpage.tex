@@ -1,55 +1,58 @@
-\begin{titlepage}
-
-\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
-
-\center % Center everything on the page
-
 %----------------------------------------------------------------------------------------
-%	HEADING SECTIONS
+%	TITLE PAGE
 %----------------------------------------------------------------------------------------
 
-\textsc{\LARGE University of Bergen \\ Department of Informatics}\\[1.5cm] % Name of your university/college
+\begin{titlepage} % Create the command for including the title page in the document
+  \fontfamily{phv}\selectfont
+  \centering % Center all text
 
-%----------------------------------------------------------------------------------------
-%	TITLE SECTION
-%----------------------------------------------------------------------------------------
+  %----------------------------------------------------------------------------------------
+  %	TITLE SECTION
+  %----------------------------------------------------------------------------------------
 
-\HRule \\[0.5cm]
-\begin{Huge}
-	\bfseries{Everyone is better at coding than me}\\[0.7cm] % Title of your document
-\end{Huge}
-\begin{Large}
-	\bfseries{Developing a modular IDE}\\[0.7cm] % Title of your document
-\end{Large}
-\HRule \\[0.5cm]
+  \vspace{200pt}
+  {\Huge Everyone is better at coding than me} \\ % Title
+  \vspace{5pt}
 
-%----------------------------------------------------------------------------------------
-%	AUTHOR SECTION
-%----------------------------------------------------------------------------------------
+  {\Large \textsl{Developing a modular IDE}} % Subtitle or further description
+  \vspace{50pt}
 
-\large \emph{Author:} Nils Michael Fitjar\\
-\large \emph{Supervisors:} Magne Haveraaen, Mikhail Barash\\[2cm]
+  %----------------------------------------------------------------------------------------
+  %	AUTHOR SECTION
+  %----------------------------------------------------------------------------------------
 
-%----------------------------------------------------------------------------------------
-%   LOGO SECTION
-% 	This will require the graphicx package
-%	Change the line to comment if you only want the UiB Logo
-%	Logo for other faculties here: http://kapd.h.uib.no/profilmanual/99LastNed/99a_lastned.html
-%----------------------------------------------------------------------------------------
+  \LARGE{\textbf{Nils Michael Fitjar}}\\ % Author name
 
-\centerline{\includegraphics[scale=0.4]{pics/NT_PositivVenstrestilt_NOR}}
-%\centerline{\includegraphics[scale=0.15]{figures/canvas}}  %change for your faculty
+  \vfill % Whitespace between the author name and the school
 
-%----------------------------------------------------------------------------------------
-%	DATE SECTION
-%----------------------------------------------------------------------------------------
+  %----------------------------------------------------------------------------------------
+  %	DESCRIPTION AND DATE SECTION
+  %----------------------------------------------------------------------------------------
 
-{\large \monthyeardate\today}\\[3cm] % Date, change the \today to a set date if you want to be precise
 
-%----------------------------------------------------------------------------------------
-%	LOGO SECTION
-%----------------------------------------------------------------------------------------
+  {\Large \textbf{Master's thesis in Software Engineering at} \\
+  \vspace{10pt}
+  Department of Computer science, Electrical engineering and Mathematical sciences, \\
+  Western Norway University of Applied Sciences \\
+  \vspace{10pt}
+  Department of  Informatics, \\
+  University of Bergen \\}
+  \vspace{10pt}
+  {\large \monthyeardate\today} % Month and year published
 
-\vfill % Fill the rest of the page with whitespace
+  %----------------------------------------------------------------------------------------
+  %	LOGO SECTION
+  %----------------------------------------------------------------------------------------
+
+  \vfill % Whitespace between the school and the publisher logo
+
+
+  \begin{figure}[h!]
+    \captionsetup[subfigure]{labelformat=empty}
+    \subfloat[][]{\includegraphics[height=70pt]{logos/hvl_logo_engelsk.pdf}}
+    \hfill
+    \subfloat[][]{\includegraphics[height=70pt]{logos/uib-logo.eps}}
+  \end{figure}
+
 
 \end{titlepage}
