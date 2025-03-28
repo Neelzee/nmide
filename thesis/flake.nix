@@ -16,12 +16,12 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         tex = pkgs.texlive.combined.scheme-full;
-        file = "report";
+        file = "thesis";
       in
       rec {
         packages = {
           document = pkgs.stdenvNoCC.mkDerivation rec {
-            name = "latex-demo-document";
+            name = "thesis";
             src = self;
             buildInputs = [
               pkgs.coreutils
