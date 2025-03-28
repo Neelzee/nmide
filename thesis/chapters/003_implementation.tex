@@ -2,89 +2,38 @@
 
 \section{Modularity}
 
-As mentioned previously, modularity, or a modular application, is an application
-which can be extended by other pieces of software. This extensibility is useful
-as features that the original developers of the application did not think about,
-can be added. If this module architecture is well-designed, then this extension
-can be added without changing the core application. This way of designing
-software can be taken to the extreme, a zero-core application, where the only
-functionality the application provides, is a way to extend the core functionality
-with modules.
-
+A modular application, is an application which can be extended by other pieces
+of software. This extensibility is useful as features that the original
+developers of the application did not think about, can be added. If this module
+architecture is well-designed, then this extension can be added without changing
+the core application.
 
 \subsection{How to extend an application}
 
-There are different methods an application can be extended. The most popular one
-\todo{Sauce???} uses so-called \textit{live-reload}, in which, if a module
-drastic changes the functionality of an application, the application has to be
-restarted, or if it is a \textit{minor} change, the module is simply loaded.
-This method is extending of the application during runtime, which is the method
-most commonly accepted. Another method would be \textit{compile-time-extension},
-in which modules are added before the application itself is compiled. There are
-some advantages and disadvantage in both approaches.
+There are different methods an application can be extended. The most common one
+uses so-called \textit{live-reload}, in which, if a module drastic changes the
+functionality of an application, the application has to be restarted, or if it
+is a \textit{minor} change, the module is simply loaded. This method is
+extending of the application during runtime, which is the method most users
+expect. Another method would be \textit{compile-time-extension}, in which
+modules are added before the application itself is compiled. There are some
+advantages and disadvantage in both approaches.
 
-As an example, a standard user of a zero-core application will expect the
-application to come bundled with all the needed functionality. This is best
-achieved with the \textit{compile-time-extension} method, since the application
-can be installed with the expected modules.
+\subsubsection{Compile Time Extension}
 
+\todo{Expand}
+As an example, a standard user of any application will expect the application to
+come bundled with all the needed functionality. This is best achieved with the
+\textit{compile-time-extension} method, since the application can be installed
+with the expected modules.
 
-\subsection{Granularity}
+\subsubsection{Runtime Extension}
 
-When designing modules, the \textit{granularity} of the combined modules has to
-be considered. As an example, if one where to extend the zero-core application
-with the needed functionality for it to be considered an \gls{ide}, this could be
-achieved by creating a singular module which does all the work. However, this
-is not a modular approach, as if one wants to change some specific feature in
-the \gls{ide}-module, one would have to re-create the whole module with that
-specific feature implemented. Instead, if this functionality was granular,
-that is to say, split into several modules, that together enable the needed
-features, then it would be \textit{simpler} to modify the needed modules to
-achieve the wanted feature.
+\todo{Expand}
 
+\section{Tech Stack}
 
-\subsection{Module Family}
-
-\begin{figure}
-  \centering
-  \input{./figures/text-editor-simple}
-  \caption{Text Editor Module Family}
-  \label{fig:textEditorSimple}
-\end{figure}
-
-In figure \ref{fig:textEditorSimple}, an input file is parsed to some structure
-which is used to translate user actions, into cursor movements. The cursor being
-the place in the file where text is written to by the user.
-
-This is a feature that naturally shows up in a \textit{true} modular system. If
-several modules together enable some feature, then those modules can be treated
-as a singular module by an external module developer, depending on what they
-want to extend.
-
-\section{Module V.1}
-
-We did not attempt at first, to create a zero core application; this was a
-\textit{natural} conclusion to the existing problem. The first attempt was a
-simple generic \gls{ide}, in which the module architecture was a concern from
-day one of development. The general plan was this:
-
-\begin{enumerate}
-  \item Create an \gls{ide}
-  \item Extend the \gls{ide}, to allow for a module architecture
-  \item Modules call the application using some DSL
-\end{enumerate}
-
-This was the more straight forward way to work, because as we could model it of
-existing \gls{ide}s, like \textit{Visual Studio Code} or \textit{Eclipse}.
-Another advantage is that when implementing the application, one necessarily
-gets a better understand of how eventual modules should extend the application.
-This approach did unfortunately not lead to a truly modular application. Similar
-issues to existing \gls{ide}s, how does one allow for \textit{everything}?
-Furthermore, anything created this way, would be subpar to existing software,
-which would lead to the next maintainer having to fix the core application. This
-in turn, would add a lot of complexity, which the maintainers would have to deal with.
-
-\subsection{Tech Stack}
+\subsection{Web View}
 
 Started with Rust, because a \textit{low-level} language was assumed to be
 necessary, to facilitate ease of C integration, which would allow for an
@@ -140,6 +89,29 @@ While this is not the best approach to implementing a text editor, a more
 modular approach, by turning the text editor into a module family would be more
 effective, it is good enough as a stop-gap.
 
+\section{Module V.1}
+
+We did not attempt at first, to create a zero core application; this was a
+\textit{natural} conclusion to the existing problem. The first attempt was a
+simple generic \gls{ide}, in which the module architecture was a concern from
+day one of development. The general plan was this:
+
+\begin{enumerate}
+  \item Create an \gls{ide}
+  \item Extend the \gls{ide}, to allow for a module architecture
+  \item Modules call the application using some DSL
+\end{enumerate}
+
+This was the more straight forward way to work, because as we could model it of
+existing \gls{ide}s, like \textit{Visual Studio Code} or \textit{Eclipse}.
+Another advantage is that when implementing the application, one necessarily
+gets a better understand of how eventual modules should extend the application.
+This approach did unfortunately not lead to a truly modular application. Similar
+issues to existing \gls{ide}s, how does one allow for \textit{everything}?
+Furthermore, anything created this way, would be subpar to existing software,
+which would lead to the next maintainer having to fix the core application. This
+in turn, would add a lot of complexity, which the maintainers would have to deal with.
+
 \section{Module V.2}
 
 \todo{Mention the troubles with backend-frontend state coalescing.}
@@ -155,17 +127,18 @@ After 7–8 months of working on this, everything was scrapped for this new plan
 An inspiration for the new module architecture is Elm-Lang. Elm is a functional
 language, aimed at frontend web development, but its architecture is quite
 \todo{Add reference to Elm-lang}
-interesting. As one can see in figure \ref{fig:elmArchitecture}, is used by some
-runtime, which translates the Elm code into \gls{dom} manipulations, and translates
-\gls{dom} events into \textit{Msg} which is handled by the Elm code. This was the
-inspiration for the new module architecture. A module is managed by the runtime,
-which is the \textit{core} application. But with some inspiration from
-\gls{mvc}, where instead of the module keeping its own state, this is again
+interesting. As one can see in figure \ref{fig:elmArchitecture}, is used by the
+Elm-runtime, which translates the Elm code into \gls{dom} manipulations, and
+translates \gls{dom} events into \textit{Msg} which is handled by the Elm code.
+This was the inspiration for the new module architecture. A module is managed by
+the runtime, which is the \textit{core} application. But with some inspiration
+from \gls{mvc}, where instead of the module keeping its own state, this is again
 managed by the core, allowing for multiple modules to read and react to states
 updated by other modules, allowing for more interactivity between modules, and
 therefore being more modular.
 
 \todo{Add source: guide.elm-lang.org/effects/}
+
 \begin{figure}
   \centering
   \input{./figures/elm-architecture}
@@ -193,7 +166,7 @@ which is rendered by the core.
 \begin{center}
   \lstinputlisting
     [ language=Haskell
-    , caption={Module Types}
+    , caption={Module Type}
     , label=lst:pluginExample
     ]{./code/plugin-example.hs}
 \end{center}
@@ -238,7 +211,7 @@ But this introduces a possibility for some hierarchy in the module ecosystem.
 For example, a module could act as a framework, and therefore needs to only be
 loaded once, creating new locations, with styling.
 
-Inspired by Elm and MVC, the new module architecture is shown in figure
+The new module architecture is shown in figure
 \ref{fig:moduleArchitecture}
 
 \subsection{Architecture}
@@ -325,6 +298,10 @@ user, sends the \textit{counter-Msg}.
     , label=lst:pluginCounterExample]{./code/plugin-counter-example.hs}
 \end{center}
 
+\subsection{Module Validation}
+
+\todo{Mention module validation}
+
 \subsection{State Collision}
 
 A state collision occurs when two or more modules updates the same field, during
@@ -359,12 +336,6 @@ module state that has no collision.
 
 \paragraph{Collision} A collision between two states occurs if they share the same
 field.
-
-Example of the code in Haskell
-
-\begin{center}
-  \lstinputlisting[language=Haskell, caption={State Collision}, label=Listing]{./code/state-collision.hs}
-\end{center}
 
 There are several different ways to correct a collision between two
 states:
@@ -404,6 +375,10 @@ if two states have A and B amount of fields, and just one collision, we will
 drop A + B amount of fields. Therefore, a module developer should avoid
 collisions.
 
+\begin{center}
+  \lstinputlisting[language=Haskell, caption={State Collision}, label=Listing]{./code/state-collision.hs}
+\end{center}
+
 \todo{Mention how updating two fields on the same object also counts as a collision}
 
 This problem of resolving state collision only occurs because each module
@@ -412,17 +387,15 @@ for each new subtree that is added, to figure out if there occurs any collision.
 And then notifying the module developer of which field this collision occurred
 on, and which modules tried to modify that field.
 
-\subsection{Tech Stack}
+\subsection{Everything is a module}
 
-The new plan did not change the tech stack, but the change in mindset,
-\todo{Don't use mindset} \textit{everything is a module}, pushed for a
-modularization between the then tightly coupled parts, the \textit{frontend} and
-\textit{backend}. As mentioned, having two different languages could allow for
-easier support of modules written in different programming languages, but for
-this to work in an optimal way, both
-\todo{Should make a concrete point in why language agnosticism is good.}
-the \textit{frontend} and \textit{backend} should be loosely coupled. This lead
-to the development of two systems. \gls{rsms} and \gls{jsms}.
+The new plan came with a change of viewpoint. Think of
+\textit{everything being a module}, this pushed for a modularization between the
+then tightly coupled parts, the \textit{frontend} and \textit{backend}. As
+mentioned, having two different languages could allow for easier support of
+modules written in different programming languages, but for this to work in an
+optimal way, both the \textit{frontend} and \textit{backend} should be loosely
+coupled. This lead to the development of two systems. \gls{rsms} and \gls{jsms}.
 \todo{Mention in the next section how RSMS and JSMS are just backend frontend}
 It was necessary to distinguish the different module systems, due to the way
 they would be loaded by the core application.
@@ -430,7 +403,7 @@ they would be loaded by the core application.
 The \gls{rsms}, being written in Rust, meant it needed extra safeguards, as
 loading of shared object files, during runtime, could lead to undefined
 behavior.
-\todo{Source for these claims}
+\todo{Expand this point}
 One of the ways undefined behavior was avoided, was using the
 \textit{abi\_stable}-crate, which enables \textit{safe} loading of external
 libraries, which is all a module is.
@@ -535,16 +508,25 @@ version, the \gls{ui} was also restructured, to allow for less re-rendering, and
 this restructuring, made it clear that changing the state, or changing the
 \gls{ui} is just tree manipulations, which will be discussed more later.
 
+\subsection{Core Modifications}
 
-\subsection{Tech Stack}
+\todo{expand}
+
+
+\subsection{Backend Agnostic Frontend}
 
 As mentioned in the previous section, the tech stack splits the application into
 two, loosely coupled parts. The \textit{frontend} and \textit{backend}. This
 architecture does facilitate the concept of an agnostic frontend. That is, if,
 as is the case per the previous plan, all logic pertaining to the core is in the
-\textit{frontend}, cannot the backend be anything, as long as it fulfills
-\todo{List these criteria out}
-certain criteria?
+\textit{frontend}, cannot the backend be anything, as long as it fulfills the
+following criteria.
+
+\begin{itemize}
+  \item File system modification
+  \item Module loading
+\end{itemize}
+
 So that was a part of the new plan, avoid creating a \textit{backend}-module
 system, similar to the \gls{rsms} mentioned previously. The functionality or
 rather capability to extend the core application with modules written in Rust
@@ -573,8 +555,7 @@ of what to do with the Core.
 Using this as a module developer is quite abstract, so to facilitate development
 of modules, a helper class was created, which \textit{translates} modifications
 to instructions. These instructions can then be analyzed for possible
-collisions. This solves the edge-case of a non-colliding modification of an
-object in the state.
+collisions.
 
 \begin{center}
   \lstinputlisting

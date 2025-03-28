@@ -6,6 +6,9 @@ Magnolia is an experimental research language being developed \gls{bldl} at the
 University of Bergen. Magnolia is designed to support a high level of abstraction
 and ease of reasoning. This is achieved by \textit{concepts}, \textit{axioms} and
 \textit{implementations}.
+\todo{expand}
+
+\subsection{Group}
 
 \todo{Tie these two sections together}
 
@@ -36,11 +39,14 @@ This, again, can be extended with an additional property, namely,
 
 Assuming associativity.
 
-This structure could be implemented in something like Java, an Object-Oriented
-Language, as shown in listings \ref{lst:jmagma}, \ref{lst:jsemigroup},
-\ref{lst:jmonoid}, and \ref{lst:jgroup}. Note the empty interfaces; there is
-nothing that enforces the different laws on the properties. This can only be
-done by unit testing, which is not enforced on a consumer of the \gls{api}.
+\subsubsection{Java Group}
+
+This structure not could be implemented in something like Java, an
+Object-Oriented Language, as shown in listings \ref{lst:jmagma},
+\ref{lst:jsemigroup}, \ref{lst:jmonoid}, and \ref{lst:jgroup}. Note the empty
+interfaces; there is nothing that enforces the different laws on the properties.
+This can only be done by unit testing, which is not enforced on a consumer of
+the \gls{api}.
 
 \begin{center}
   \lstinputlisting
@@ -69,6 +75,15 @@ done by unit testing, which is not enforced on a consumer of the \gls{api}.
     , caption={Group concept in Java, can only be upheld using unit tests}
     , label=lst:jgroup]{./code/group.java}
 \end{center}
+
+
+\subsubsection{Haskell Group}
+
+\todo{Add examples}
+
+This can also not be implemented in Haskell
+
+\subsubsection{Magnolia Group}
 
 In Magnolia, however, this can be enforced on the \textit{interface}-level. The
 example code shown in listing \ref{lst:magma}, showcases a concept
@@ -112,9 +127,25 @@ with the added property of associativity.
     , label=lst:group]{./code/group.mg}
 \end{center}
 
+So Magnolia facilitates \textit{reuse}.
+\todo{Make the red-thread easier to follow}
+
 \section{Reusable Software}
 
+One of the most important features in any programming language, is the notion
+of \textit{reusability}. From the invention of the GO-TO-statement,
+to functions, and external libraries, being able to reuse existing software is
+an important tool for a developer. It avoids \textit{re-inventing the wheel}, as
+common functionality can be externalized and reused in several different places.
+
 \subsection{Reuse in Magnolia}
+
+Reusability is also an important feature in Magnolia, but this reusability is in
+the entire language. In libraries in other languages, functions are reused, in
+an attempt to avoid common logical mistakes, but these mistakes could still be
+there, hiding in plain view. In Magnolia, one can re-use the \textit{logic} of a
+function.
+\todo{Expand}
 
 \subsection{Software Lifetimes}
 
@@ -133,8 +164,8 @@ factors behind this success, but the ones being highlighted here, are due to its
 extensibility and due to it being open-sourced. Being open sourced, allows for a
 rotating cast of maintainers, ensuring the core application has the features its
 users wants. The users of \gls{vim} can be split into two categories,
-\textit{standard users}, and \textit{plugin developers}. \gls{vim} has an
-extensive plugin ecosystem, which can extend \gls{vim}s functionality from a
+\textit{standard users}, and \textit{module developers}. \gls{vim} has an
+extensive module ecosystem, which can extend \gls{vim}s functionality from a
 text editor, to a fully fledged \gls{ide}.
 
 \section{Integrated Development Environment}
@@ -192,16 +223,42 @@ lifetime of the module is extended.
 
 \todo{Talk about modules in IDEs}
 
-\todo{Find a way to mention this?}
-\paragraph{Language Agnostic} The largest limiting factor in module oriented
-applications, is the \textit{language barrier} Most applications limit what
-language one can extend an application with, like in "Visual Studio Code", where
-its JavaScript/HTML/CSS. Or IntelliJ, where one can use Java or Kotlin. But what
-does language agnostic mean in the context of programming languages? It is, and
-always will be C. Any \textit{serious} language can create some bindings with C.
-So, for a module application to be Language Agnostic, it must be able to use C
-Modules. This just means that the application must be able to call function from
-a C library.
+\subsection{Module Ecosystem}
+
+\todo{Expand}
+More modules == better, right?
+
+\subsection{Granularity}
+
+When designing modules, the \textit{granularity} of the combined modules has to
+be considered. As an example, if one where to extend the zero-core application
+with the needed functionality for it to be considered an \gls{ide}, this could be
+achieved by creating a singular module which does all the work. However, this
+is not a modular approach, as if one wants to change some specific feature in
+the \gls{ide}-module, one would have to re-create the whole module with that
+specific feature implemented. Instead, if this functionality was granular,
+that is to say, split into several modules, that together enable the needed
+features, then it would be \textit{simpler} to modify the needed modules to
+achieve the wanted feature.
+
+
+\subsection{Module Family}
+
+\begin{figure}
+  \centering
+  \input{./figures/text-editor-simple}
+  \caption{Text Editor Module Family}
+  \label{fig:textEditorSimple}
+\end{figure}
+
+In figure \ref{fig:textEditorSimple}, an input file is parsed to some structure
+which is used to translate user actions, into cursor movements. The cursor being
+the place in the file where text is written to by the user.
+
+This is a feature that naturally shows up in a \textit{true} modular system. If
+several modules together enable some feature, then those modules can be treated
+as a singular module by an external module developer, depending on what they
+want to extend.
 
 \subsection{Language Workbench}
 \todo{Expand}
@@ -229,40 +286,17 @@ language, this off course means the compiler/interpreter has to be expanded
 and/or modified, but for the \gls{ide}, a module could be added/modified to
 utilize this change, instead of having to change the entire application.
 
-In this paper, we will start by discussing some background around modularity,
-software longevity, and Magnolia (chapter 2). We will also discuss the different
-ways to achieve modularity within an application, and point out different
-behaviors that arise from such a setup (chapter 4). Finally, we will discuss the
-results (chapter 5), and conclusions (chapter 6).
-
-Traditional \gls{ide}s encompass essential features such as syntax highlighting, code
-navigation, and hover-help, playing a crucial role in the software development
-process. However, their limitations become apparent when working with
-experimental languages. This paper advocates for modularization and
-\textit{composability} as key design principles, demonstrating their ability to
-extend the operational lifespan of software by allowing for ease-of adoption to
-new paradigms and tools. The discussion revolves around Magnolia, an
-experimental research programming language developed by \gls{bldl} at the
-University of Bergen. Magnolia will act as a case study illustrating the need for
-a specialized \gls{ide}. It is a way to experiment with novel language features.
-And to achieve this in a sufficient manner, a more specialized \gls{ide} is
-required.
-
-
 \section{Existing Magnolia IDE}
 
 The current \gls{ide} for Magnolia, is a many-years-old version of Eclipse,
 using modules and functionality from the core Eclipse application, that has
 since been outdated. The \gls{ide}s lifetime was limited by a dependency on
-external modules and features that where not maintained by \gls{bldl}. This
-meant that for future development of Magnolia, an outdated \gls{ide} was needed,
-with outdated tooling. Furthermore, the Magnolia compiler was implemented as an
-Eclipse module, which means that development is limited to Eclipse, and only
-Eclipse, as a developer cannot compile Magnolia code without it.
-
-Having the entire application available \textit{in-house}, will also help, as
-open source; availability to the source code helps when developing niche
-modules.
+external modules and features that where not maintained by the
+\gls{ide}-developers. This meant that for future development of Magnolia, an
+outdated \gls{ide} was needed, with outdated tooling. Furthermore, the Magnolia
+compiler was implemented as an Eclipse module, which means that development is
+limited to Eclipse, and only Eclipse, as a developer cannot compile Magnolia
+code without it.
 
 Modularization will help to mitigate some of the issues with the current
 Magnolia \gls{ide}. Instead of maintaining an entire application, the needed and

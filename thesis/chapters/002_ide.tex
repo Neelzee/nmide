@@ -1,5 +1,9 @@
 \chapter{Magnolia IDE}
 
+This section will discuss the new Magnolia \gls{ide}, the different users of the
+\gls{ide}, and their possible experiences which was under consideration when
+developing the application.
+
 \section{User Perspectives}
 
 This application has to consider different users
@@ -8,6 +12,26 @@ This application has to consider different users
 
 Being a zero core application; all functionality comes from modules, the module
 developer experience is the most important.
+
+\subsubsection{Language Agnostic Modules}
+
+The largest limiting factor in module oriented applications, is the
+\textit{language barrier} Most applications limit what language one can extend
+an application with, like in "Visual Studio Code", where its
+JavaScript/HTML/CSS. Or IntelliJ, where one can use Java or Kotlin. But what
+does language agnostic mean in the context of programming languages? It is, and
+always will be C. Any \textit{serious} language has some form of C-\gls{abi}.
+So, for a module application to be Language Agnostic, it must be able to invoke
+C Modules. This functionality can come from a module, creating a structure as
+shown in figure. \todo{Create this figure}
+
+This module could be a singular one, acting as a translator, translating the
+data flowing between the core and foreign-modules, or each foreign-module could
+have their own translator.
+
+\subsubsection{Existing Third Party Libraries}
+
+You can use existing JavaScript libraries
 
 \subsection{IDE User}
 
