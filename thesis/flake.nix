@@ -37,7 +37,8 @@
               "installPhase"
             ];
             buildPhase = ''
-              export PATH="${pkgs.lib.makeBinPath buildInputs}";
+              export PATH="${pkgs.lib.makeBinPath buildInputs}"
+              export SOURCE_DATE_EPOCH="$(date +%s)"
               mkdir -p .cache/texmf-var
               env TEXMFHOME=.cache TEXMFVAR=.cache/texmf-var \
               latexmk -interaction=nonstopmode \
