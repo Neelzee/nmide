@@ -1,4 +1,4 @@
-\chapter{Background}
+\chapter{Background} \label{cha:background}
 
 \section{Magnolia}
 
@@ -6,40 +6,148 @@ Magnolia is an experimental research language being developed \gls{bldl} at the
 University of Bergen. Magnolia is designed to support a high level of abstraction
 and ease of reasoning. This is achieved by \textit{concepts}, \textit{axioms} and
 \textit{implementations}.
+
 \todo{expand}
 
-\subsection{Group}
+\subsection{Mathematics and Programming}
 
-\todo{Tie these two sections together}
+Mathematics is everywhere, and useful. It's not always easy to notice this, but
+one thing that helps, is knowing the names of the concepts one encounter. One
+can easily understand that knowing simple operations like addition,
+multiplication, etc. is useful but for more abstract mathematics, this is
+harder. An example of this is abstract algebra, which is the study of algebraic
+structures, which are structures that are very common in programming. A
+programmer will use these structures more often than not, knowingly or
+unknowingly, and a good programmer will explicitly seek these structures out.
+Using existing logic; something that other people have reasoned and verified,
+makes avoiding bugs easier.
 
-Something, something\dots string concatenation is actually a semigroup. Which is
-helpful because reasons
-
-\todo{Tie these two sections together}
-
-Sets with specific operations acting on those elements, known as algebraic
-structures, showcase the usage of concepts. Magma consists of a set with just a
-singular binary operation, that must be closed by definition. A semigroup is an
-extension of magma, with the added property that the binary operation is
-associative. A monoid is an extension of a semigroup, with the added property
-wherein an element in the set, \textit{C}, sometimes called a \textit{unit}, or
-the \textit{identity}. This \textit{identity} ensures the following equation
-holds, where the binary operation is $ \oplus $, and $ a, C $ are elements of the set.
-
+An important aspect of development, is logging. Knowing what actions have taken
+place is an essential tool when hunting down bugs. A common way to structure
+logs, would be composing logs, depending on when they occurred. As a concrete
+example, let's say we are making a text editor, and are in the need of a logging
+manager, which, among other things, should compose different log statements.
+Assuming we have some type \lstinline[language=Haskell]{Log A}, where there the
+type \lstinline[language=Haskell]{A}, is the result of the computation a given
+function, we want to be able to compose different, related, computations. But,
+importantly, the order of composition of the
+\lstinline[language=Haskell]{Log A}-type matters. Representing the composition
+of the \lstinline[language=Haskell]{Log A}-type as $\odot$, doing, and letting
+$a, b, c$ be of type \lstinline[language=Haskell]{Log A}:
 \begin{equation}
-  a \oplus C = a
+  a \odot \left ( b \odot c \right ) = \left ( a \odot b \right ) \odot c
 \end{equation}
 
-This, again, can be extended with an additional property, namely,
-\textit{inverse element}.
+Moving on, a good feature of a text editor, is being able to undo and redo
+actions. These are the actions that a user can do:
+
+\begin{itemize}
+  \item Insert text at a position
+  \item Delete text from a position
+  \item Redo an action
+  \item Undo an action
+\end{itemize}
+
+Same as in the logging example, composing is a reasonable thing to implement,
+and should result in another action. Similarly, the order matters; deleting text
+and then inserting, is not the same as inserting and then deleting. But we want
+the \textit{inverse} of an action, so for every action we want an opposite
+action that undos an action. Then our composition of actions looks different.
+Say, $a$ is some action, and $c$ is some opposite action, then our composition
+looks like this:
 
 \begin{equation}
-  \forall a, \exists b, \in M \implies a \oplus b = C
+  a \odot c = U
 \end{equation}
 
-Assuming associativity.
+Where $U$ is an action representing \textit{no-operation}. This could be
+inserting the empty string at any position, deleting the empty string at any
+position, or redoing or undoing any of the aforementioned actions.
 
-\subsubsection{Java Group}
+Both of these examples are relatively easy to implement, but harder to verify,
+that they work correctly; that the \textit{logic} holds. But both of these two
+examples are well known in mathematics, especially in \textit{Abstract Algebra}
+
+\subsection{Abstract Algebra}
+
+Both the logging example, and the text editor example, are some binary
+operation over some set. In the first example, our set was all different log
+statements of the type \lstinline[language=Haskell]{Log A}, and composing these
+logs, gave us another \lstinline[language=Haskell]{Log A} type. While in the
+second example, we were working on the set of actions, which we could compose,
+which also gave us another action, but we also had an action representing
+no-operation, and an \textit{inverse} operation, undoing an action.
+
+In the first example, we are working with a \textit{semigroup}, and in the
+second example, we are working with a \textit{group}. These are known as
+algebraic structures, which is just some set, with a binary operation, and some
+property on that binary operation. The trivial example, is known as
+\textit{magma}, and is defined by \ref{def:magma}. The closure \ref{def:closed}
+simply specifies that we only work with one set.
+
+\begin{definition}[Closure] \label{def:closed}
+  For a set $M$, with a binary operation $\oplus$,
+  $\forall a, \forall b, \exists c \in M$, such that
+  $a \oplus b = c$.
+\end{definition}
+
+\begin{definition}[Magma] \label{def:magma}
+  A magma is a set $M$, with a binary operation $\oplus$, which is
+  \ref{def:closed}
+\end{definition}
+
+We can \textit{extend} the definition of magma, by adding associativity on the
+binary operation. This \ref{def:assoc}, as shown in the examples, simply
+specifies that the order we evaluate our composition matters.
+
+\begin{definition}[Associtativity Law] \label{def:assoc}
+  For any binary operation $\oplus$, on a set $M$, $a, b, c \in M$.
+  $a \oplus \left ( b \oplus c \right ) = \left ( a \oplus b \right ) \oplus c$,
+  must hold.
+\end{definition}
+
+This associativity gives us a semigroup, as shown in the definition
+\ref{def:semi}, which is the structure that we modeled in our logging example.
+
+\begin{definition}[Semigroup] \label{def:semi}
+  A semigroup is a set $M$, with a binary operation $\oplus$, and $\oplus$ must
+  uphold \ref{def:closed} and \ref{def:assoc}.
+\end{definition}
+
+By simply adding the identity law (\ref{def:ident}), we get a
+monoid (\ref{def:monoid}), and adding the inverse law
+(\ref{def:inv}), we get a group.
+
+\begin{definition}[Identity Law] \label{def:ident}
+  For any binary operation $\oplus$, on a set $M$,
+  $\forall a, \exists U \in M$, such that
+  $a \oplus U = a$, and $U$ is unique.
+\end{definition}
+
+\begin{definition}[Monoid] \label{def:monoid}
+  A monoid is a set $M$, with a binary operation $\oplus$, and $\oplus$ must
+  uphold \ref{def:closed}, \ref{def:assoc} and \ref{def:ident}.
+\end{definition}
+
+\begin{definition}[Inverse Law] \label{def:inv}
+  For any binary operation $\oplus$, on a set $M$,
+  $\forall a, \exists U \in M$, such that
+  $a \oplus U = a$, and $U$ is unique.
+  And $\forall a, \exists b \in M$, such that $a \oplus b = U$, and the mapping
+  for $a \to b$ is one-to-one.
+\end{definition}
+
+\begin{definition}[Group] \label{def:group}
+  A group is a set $M$, with a binary operation $\oplus$, and $\oplus$ must
+  uphold \ref{def:closed}, \ref{def:assoc}, \ref{def:ident} and \ref{def:inv}.
+\end{definition}
+
+This definition \ref{def:group}, of course is identical to the structure we used
+to model undo-redo, in our text editor example. To avoid common mistakes when
+implementing these structures, it would behoove a developer if they could encode
+these properties in something like an interface or type class, like in Java.
+
+\subsection{Java Group}
 
 This structure not could be implemented in something like Java, an
 Object-Oriented Language, as shown in listings \ref{lst:jmagma},
@@ -77,23 +185,56 @@ the \gls{api}.
 \end{center}
 
 
-\subsubsection{Haskell Group}
+\subsection{Haskell Group}
 
-\todo{Add examples}
+This can also not be implemented in Haskell. Using typeclasses, one cannot
+enforce properties on the defined methods. Again, notice the empty extensions
+in listing \ref{lst:hsemigroup} and \ref{lst:hgroup}.
 
-This can also not be implemented in Haskell
+\begin{center}
+  \lstinputlisting
+    [ language=Haskell
+    , caption={Magma concept in Haskell}
+    , label=lst:hmagma]{./code/magma.hs}
+\end{center}
 
-\subsubsection{Magnolia Group}
+\begin{center}
+  \lstinputlisting
+    [ language=Haskell
+    , caption={Semigroup concept in Haskell, can only be upheld using unit tests}
+    , label=lst:hsemigroup]{./code/semigroup.hs}
+\end{center}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Haskell
+    , caption={Monoid concept in Haskell, can only be upheld using unit tests}
+    , label=lst:hmonoid]{./code/monoid.hs}
+\end{center}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Haskell
+    , caption={Group concept in Haskell, can only be upheld using unit tests}
+    , label=lst:hgroup]{./code/group.hs}
+\end{center}
+
+\subsection{Magnolia Group}
 
 In Magnolia, however, this can be enforced on the \textit{interface}-level. The
 example code shown in listing \ref{lst:magma}, showcases a concept
-representation a binary operation, which has one function, \textit{magma}, which
+representation a binary operation, which has one function, \textit{binop}, which
 takes in two values of type \textit{T}, and returns \textit{T}. Note that the
 actual implementation of this function is missing. This is because a concept
 encodes the properties of a users code. The actual implementation of the
-\textit{magma} function needs to uphold the properties of the concept that is
-being implemented. In this case, it is just that the input and output
-of the function are of the same types.
+binary function needs to uphold the properties of the concept that is
+being implemented. Note that this is unlike the Java and Haskell example, in
+which we have no way to encode the property of our binary function. So any
+consumer of our \gls{api} would not be explicitly bound to our restriction of
+the associativity law \ref{def:assoc}, identify law \ref{def:ident}, and the
+inverse law \ref{def:inv}, required by semigroup and group. The closure
+definition, \ref{def:closed}, however, can be encoded by the type system in Java
+and Haskell.
 
 \begin{center}
   \lstinputlisting
@@ -127,8 +268,7 @@ with the added property of associativity.
     , label=lst:group]{./code/group.mg}
 \end{center}
 
-So Magnolia facilitates \textit{reuse}.
-\todo{Make the red-thread easier to follow}
+So Magnolia facilitates reuse, and extension of logic. \todo{expand}
 
 \section{Reusable Software}
 
@@ -144,8 +284,22 @@ Reusability is also an important feature in Magnolia, but this reusability is in
 the entire language. In libraries in other languages, functions are reused, in
 an attempt to avoid common logical mistakes, but these mistakes could still be
 there, hiding in plain view. In Magnolia, one can re-use the \textit{logic} of a
-function.
-\todo{Expand}
+function. The logging and group example can be written using Magnolia concepts
+as shown in listing \ref{lst:logging} and \ref{lst:editor} respectively.
+
+\begin{center}
+  \lstinputlisting
+    [ language=Magnolia
+    , caption={Logging example}
+    , label=lst:logging]{./code/logging.mg}
+\end{center}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Magnolia
+    , caption={Editor example}
+    , label=lst:editor]{./code/editor.mg}
+\end{center}
 
 \subsection{Software Lifetimes}
 
@@ -168,7 +322,7 @@ users wants. The users of \gls{vim} can be split into two categories,
 extensive module ecosystem, which can extend \gls{vim}s functionality from a
 text editor, to a fully fledged \gls{ide}.
 
-\section{Integrated Development Environment}
+\section{Integrated Development Environment} \label{sec:ide}
 
 An \gls{ide}, aids a developer, as all the needed tools for development are
 integrated into one application. There are two different kinds of \gls{ide}s,
@@ -219,9 +373,37 @@ developing it, that community can continue to develop the module, either by
 getting maintenance access to the repository, or by forking it. Ensuring the
 lifetime of the module is extended.
 
-\subsection{Module Architecture}
+\section{Module Architecture}
 
 \todo{Talk about modules in IDEs}
+
+A modular application, is an application which can be extended by other pieces
+of software. This extensibility is useful as features that the original
+developers of the application did not think about, can be added. If this module
+architecture is well-designed, then this extension can be added without changing
+the core application.
+
+There are different methods an application can be extended. The most common one
+uses so-called \textit{live-reload}, in which, if a module drastic changes the
+functionality of an application, the application has to be restarted, or if it
+is a \textit{minor} change, the module is simply loaded. This method is
+extending of the application during runtime, which is the method most users
+expect. Another method would be \textit{compile-time-extension}, in which
+modules are added before the application itself is compiled. There are some
+advantages and disadvantage in both approaches.
+
+\subsection{Compile Time Extension}
+
+\todo{Expand}
+As an example, a standard user of any application will expect the application to
+come bundled with all the needed functionality. This is best achieved with the
+\textit{compile-time-extension} method, since the application can be installed
+with the expected modules.
+
+\subsection{Runtime Extension}
+
+\todo{Expand}
+
 
 \subsection{Module Ecosystem}
 
@@ -260,38 +442,55 @@ several modules together enable some feature, then those modules can be treated
 as a singular module by an external module developer, depending on what they
 want to extend.
 
-\subsection{Language Workbench}
-\todo{Expand}
-I don't know what this is.
+\section{Language Workbench}
 
-\subsection{Language Server}
+Language workbenches are environments for simplifying the creation and use of
+computer languages. \cite{lwb}
+
+\todo{Expand}
+
+\section{Language Server}
 
 The most important features in a modern \gls{ide} are possible due to the
 \gls{lsp}. \gls{lsp} is a protocol for a language server and editor,
-(the client), with which they communicate, allowing for features like code
-completion, syntax highlighting, marking of warnings and errors, as well as
-refactoring routines. This client-server architecture, in \gls{ide}s are a
-more recent development (2020s), as previously, support for the features
-mentioned, were only possible due to specific modules being written for
-specific \gls{ide}s. \gls{lsp} being the norm, is a sign of modularity being
-preferred, as now a single \gls{lsp} can be created, and used across several
-different applications, like IntelliJ, VS Code and Vim. While useful for
-\textit{standard} language, this is the limiting factor when it comes to
-supporting experimental languages, as not only does a new set of protocols need
-to be appended to a language server, the editor itself needs to be changed to
-actually use these protocols. This creates a lot of work, for both the \gls{ide}
-developer and for the compiler developer. Here is where a modular approach can
-help both. If some new functionality or feature is added to the experimental
-language, this off course means the compiler/interpreter has to be expanded
-and/or modified, but for the \gls{ide}, a module could be added/modified to
-utilize this change, instead of having to change the entire application.
+(the client), with which they communicate, allowing for many of the features
+mentioned in section \ref{sec:ide}, and explicitly mentioned in table
+\ref{tbl:ide}. \gls{lsp} being the standard since the 2020s, is a sign of
+modularity being preferred, as now a single \gls{lsp} can be created, and used
+across several different applications, like IntelliJ, VS Code and \gls{vim}.
+While useful for \textit{standard} language, this is the limiting factor when it
+comes to supporting experimental languages, as not only does a new set of
+protocols need to be appended to a language server, the editor itself needs to
+be changed to actually use these protocols. This creates a lot of work, for both
+the \gls{ide} developer and for the compiler developer. Here is where a modular
+approach can help both. If some new functionality or feature is added to the
+experimental language, this off course means the compiler/interpreter has to be
+expanded and/or modified, but for the \gls{ide}, a module could be added and/or
+modified to utilize this change, instead of having to change the entire
+application.
+
+\begin{table}[]
+  \centering
+  \caption{IDE features enabled by LSP}
+  \label{tbl:ide}
+  \begin{tabular}{|l|l|}
+    \hline
+    IDE Feature & LS-Protocol \\ \hline
+    Go to Declaration & textDocument/definition \\ \hline
+    Go to Implementation & textDocument/implementation \\ \hline
+    Auto-completion & textDocument/completion \\ \hline
+    Hover & textDocument/hover \\ \hline
+    Warnings & textDocument/publishDiagnostics \\ \hline
+    Rename & textDocument/rename \\ \hline
+  \end{tabular}
+\end{table}
 
 \section{Existing Magnolia IDE}
 
-The current \gls{ide} for Magnolia, is a many-years-old version of Eclipse,
-using modules and functionality from the core Eclipse application, that has
-since been outdated. The \gls{ide}s lifetime was limited by a dependency on
-external modules and features that where not maintained by the
+The current \gls{ide} for Magnolia \cite{baggeIde}, is a many-years-old version
+of Eclipse, using modules and functionality from the core Eclipse application,
+that has since been outdated. The \gls{ide}s lifetime was limited by a
+dependency on external modules and features that where not maintained by the
 \gls{ide}-developers. This meant that for future development of Magnolia, an
 outdated \gls{ide} was needed, with outdated tooling. Furthermore, the Magnolia
 compiler was implemented as an Eclipse module, which means that development is
@@ -313,5 +512,3 @@ time passes, increases the complexity of installation, as the surrounding
 tooling and libraries needed by this version of Eclipse also becomes deprecated.
 Currently, in INF220, at the university, two weeks are set aside for students to
 be able to install it.
-
-\todo{Reference Anya's paper}

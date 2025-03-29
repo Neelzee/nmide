@@ -1,4 +1,4 @@
-\chapter{Magnolia IDE}
+\chapter{Magnolia IDE} \label{cha:ide}
 
 This section will discuss the new Magnolia \gls{ide}, the different users of the
 \gls{ide}, and their possible experiences which was under consideration when
@@ -6,7 +6,7 @@ developing the application.
 
 \section{User Perspectives}
 
-This application has to consider different users
+This application has to consider different users.
 
 \subsection{Module Developer}
 
@@ -31,20 +31,55 @@ have their own translator.
 
 \subsubsection{Existing Third Party Libraries}
 
-You can use existing JavaScript libraries
+You can use existing JavaScript libraries.
+
+This fascilitates designing modules, as a module could simply act as a binding
+between the existing JavaScript library, and the core application. Since the
+core application is designed to be an \gls{ide}, one could use existing
+JavaScript libraries, like \textit{Monaco}, which is the text editor used by
+Visual Studio Code. It comes with an integrated \gls{lsp}-client, which would
+enable the application to easily support existing popular languages.
+
+However, being a zero core application, this application could be anything, from
+a audio editing program, to a game emulator. Simply using the \textit{JS-DOS}
+library, would allow the application to run Doom.
 
 \subsection{IDE User}
 
-Something-something compiled/runtime modules
+Something-something compiled/runtime modules.
+
+As mentioned in chapter \ref{cha:background}, modern \gls{ide}s come with an
+integrated module architecture. Which is used to extend/change the \gls{ide},
+from as simple as to change the theme, to more drastic changes, like changing
+all keybinds to \textit{vim-motions}. In any case, a user expects certain
+functionality to already exist in an \gls{ide}, like text editing. A maintainer
+of a zero core \gls{ide} could supply modules added at compile time, meaning the
+expected functionality is there out of the box, while more thematic modules
+could be supplied as runtime modules.
 
 \subsubsection{Standard User}
 
-Stupid/Lazy
+Stupid/Lazy.
+
+Most users just want an \gls{ide}, and do not spend, nor want to spend, much
+time configuring their \gls{ide}.
 
 \subsubsection{Experienced User}
 
-Stupid/Opinionated
+Stupid/Opinionated.
+
+Most experiences users just want to modify their \gls{ide}, instead of actually
+using it.
 
 \subsection{Maintainer}
 
 Stupid/Lazy/Opinionated
+
+To make the maintainer of the core application most comfortable, good
+documentation is needed. But how good is documentation if it is not updated
+when the code being documented is changed? This is where Rusts doc-test system
+comes into play. Any function annotated with a docstring, can contain code
+examples. If these code examples are written as Rust code, and use assert
+statements, then this code is run, during testing, as if it was an actual test.
+Meaning the saying \textit{code is documentation}, is
+\textit{documentation is code} in Rust.

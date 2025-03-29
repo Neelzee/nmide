@@ -1,4 +1,4 @@
-\chapter{Related Work}
+\chapter{Related Work} \label{cha:related}
 
 \paragraph{Automated Testing} Due to the exstensive modularity of the
 application, all modules can be tested individually, by \textit{mocking} the
@@ -10,4 +10,18 @@ framework, like the one in \cite{autoUi}.
 
 \paragraph{\gls{mdcs}} Since the data and the \gls{ui}
 in the core application is separated, it allows for use of Multi-way Dataflow
-Constraint Systems. Leveraging \gls{mdcs}'s as mentioned in \cite{dslMdcs}
+Constraint Systems. Leveraging \gls{mdcs}-frameworks, like \textit{WarmDrink} as
+mentioned in \cite{declGui} and \cite{dslMdcs}
+
+\paragraph{JavaScript Module System} Due to the good compatibility with existing
+JavaScript libraries, this zero core application can utilize things like
+\textit{flushable promises} \cite{flush}
+
+\paragraph{Expected \gls{ui} behaviour} When creating a \gls{ui}, it is
+important that it behaves in a manner which the user expects \cite{leastGui}.
+
+\paragraph{Rust Module System} Since the core application is made using Rust,
+one could use a \gls{mdcs}-framework made for Rust \cite{mcdsRust}.
+
+\paragraph{\gls{mdcs} tooling} Having good tooling for a framework is important,
+as shown in \cite{toolMcds}

@@ -1,37 +1,15 @@
-\chapter{Implementation}
+\chapter{Implementation} \label{cha:impl}
 
-\section{Modularity}
+This section will focus on the implementation of the zero core \gls{ide}. In
+section \ref{sec:stack}, we will mention technologies used, and the reasoning
+behind them. In section \ref{sec:mod1} and \ref{sec:mod2}, we will discuss the
+different iterations the application architecture had, and why they were subpar,
+compared to section \ref{sec:mod3}, which is the implementation of the zero core
+\gls{ide}. Section \ref{sec:testing} will explain the necessity of testing when
+using such a modular design, and explore the ease of which functionality can be
+tested.
 
-A modular application, is an application which can be extended by other pieces
-of software. This extensibility is useful as features that the original
-developers of the application did not think about, can be added. If this module
-architecture is well-designed, then this extension can be added without changing
-the core application.
-
-\subsection{How to extend an application}
-
-There are different methods an application can be extended. The most common one
-uses so-called \textit{live-reload}, in which, if a module drastic changes the
-functionality of an application, the application has to be restarted, or if it
-is a \textit{minor} change, the module is simply loaded. This method is
-extending of the application during runtime, which is the method most users
-expect. Another method would be \textit{compile-time-extension}, in which
-modules are added before the application itself is compiled. There are some
-advantages and disadvantage in both approaches.
-
-\subsubsection{Compile Time Extension}
-
-\todo{Expand}
-As an example, a standard user of any application will expect the application to
-come bundled with all the needed functionality. This is best achieved with the
-\textit{compile-time-extension} method, since the application can be installed
-with the expected modules.
-
-\subsubsection{Runtime Extension}
-
-\todo{Expand}
-
-\section{Tech Stack}
+\section{Tech Stack} \label{sec:stack}
 
 \subsection{Web View}
 
@@ -48,7 +26,6 @@ and null references.
 Framework we chose was Tauri, UI components can be created using JavaScript. This
 framework gives a lot of security which is needed in an application which runs
 third party code.
-\todo{Expand upon the security aspect}
 
 As mentioned, the UI of the application is rendered using \gls{html} and
 JavaScript, making development of the UI similar to standard web development.
@@ -89,7 +66,11 @@ While this is not the best approach to implementing a text editor, a more
 modular approach, by turning the text editor into a module family would be more
 effective, it is good enough as a stop-gap.
 
-\section{Module V.1}
+\subsection{Security}
+
+\todo{Expand upon the security aspect}
+
+\section{Module V.1} \label{sec:mod1}
 
 We did not attempt at first, to create a zero core application; this was a
 \textit{natural} conclusion to the existing problem. The first attempt was a
@@ -112,9 +93,7 @@ Furthermore, anything created this way, would be subpar to existing software,
 which would lead to the next maintainer having to fix the core application. This
 in turn, would add a lot of complexity, which the maintainers would have to deal with.
 
-\section{Module V.2}
-
-\todo{Mention the troubles with backend-frontend state coalescing.}
+\section{Module V.2} \label{sec:mod2}
 
 After 7–8 months of working on this, everything was scrapped for this new plan:
 
@@ -171,6 +150,13 @@ which is rendered by the core.
     ]{./code/plugin-example.hs}
 \end{center}
 
+\subsubsection{Module purity}
+
+\todo{
+  The implementation of this was more complex, and relied on the pureness of
+  modules, which should be mentioned.
+}
+
 \paragraph{State}
 State is the \textit{state} of the application. In this case, it has the same
 structure as a JSON object. A few values are set at the start of the
@@ -202,19 +188,18 @@ The way rendering worked in the core application, was to \textit{parse} the
 \gls{html}-representation given by a module, and translating it into actual
 \gls{html} which was added to the \gls{dom}.
 
-\todo{
-  The implementation of this was more complex, and relied on the pureness of
-  modules, which should be mentioned.
-}
+\subsubsection{Backend-Frontend State Coalescing}
+
+\todo{Mention the troubles with backend-frontend state coalescing.}
 
 But this introduces a possibility for some hierarchy in the module ecosystem.
 For example, a module could act as a framework, and therefore needs to only be
 loaded once, creating new locations, with styling.
 
-The new module architecture is shown in figure
-\ref{fig:moduleArchitecture}
+The new module architecture is shown in figure \ref{fig:moduleArchitecture}
 
 \subsection{Architecture}
+
 \begin{figure}
   \centering
   \input{./figures/plugin-architecture}
@@ -245,15 +230,6 @@ be easily translated to a Rust representation of the same type, using the
 JSON objects, and creates an automatic encoder/decoder between Rust and JSON.
 This ensures a good cooperation between the \textit{frontend} and
 \textit{backend}.
-\todo{Rewrite this, I didn't discuss this with anyone}
-\todo{Also expand on the module-validation part, third-party-code, and all that.}
-Before the finalization of this state representation, there was some
-discussion, on how best to represent a number. Because, in JavaScript, there is
-no distinction between a floating-point number, and a decimal number. This
-\textit{leakage} was stopped by adding extra validation in the core, using the
-\textit{io-fp} library, which validates data sent from a module, regardless if
-its from the frontend or backend This will be discussed more in the next
-section.
 
 \begin{center}
   \lstinputlisting
@@ -302,7 +278,16 @@ user, sends the \textit{counter-Msg}.
 
 \todo{Mention module validation}
 
-\subsection{State Collision}
+\todo{Also expand on the module-validation part, third-party-code, and all that.}
+Before the finalization of this state representation, there was some
+discussion, on how best to represent a number. Because, in JavaScript, there is
+no distinction between a floating-point number, and a decimal number. This
+\textit{leakage} was stopped by adding extra validation in the core, using the
+\textit{io-fp} library, which validates data sent from a module, regardless if
+its from the frontend or backend This will be discussed more in the next
+section.
+
+\subsection{State Collision} \label{sec:collision}
 
 A state collision occurs when two or more modules updates the same field, during
 the same update-cycle. This issue also occurs when folding two states.
@@ -487,7 +472,7 @@ could be actually tested out.
   \label{fig:doom}
 \end{figure}
 
-\section{Module V.3}
+\section{Module V.3} \label{sec:mod3}
 
 The third and hopefully final, plan:
 
@@ -510,36 +495,20 @@ this restructuring, made it clear that changing the state, or changing the
 
 \subsection{Core Modifications}
 
-\todo{expand}
-
-
-\subsection{Backend Agnostic Frontend}
-
-As mentioned in the previous section, the tech stack splits the application into
-two, loosely coupled parts. The \textit{frontend} and \textit{backend}. This
-architecture does facilitate the concept of an agnostic frontend. That is, if,
-as is the case per the previous plan, all logic pertaining to the core is in the
-\textit{frontend}, cannot the backend be anything, as long as it fulfills the
-following criteria.
-
-\begin{itemize}
-  \item File system modification
-  \item Module loading
-\end{itemize}
-
-So that was a part of the new plan, avoid creating a \textit{backend}-module
-system, similar to the \gls{rsms} mentioned previously. The functionality or
-rather capability to extend the core application with modules written in Rust
-exist, but would be a future core maintainers job. This would greatly simplify
-the implementation of the core application, as a simplified \textit{backend}
-could be created, only offering simple functionality, like access to the file
-system. This plan would still keep the support for external JavaScript
-libraries, not made with the application in mind, to be used, which also would
-greatly reduce the development time.
+Learning from the issues outlined in section \ref{sec:collision}, instead of a
+module returning the new core, it will rather return a set of instruction on
+\textit{how} the core is to be modified, resulting in what the module developer
+wants the core to be. The reason for turning it around in this manner, is that,
+the new architectural change also came with a change on how the \gls{ui} is
+modeled, as it is now up to the core to figure out an inexpensive way to do
+rendering. Since the core has \gls{ui}-structure which is a representation of
+what the \gls{dom} should be, it can be treated as a Virtual-\gls{dom}, similar
+as to how React does it. This also means that there could be a collision on
+\gls{ui}-change, as well as on a state-change. Instead of solving the equivalent
+problems twice, it was decided to try to treat the issues with collisions in
+state and \gls{ui} as the same issue; its some form of tree-manipulation.
 
 \subsection{Tree Manipulation}
-
-\todo{Mention how state and UI manipulation is equivalent to tree manipulation}
 
 This restructure changes the way the view is rendered. Instead of the view being
 re-rendered for each state-update, the view, or \gls{ui}-hierarchy, is only
@@ -639,3 +608,55 @@ UI-hierarchy, by adding a button which throws an
 \lstinline[language=Haskell]{EventHandler} shown in
 \ref{lst:moduleEventHandler}, which again, modifies the core by changing the
 counter field with the value from the \lstinline[language=Haskell]{Event}.
+
+\subsection{Backend Agnostic Frontend}
+
+As mentioned in the previous section, the tech stack splits the application into
+two, loosely coupled parts. The \textit{frontend} and \textit{backend}. This
+architecture does facilitate the concept of an agnostic frontend. That is, if,
+as is the case per the previous plan, all logic pertaining to the core is in the
+\textit{frontend}, cannot the backend be anything, as long as it fulfills the
+following criteria.
+
+\begin{itemize}
+  \item File system modification
+  \item Module loading
+\end{itemize}
+
+So that was a part of the new plan, avoid creating a \textit{backend}-module
+system, similar to the \gls{rsms} mentioned previously. The functionality or
+rather capability to extend the core application with modules written in Rust
+exist, but would be a future core maintainers job. This would greatly simplify
+the implementation of the core application, as a simplified \textit{backend}
+could be created, only offering simple functionality, like access to the file
+system. This plan would still keep the support for external JavaScript
+libraries, not made with the application in mind, to be used, which also would
+greatly reduce the development time.
+
+\section{Testing} \label{sec:testing}
+
+A zero-core application is equivalent to a microservice architecture, in that
+testing is important to ensure changes in one module does not inadvertently
+affect another.
+
+\subsection{Mocking}
+
+Due to the \textit{pureness} of modules, mocking can be achieved easily, and
+therefore, modules can be tested alone
+
+\subsection{Unit Testing}
+
+A module developer should create unit tests for their module.
+
+\subsection{Automated UI Testing}
+
+\todo{Mention the automated script generation, or playwright?}
+
+\subsection{Module Family Testing}
+
+
+\subsubsection{Contract Testing}
+
+\todo{Mention https://docs.pact.io/}
+
+\subsection{\gls{e2e}-Testing}
