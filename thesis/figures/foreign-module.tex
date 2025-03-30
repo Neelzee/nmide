@@ -1,0 +1,10 @@
+\begin{tikzpicture}
+  % Nodes
+  \node (p-0) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (-3, 0) {Foreign Module};
+  \node (m) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (0, 0) {C-Module};
+  \node (i) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (3, 0) {IDE};
+  % Arrow
+  \draw[->] (m.north) to[out=60, in=120] node[midway, above] {Modification} (i.north);
+  \draw[->] (i.south) to[out=-120, in=-60] node[midway, above] {Event/Core} (m.south);
+  \draw[->] (p-0) -- (m) node[midway, above] {};
+\end{tikzpicture}
