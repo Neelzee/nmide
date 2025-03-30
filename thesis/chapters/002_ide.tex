@@ -22,12 +22,26 @@ JavaScript/HTML/CSS. Or IntelliJ, where one can use Java or Kotlin. But what
 does language agnostic mean in the context of programming languages? It is, and
 always will be C. Any \textit{serious} language has some form of C-\gls{abi}.
 So, for a module application to be Language Agnostic, it must be able to invoke
-C Modules. This functionality can come from a module, creating a structure as
-shown in figure. \todo{Create this figure}
+C Modules.
+
+\begin{figure}
+  \begin{center}
+    \input{./figures/foreign-module-1}
+    \label{fig:fm1}
+  \end{center}
+\end{figure}
+
+\begin{figure}
+  \begin{center}
+    \input{./figures/foreign-module-2}
+    \label{fig:fm2}
+  \end{center}
+\end{figure}
 
 This module could be a singular one, acting as a translator, translating the
-data flowing between the core and foreign-modules, or each foreign-module could
-have their own translator.
+data flowing between the core and foreign-modules as shown in figure
+\ref{fig:fm1}, or each foreign-module could have their own translator as shown
+in figure \ref{fig:fm2}.
 
 \subsubsection{Existing Third Party Libraries}
 

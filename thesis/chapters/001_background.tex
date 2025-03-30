@@ -7,7 +7,10 @@ University of Bergen. Magnolia is designed to support a high level of abstractio
 and ease of reasoning. This is achieved by \textit{concepts}, \textit{axioms} and
 \textit{implementations}.
 
-\todo{expand}
+\todo{
+  Expand, maybe exploring generic concepts, axioms and implementation, noting
+  how a developer would use Magnolia?
+}
 
 \subsection{Mathematics and Programming}
 
@@ -166,24 +169,29 @@ the \gls{api}.
 \begin{center}
   \lstinputlisting
     [ language=Java
-    , caption={Semigroup concept in Java, can only be upheld using unit tests}
+    , caption={Semigroup concept in Java}
     , label=lst:jsemigroup]{./code/semigroup.java}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Java
-    , caption={Monoid concept in Java, can only be upheld using unit tests}
+    , caption={Monoid concept in Java}
     , label=lst:jmonoid]{./code/monoid.java}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Java
-    , caption={Group concept in Java, can only be upheld using unit tests}
+    , caption={Group concept in Java}
     , label=lst:jgroup]{./code/group.java}
 \end{center}
 
+\begin{remark}
+  One could ensure the associativity, identity and inverse law are upheld using
+  unit tests, but this is not enforced on consumers of our \gls{api}; we cannot
+  enforce these laws on implementers.
+\end{remark}
 
 \subsection{Haskell Group}
 
@@ -375,7 +383,7 @@ lifetime of the module is extended.
 
 \section{Module Architecture}
 
-\todo{Talk about modules in IDEs}
+\todo{Talk about modules in \gls{ide}s}
 
 A modular application, is an application which can be extended by other pieces
 of software. This extensibility is useful as features that the original
@@ -392,20 +400,45 @@ expect. Another method would be \textit{compile-time-extension}, in which
 modules are added before the application itself is compiled. There are some
 advantages and disadvantage in both approaches.
 
-\subsection{Compile Time Extension}
+\subsection{Compile Time Module}
 
 \todo{Expand}
 As an example, a standard user of any application will expect the application to
 come bundled with all the needed functionality. This is best achieved with the
 \textit{compile-time-extension} method, since the application can be installed
-with the expected modules.
+with the expected modules. A compile time module is usually made using the same
+language as the core application.
 
-\subsection{Runtime Extension}
+\subsection{Runtime Module}
 
 \todo{Expand}
 
+Runtime modules are usually also interpreted, but they can still be a
+library, same as in a compile time module.
 
 \subsection{Module Ecosystem}
+
+In modern \gls{ide}s, with an extensive module architecture, there exists a
+vast module ecosystem. From simple modules that change the color scheme, or
+add file icons to more complex modules that add support for other languages.
+A good variety of a module ecosystem can help ensure the longevity of an
+\gls{ide}.
+
+\begin{table}[]
+  \centering
+  \caption{Module Ecosystem per \gls{ide}}
+  \label{tbl:mod}
+  \begin{tabular}{|l|l|}
+    \hline
+    \gls{ide} & Module count \\ \hline
+    Eclipse & $1200~$ \\ \hline %\footnote{Found at \href{https://marketplace.eclipse.org/content/welcome-eclipse-marketplace}{Eclipse Marketplace}}
+    Nvim & $4600~$ \\ \hline %\footnote{Found by looking at search results on \href{https://github.com/search?q=nvim+plugin&type=repositories}{GitHub}}
+    Intellij & $9500~$ \\ \hline %\footnote{Found at \href{https://plugins.jetbrains.com/}{Intellij Marketplace}}
+    \gls{vim} & $11500~$ \\ \hline %\footnote{Found by looking at search results on \href{https://github.com/search?q=nvim+plugin&type=repositories}{GitHub}}
+    VS Code & $71700~$ \\ \hline %\footnote{Found by doing an empty search at \href{https://marketplace.visualstudio.com/search?target=VSCode&category=All%20categories&sortBy=Installs}{VS Code Marketplace}}
+  \end{tabular}
+\end{table}
+
 
 \todo{Expand}
 More modules == better, right?
@@ -512,3 +545,13 @@ time passes, increases the complexity of installation, as the surrounding
 tooling and libraries needed by this version of Eclipse also becomes deprecated.
 Currently, in INF220, at the university, two weeks are set aside for students to
 be able to install it.
+
+\section{Challenges imposed by Magnolia}
+
+Mention renaming?
+
+Mention \gls{stf}s?
+
+Mention \gls{asr}s?
+
+Mention the need for two different external programs, a compiler and a solver?

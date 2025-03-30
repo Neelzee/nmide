@@ -1,5 +1,46 @@
 \chapter{Related Work} \label{cha:related}
 
+\section{Multi-way Dataflow Constraint System} \label{sec:mdcs}
+
+One thing this application does not provide a solution for, is the difficulty
+in designing good \gls{gui}. Following the \gls{mvc}-pattern, \gls{gui}s can
+represent structures such as lists, which users might want to manipulate in
+some fashion, like appending or rearringing the items in the list. Managing such
+a change, especially one that involves \gls{gui} widgets can be a challenge,
+since a change in the view should be reflected in the model, and encoding this
+can be very involved. Luckily, there exists frameworks that makes this task
+easier. \textit{WarmDrink}, \cite{warmDrink} \cite{dslMdcs} is a JavaScript
+framework that allow a developer to declarative specify structural changes in
+an application. \todo{Find out if this is actually possible}
+
+Another issue in \gls{gui}s is optimizing performance in regards to events
+triggered by user actions, such as scrolling, resizing or typing. These events
+could happen many times in a second, while in theory user speed is trivial for a
+computer to keep up with, there are instances where a module family could be
+quite large, meaning many different modules are triggered by the same event many
+times. There are techniques, called event coalescing, for handling this, like
+debouncing and throttling.
+
+\paragraph{Debouncing} Debouncing is a technique where you delay the sending of
+an event until after some timeperiod $T$ has passed. Once the event is triggered
+$T_0$ starts counting down. If the same event is retriggered while $T_0 > 0$,
+$T_0$ is reset by $T_0 = T$. If $T_0 = 0$, then the event is sent. Ensuring that
+$T$ is not too large, is important, as if $T$ is above some threshold, the user
+of the \gls{gui} will notice, and it will make the application \textit{feel}
+slow.
+
+\paragraph{Throttling} Throttling is a similar technique to debouncing, except
+instead of delaying the event by some time $T$, the event is only sent when
+$T_0 = 0$. Meaning the event is sent at regular intervals, and could be sent at
+the exact same point in time when the user triggered the event, or it could
+happen at most, $T$ units after the user action.
+
+Debouncing and throttling work in less complex \gls{gui} structures, but as the
+amount of features in an application increases, the complexity will also
+increase. These event coalescing stragegies are a source of subtle bugs, as
+event coalecsing can easily break modularity. In a \gls{jsms}, this issue could
+be solved by using \textit{flusable promises} \cite{flush}.
+
 \paragraph{Automated Testing} Due to the exstensive modularity of the
 application, all modules can be tested individually, by \textit{mocking} the
 expected state and events. This means that breaking changes in one module can be
@@ -11,7 +52,7 @@ framework, like the one in \cite{autoUi}.
 \paragraph{\gls{mdcs}} Since the data and the \gls{ui}
 in the core application is separated, it allows for use of Multi-way Dataflow
 Constraint Systems. Leveraging \gls{mdcs}-frameworks, like \textit{WarmDrink} as
-mentioned in \cite{declGui} and \cite{dslMdcs}
+mentioned in \cite{warmDrink} and \cite{dslMdcs}
 
 \paragraph{JavaScript Module System} Due to the good compatibility with existing
 JavaScript libraries, this zero core application can utilize things like
@@ -25,3 +66,11 @@ one could use a \gls{mdcs}-framework made for Rust \cite{mcdsRust}.
 
 \paragraph{\gls{mdcs} tooling} Having good tooling for a framework is important,
 as shown in \cite{toolMcds}
+
+
+\section{Abstract Algebra}
+
+Interesting stuff. Its cool to know the names of certain \textit{patterns} in
+mathematics, which are useful in programming. Other people also think that,
+which is why \textit{Algebraic Specification}, for specifying system behavior,
+was popular in the 80s. You got stuff like \cite{cafeObj}.

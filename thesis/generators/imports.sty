@@ -56,10 +56,10 @@ style=numeric-verb,
   \setlength{\glsdescwidth}{1\hsize}
 
 \usepackage{datetime}
-\newdateformat{monthyeardate}{%
+\newdateformat{monthyeardate}{
   \monthname[\THEMONTH], \THEYEAR}
 
-\newcommand\blankpage{%
+\newcommand\blankpage{
     \null
     \thispagestyle{empty}%
     \addtocounter{page}{-1}%
@@ -91,3 +91,5 @@ style=numeric-verb,
 \usepackage{amsthm}
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
