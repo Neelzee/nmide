@@ -1,8 +1,9 @@
-concept Logging = {
-  type K;
+trait Log {
+    pub fn appendLog(self, other: Self) -> Self;
+}
+
+concept Log = {
   type Log;
+    function appendLog(first: Log, second: Log): Log;
 
-  function getValue(log: Log): K;
-
-  use Semigroup[binop => combine, T => Log];
 };
