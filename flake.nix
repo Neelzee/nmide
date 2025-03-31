@@ -41,24 +41,6 @@
           git-cliff
           xdotool
           # TAURI END
-          # HASKELL START
-          zlib
-          nodejs
-          electron
-          patchelf
-          gtk2
-          glib
-          cairo
-          pango
-          atk
-          gdk-pixbuf
-          harfbuzz
-          # HASKELL END
-          haskellPackages.ghc
-          haskellPackages.cabal-install
-          haskellPackages.haskell-language-server
-          haskellPackages.threepenny-gui
-          haskellPackages.stm
         ];
       in
       {
