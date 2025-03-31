@@ -7,6 +7,19 @@ University of Bergen. Magnolia is designed to support a high level of abstractio
 and ease of reasoning. This is achieved by \textit{concepts}, \textit{axioms} and
 \textit{implementations}.
 
+\subsection{Magnolia Concept}
+
+Something, Something, \dots, concepts declare types, functions and properties
+which those functions need to uphold. A simple example of this would be a
+concept for addition with natural numbers.
+
+\subsection{Magnolia Implementation}
+
+Something, Something, \dots, implementations of concepts need to uphold the
+axioms declared in the concept being implemented. This is done by using an
+external SMT-solver.
+\todo{Cite Beate maybe?}
+
 \todo{
   Expand, maybe exploring generic concepts, axioms and implementation, noting
   how a developer would use Magnolia?
@@ -68,8 +81,74 @@ inserting the empty string at any position, deleting the empty string at any
 position, or redoing or undoing any of the aforementioned actions.
 
 Both of these examples are relatively easy to implement, but harder to verify,
-that they work correctly; that the \textit{logic} holds. But both of these two
-examples are well known in mathematics, especially in \textit{Abstract Algebra}
+that they work correctly; that the \textit{logic} holds. The following are
+examples of the logging and editor examples in Java, Rust, and Magnolia
+respectively.
+\todo{rewrite}
+
+\subsection{Java: Logging and Editor}
+
+This structure not could be implemented in something like Java, an
+Object-Oriented Language, as shown in listings \ref{lst:jmagma},
+\ref{lst:jsemigroup}, \ref{lst:jmonoid}, and \ref{lst:jgroup}. Note the empty
+interfaces; there is nothing that enforces the different laws on the properties.
+This can only be done by unit testing, which is not enforced on a consumer of
+the \gls{api}.
+\todo{rewrite}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Java
+    , caption={Logging structure in Java}
+    , label=lst:jlogging]{./code/logging.java}
+\end{center}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Java
+    , caption={Editor structure in Java}
+    , label=lst:jeditor]{./code/editor.java}
+\end{center}
+
+\subsection{Rust: Logging and Editor}
+
+These can also not be implemented using Rusts trait system.
+\todo{Expand}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Rust
+    , caption={Logging structure in Rust}
+    , label=lst:rlogging]{./code/logging.rs}
+\end{center}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Rust
+    , caption={Editor structure in Rust}
+    , label=lst:reditor]{./code/editor.rs}
+\end{center}
+
+\subsection{Magnolia Group}
+
+
+\todo{Expand}
+
+In Magnolia, however, this can be enforced on the \textit{interface}-level.
+
+\begin{center}
+  \lstinputlisting
+    [ language=Magnolia
+    , caption={Logging structure in Magnolia}
+    , label=lst:mlogging]{./code/logging.mg}
+\end{center}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Magnolia
+    , caption={Editor structure in Magnolia}
+    , label=lst:meditor]{./code/editor.mg}
+\end{center}
 
 \subsection{Abstract Algebra}
 
@@ -148,7 +227,10 @@ monoid (\ref{def:monoid}), and adding the inverse law
 This definition \ref{def:group}, of course is identical to the structure we used
 to model undo-redo, in our text editor example. To avoid common mistakes when
 implementing these structures, it would behoove a developer if they could encode
-these properties in something like an interface or type class, like in Java.
+these properties in something like an interface or a trait, however, this is not
+possible in either Java nor Rust.
+
+\todo{Rewrite this to better fit the previous section}
 
 \subsection{Java Group}
 
@@ -358,9 +440,14 @@ their implementation is a useful tool for a developer, as less time has to be
 spent navigating the project structure, to figure out where some method was
 implemented, and more time can be spent actually developing.
 
-A lot of these features are possible due to \textit{Language Server Protocols},
-which allow for a standardized way for compilers to give code-support to
-\gls{ide}'s.
+\paragraph{Pretty Printing/Formatting} Following the languages style guide.
+\todo{Expand, add examples like with Rust}
+
+\paragraph{Boilerplate Code Generation} For unit tests, getters and setters,
+(where relevant), and similar.
+
+A lot of these features are possible due to \gls{lsp} which allow for a
+standardized way for compilers to give code-support to \gls{ide}'s.
 
 A generic \gls{ide} contains the features that are common among development in
 any programming language, like:
@@ -400,6 +487,9 @@ expect. Another method would be \textit{compile-time-extension}, in which
 modules are added before the application itself is compiled. There are some
 advantages and disadvantage in both approaches.
 
+Something, something \dots, in Eclipse modules extending modules is quite
+common, using Eclipse Rich Client Platform. \cite{eclipseRcp}
+
 \subsection{Compile Time Module}
 
 \todo{Expand}
@@ -418,11 +508,31 @@ library, same as in a compile time module.
 
 \subsection{Module Ecosystem}
 
+\todo{Expand}
+More modules == better, right?
+
 In modern \gls{ide}s, with an extensive module architecture, there exists a
 vast module ecosystem. From simple modules that change the color scheme, or
 add file icons to more complex modules that add support for other languages.
 A good variety of a module ecosystem can help ensure the longevity of an
-\gls{ide}.
+\gls{ide}. In the table \ref{tbl:mod}, we can see that \gls{ide}s have an
+exstensive module architecture. \footnotemark
+
+\footnotetext{
+  \unskip Data found by looking at the marketplace\footnotemark for the modules,
+  \unskip in order:
+  \unskip \url{https://marketplace.eclipse.org/content/welcome-eclipse-marketplace}% Eclipse
+  \unskip, \url{https://plugins.jetbrains.com/} % Intellij
+  \unskip, \url{https://github.com/search?q=vim+plugin\&type=repositories} % Vim
+  \unskip, \url{https://github.com/search?q=nvim+plugin\&type=repositories} % Nvim
+  \unskip, \url{https://marketplace.visualstudio.com/search?target=VSCode\&category=All\%20categories\&sortBy=Installs} % vscode
+}
+
+\footnotetext{
+  Nvim and Vim's marketplace is GitHub, so the results are found by searching
+  GitHub for Nvim plugins and Vim plugins respectively, furthermore, all Vim
+  plugins can be used by Nvim.
+}
 
 \begin{table}[]
   \centering
@@ -431,17 +541,20 @@ A good variety of a module ecosystem can help ensure the longevity of an
   \begin{tabular}{|l|l|}
     \hline
     \gls{ide} & Module count \\ \hline
-    Eclipse & $1200~$ \\ \hline %\footnote{Found at \href{https://marketplace.eclipse.org/content/welcome-eclipse-marketplace}{Eclipse Marketplace}}
-    Nvim & $4600~$ \\ \hline %\footnote{Found by looking at search results on \href{https://github.com/search?q=nvim+plugin&type=repositories}{GitHub}}
-    Intellij & $9500~$ \\ \hline %\footnote{Found at \href{https://plugins.jetbrains.com/}{Intellij Marketplace}}
-    \gls{vim} & $11500~$ \\ \hline %\footnote{Found by looking at search results on \href{https://github.com/search?q=nvim+plugin&type=repositories}{GitHub}}
-    VS Code & $71700~$ \\ \hline %\footnote{Found by doing an empty search at \href{https://marketplace.visualstudio.com/search?target=VSCode&category=All%20categories&sortBy=Installs}{VS Code Marketplace}}
+    Eclipse & $\sim1200$ \\ \hline
+    Intellij & $\sim9500$ \\ \hline
+    \gls{vim} & $\sim11500$ \\ \hline
+    Nvim & $\sim16100$ \\ \hline
+    VS Code & $\sim71700$ \\ \hline
   \end{tabular}
 \end{table}
 
 
-\todo{Expand}
-More modules == better, right?
+\subsubsection{Module Marketplace}
+
+It is important to be able to get modules.
+
+\todo{Mention the need for a module marketplace}
 
 \subsection{Granularity}
 
@@ -504,11 +617,11 @@ application.
 
 \begin{table}[]
   \centering
-  \caption{IDE features enabled by LSP}
+  \caption{\gls{ide} features enabled by \gls{lsp}}
   \label{tbl:ide}
   \begin{tabular}{|l|l|}
     \hline
-    IDE Feature & LS-Protocol \\ \hline
+    IDE Feature & \gls{lsp}-method \\ \hline
     Go to Declaration & textDocument/definition \\ \hline
     Go to Implementation & textDocument/implementation \\ \hline
     Auto-completion & textDocument/completion \\ \hline
@@ -518,7 +631,7 @@ application.
   \end{tabular}
 \end{table}
 
-\section{Existing Magnolia IDE}
+\section{Existing Magnolia \gls{ide}}
 
 The current \gls{ide} for Magnolia \cite{baggeIde}, is a many-years-old version
 of Eclipse, using modules and functionality from the core Eclipse application,
@@ -548,9 +661,13 @@ be able to install it.
 
 \section{Challenges imposed by Magnolia}
 
-Mention renaming?
+In most programming languages, any type has a singular definition, so invoking
+the \textit{go-to-definition} endpoint implemented by an \gls{lsp} results in a
+singular response. The actual response of the \gls{lsp} is a list, but this is
+\textit{always} a singleton. However, in Magnolia a singular type could have
+multiple definitions, and resolving this can be complex.
 
-Mention \gls{stf}s?
+Mention renaming?
 
 Mention \gls{asr}s?
 

@@ -41,13 +41,14 @@ increase. These event coalescing stragegies are a source of subtle bugs, as
 event coalecsing can easily break modularity. In a \gls{jsms}, this issue could
 be solved by using \textit{flusable promises} \cite{flush}.
 
-\paragraph{Automated Testing} Due to the exstensive modularity of the
-application, all modules can be tested individually, by \textit{mocking} the
-expected state and events. This means that breaking changes in one module can be
-detected before End-To-End testing, which is expensive. \todo{Add source}
-But this can only verify the general logic of a module and module family, not
-the UI. To achieve such automation, one could rely on an automated testing
-framework, like the one in \cite{autoUi}.
+
+\section{Autmoated Testing}
+Due to the exstensive modularity of the application, all modules can be tested
+individually, by \textit{mocking} the expected state and events. This means that
+breaking changes in one module can be detected before \gls{e2e} testing, which
+is expensive. \todo{Add source} But this can only verify the general logic of a
+module and module family, not the UI. To achieve such automation, one could rely
+on an automated testing framework, like the one in \cite{autoUi}.
 
 \paragraph{\gls{mdcs}} Since the data and the \gls{ui}
 in the core application is separated, it allows for use of Multi-way Dataflow
@@ -74,3 +75,6 @@ Interesting stuff. Its cool to know the names of certain \textit{patterns} in
 mathematics, which are useful in programming. Other people also think that,
 which is why \textit{Algebraic Specification}, for specifying system behavior,
 was popular in the 80s. You got stuff like \cite{cafeObj}.
+
+
+\paragraph{\gls{stf}} It is used by the compiler \cite{wig} for stuff.

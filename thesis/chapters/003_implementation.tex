@@ -354,20 +354,13 @@ the same update-cycle. This issue also occurs when folding two states.
 
 Was \textit{solved} with this:
 
-\begin{minted}{haskell}
-  {- Field the collision occurred on, list of modules, and the state with the
-     collision
-  -}
-  newtype CollisionReport = (State, [(String, [(String, State)])])
-  -- A Module, and its corresponding State
-  newtype ModuleState = (String, State)
-  -- Combines frontend and backend states, removing all collisions
-  stateUpdateHandler :: [ModuleState] -> [ModuleState] -> State
-  stateUpdateHandler fs bs = first $ map foldPartition (group (fs ++ bs))
-  -- Gets the
-  foldPartition :: CollisionReport -> [String, State] -> CollisionReport
-  foldPartition acc cur = (map snd (head cur) : fst acc, tail cur : snd acc)
-\end{minted}
+\begin{center}
+  \lstinputlisting
+  [ language=Haskell
+  , caption={State Collision Typing}
+  , label=lst:stColType
+  ]{./code/state-collision-types.hs}
+\end{center}
 
 Takes list of states from all modules, checks for collisions. It returns a
 list of
@@ -600,7 +593,7 @@ collisions.
 
 As one can see in listing \ref{lst:moduleType}, a module only exposes its name,
 and an \lstinline[language=haskell]{init} function, which takes the
-\lstinline[language=haskell]{Core} \textit{ADT}, which is a representation of
+\lstinline[language=haskell]{Core}, which is a representation of
 the core application shown in listing \ref{lst:coreAdt}.
 
 \begin{center}
@@ -622,13 +615,13 @@ without explicitly invoking the function.
 \begin{center}
   \lstinputlisting
     [ language=Haskell
-    , caption={Core ADT}
+    , caption={Core}
     , label=lst:coreAdt
     ]{./code/module-example-core.hs}
 \end{center}
 
 In listing \ref{lst:moduleEvent}, one can see the structure of an
-\lstinline[language=Haskell]{Event} \textit{ADT}. This allows for modules to
+\lstinline[language=Haskell]{Event}. This allows for modules to
 pattern match on specific \lstinline[language=Haskell]{Event}s, and as in the
 previous version, only react to specific \lstinline[language=Haskell]{Event}s.
 What is different, is as shown in the \ref{lst:moduleCounter} listing, is that
@@ -714,9 +707,9 @@ singular module is inexpensive.
 A module developer should create unit tests for their module. This can easily be
 done, and tested many times, due to the light-weightiness of a module.
 
-\subsection{Automated UI Testing}
+\subsubsection{UI Testing}
 
-\todo{Mention the automated script generation, or playwright?}
+\todo{Mention of ui testing is part of unit testing}
 
 \subsection{Module Family Testing}
 
