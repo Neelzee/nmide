@@ -11,7 +11,7 @@ use abi_stable::{
 macro_rules! rhtmlkind {
     ( $( $name:ident ),* ) => {
         #[repr(u8)]
-        #[derive(StableAbi, Clone)]
+        #[derive(StableAbi, Clone, Copy)]
         pub enum RHtmlKind {
             $(
                 $name,
@@ -63,7 +63,7 @@ rhtmlkind!(
 );
 
 #[repr(C)]
-#[derive(StableAbi)]
+#[derive(StableAbi, Clone)]
 pub struct RHtml {
     pub(crate) kind: RHtmlKind,
     pub(crate) kids: RVec<RHtml>,

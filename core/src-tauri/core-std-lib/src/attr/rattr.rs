@@ -14,6 +14,27 @@ pub struct RAttr {
     pub(crate) val: RAttrUnion,
 }
 
+impl Clone for RAttr {
+    fn clone(&self) -> Self {
+        match self.kind {
+            RAttrKind::Id | RAttrKind::Class | RAttrKind::Src => Self {
+                kind: self.kind.clone(),
+                val: unsafe {
+                    RAttrUnion {
+                        _str: self.val._str.clone(),
+                    }
+                },
+            },
+            RAttrKind::Style => todo!(),
+            RAttrKind::Type => todo!(),
+            RAttrKind::Checked => todo!(),
+            RAttrKind::OnClick => todo!(),
+            RAttrKind::OnInput => todo!(),
+            RAttrKind::EmitInput => todo!(),
+        }
+    }
+}
+
 impl RAttr {
     // TODO: Add doc-test
     /// Gets a possible [`RString`] value from the RAttr.
@@ -120,7 +141,7 @@ impl RAttr {
 }
 
 #[repr(u8)]
-#[derive(StableAbi)]
+#[derive(StableAbi, Clone)]
 pub enum RAttrKind {
     Id,
     Class,

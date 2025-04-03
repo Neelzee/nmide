@@ -1,15 +1,13 @@
-#![warn(
-    clippy::all,
-    clippy::restriction,
-    clippy::pedantic,
-    clippy::nursery,
-    clippy::cargo
-)]
+#![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
 
 use abi_stable::library::{LibraryError, LibraryPath, RootModule};
 use core_std_lib::{
-    html::rhtml::RHtml, map::rmap::RMap, msg::rmsg::RMsg, NmideStandardLibraryRef,
-    NmideStandardModuleRef,
+    core::{Core, CoreModification},
+    event::REvent,
+    html::rhtml::RHtml,
+    map::rmap::RMap,
+    msg::rmsg::RMsg,
+    NmideStandardLibraryRef, NmideStandardModuleRef,
 };
 use std::path::Path;
 
@@ -69,11 +67,11 @@ impl Module {
     }
 
     pub fn init(&self, core: &Core) -> CoreModification {
-        self.module.init(core)()
+        self.module.init()(core)
     }
 
     pub fn handler(&self, event: &REvent, core: &Core) -> CoreModification {
-        self.module.handler(event, core)()
+        self.module.handler()(event, core)
     }
 
     pub fn name(&self) -> &str {

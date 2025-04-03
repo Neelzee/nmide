@@ -18,19 +18,15 @@
 //! [`README`]: https://github.com/Neelzee/nmide
 //! [`ts-rs`]: https://docs.rs/ts-rs/latest/ts_rs/
 
-#![warn(
-    clippy::all,
-    clippy::restriction,
-    clippy::pedantic,
-    clippy::nursery,
-    clippy::cargo
-)]
+#![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
 use abi_stable::{
     library::{LibraryError, RootModule},
     package_version_strings,
     sabi_types::VersionStrings,
     StableAbi,
 };
+use core::{Core, CoreModification};
+use event::REvent;
 use html::rhtml::RHtml;
 use map::rmap::RMap;
 use msg::rmsg::RMsg;
@@ -82,7 +78,7 @@ pub fn load_root_module_in_directory(
 #[sabi(missing_field(panic))]
 pub struct NmideModule {
     pub init: extern "C" fn(core: &Core) -> CoreModification,
-    pub handle: extern "C" fn(event: &REvent, core: &Core) -> CoreModification,
+    pub handler: extern "C" fn(event: &REvent, core: &Core) -> CoreModification,
 }
 
 impl RootModule for NmideStandardModuleRef {
@@ -93,8 +89,6 @@ impl RootModule for NmideStandardModuleRef {
     const VERSION_STRINGS: VersionStrings = package_version_strings!();
 }
 
-pub fn load_root_module_in_directory(
-    directory: &Path,
-) -> Result<NmideStandardModuleRef, LibraryError> {
+pub fn load_module(directory: &Path) -> Result<NmideStandardModuleRef, LibraryError> {
     NmideStandardModuleRef::load_from_directory(directory)
 }
