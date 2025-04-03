@@ -75,3 +75,26 @@ pub fn load_root_module_in_directory(
 ) -> Result<NmideStandardLibraryRef, LibraryError> {
     NmideStandardLibraryRef::load_from_directory(directory)
 }
+
+#[repr(C)]
+#[derive(StableAbi)]
+#[sabi(kind(Prefix(prefix_ref = NmideStandardModuleRef)))]
+#[sabi(missing_field(panic))]
+pub struct NmideModule {
+    pub init: extern "C" fn(core: &Core) -> CoreModification,
+    pub handle: extern "C" fn(event: &REvent, core: &Core) -> CoreModification,
+}
+
+impl RootModule for NmideStandardModuleRef {
+    abi_stable::declare_root_module_statics! {NmideStandardModuleRef}
+
+    const BASE_NAME: &'static str = "nmide_example_module";
+    const NAME: &'static str = "nmide_example_module";
+    const VERSION_STRINGS: VersionStrings = package_version_strings!();
+}
+
+pub fn load_root_module_in_directory(
+    directory: &Path,
+) -> Result<NmideStandardModuleRef, LibraryError> {
+    NmideStandardModuleRef::load_from_directory(directory)
+}

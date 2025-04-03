@@ -7,7 +7,10 @@
 )]
 
 use abi_stable::library::{LibraryError, LibraryPath, RootModule};
-use core_std_lib::{html::rhtml::RHtml, map::rmap::RMap, msg::rmsg::RMsg, NmideStandardLibraryRef};
+use core_std_lib::{
+    html::rhtml::RHtml, map::rmap::RMap, msg::rmsg::RMsg, NmideStandardLibraryRef,
+    NmideStandardModuleRef,
+};
 use std::path::Path;
 
 pub struct Nmlugin {
@@ -49,5 +52,35 @@ impl std::fmt::Debug for Nmlugin {
         f.debug_struct("Nmlugin")
             .field("plugin_path", &self.plugin_path)
             .finish()
+    }
+}
+
+pub struct Module {
+    module: NmideStandardModuleRef,
+    module_path: String,
+}
+
+impl Module {
+    pub fn new(path: &Path) -> Result<Self, LibraryError> {
+        Ok(Self {
+            module: NmideStandardModuleRef::load_from(LibraryPath::FullPath(path))?,
+            module_path: path.to_string_lossy().to_string(),
+        })
+    }
+
+    pub fn init(&self, core: &Core) -> CoreModification {
+        self.module.init(core)()
+    }
+
+    pub fn handler(&self, event: &REvent, core: &Core) -> CoreModification {
+        self.module.handler(event, core)()
+    }
+
+    pub fn name(&self) -> &str {
+        self.module_path.split("/").last().unwrap_or_default()
+    }
+
+    pub fn path(&self) -> &str {
+        &self.module_path
     }
 }

@@ -10,3 +10,5 @@ pub mod setup;
 pub mod statics;
 
 pub mod core;
+
+pub mod eventThrower;

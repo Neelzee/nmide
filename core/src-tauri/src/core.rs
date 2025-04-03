@@ -8,13 +8,11 @@ pub struct NmideCore;
 
 impl Core for NmideCore {
     async fn get_ui() -> RHtml {
-        let rw: RHtml = NMIDE_UI.read();
-        rw
+        todo!()
     }
 
     async fn get_state() -> RMap {
-        let rw: RMap = NMIDE_STATE.read();
-        rw
+        todo!()
     }
 
     /// Sends the event to another thread, to be handled and eventually modify the State or UI
