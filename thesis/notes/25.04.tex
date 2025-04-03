@@ -1,0 +1,22 @@
+\section{25.03.02}
+
+Wasted the whole day, trying to build the rust code using flakes. Did not get it
+to work, and noticed I don't get any LSP help, probably due to linking issues. I
+think the best solution is to distro-jump to Debian, which \textit{just works},
+and add Nix as a package which I could use for development. Getting stuff to
+work in on NixOs is hard, probably in some part due to me not reading the
+documentation that well. Or being able to find the documentation.
+Regardless, there is some restructuring in the code that is ahead of me, I need
+to be finished with the implementation stuff in two weeks, at the end of April
+at the latest.
+
+I think I'll just write some stuff, and hope it works, code-wise, until I get a
+proper environment setup.
+
+\section{25.03.03}
+
+Got stuff to work, back on Debian again. I think I should just rewrite the base
+to use \textit{regular} Rust stuff, so none of the ABI stuff. This will simplify
+the code, while still allowing me to keep the stuff I've written about, since I
+can talk about \textit{it would be cool if \dots}, instead of having to actually
+implement the cool stuff.
