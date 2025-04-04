@@ -3,7 +3,6 @@
 
 use crate::statics::APP_DATA_DIR;
 use crate::statics::{NMIDE_PLUGIN_DIR, NMLUGS};
-use core_plugin_lib::Nmlugin;
 use std::fs;
 use std::path::PathBuf;
 use tokio::sync::RwLock;
@@ -34,8 +33,7 @@ pub fn setup(paths: (PathBuf, PathBuf)) {
             });
     }
 
-    NMLUGS.set({
-        nmide_plugin_dir
+    NMLUGS.set(nmide_plugin_dir
             .read_dir()
             .unwrap_or_else(|err| {
                 panic!("Reading the plugin directory: `{nmide_plugin_dir:?}` should succeed, failed with error: {err:?}")
@@ -44,6 +42,7 @@ pub fn setup(paths: (PathBuf, PathBuf)) {
                 Ok(d)
                 if d.path().is_file()
                 && d.path().extension().is_some_and(|e| {
+                // TODO: This will not work, need a cfg for os
                     e.to_string_lossy() == "so" || e.to_string_lossy() == "dll"
                 }) =>
                 {
@@ -59,10 +58,9 @@ pub fn setup(paths: (PathBuf, PathBuf)) {
             .map(|pth| {
                 // TODO: This should print to stderr, and not panic, but is useful for
                 // development
-                Nmlugin::new(pth.as_path()).unwrap_or_else(|err| {
+                /*Nmlugin::new(pth.as_path()).unwrap_or_else(|err| {
                     panic!("Couldnt create plugin on path: {pth:?}, due too {err:?}")
-                })
+                })*/
             })
-            .collect()
-    }).expect("Reading from the plugin directory should not fail");
+            .collect()).expect("Reading from the plugin directory should not fail");
 }

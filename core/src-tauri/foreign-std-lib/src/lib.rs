@@ -18,15 +18,15 @@
 //! [`README`]: https://github.com/Neelzee/nmide
 //! [`ts-rs`]: https://docs.rs/ts-rs/latest/ts_rs/
 
-/// Module containing the Attr struct
-pub mod attrs;
+/// Module containing *-Attr-Types
+pub mod attr;
 
 /// Module containing *-Html-Types
 pub mod html;
 
-/// Module containing State
+/// Module containing *-state & *-Value-Types
 pub mod state;
 
-pub mod core;
-
 pub mod event;
+
+pub mod module;

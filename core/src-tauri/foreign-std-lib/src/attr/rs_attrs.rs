@@ -2,8 +2,8 @@
 
 // TODO: Add doc-string
 
-use crate::msg::rmsg::RMsg;
-use abi_stable::{std_types::RString, StableAbi};
+use crate::event::rs_event::REvent;
+use abi_stable::{StableAbi, std_types::RString};
 use std::mem::ManuallyDrop;
 
 // TODO: Add doc-string
@@ -62,11 +62,11 @@ impl RAttr {
     }
 
     // TODO: Add doc-test
-    /// Gets a possible [`RMsg`] value from the RAttr.
+    /// Gets a possible [`REvent`] value from the RAttr.
     /// This will only be [`Some`] if the RAttr is of type `OnClick` or `OnInput`
     ///
-    /// [`RMsg`]: ../msg/rmsg.rs
-    pub fn msg(&self) -> Option<ManuallyDrop<RMsg>> {
+    /// [`REvent`]: ../msg/rmsg.rs
+    pub fn msg(&self) -> Option<ManuallyDrop<REvent>> {
         match self.kind {
             RAttrKind::OnClick => Some(unsafe { self.val._msg.clone() }),
             _ => None,
@@ -108,7 +108,7 @@ impl RAttr {
 
     // TODO: Add doc-test
     /// Creates a new `OnClick` RAttr
-    pub fn new_click(rmsg: RMsg) -> Self {
+    pub fn new_click(rmsg: REvent) -> Self {
         Self {
             kind: RAttrKind::OnClick,
             val: RAttrUnion {
@@ -119,7 +119,7 @@ impl RAttr {
 
     // TODO: Add doc-test
     /// Creates a new `OnInput` RAttr
-    pub fn new_on_input(rmsg: RMsg) -> Self {
+    pub fn new_on_input(rmsg: REvent) -> Self {
         Self {
             kind: RAttrKind::OnInput,
             val: RAttrUnion {
@@ -159,5 +159,5 @@ pub enum RAttrKind {
 pub union RAttrUnion {
     _str: ManuallyDrop<RString>,
     _bool: bool,
-    _msg: ManuallyDrop<RMsg>,
+    _msg: ManuallyDrop<REvent>,
 }

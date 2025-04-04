@@ -2,7 +2,7 @@
 
 // TODO: Add doc-string
 
-use crate::attr::rattr::RAttr;
+use crate::attr::rs_attrs::RAttr;
 use abi_stable::{
     std_types::{ROption, RString, RVec},
     StableAbi,

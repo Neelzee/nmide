@@ -1,15 +1,16 @@
 use crate::setup::setup;
 use anyhow::{Context as _, Result};
-use core_std_lib::{html::thtml::THtml, map::tmap::TMap, msg::tmsg::TMsg};
+use core_std_lib::core::CoreModification;
 use std::fs;
 use std::path::PathBuf;
 use tauri::Manager as _;
 
 /// see [init](crate::handlers::init)
 #[tauri::command]
-async fn init() -> Vec<(String, TMap)> {
+async fn init() -> CoreModification {
     crate::handlers::init().await
 }
+/*
 
 /// see [view](crate::handlers::view)
 #[tauri::command]
@@ -22,6 +23,7 @@ async fn update(tmsg: TMsg, tmodel: TMap) -> Vec<(String, TMap)> {
 async fn view(tmodel: TMap) -> Vec<(String, THtml)> {
     crate::handlers::view(tmodel).await
 }
+*/
 
 /// Runs the Tauri application
 ///
@@ -39,12 +41,12 @@ pub fn run() {
             setup(ide_setup(app).expect("IDE-setup should always succeed"));
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![init, update, view,])
+        .invoke_handler(tauri::generate_handler![init])
         .run(tauri::generate_context!())
         .expect("IDE Application should not error");
 }
 
-/// Gets the needed paths to $APPDATA and the plugin directory.
+/// Gets the needed paths to $APPDATA and the module directory.
 ///
 /// # Panics
 ///
@@ -52,25 +54,28 @@ pub fn run() {
 ///
 /// # Errors
 ///
-/// If either $APPDATA or $APPDATA/Plugins cannot be canonicalized.
+/// If either $APPDATA or $APPDATA/modules cannot be canonicalized.
 fn ide_setup(app: &mut tauri::App) -> Result<(PathBuf, PathBuf)> {
+    /* Development setup, copies all modules from the modules folders
+     * to the $APPDATA/modules folder used by the application
+     */
     #[cfg(debug_assertions)]
     {
-        let dev_plugin_folder = PathBuf::new()
-            .join("../plugins/")
+        let dev_module_folder = PathBuf::new()
+            .join("../modules/")
             .canonicalize()
-            .context("plugins folder should exist in development")?;
+            .context("modules folder should exist in development")?;
 
-        let plugin_paths: Vec<PathBuf> = dev_plugin_folder
+        let module_paths: Vec<PathBuf> = dev_module_folder
             .read_dir()
-            .context(format!("Path: {dev_plugin_folder:?} should exist"))?
+            .context(format!("Path: {dev_module_folder:?} should exist"))?
             .filter_map(std::result::Result::ok)
             .filter(|p| p.path().is_file())
             .filter(|p| p.file_name() != ".gitignore")
             .map(|p| p.path())
             .collect();
 
-        let plugin_folder = app
+        let module_folder = app
             .path()
             .app_data_dir()
             .context("Should have permissions to read app_data_dir")?
@@ -78,14 +83,14 @@ fn ide_setup(app: &mut tauri::App) -> Result<(PathBuf, PathBuf)> {
 
         // Ignoring the result of this function, because it only fails if the plugin_directory does
         // not exist, which is the case on the first ever run
-        let _ = fs::remove_dir_all(&plugin_folder);
+        let _ = fs::remove_dir_all(&module_folder);
 
-        fs::create_dir_all(&plugin_folder)
-            .expect("Should have permissions to create plugins folder");
+        fs::create_dir_all(&module_folder)
+            .expect("Should have permissions to create modules folder");
 
-        for pp in plugin_paths {
-            let _ = fs::remove_file(plugin_folder.join(pp.file_name().unwrap()));
-            let dest = plugin_folder.join(pp.file_name().expect("Filename should be UTF-8 safe"));
+        for pp in module_paths {
+            let _ = fs::remove_file(module_folder.join(pp.file_name().unwrap()));
+            let dest = module_folder.join(pp.file_name().expect("Filename should be UTF-8 safe"));
             fs::copy(&pp, &dest).context(format!("Can't copy: {pp:?}, {dest:?}"))?;
         }
     }
@@ -93,6 +98,6 @@ fn ide_setup(app: &mut tauri::App) -> Result<(PathBuf, PathBuf)> {
     let app_handle = app.app_handle();
     Ok((
         app_handle.path().app_data_dir()?,
-        app_handle.path().app_data_dir()?.join("plugins"),
+        app_handle.path().app_data_dir()?.join("modules"),
     ))
 }

@@ -10,9 +10,10 @@ async fn main() -> Result<()> {
         core_lib::ide::run();
     } else if cfg!(feature = "server") {
         #[cfg(feature = "server")]
-        core_lib::server::run()
-            .await
-            .expect("An error occurred when running the Server");
+        todo!("Implement server")
+        /*core_lib::server::run()
+        .await
+        .expect("An error occurred when running the Server");*/
     } else {
         panic!("Invalid state, specify either ide or server as features");
     }
