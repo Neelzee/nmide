@@ -20,3 +20,24 @@ to use \textit{regular} Rust stuff, so none of the ABI stuff. This will simplify
 the code, while still allowing me to keep the stuff I've written about, since I
 can talk about \textit{it would be cool if \dots}, instead of having to actually
 implement the cool stuff.
+
+\section{25.03.04}
+
+I have discussed this before, I think, but how should the frontend and backend
+communicate? I am leaning towards a frontend \to backend communication method,
+so the frontend does the rendering, and event \to event mapping, but the backend
+does all the state management. But will look into it.
+
+I've done some refactoring, again. I have Rust Traits now, which I've used to
+create an API for my modules, which other foreign languages can implement. I
+will have to send UI modifications to the frontend, but I could coalesce them
+all in the backend, by finding UI modifications that "just" result in the
+identity.
+
+Doing the modification/instruction thing is difficult, at least the way I want
+to implement it. I wanted it to be some kind of DSL, so that I could analyze it.
+But this is proving difficult. I think it is because I am over-engineering it,
+so instead of having "add node to node", or something like that, I am supplying
+a function which does the modification. It is probably better if I transpile the
+DSL to the function, after I've done some analysis on it, to remove redundant or
+invalid instructions.
