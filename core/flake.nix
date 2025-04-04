@@ -45,7 +45,6 @@
           pango
           webkitgtk_4_1
           openssl
-          git-cliff
           xdotool
         ];
       in
