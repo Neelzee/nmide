@@ -938,6 +938,7 @@ dependencies = [
  "core-macros",
  "once_cell",
  "rstest",
+ "serde",
 ]
 
 [[package]]

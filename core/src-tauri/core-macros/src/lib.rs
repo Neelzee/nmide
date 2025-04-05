@@ -1,15 +1,7 @@
-#![warn(
-    clippy::all,
-    clippy::restriction,
-    clippy::pedantic,
-    clippy::nursery,
-    clippy::cargo
-)]
-
 #[macro_export]
 macro_rules! define_html {
     ( $( $name:ident ),* ) => {
-        #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+        #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq)]
         pub enum Html {
             $(
                 $name { kids: Vec<Html>, attrs: Vec<Attr> },
@@ -29,20 +21,18 @@ macro_rules! define_html {
 
             pub fn cast_html(self, target: Self) -> Self {
                 match self {
-                    // Match each variant and cast to the target variant if possible
                     $(
                         Html::$name { kids, attrs } => {
                             match target {
-                                Html::$name { .. } => Html::$name { kids, attrs }, // Cast to the same type
-                                _ => target._cast_html(kids, attrs), // Cast to the target type
+                                Html::$name { .. } => Html::$name { kids, attrs },
+                                _ => target._cast_html(kids, attrs),
                             }
                         },
                     )*
-                    Html::Text(text) => Html::Text(text), // Text remains Text
+                    Html::Text(text) => Html::Text(text),
                 }
             }
 
-            // Helper method to create a target variant
             fn _cast_html(self, kids: Vec<Html>, attrs: Vec<Attr>) -> Self {
                 match self {
                     $(
@@ -54,6 +44,7 @@ macro_rules! define_html {
 
             $(
             #[allow(non_snake_case)]
+            /// Creates empty $name
             pub fn $name() -> Self {
                 Self::$name { kids: Vec::new(), attrs: Vec::new() }
             }
@@ -79,6 +70,15 @@ macro_rules! define_html {
                 }
             }
 
+            pub fn set_attrs(self, attrs: Vec<Attr>) -> Self {
+                match self {
+                $(
+                    Self::$name { attrs: _, kids } => Self::$name { attrs, kids },
+                )*
+                    Self::Text(_) => Self::P { kids: vec![self], attrs },
+                }
+            }
+
             /// Adds the given Html node to itself
             pub fn adopt(self, kid: Html) -> Self {
                 match self {
@@ -92,6 +92,7 @@ macro_rules! define_html {
                 }
             }
 
+            /// Sets kids to the new supplied value
             pub fn replace_kids(self, new_kids: Vec<Html>) -> Self {
                 match self {
                 $(
@@ -100,41 +101,11 @@ macro_rules! define_html {
                     html @ _ => html,
                 }
             }
-
-            pub fn to_ts_html_kind(&self) -> TSHtmlKind {
-                match self {
-                    $(
-                        Self::$name { .. } => TSHtmlKind::$name,
-                    )*
-                        Self::Text(_) => TSHtmlKind::Text,
-                }
-            }
-        }
-
-        #[derive(
-            Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord, TS,
-        )]
-        #[ts(export, export_to = "../../../app/bindings/TSHtmlKind.ts")]
-        pub enum TSHtmlKind {
-            $(
-                $name,
-            )*
-            Text,
-        }
-
-        impl TSHtmlKind {
-            pub fn to_html(&self) -> Html {
-                match self {
-                    $(
-                        Self::$name => Html::$name(),
-                    )*
-                        Self::Text => Html::Text(String::new()),
-                }
-            }
         }
     };
 }
 
+// TODO: Fix
 #[macro_export]
 macro_rules! css {
     ($( $style:ident $e:expr $(; $unit:ident)? ),*) => {
@@ -146,10 +117,6 @@ macro_rules! css {
 macro_rules! attr {
     ( $attr:ident $v:expr ) => {
         Attr::$attr($v.to_string())
-    };
-
-    ( $attr:ident => $v:expr ) => {
-        Attr::$attr(Msg::from_string($v))
     };
 }
 

@@ -8,8 +8,8 @@ pub static NMLUGS: tokio::sync::OnceCell<Vec<()>> = tokio::sync::OnceCell::const
 pub static NMIDE_PLUGIN_DIR: tokio::sync::OnceCell<PathBuf> = tokio::sync::OnceCell::const_new();
 pub static APP_DATA_DIR: OnceCell<RwLock<PathBuf>> = OnceCell::new();
 
-pub static NMIDE_UI: Lazy<RwLock<Html>> = Lazy::new(|| RwLock::new(Html::empty()));
-pub static NMIDE_STATE: Lazy<RwLock<State>> = Lazy::new(|| RwLock::new(HashMap::new()));
+pub static NMIDE_UI: Lazy<RwLock<Html>> = Lazy::new(|| RwLock::new(Html::Main()));
+pub static NMIDE_STATE: Lazy<RwLock<State>> = Lazy::new(|| RwLock::new(State::default()));
 pub static NMIDE_MODULES: Lazy<RwLock<HashMap<String, Module>>> =
     Lazy::new(|| RwLock::new(HashMap::new()));
 
