@@ -8,26 +8,32 @@ use std::{path::Path, sync::Arc};
 
 pub mod js_module;
 
-pub trait ModuleTrait: Send + Sync {
+pub trait ModuleTrait<T>: Send + Sync {
     fn name(&self) -> &str;
-    fn init(&self, core: &Core) -> CoreModification;
-    fn handler(&self, event: &Event, core: &Core) -> CoreModification;
+    fn init(&self, core: &T) -> CoreModification;
+    fn handler(&self, event: &Event, core: &T) -> CoreModification;
 }
 
-pub struct Module {
-    handle: Arc<dyn ModuleTrait>,
+pub struct Module<T>
+where
+    T: Core,
+{
+    handle: Arc<dyn ModuleTrait<T>>,
 }
 
-impl Module {
+impl<T> Module<T>
+where
+    T: Core,
+{
     pub fn name(&self) -> &str {
         self.handle.name()
     }
 
-    pub fn init(&self, core: &Core) -> CoreModification {
+    pub fn init(&self, core: &T) -> CoreModification {
         self.handle.init(core)
     }
 
-    pub fn handler(&self, event: &Event, core: &Core) -> CoreModification {
+    pub fn handler(&self, event: &Event, core: &T) -> CoreModification {
         self.handle.handler(event, core)
     }
 }
@@ -37,17 +43,17 @@ pub struct RsModule {
     module_path: String,
 }
 
-impl ModuleTrait for RsModule {
+impl<T> ModuleTrait<T> for RsModule {
     fn name(&self) -> &str {
         self.module_path.split("/").last().unwrap_or_default()
     }
 
-    fn init(&self, core: &Core) -> CoreModification {
+    fn init(&self, core: &T) -> CoreModification {
         self.module.init()(0);
         todo!()
     }
 
-    fn handler(&self, event: &Event, core: &Core) -> CoreModification {
+    fn handler(&self, event: &Event, core: &T) -> CoreModification {
         self.module.handler()(0);
         todo!()
     }

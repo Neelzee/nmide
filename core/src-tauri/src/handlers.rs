@@ -1,7 +1,31 @@
 use anyhow::Context;
-use core_std_lib::core::{Core, CoreModification};
+use core_std_lib::{
+    core::{Core, CoreModification},
+    html::Html,
+};
 use serde::Serialize;
 
-pub async fn init() -> CoreModification {
-    todo!()
+use crate::{
+    core::NmideCore,
+    statics::{NMIDE_MODULES, NMIDE_STATE, NMIDE_UI},
+};
+
+pub async fn init() -> Html {
+    let modules = NMIDE_MODULES.read().await;
+
+    let state = NmideCore.state().await;
+    let ui = NmideCore.ui().await;
+
+    let (new_state, new_ui) = modules
+        .values()
+        .into_iter()
+        .map(|m| m.init(&NmideCore))
+        .reduce(|acc, ins| acc.combine(ins))
+        .unwrap_or_default()
+        .build(state, ui);
+
+    let mut st = NMIDE_STATE.write().await;
+    *st = new_state;
+    drop(st);
+    new_ui
 }
