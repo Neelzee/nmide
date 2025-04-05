@@ -41,3 +41,19 @@ so instead of having "add node to node", or something like that, I am supplying
 a function which does the modification. It is probably better if I transpile the
 DSL to the function, after I've done some analysis on it, to remove redundant or
 invalid instructions.
+
+\section{25.03.05}
+
+It is difficult to do something correct. Not that I think I am doing it
+correctly, but it is difficult. I've made some mix of a DSL + function
+supplying. Which is a combination of what I said I was going to do, with what I
+said I was not going to do. I think it works, it uses Rust Traits to encode
+field modifications on a type-level, which is pretty interesting. I just have to
+make a struct for each field that is modifiable, supplying a setter and getter.
+
+Just setting the state is okay, the \textit{only} issue is reporting to
+the module developer that the field does not exist, or something like that if
+they try to modify a non-existing field. Which probably can be done
+\textit{easily}. I think making an instruction set for each tree is the way to
+go, at least until I see a way to combine them later.
+
