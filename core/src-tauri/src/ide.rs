@@ -1,9 +1,11 @@
 use crate::core::NmideCore;
 use crate::setup::setup;
+use crate::statics::COMPILE_TIME_MODULES;
 use anyhow::{Context as _, Result};
 use core_module_lib::Module;
 use core_std_lib::core::Core;
 use core_std_lib::html::Html;
+use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 use tauri::Manager as _;
@@ -11,6 +13,7 @@ pub(crate) mod module_reg {
     use core_module_lib::Module;
     use core_module_lib::ModuleBuilder;
     use core_std_lib::core::Core;
+    use std::collections::HashMap;
     include!(concat!(env!("OUT_DIR"), "/module_reg.rs"));
 }
 
@@ -41,13 +44,15 @@ async fn view(tmodel: TMap) -> Vec<(String, THtml)> {
 /// Will panic if:
 /// - If `../plugins` does not exist
 /// - [APPDATA](https://tauri.app/reference/config/) and/or $APPDATA/plugins does not exist
-pub fn run() {
+pub async fn run() {
+    setup_compile_time_modules()
+        .await
+        .expect("Compile time module setup should always succeed");
     tauri::Builder::default()
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
         .setup(|app| {
-            setup_compile_time_modules().expect("Compile time module setup should always succeed");
             setup(ide_setup(app).expect("IDE-setup should always succeed"));
             Ok(())
         })
@@ -113,12 +118,13 @@ fn ide_setup(app: &mut tauri::App) -> Result<(PathBuf, PathBuf)> {
     ))
 }
 
-fn setup_compile_time_modules() -> Result<()> {
-    let mut modules: Vec<Module<NmideCore>> = Vec::new();
+async fn setup_compile_time_modules() -> Result<()> {
+    let mut modules: HashMap<String, Module<NmideCore>> = HashMap::new();
 
     module_reg::register_modules(&mut modules);
 
-    println!("{}", modules.len());
+    let mut m = COMPILE_TIME_MODULES.write().await;
+    *m = modules;
 
     Ok(())
 }

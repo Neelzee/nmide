@@ -7,7 +7,7 @@ use anyhow::Result;
 async fn main() -> Result<()> {
     if cfg!(feature = "ide") {
         #[cfg(feature = "ide")]
-        core_lib::ide::run();
+        core_lib::ide::run().await;
     } else if cfg!(feature = "server") {
         #[cfg(feature = "server")]
         todo!("Implement server")

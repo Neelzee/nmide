@@ -151,6 +151,10 @@ impl UIInstructionBuilder {
         Self(ins)
     }
 
+    pub(crate) fn instruction(self) -> UIInstruction {
+        self.0
+    }
+
     pub fn add_node(self, ui: Html, id: Option<String>, class: Option<String>) -> Self {
         Self::new(self.0.combine(UIInstruction::Add { ui, id, class }))
     }

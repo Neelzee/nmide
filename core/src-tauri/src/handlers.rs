@@ -18,7 +18,6 @@ pub async fn init() -> Html {
 
     let (new_state, new_ui) = modules
         .values()
-        .into_iter()
         .map(|m| m.init(&NmideCore))
         .reduce(|acc, ins| acc.combine(ins))
         .unwrap_or_default()

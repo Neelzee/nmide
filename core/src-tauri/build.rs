@@ -37,7 +37,10 @@ fn main() {
                     .unwrap()
                     .insert(module.clone(), spec.clone());
                 module_imports.push(format!("extern crate {};", module));
-                module_reg.push(format!("modules.push({}::ModuleBuilder.build());", module));
+                module_reg.push(format!(
+                    "modules.insert(\"{}\".to_string(), {}::ModuleBuilder.build());",
+                    module, module
+                ));
             }
         }
 
@@ -51,7 +54,7 @@ fn main() {
 
         writeln!(
             reg_file,
-            "pub fn register_modules(modules: &mut Vec<Module<impl Core>>) {{"
+            "pub fn register_modules(modules: &mut HashMap<String, Module<impl Core>>) {{"
         )
         .unwrap();
         for registration in &module_reg {

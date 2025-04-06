@@ -103,6 +103,20 @@ macro_rules! define_html {
                     html @ _ => html,
                 }
             }
+
+            pub fn text<S: ToString>(self, s: S) -> Self {
+
+                match self {
+                $(
+                    Self::$name { kids: mut new_kids, attrs } => {
+                        new_kids.push(Self::Text(s.to_string()));
+                        Self::$name { kids: new_kids, attrs }
+                    },
+                )*
+                    Self::Text(_) => Self::Text(s.to_string()),
+                }
+
+            }
         }
     };
 }

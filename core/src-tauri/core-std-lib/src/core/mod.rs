@@ -35,6 +35,20 @@ pub struct CoreModification {
 }
 
 impl CoreModification {
+    pub fn set_state(self, builder: StateInstructionBuilder) -> Self {
+        Self {
+            state_inst: builder.instruction(),
+            ..self
+        }
+    }
+
+    pub fn set_ui(self, builder: UIInstructionBuilder) -> Self {
+        Self {
+            ui_inst: builder.instruction(),
+            ..self
+        }
+    }
+
     pub fn combine(self, other: Self) -> Self {
         Self {
             state_inst: self.state_inst.combine(other.state_inst),

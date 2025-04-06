@@ -84,6 +84,10 @@ impl StateInstructionBuilder {
         Self(ins)
     }
 
+    pub(crate) fn instruction(self) -> StateInstruction {
+        self.0
+    }
+
     pub fn add(self, field: String, value: Value) -> Self {
         Self::new(self.0.combine(StateInstruction::Add { field, value }))
     }
