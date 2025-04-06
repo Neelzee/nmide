@@ -57,3 +57,11 @@ they try to modify a non-existing field. Which probably can be done
 \textit{easily}. I think making an instruction set for each tree is the way to
 go, at least until I see a way to combine them later.
 
+\section{25.03.06}
+
+Stuff works, kinda, so that's fun. I am having issues with the Trait system, as,
+surprisingly, doing runtime-thread Trait usage is difficult. It made it easier
+to integrated Modules, as I could simply implement the interface, but maybe
+looking into using a struct instead? I would have a similar problem, where I
+have field for a function, but I don't really know. Tomorrow, I'll look into
+the async_trait crate, which apparently can help here.
