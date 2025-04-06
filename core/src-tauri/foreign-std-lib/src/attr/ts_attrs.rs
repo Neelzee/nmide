@@ -2,7 +2,7 @@ use crate::event::ts_event::TEvent;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-#[derive(Serialize, Deserialize, TS)]
+#[derive(Debug, Serialize, Deserialize, TS, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub enum TAttr {

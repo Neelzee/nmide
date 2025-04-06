@@ -69,7 +69,7 @@ path = "../../plugins/trivial_module/"
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]
-default = []
+default = ["ide"]
 ide = ["dep:tauri", "dep:tauri-plugin-log", "dep:tauri-plugin-fs", "dep:tauri-plugin-shell", "dep:tauri-plugin-dialog", "dep:tauri-build"]
 server = ["dep:actix-web", "dep:actix-files", "dep:actix-cors"]
 

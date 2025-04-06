@@ -1,7 +1,13 @@
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-#[derive(Serialize, Deserialize, TS)]
-//#[serde(rename_all = "camelCase")]
+use crate::state::tmap::TValue;
+
+#[derive(Debug, TS, Serialize, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct TEvent;
+pub struct TEvent {
+    event_name: String,
+    module_name: String,
+    args: Option<TValue>,
+}

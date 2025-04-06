@@ -5,6 +5,7 @@
 // TODO: Add doc-string
 
 /// Rust-Map
+#[cfg(feature = "rs")]
 pub mod rmap;
 #[cfg(feature = "ts")]
 /// TypeScript Map
@@ -13,7 +14,7 @@ pub mod tmap {
     use serde::{Deserialize, Serialize};
     use ts_rs::TS;
 
-    #[derive(Debug, Serialize, Deserialize, TS, Clone)]
+    #[derive(Debug, Serialize, Deserialize, TS, Clone, PartialEq)]
     #[serde(rename_all = "camelCase")]
     #[ts(export_to = "TMap.ts")]
     pub enum TValue {

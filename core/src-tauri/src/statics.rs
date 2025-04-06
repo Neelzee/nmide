@@ -1,10 +1,9 @@
+use crate::core::NmideCore;
 use core_module_lib::Module;
 use core_std_lib::{html::Html, state::State};
 use once_cell::sync::{Lazy, OnceCell};
 use std::{collections::HashMap, path::PathBuf};
 use tokio::sync::RwLock;
-
-use crate::core::NmideCore;
 
 // TODO: Add runtime module support
 pub static RUNTIME_MODULES: tokio::sync::OnceCell<Vec<()>> = tokio::sync::OnceCell::const_new();

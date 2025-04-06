@@ -119,7 +119,8 @@ impl StateInstructionBuilder {
             StateInstruction::NoOp => State(state),
             StateInstruction::Add { field, value } => {
                 if state.contains_key(&field) {
-                    panic!("State already contains field: {field}, cant add it");
+                    eprintln!("State already contains field: {field}, cant add it");
+                    return State(state);
                 }
                 state.insert(field, value);
                 State(state)

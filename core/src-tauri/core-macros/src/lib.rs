@@ -2,15 +2,16 @@
 // TODO: See if we can refactor this to be better
 #[macro_export]
 macro_rules! define_html {
-    ( $( $name:ident ),* ) => {
-        #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq)]
+    (
+        attr_type = $attr:ty,
+        $(#[$meta:meta])*
+        $( $name:ident ),*
+    ) => {
+        $(#[$meta])*
         pub enum Html {
-            $(
-                $name { kids: Vec<Html>, attrs: Vec<Attr> },
-            )*
             Text(String),
+                $( $name { kids: Vec<Html>, attrs: Vec<$attr> }, )*
         }
-
         impl Html {
             pub fn shallow_clone(&self) -> Self {
                 match self {
@@ -35,7 +36,7 @@ macro_rules! define_html {
                 }
             }
 
-            fn _cast_html(self, kids: Vec<Html>, attrs: Vec<Attr>) -> Self {
+            fn _cast_html(self, kids: Vec<Html>, attrs: Vec<$attr>) -> Self {
                 match self {
                     $(
                         Html::$name { .. } => Html::$name { kids, attrs },
@@ -63,7 +64,7 @@ macro_rules! define_html {
             }
 
             /// Returns a copy of the attributes
-            pub fn attrs(&self) -> Vec<Attr> {
+            pub fn attrs(&self) -> Vec<$attr> {
                 match self {
                 $(
                     Self::$name { kids: _, attrs } => attrs.clone(),
@@ -72,7 +73,7 @@ macro_rules! define_html {
                 }
             }
 
-            pub fn set_attrs(self, attrs: Vec<Attr>) -> Self {
+            pub fn set_attrs(self, attrs: Vec<$attr>) -> Self {
                 match self {
                 $(
                     Self::$name { attrs: _, kids } => Self::$name { attrs, kids },

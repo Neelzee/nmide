@@ -4,11 +4,14 @@ use crate::statics::COMPILE_TIME_MODULES;
 use anyhow::{Context as _, Result};
 use core_module_lib::Module;
 use core_std_lib::core::Core;
+use core_std_lib::event::Event;
 use core_std_lib::html::Html;
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
+use tauri::AppHandle;
 use tauri::Manager as _;
+use tokio::sync::RwLock;
 pub(crate) mod module_reg {
     use core_module_lib::Module;
     use core_module_lib::ModuleBuilder;
@@ -17,10 +20,18 @@ pub(crate) mod module_reg {
     include!(concat!(env!("OUT_DIR"), "/module_reg.rs"));
 }
 
+pub static NMIDE: tokio::sync::OnceCell<RwLock<AppHandle>> = tokio::sync::OnceCell::const_new();
+
 /// see [init](crate::handlers::init)
 #[tauri::command]
 async fn init() -> Html {
     crate::handlers::init().await
+}
+
+#[tauri::command]
+async fn event(event: Event) {
+    println!("Event: {event:?}");
+    NmideCore.throw_event(event).await
 }
 /*
 
@@ -53,10 +64,13 @@ pub async fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
         .setup(|app| {
+            NMIDE
+                .set(RwLock::new(app.handle().clone()))
+                .expect("AppHandle setup should always succeed");
             setup(ide_setup(app).expect("IDE-setup should always succeed"));
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![init])
+        .invoke_handler(tauri::generate_handler![init, event])
         .run(tauri::generate_context!())
         .expect("IDE Application should not error");
 }

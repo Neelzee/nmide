@@ -4,6 +4,7 @@ use crate::event::Event;
 
 // TODO: Correct documentation
 #[derive(Debug, Clone, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum Attr {
     /// ```html
     /// <div id="foobar"/>
