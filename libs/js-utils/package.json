@@ -9,11 +9,11 @@
   "author": "Nils.Fitjar",
   "license": "Beerware",
   "devDependencies": {
-    "typescript": "^5.6.3",
-    "vitest": "^2.1.4"
+    "typescript": "^5.8.3",
+    "vitest": "^2.1.9"
   },
   "dependencies": {
     "fp-ts": "^2.16.9",
-    "io-ts": "^2.2.21"
+    "io-ts": "^2.2.22"
   }
 }
