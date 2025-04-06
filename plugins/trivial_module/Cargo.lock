@@ -106,6 +106,7 @@ name = "core-macros"
 version = "1.0.1"
 dependencies = [
  "serde",
+ "ts-rs",
 ]
 
 [[package]]
@@ -128,6 +129,7 @@ dependencies = [
  "once_cell",
  "rstest",
  "serde",
+ "ts-rs",
 ]
 
 [[package]]
