@@ -1,13 +1,22 @@
+use crate::core::NmideCore;
 use crate::setup::setup;
 use anyhow::{Context as _, Result};
-use core_std_lib::core::CoreModification;
+use core_module_lib::Module;
+use core_std_lib::core::Core;
+use core_std_lib::html::Html;
 use std::fs;
 use std::path::PathBuf;
 use tauri::Manager as _;
+pub(crate) mod module_reg {
+    use core_module_lib::Module;
+    use core_module_lib::ModuleBuilder;
+    use core_std_lib::core::Core;
+    include!(concat!(env!("OUT_DIR"), "/module_reg.rs"));
+}
 
 /// see [init](crate::handlers::init)
 #[tauri::command]
-async fn init() -> CoreModification {
+async fn init() -> Html {
     crate::handlers::init().await
 }
 /*
@@ -38,6 +47,7 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
         .setup(|app| {
+            setup_compile_time_modules().expect("Compile time module setup should always succeed");
             setup(ide_setup(app).expect("IDE-setup should always succeed"));
             Ok(())
         })
@@ -45,7 +55,8 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("IDE Application should not error");
 }
-
+// TODO: Mention that this setup is only for run-time modules
+//
 /// Gets the needed paths to $APPDATA and the module directory.
 ///
 /// # Panics
@@ -100,4 +111,14 @@ fn ide_setup(app: &mut tauri::App) -> Result<(PathBuf, PathBuf)> {
         app_handle.path().app_data_dir()?,
         app_handle.path().app_data_dir()?.join("modules"),
     ))
+}
+
+fn setup_compile_time_modules() -> Result<()> {
+    let mut modules: Vec<Module<NmideCore>> = Vec::new();
+
+    module_reg::register_modules(&mut modules);
+
+    println!("{}", modules.len());
+
+    Ok(())
 }

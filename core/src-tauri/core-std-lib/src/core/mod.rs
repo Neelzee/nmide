@@ -6,10 +6,26 @@ use crate::{
 
 pub(crate) mod modification;
 
+pub struct EmptyCore;
+
 pub trait Core {
     fn state(&self) -> impl std::future::Future<Output = State>;
     fn ui(&self) -> impl std::future::Future<Output = Html>;
     fn throw_event(&self, event: Event) -> impl std::future::Future<Output = ()>;
+}
+
+impl Core for EmptyCore {
+    async fn state(&self) -> State {
+        unimplemented!()
+    }
+
+    async fn ui(&self) -> Html {
+        unimplemented!()
+    }
+
+    async fn throw_event(&self, _: Event) {
+        unimplemented!()
+    }
 }
 
 #[derive(Default)]

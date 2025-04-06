@@ -2,7 +2,7 @@
 //! used by [ide](crate::ide) and [server](crate::server).
 
 use crate::statics::APP_DATA_DIR;
-use crate::statics::{NMIDE_PLUGIN_DIR, NMLUGS};
+use crate::statics::{RUNTIME_MODULES, RUNTIME_MODULE_DIR};
 use std::fs;
 use std::path::PathBuf;
 use tokio::sync::RwLock;
@@ -21,11 +21,11 @@ pub fn setup(paths: (PathBuf, PathBuf)) {
         .set(RwLock::new(app_data))
         .expect("Initialization of APP_DATA_DIR should always succeed");
 
-    NMIDE_PLUGIN_DIR
+    RUNTIME_MODULE_DIR
         .set(nmide_plugin)
         .expect("Initialization of NMIDE_PLUGIN_DIR should always succeed");
 
-    let nmide_plugin_dir = NMIDE_PLUGIN_DIR.get().unwrap();
+    let nmide_plugin_dir = RUNTIME_MODULE_DIR.get().unwrap();
     if !nmide_plugin_dir.exists() {
         fs::create_dir_all(nmide_plugin_dir)
             .unwrap_or_else(|err| {
@@ -33,7 +33,7 @@ pub fn setup(paths: (PathBuf, PathBuf)) {
             });
     }
 
-    NMLUGS.set(nmide_plugin_dir
+    RUNTIME_MODULES.set(nmide_plugin_dir
             .read_dir()
             .unwrap_or_else(|err| {
                 panic!("Reading the plugin directory: `{nmide_plugin_dir:?}` should succeed, failed with error: {err:?}")

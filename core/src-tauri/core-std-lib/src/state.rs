@@ -34,7 +34,7 @@ impl PartialOrd for Value {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct State(HashMap<String, Value>);
 
 #[derive(Default)]

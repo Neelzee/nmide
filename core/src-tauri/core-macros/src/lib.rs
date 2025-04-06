@@ -1,3 +1,5 @@
+// TODO: Add docs
+// TODO: See if we can refactor this to be better
 #[macro_export]
 macro_rules! define_html {
     ( $( $name:ident ),* ) => {

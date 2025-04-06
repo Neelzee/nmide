@@ -7,11 +7,11 @@ use serde::Serialize;
 
 use crate::{
     core::NmideCore,
-    statics::{NMIDE_MODULES, NMIDE_STATE, NMIDE_UI},
+    statics::{COMPILE_TIME_MODULES, NMIDE_STATE, NMIDE_UI},
 };
 
 pub async fn init() -> Html {
-    let modules = NMIDE_MODULES.read().await;
+    let modules = COMPILE_TIME_MODULES.read().await;
 
     let state = NmideCore.state().await;
     let ui = NmideCore.ui().await;

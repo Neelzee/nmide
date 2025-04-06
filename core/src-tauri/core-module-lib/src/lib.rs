@@ -8,6 +8,10 @@ use std::{path::Path, sync::Arc};
 
 pub mod js_module;
 
+pub trait ModuleBuilder {
+    fn build<T: Core>(self) -> Module<T>;
+}
+
 pub trait ModuleTrait<T>: Send + Sync {
     fn name(&self) -> &str;
     fn init(&self, core: &T) -> CoreModification;
@@ -25,6 +29,12 @@ impl<T> Module<T>
 where
     T: Core,
 {
+    pub fn new(module: impl ModuleTrait<T> + 'static) -> Self {
+        Self {
+            handle: Arc::new(module),
+        }
+    }
+
     pub fn name(&self) -> &str {
         self.handle.name()
     }
