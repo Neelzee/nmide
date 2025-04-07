@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 core-std-lib = { path = "../../core/src-tauri/core-std-lib/" }
 core-module-lib = { path = "../../core/src-tauri/core-module-lib/" }
+async-trait = "0.1.88"

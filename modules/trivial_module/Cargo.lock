@@ -78,6 +78,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-trait"
+version = "0.1.88"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e539d3fca749fcee5236ab05e93a52867dd549cc157c8cb7f99595f3cedffdb5"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.100",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -115,6 +126,7 @@ version = "1.0.1"
 dependencies = [
  "abi_stable",
  "anyhow",
+ "async-trait",
  "core-std-lib",
  "foreign-std-lib",
  "log",
@@ -125,6 +137,7 @@ dependencies = [
 name = "core-std-lib"
 version = "2.0.2"
 dependencies = [
+ "async-trait",
  "core-macros",
  "once_cell",
  "rstest",
@@ -728,6 +741,7 @@ dependencies = [
 name = "trivial_module"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "core-module-lib",
  "core-std-lib",
 ]

@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use core_std_lib::{
     attrs::Attr,
     core::{Core, CoreModification},
@@ -9,22 +10,20 @@ use core_std_lib::{
 pub struct ModuleBuilder;
 
 impl core_module_lib::ModuleBuilder for ModuleBuilder {
-    fn build<T: Core>(self) -> core_module_lib::Module<T> {
-        core_module_lib::Module::<T>::new(Module)
+    fn build(self) -> impl core_module_lib::Module {
+        Module
     }
 }
 
 pub struct Module;
 
-impl<T> core_module_lib::ModuleTrait<T> for Module
-where
-    T: Core,
-{
+#[async_trait]
+impl core_module_lib::Module for Module {
     fn name(&self) -> &str {
         "trivial module"
     }
 
-    fn init(&self, _core: &T) -> CoreModification {
+    async fn init(&self, _core: &dyn Core) -> CoreModification {
         let state = StateInstructionBuilder::default().add("counter".to_string(), Value::Int(0));
         let ui = UIInstructionBuilder::default().add_node(
             Html::Div()
@@ -38,6 +37,11 @@ where
                         )))
                         .add_attr(Attr::Id("ButtonID".to_string())),
                 )
+                .adopt(
+                    Html::P()
+                        .text("Count: 0")
+                        .add_attr(Attr::Id("PID".to_string())),
+                )
                 .add_attr(Attr::Id("DivId".to_string())),
             None,
             None,
@@ -45,7 +49,7 @@ where
         CoreModification::default().set_ui(ui).set_state(state)
     }
 
-    fn handler(&self, event: &Event, _core: &T) -> CoreModification {
+    async fn handler(&self, event: &Event, core: &dyn Core) -> CoreModification {
         match (event.event_name(), event.args()) {
             ("counter", Some(v)) => {
                 let state = StateInstructionBuilder::default().modify(
@@ -56,7 +60,16 @@ where
                         _ => Value::Int(0),
                     },
                 );
-                CoreModification::default().set_state(state)
+                let ui = if let Some(Value::Int(old)) = core.state().await.get("counter") {
+                    UIInstructionBuilder::default().set_text(
+                        Some("PID".to_string()),
+                        None,
+                        format!("Count: {}", old),
+                    )
+                } else {
+                    UIInstructionBuilder::default()
+                };
+                CoreModification::default().set_state(state).set_ui(ui)
             }
             _ => CoreModification::default(),
         }
