@@ -65,3 +65,17 @@ to integrated Modules, as I could simply implement the interface, but maybe
 looking into using a struct instead? I would have a similar problem, where I
 have field for a function, but I don't really know. Tomorrow, I'll look into
 the async_trait crate, which apparently can help here.
+
+\section{25.03.07}
+
+Stuff works again, took only 4 months. Well, it kinda works. Still some kinks to
+iron out, but should be able to figure out that by the end of the week. I should
+definitively mention the trait system in Rust, because I am using it a lot. I
+should also re-write the API section, to be more story like, implementing
+logging and then the editor, in Rust and Magnolia. Looking at the differences,
+especially how refactoring it to use semigroup and group traits/concepts.
+
+I think I am going to remove everything I am not using, and either re-write it
+if I need it, or checking previous commits to find it again. Since there is so
+much garbage here currently, it probably feels good for the repository to have
+commits which is just "deleted file".
