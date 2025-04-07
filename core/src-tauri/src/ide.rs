@@ -1,4 +1,5 @@
 use crate::core::NmideCore;
+use crate::core::ReturnType;
 use crate::setup::setup;
 use crate::statics::COMPILE_TIME_MODULES;
 use anyhow::{Context as _, Result};
@@ -6,6 +7,7 @@ use core_module_lib::Module;
 use core_std_lib::core::Core;
 use core_std_lib::event::Event;
 use core_std_lib::html::Html;
+use core_std_lib::html::UIInstruction;
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
@@ -24,7 +26,7 @@ pub static NMIDE: tokio::sync::OnceCell<RwLock<AppHandle>> = tokio::sync::OnceCe
 
 /// see [init](crate::handlers::init)
 #[tauri::command]
-async fn init() -> Html {
+async fn init() -> ReturnType {
     crate::handlers::init().await
 }
 
@@ -133,7 +135,7 @@ fn ide_setup(app: &mut tauri::App) -> Result<(PathBuf, PathBuf)> {
 }
 
 async fn setup_compile_time_modules() -> Result<()> {
-    let mut modules: HashMap<String, Module<NmideCore>> = HashMap::new();
+    let mut modules: HashMap<String, Box<dyn Module>> = HashMap::new();
 
     module_reg::register_modules(&mut modules);
 

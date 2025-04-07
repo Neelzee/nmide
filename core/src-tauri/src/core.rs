@@ -1,13 +1,25 @@
-use core_std_lib::{core::Core, html::Html, state::State};
-use tauri::Emitter;
-
 use crate::{
     ide::NMIDE,
     statics::{COMPILE_TIME_MODULES, NMIDE_STATE, NMIDE_UI},
 };
+use async_trait::async_trait;
+use core_std_lib::{
+    core::Core,
+    html::{Html, UIInstruction},
+    state::State,
+};
+use serde::{Deserialize, Serialize};
+use tauri::Emitter;
 
 pub struct NmideCore;
 
+#[derive(Serialize, Deserialize, Clone)]
+pub struct ReturnType {
+    pub inst: UIInstruction,
+    pub ui: Html,
+}
+
+#[async_trait]
 impl Core for NmideCore {
     async fn state(&self) -> State {
         let st = NMIDE_STATE.read().await;
@@ -23,23 +35,34 @@ impl Core for NmideCore {
         let modules = COMPILE_TIME_MODULES.read().await;
         let state = NmideCore.state().await;
         let ui = NmideCore.ui().await;
-        let (new_state, new_ui) = modules
-            .values()
-            .map(|m| m.handler(&event, self))
+        let module_futures = modules.values().map(|m| m.handler(&event, self));
+
+        let cm = futures::future::join_all(module_futures)
+            .await
+            .into_iter()
             .reduce(|acc, cm| acc.combine(cm))
-            .unwrap_or_default()
-            .build(state, ui);
+            .unwrap_or_default();
+
+        let (new_state, ui_builder) = cm.build_state(state);
 
         let mut st = NMIDE_STATE.write().await;
         *st = new_state;
-        println!("{st:?}");
         drop(st);
         let app = NMIDE
             .get()
             .expect("AppHandle should be initialized")
             .read()
             .await;
-        app.emit("nmide://render", new_ui)
-            .expect("AppHandle emit should always succeed");
+        let inst = ui_builder.get_instructions();
+        let mut current_ui = NMIDE_UI.write().await;
+        *current_ui = ui_builder.build(ui);
+        app.emit(
+            "nmide://render",
+            ReturnType {
+                inst,
+                ui: current_ui.clone(),
+            },
+        )
+        .expect("AppHandle emit should always succeed");
     }
 }

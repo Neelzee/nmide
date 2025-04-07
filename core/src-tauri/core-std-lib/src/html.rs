@@ -5,6 +5,7 @@
 use crate::attrs::Attr;
 use core_macros::define_html;
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 define_html!(
     attr_type = Attr,
@@ -102,25 +103,33 @@ impl Html {
             _ => false,
         }
     }
+
+    pub fn set_text<S: ToString>(self, text: S) -> Self {
+        self.text(text)
+    }
 }
 
 // NOTE: This is at minimum, a semigroup, could be argued its a monoid and also a group.
-#[derive(Default)]
-pub(crate) enum UIInstruction {
+#[derive(Default, Deserialize, Serialize, Clone, TS)]
+#[serde(rename_all = "camelCase")]
+pub enum UIInstruction {
     #[default]
     NoOp,
     AddAttr {
         field: String,
+        #[ts(type = "TAttr")]
         attr: Attr,
     },
     SetAttr {
         field: String,
+        #[ts(type = "TAttr")]
         attr: Attr,
     },
     RemAttr {
         field: String,
     },
     Add {
+        #[ts(type = "Html")]
         ui: Html,
         id: Option<String>,
         class: Option<String>,
@@ -133,18 +142,25 @@ pub(crate) enum UIInstruction {
         field: String,
         id: Option<String>,
         class: Option<String>,
+        #[ts(type = "TAttr")]
         attr: Attr,
     },
     SetAttrPred {
         field: String,
         id: Option<String>,
         class: Option<String>,
+        #[ts(type = "TAttr")]
         attr: Attr,
     },
     RemAttrPred {
         id: Option<String>,
         class: Option<String>,
         field: String,
+    },
+    TextAttrPred {
+        id: Option<String>,
+        class: Option<String>,
+        text: String,
     },
     Then {
         fst: Box<UIInstruction>,
@@ -195,6 +211,13 @@ impl UIInstructionBuilder {
 
     pub(crate) fn instruction(self) -> UIInstruction {
         self.0
+    }
+
+    pub fn set_text(self, id: Option<String>, class: Option<String>, text: String) -> Self {
+        Self::new(
+            self.0
+                .combine(UIInstruction::TextAttrPred { id, class, text }),
+        )
     }
 
     pub fn add_node(self, ui: Html, id: Option<String>, class: Option<String>) -> Self {
@@ -357,6 +380,15 @@ impl UIInstructionBuilder {
                 }
                 ui.rem_attr(&field)
             }
+            UIInstruction::TextAttrPred { id, class, text } => {
+                if let Some(id) = id {
+                    return ui.modify(|h| h.set_text(text.clone()), |h| h.cmp_id(&id));
+                }
+                if let Some(class) = class {
+                    return ui.modify(|h| h.set_text(text.clone()), |h| h.cmp_class(&class));
+                }
+                ui.set_text(text)
+            }
         }
     }
 
@@ -365,5 +397,9 @@ impl UIInstructionBuilder {
     // TODO: Make type-level error handling
     pub fn build(self, state: Html) -> Html {
         Self::_build(self.0, state)
+    }
+
+    pub fn get_instructions(&self) -> UIInstruction {
+        self.0.clone()
     }
 }

@@ -9,8 +9,7 @@ macro_rules! define_html {
     ) => {
         $(#[$meta])*
         pub enum Html {
-            Text(String),
-                $( $name { kids: Vec<Html>, attrs: Vec<$attr> }, )*
+            $( $name { kids: Vec<Html>, attrs: Vec<$attr>, text: Option<String> }, )*
         }
         impl Html {
             pub fn shallow_clone(&self) -> Self {
@@ -18,30 +17,27 @@ macro_rules! define_html {
                     $(
                         Html::$name { .. } => Html::$name(),
                     )*
-                    Html::Text(_) => Html::Text(String::new()),
                 }
             }
 
             pub fn cast_html(self, target: Self) -> Self {
                 match self {
                     $(
-                        Html::$name { kids, attrs } => {
+                        Html::$name { kids, attrs, text } => {
                             match target {
-                                Html::$name { .. } => Html::$name { kids, attrs },
-                                _ => target._cast_html(kids, attrs),
+                                Html::$name { .. } => Html::$name { kids, attrs, text },
+                                _ => target._cast_html(kids, attrs, text),
                             }
                         },
                     )*
-                    Html::Text(text) => Html::Text(text),
                 }
             }
 
-            fn _cast_html(self, kids: Vec<Html>, attrs: Vec<$attr>) -> Self {
+            fn _cast_html(self, kids: Vec<Html>, attrs: Vec<$attr>, text: Option<String>) -> Self {
                 match self {
                     $(
-                        Html::$name { .. } => Html::$name { kids, attrs },
+                        Html::$name { .. } => Html::$name { kids, attrs, text },
                     )*
-                    Html::Text(text) => Html::Text(text), // Text remains Text
                 }
             }
 
@@ -49,17 +45,16 @@ macro_rules! define_html {
             #[allow(non_snake_case)]
             /// Creates empty $name
             pub fn $name() -> Self {
-                Self::$name { kids: Vec::new(), attrs: Vec::new() }
-            }
+                    Self::$name { text: None, kids: Vec::new(), attrs: Vec::new() }
+                }
             )*
 
             /// Returns a copy of the kids
             pub fn kids(&self) -> Vec<Html> {
                 match self {
                 $(
-                    Self::$name { kids, attrs } => kids.clone(),
+                    Self::$name { kids, .. } => kids.clone(),
                 )*
-                    Self::Text(_) => Vec::new(),
                 }
             }
 
@@ -67,18 +62,16 @@ macro_rules! define_html {
             pub fn attrs(&self) -> Vec<$attr> {
                 match self {
                 $(
-                    Self::$name { kids: _, attrs } => attrs.clone(),
+                    Self::$name { attrs, .. } => attrs.clone(),
                 )*
-                    Self::Text(_) => Vec::new(),
                 }
             }
 
             pub fn set_attrs(self, attrs: Vec<$attr>) -> Self {
                 match self {
                 $(
-                    Self::$name { attrs: _, kids } => Self::$name { attrs, kids },
+                    Self::$name { attrs: _, kids, text } => Self::$name { attrs, kids, text },
                 )*
-                    Self::Text(_) => Self::P { kids: vec![self], attrs },
                 }
             }
 
@@ -86,12 +79,11 @@ macro_rules! define_html {
             pub fn adopt(self, kid: Html) -> Self {
                 match self {
                 $(
-                    Self::$name { mut kids, attrs } => {
+                    Self::$name { mut kids, attrs, text } => {
                         kids.push(kid);
-                        Self::$name { kids, attrs }
+                        Self::$name { kids, attrs, text }
                     },
                 )*
-                    html @ _ => html,
                 }
             }
 
@@ -99,22 +91,18 @@ macro_rules! define_html {
             pub fn replace_kids(self, new_kids: Vec<Html>) -> Self {
                 match self {
                 $(
-                    Self::$name { kids: _, attrs } => Self::$name { kids: new_kids, attrs },
+                    Self::$name { kids: _, attrs, text } => Self::$name { kids: new_kids, attrs, text },
                 )*
-                    html @ _ => html,
                 }
             }
 
             pub fn text<S: ToString>(self, s: S) -> Self {
-
                 match self {
                 $(
-                    Self::$name { kids: mut new_kids, attrs } => {
-                        new_kids.push(Self::Text(s.to_string()));
-                        Self::$name { kids: new_kids, attrs }
+                    Self::$name { kids, attrs, text: _ } => {
+                        Self::$name { kids, attrs, text: Some(s.to_string()) }
                     },
                 )*
-                    Self::Text(_) => Self::Text(s.to_string()),
                 }
 
             }

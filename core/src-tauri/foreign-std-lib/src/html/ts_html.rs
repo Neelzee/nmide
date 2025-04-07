@@ -1,5 +1,6 @@
 use crate::attr::ts_attrs::TAttr;
 use core_macros::define_html;
+use core_std_lib::html::UIInstruction;
 use serde::{self, Deserialize, Serialize};
 use ts_rs::TS;
 
@@ -52,3 +53,9 @@ define_html!(
     Main
 );
 
+#[derive(Default, Deserialize, Serialize, Clone, TS)]
+#[ts(export, export_to = "Html.ts")]
+pub struct TUIInstruction {
+    #[ts(inline)]
+    op: UIInstruction,
+}

@@ -1,72 +1,28 @@
 use abi_stable::library::{LibraryError, LibraryPath, RootModule};
+use async_trait::async_trait;
 use core_std_lib::{
     core::{Core, CoreModification},
     event::Event,
 };
 use foreign_std_lib::module::rs_module::ModuleRef;
-use std::{path::Path, sync::Arc};
+use std::path::Path;
 
 pub mod js_module;
 
 pub trait ModuleBuilder {
-    fn build<T: Core>(self) -> Module<T>;
+    fn build(self) -> impl Module;
 }
 
-pub trait ModuleTrait<T>: Send + Sync {
+#[async_trait]
+pub trait Module: Send + Sync {
     fn name(&self) -> &str;
-    fn init(&self, core: &T) -> CoreModification;
-    fn handler(&self, event: &Event, core: &T) -> CoreModification;
-}
-
-pub struct Module<T>
-where
-    T: Core,
-{
-    handle: Arc<dyn ModuleTrait<T>>,
-}
-
-impl<T> Module<T>
-where
-    T: Core,
-{
-    pub fn new(module: impl ModuleTrait<T> + 'static) -> Self {
-        Self {
-            handle: Arc::new(module),
-        }
-    }
-
-    pub fn name(&self) -> &str {
-        self.handle.name()
-    }
-
-    pub fn init(&self, core: &T) -> CoreModification {
-        self.handle.init(core)
-    }
-
-    pub fn handler(&self, event: &Event, core: &T) -> CoreModification {
-        self.handle.handler(event, core)
-    }
+    async fn init(&self, core: &dyn Core) -> CoreModification;
+    async fn handler(&self, event: &Event, core: &dyn Core) -> CoreModification;
 }
 
 pub struct RsModule {
     module: ModuleRef,
     module_path: String,
-}
-
-impl<T> ModuleTrait<T> for RsModule {
-    fn name(&self) -> &str {
-        self.module_path.split("/").last().unwrap_or_default()
-    }
-
-    fn init(&self, core: &T) -> CoreModification {
-        self.module.init()(0);
-        todo!()
-    }
-
-    fn handler(&self, event: &Event, core: &T) -> CoreModification {
-        self.module.handler()(0);
-        todo!()
-    }
 }
 
 impl RsModule {

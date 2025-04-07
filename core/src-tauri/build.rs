@@ -38,7 +38,7 @@ fn main() {
                     .insert(module.clone(), spec.clone());
                 module_imports.push(format!("extern crate {};", module));
                 module_reg.push(format!(
-                    "modules.insert(\"{}\".to_string(), {}::ModuleBuilder.build());",
+                    "modules.insert(\"{}\".to_string(), Box::new({}::ModuleBuilder.build()));",
                     module, module
                 ));
             }
@@ -54,7 +54,7 @@ fn main() {
 
         writeln!(
             reg_file,
-            "pub fn register_modules(modules: &mut HashMap<String, Module<impl Core>>) {{"
+            "pub fn register_modules(modules: &mut HashMap<String, Box<dyn Module>>) {{"
         )
         .unwrap();
         for registration in &module_reg {

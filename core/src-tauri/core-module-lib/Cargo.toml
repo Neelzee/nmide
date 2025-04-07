@@ -11,3 +11,4 @@ foreign-std-lib = { path = "../foreign-std-lib", features = ["rs", "ts", "c"] }
 log = "0.4.22"
 abi_stable = "0.11.3"
 serialize-to-javascript = "0.1.1"
+async-trait = "0.1.88"

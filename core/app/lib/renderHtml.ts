@@ -3,7 +3,7 @@ import { Html } from "@nmide/js-utils/lib/Html";
 import { TEvent } from "@nmide/js-utils/lib/TEvent";
 import { invoke } from "@tauri-apps/api/core";
 
-type THtml = { kind: string, kids: THtml[], attrs: TAttr[], text?: string };
+export type THtml = { kind: string, kids: THtml[], attrs: TAttr[], text?: string };
 
 // TODO: Add docs
 const createElement = ({ attrs, kids, kind, text }: THtml) => {
@@ -45,9 +45,8 @@ const createElement = ({ attrs, kids, kind, text }: THtml) => {
 }
 
 // TODO: Add docs
-export const renderHtml = (h: Html) => {
+export const renderHtml = (html: THtml) => {
   //const element = window.parseHtml(html);
-  const html = getHtml(h);
   const element = parseHtml(html);
   // HACK: The reason this is undefined, is because rendering an
   // Html-frag-node should not happen, so this has to be encoded with undefined

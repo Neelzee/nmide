@@ -3,29 +3,15 @@ use crate::{
     html::{Html, UIInstruction, UIInstructionBuilder},
     state::{State, StateInstruction, StateInstructionBuilder},
 };
+use async_trait::async_trait;
 
 pub(crate) mod modification;
 
-pub struct EmptyCore;
-
-pub trait Core {
-    fn state(&self) -> impl std::future::Future<Output = State>;
-    fn ui(&self) -> impl std::future::Future<Output = Html>;
-    fn throw_event(&self, event: Event) -> impl std::future::Future<Output = ()>;
-}
-
-impl Core for EmptyCore {
-    async fn state(&self) -> State {
-        unimplemented!()
-    }
-
-    async fn ui(&self) -> Html {
-        unimplemented!()
-    }
-
-    async fn throw_event(&self, _: Event) {
-        unimplemented!()
-    }
+#[async_trait]
+pub trait Core: Send + Sync {
+    async fn state(&self) -> State;
+    async fn ui(&self) -> Html;
+    async fn throw_event(&self, event: Event);
 }
 
 #[derive(Default)]
@@ -60,6 +46,13 @@ impl CoreModification {
         (
             StateInstructionBuilder::new(self.state_inst).build(state),
             UIInstructionBuilder::new(self.ui_inst).build(ui),
+        )
+    }
+
+    pub fn build_state(self, state: State) -> (State, UIInstructionBuilder) {
+        (
+            StateInstructionBuilder::new(self.state_inst).build(state),
+            UIInstructionBuilder::new(self.ui_inst),
         )
     }
 }

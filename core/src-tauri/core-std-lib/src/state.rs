@@ -1,8 +1,8 @@
-use std::collections::HashMap;
-
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use ts_rs::TS;
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 pub enum Value {
     Int(i32),
     Float(f32),
@@ -37,6 +37,12 @@ impl PartialOrd for Value {
 #[derive(Debug, Default, Clone)]
 pub struct State(HashMap<String, Value>);
 
+impl State {
+    pub fn get<S: ToString>(&self, field: S) -> Option<&Value> {
+        self.0.get(&(field.to_string()))
+    }
+}
+
 #[derive(Default)]
 pub(crate) enum StateInstruction {
     #[default]
@@ -52,7 +58,7 @@ pub(crate) enum StateInstruction {
     Mod {
         field: String,
         value: Value,
-        combine: Box<dyn Fn(Value, Value) -> Value>,
+        combine: Box<dyn Fn(Value, Value) -> Value + Send + Sync + 'static>,
     },
     Rem {
         field: String,
@@ -102,7 +108,7 @@ impl StateInstructionBuilder {
 
     pub fn modify<M>(self, field: String, value: Value, combine: M) -> Self
     where
-        M: Fn(Value, Value) -> Value + 'static,
+        M: Fn(Value, Value) -> Value + 'static + Send + Sync,
     {
         Self::new(self.0.combine(StateInstruction::Mod {
             field,
