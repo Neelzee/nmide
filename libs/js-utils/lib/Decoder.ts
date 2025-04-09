@@ -68,9 +68,10 @@ export const DNode = <T extends t.Mixed>(type: T) => t.intersection([
   DNodeImpl(type),
   type,
 ]);
-export const DIns = <T extends t.Mixed>(type: T) => t.union([
-  t.type({ node: DNode<T>(type) }, "DRemIns"),
-  t.type({ node: DNode<T>(type), f: t.Function }, "RModIns")
+export const DIns = <T extends t.Mixed>(_type: T) => t.union([
+  t.type({ f: t.Function }, "DRemIns"),
+  // TODO: Should encode that the field is restricted on the type T
+  t.type({ f: t.Function, field: t.string, g: t.Function }, "RModIns")
 ]);
 export const DEventHandler = t.type({
   handler: t.Function,
@@ -78,8 +79,8 @@ export const DEventHandler = t.type({
 });
 export const DInsArr = <T extends t.Mixed>(type: T) => t.array(DIns<T>(type));
 export const DCoreModification = t.type({
-  uiModifications: DInsArr(DHtml),
-  stateModifications: DInsArr(DValue),
-  eventModifications: DInsArr(DEvent),
+  uiModifications: t.array(DIns(DHtml)),
+  stateModifications: t.array(DIns(DMap)),
+  eventModifications: t.array(DIns(DEvent)),
   newEventHandlers: t.array(t.tuple([t.string, DEventHandler]))
 });

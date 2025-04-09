@@ -31,6 +31,25 @@ export default defineConfig({
     minify: !process.env.TAURI_ENV_DEBUG ? 'esbuild' : false,
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_ENV_DEBUG,
+    rollupOptions: {
+      // HACK: This should not be needed, I think. But makes it so that I can build
+      external: [
+        "fp-ts/",
+        "fp-ts/function",
+        "fp-ts/lib/function",
+        "fp-ts/lib/Ord",
+        "fp-ts/Array",
+        "fp-ts/NonEmptyArray",
+        "fp-ts/Tuple",
+        "fp-ts/string",
+        "fp-ts/boolean",
+        "fp-ts/Option",
+        "fp-ts/number",
+        "fp-ts/Either",
+        "fp-ts/Eq",
+        "io-ts",
+      ]
+    },
   },
   plugins: [
     nodePolyfills({ include: [] }),

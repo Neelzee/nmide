@@ -1,61 +1,94 @@
-[workspace]
-members = ["core-macros", "core-plugin-lib", "core-std-lib"]
-
-[package]
-name = "core"
-version = "1.1.0"
-description = "A simple, modular, IDE"
-authors = ["Nils Michael Fitjar <nfi005@uib.no>"]
-license = "MIT License"
-repository = "https://github.com/Neelzee/nmide"
-edition = "2021"
-readme = "../../README.md"
-exclude = ["./core-*/*"]
-
-[lib]
-name = "core_lib"
-crate-type = ["staticlib", "cdylib", "rlib"]
-
 [build-dependencies]
-tauri-build = { version = "2.0.3", features = [], optional = true }
+env = "1.0.1"
+toml = "0.8.20"
+
+[build-dependencies.tauri-build]
+features = []
+optional = true
+version = "2.1.1"
 
 [dependencies]
-# IDE specific dependencies
-tauri = { version = "2.1.1", features = [
-  "protocol-asset",
-  "config-toml",
-], optional = true }
-tauri-plugin-log = { version = "2.0.2", optional = true }
-tauri-plugin-fs = { version = "2.0.3", optional = true }
-tauri-plugin-shell = { version = "2.0.2", optional = true }
-tauri-plugin-dialog = { version = "2.0.3", optional = true }
-anyhow-tauri = { version = "1.0.0", optional = true }
+anyhow = "1.0.97"
+async-trait = "0.1.88"
+futures = "0.3.31"
+log = "0.4.27"
+once_cell = "1.21.3"
+serde_json = "1.0.140"
 
-# Server specific dependencies
-actix-web = { version = "4.9.0", optional = true }
-actix-files = { version = "0.6.6", optional = true }
-actix-cors = { version = "0.7.0", optional = true }
+[dependencies.actix-cors]
+optional = true
+version = "0.7.1"
 
-serde = { version = "1.0.215", features = ["derive"] }
-once_cell = "1.20.2"
-tokio = { version = "1.41.1", features = ["full"] }
-anyhow = "1.0.93"
-core-std-lib = { path = "./core-std-lib" }
-core-plugin-lib = { path = "./core-plugin-lib" }
-log = "0.4.22"
-serde_json = "1.0.133"
+[dependencies.actix-files]
+optional = true
+version = "0.6.6"
+
+[dependencies.actix-web]
+optional = true
+version = "4.10.2"
+
+[dependencies.anyhow-tauri]
+optional = true
+version = "1.0.0"
+
+[dependencies.core-module-lib]
+path = "./core-module-lib"
+
+[dependencies.core-std-lib]
+path = "./core-std-lib"
+
+[dependencies.serde]
+features = ["derive"]
+version = "1.0.219"
+
+[dependencies.tauri]
+features = ["protocol-asset", "config-toml"]
+optional = true
+version = "2.4.1"
+
+[dependencies.tauri-plugin-dialog]
+optional = true
+version = "2.2.1"
+
+[dependencies.tauri-plugin-fs]
+optional = true
+version = "2.2.1"
+
+[dependencies.tauri-plugin-log]
+optional = true
+version = "2.3.1"
+
+[dependencies.tauri-plugin-shell]
+optional = true
+version = "2.2.1"
+
+[dependencies.tokio]
+features = ["full"]
+version = "1.44.2"
+
+[dependencies.trivial_module]
+path = "../../modules/trivial_module/"
 
 [features]
-default = []
-# this feature is used for production builds or when `devPath` points to the filesystem
-# DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
-ide = [
-  "dep:tauri",
-  "dep:tauri-plugin-log",
-  "dep:tauri-plugin-fs",
-  "dep:tauri-plugin-shell",
-  "dep:tauri-plugin-dialog",
-  "dep:tauri-build",
-]
+default = ["ide"]
+ide = ["dep:tauri", "dep:tauri-plugin-log", "dep:tauri-plugin-fs", "dep:tauri-plugin-shell", "dep:tauri-plugin-dialog", "dep:tauri-build"]
 server = ["dep:actix-web", "dep:actix-files", "dep:actix-cors"]
+
+[lib]
+crate-type = ["staticlib", "cdylib", "rlib"]
+name = "core_lib"
+
+[package]
+authors = ["Nils Michael Fitjar <nfi005@uib.no>"]
+description = "A simple, modular, IDE"
+edition = "2021"
+exclude = ["./core-*/*"]
+license = "MIT License"
+name = "core"
+readme = "../../README.md"
+repository = "https://github.com/Neelzee/nmide"
+version = "1.1.0"
+
+[workspace]
+members = ["core-macros", "core-module-lib", "core-std-lib", "foreign-std-lib"]

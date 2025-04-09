@@ -10,14 +10,12 @@
 \usepackage{float}
 \usepackage{geometry}
 \usepackage{wrapfig}
-\usepackage{amssymb}
 \usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
 \usepackage{soul}
 \usepackage{textcomp}
 \usepackage{marvosym}
 \usepackage[integrals]{wasysym}
 \usepackage{latexsym}
-\usepackage{minted}
 \usepackage[svgnames]{xcolor}
 \DeclareRobustCommand{\VAN}[3]{#2}
 \usepackage{amssymb}
@@ -57,10 +55,10 @@ style=numeric-verb,
   \setlength{\glsdescwidth}{1\hsize}
 
 \usepackage{datetime}
-\newdateformat{monthyeardate}{%
+\newdateformat{monthyeardate}{
   \monthname[\THEMONTH], \THEYEAR}
 
-\newcommand\blankpage{%
+\newcommand\blankpage{
     \null
     \thispagestyle{empty}%
     \addtocounter{page}{-1}%
@@ -80,3 +78,18 @@ style=numeric-verb,
 
 \usepackage[acronym,nonumberlist,toc,nogroupskip]{glossaries}
 \usepackage{generators/commands}
+
+\usepackage{helvet}
+\usepackage[useregional]{datetime2}
+\usepackage{pgfgantt}
+\usepackage{dirtytalk}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{colortbl}
+\usepackage{listings-rust}
+
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}

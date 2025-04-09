@@ -1,0 +1,4 @@
+[modules]
+counter-plugin = { kind = "js" }
+trivial = { kind = "js" }
+trivial_module = { path = "../../modules/trivial_module/" }

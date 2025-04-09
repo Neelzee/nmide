@@ -1,50 +1,38 @@
-//! The [handlers](crate::handlers) module contains the three functions that make up the zero core
-//! IDE.
+use std::future::IntoFuture;
 
-use crate::statics::NMLUGS;
+use anyhow::Context;
 use core_std_lib::{
-    html::thtml::THtml,
-    map::{rmap::RMap, tmap::TMap},
-    msg::{rmsg::RMsg, tmsg::TMsg},
+    core::{Core, CoreModification},
+    html::{Html, UIInstruction},
 };
-use log::info;
+use futures;
+use serde::{Deserialize, Serialize};
 
-// TODO: Add doc-string
-pub async fn init() -> Vec<(String, TMap)> {
-    info!("Backend: init");
-    NMLUGS
-        .get()
-        .expect("Plugins are already initialized at this point")
-        .iter()
-        .map(|p| (p.name().to_string(), p.init().into()))
-        .collect()
-}
+use crate::{
+    core::NmideCore,
+    statics::{COMPILE_TIME_MODULES, NMIDE_STATE, NMIDE_UI},
+};
 
-// TODO: Add doc-string
-pub async fn view(tmodel: TMap) -> Vec<(String, THtml)> {
-    info!("Backend: view");
-    let model: RMap = tmodel.into();
-    NMLUGS
-        .get()
-        .unwrap()
-        .iter()
-        .map(|p| (p.name().to_string(), p.view(&model).into()))
-        .collect()
-}
+pub async fn init() -> UIInstruction {
+    let modules = COMPILE_TIME_MODULES.read().await;
 
-// TODO: Add doc-string
-pub async fn update(tmsg: TMsg, tmodel: TMap) -> Vec<(String, TMap)> {
-    info!("Backend: update");
-    let fmap: RMap = tmodel.into();
-    match &tmsg {
-        TMsg::Msg(_, _) => {
-            let rmsg: RMsg = tmsg.into();
-            NMLUGS
-                .get()
-                .unwrap()
-                .iter()
-                .map(|p| (p.name().to_string(), p.update(&rmsg, &fmap).into()))
-                .collect()
-        }
-    }
+    let state = NmideCore.state().await;
+    let ui = NmideCore.ui().await;
+
+    let module_futures = modules.values().map(|m| m.init(&NmideCore));
+
+    let (new_state, ui_builder) = futures::future::join_all(module_futures)
+        .await
+        .into_iter()
+        .reduce(|acc, ins| acc.combine(ins))
+        .unwrap_or_default()
+        .build_state(state);
+
+    let mut st = NMIDE_STATE.write().await;
+    *st = new_state;
+    drop(st);
+    let inst = ui_builder.get_instructions();
+    let mut current_ui = NMIDE_UI.write().await;
+    *current_ui = ui_builder.build(ui);
+    inst
 }
