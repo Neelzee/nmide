@@ -1,0 +1,35 @@
+{
+  "name": "core",
+  "private": true,
+  "version": "1.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "tauri": "tauri",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@nmide/js-utils": "file:../libs/js-utils",
+    "@tauri-apps/api": "^2.4.1",
+    "@tauri-apps/plugin-fs": "^2.2.1",
+    "@tauri-apps/plugin-log": "^2.3.1",
+    "@tauri-apps/plugin-shell": "^2.2.1",
+    "fp-ts": "^2.16.9",
+    "io-ts": "^2.2.21"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.16.0",
+    "@tauri-apps/cli": "^2.4.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "esbuild": "^0.24.0",
+    "eslint": "^9.16.0",
+    "globals": "^15.13.0",
+    "jsdom": "^25.0.1",
+    "typescript": "^5.2.2",
+    "typescript-eslint": "^8.17.0",
+    "vite": "^5.4.10",
+    "vite-plugin-node-polyfills": "^0.22.0",
+    "vitest": "^2.1.4"
+  }
+}

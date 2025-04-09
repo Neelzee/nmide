@@ -1,0 +1,137 @@
+\section{Modeling a module}
+\SectionPage
+
+\begin{frame}
+  \frametitle{How To model a module?}
+  \begin{itemize}
+    \item A module needs to:
+      \pause
+      \begin{itemize}
+        \item Initialize some state
+        \pause
+        \item Update the state based on events
+        \pause
+        \item Change the view based on the state
+      \end{itemize}
+      \pause
+    \item Module architecture is inspired by Elm and MVC
+      \pause
+    \item A module should be \textit{pure}
+  \end{itemize}
+\end{frame}
+
+\hidelogo
+
+\begin{frame}
+  \frametitle{Scrapped architecture}
+  \begin{figure}
+    \centering
+    \input{./figures/plugin-architecture-v0}
+    \caption{DSL inspired module architecture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Scrapped architecture}
+  \begin{figure}
+    \centering
+    \input{./figures/plugin-architecture}
+    \caption{Elm inspired module architecture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Current architecture}
+  \begin{figure}
+    \centering
+    \input{./figures/plugin-architecture-v1}
+    \caption{Initialization stage}
+  \end{figure}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Current Architecture}
+  \begin{figure}
+    \centering
+    \input{./figures/plugin-architecture-post}
+    \caption{Post initialization stage}
+  \end{figure}
+\end{frame}
+
+\showlogo
+
+\section{Implementation struggles}
+\SectionPage
+
+\begin{frame}
+  \frametitle{I need super computer time for my featureless app}
+  \begin{itemize}
+    \item When implementing the Elm inspired module architecture
+    \pause
+    \item \textit{Basic} module, which should only display "Hello, World!"
+    \pause
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.9\textwidth]{./pics/memory-allocation-zoomed.png}
+        \caption{140.6594 Terabytes of memory}
+      \end{figure}
+  \end{itemize}
+\end{frame}
+
+\hidelogo
+
+\showlogo
+\begin{frame}
+  \frametitle{Module V.1 - Final.Final}
+  \begin{itemize}
+    \item Everything* is a module
+      \pause
+    \item Modules can \textit{invoke} modules
+      \pause
+    \begin{itemize}
+      \item Init - Returns a set of modifications
+    \end{itemize}
+    \pause
+    \item Pros
+    \pause
+    \begin{itemize}
+      \item Modular
+        \pause
+      \item Modules can \textit{invoke} other modules
+    \end{itemize}
+    \pause
+    \item Cons
+    \begin{itemize}
+        \pause
+      \item Complex to implement
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Module Architecture}
+  \begin{figure}
+    \centering
+    \input{./figures/plugin-architecture-v1}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Module Type}
+  \begin{center}
+    \lstinputlisting
+    [ language=Haskell
+    ]{./code/module-example.hs}
+  \end{center}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Event Type}
+  \begin{center}
+    \lstinputlisting
+    [ language=Haskell
+    ]{./code/module-example-event.hs}
+  \end{center}
+\end{frame}

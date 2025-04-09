@@ -1,0 +1,182 @@
+\section{Task}
+\SectionPage
+
+\begin{frame}
+  \frametitle{Task}
+  \begin{itemize}
+    \item Develop a new, \textit{modular}, IDE for Magnolia
+    \begin{itemize}
+      \pause
+      \item What is Magnolia?
+      \pause
+      \item What is an IDE?
+      \pause
+      \item Why create a \textit{new} IDE?
+      \pause
+      \item Why modular?
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\section{What is Magnolia?}
+\SectionPage
+
+\begin{frame}
+  \frametitle{Magnolia}
+  \begin{itemize}
+    \item A research programming language being developed by
+      Bergen Language Design Laboratory at the University of Bergen
+    \pause
+    \item Introduces something called \textit{concepts}
+    \pause
+    \item Similar to an Java interface.
+    \pause
+    \item A concept declares
+    \begin{itemize}
+      \item Types
+      \pause
+      \item Operations on those Types
+      \pause
+      \item Axioms that specify the behavior of the Operations
+    \end{itemize}
+    \pause
+    \item A concept can use other concepts, and rename the Types and Operations
+      in the concept, this is called renaming
+    % TODO: Source?
+    \pause
+    \item It is useful for a Magnolia Developer to be able to see the different
+      renaming's of a concept
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Magma Example}
+    \begin{center}
+      \lstinputlisting
+      [ language=Magnolia
+      , caption={Magma example in Magnolia}
+      , label=lst:magma
+      ]{./code/magma.mg}
+    \end{center}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Semigroup Example}
+    \begin{center}
+      \lstinputlisting
+      [ language=Magnolia
+      , caption={Semigroup example in Magnolia}
+      , label=lst:semigroup
+      ]{./code/semigroup.mg}
+    \end{center}
+\end{frame}
+
+\section{What is an IDE?}
+\SectionPage
+
+\begin{frame}
+  \frametitle{The Solution To The Problem}
+  \begin{quote}
+    "It works on my machine." \textemdash Intern
+  \end{quote}
+  \begin{itemize}
+    % TODO: Insert The Good, The Bad, and The Ugly picture, maybe?
+    \item The Terminal, The Text Editor and The Compiler
+    \pause
+    \item Missing/incomplete:
+    \begin{itemize}
+      \item Libraries
+      \pause
+      \item Environment variables
+      \pause
+      \item Configurations
+      \pause
+      \item Scripts
+    \end{itemize}
+    \pause
+  \item What if everything is bundled?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Integrated Development Environment}
+  \begin{itemize}
+    \item Easier to onboard new developers
+    \pause
+    \item Other quality of life improvements
+    \pause
+    \begin{itemize}
+      \item File explorer
+      \pause
+      \item Project manager
+      \pause
+      \item Version Control System integration
+      \pause
+      \item Syntax Highlighting
+      \pause
+      \item Integrated debugging
+      \pause
+      \item \dots
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\section{Why create a \textit{new} IDE?}
+\SectionPage
+
+\begin{frame}
+  \frametitle{If It Ain't Broke}
+  % TODO: Could probably expand this
+  The current Magnolia IDE
+  \pause
+  \begin{itemize}
+    \item Made using an old version of Eclipse
+      \pause
+    \item Uses deprecated Eclipse plugins
+      \pause
+    \item Installation process is complex
+      \pause
+    \item In INF220, two weeks is set aside for students to install it
+      \pause
+    \item Integrated with the Magnolia Compiler
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Forking VS Code And Adding AI}
+  \begin{itemize}
+    \item Current IDEs cannot have good support for all experimental programming
+      languages
+      \pause
+      \begin{itemize}
+        \item So niche solutions are needed
+          \pause
+        \item Which might depend on very specific functionality from the host
+          IDE
+          \pause
+      \end{itemize}
+    \item The host IDE could deprecate needed functionality
+      \pause
+    \item The installation process would then be complex
+      \pause
+    \item Deep understanding of the host IDE is needed
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Why Modular?}
+  \begin{itemize}
+    \item Magnolia is still in development
+      \pause
+    \item The Magnolia toolchain is being developed in parallel
+      \pause
+    \item Nothing concrete to develop towards
+      \pause
+    \item Modularity allows for future discoveries to be quickly adopted into
+      the IDE
+      \pause
+    \item Lowers the onboarding time for future maintainers
+    % TODO: Add more
+  \end{itemize}
+\end{frame}

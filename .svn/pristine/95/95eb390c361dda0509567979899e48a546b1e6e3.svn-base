@@ -1,0 +1,32 @@
+{
+  "name": "ide",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "tauri": "tauri",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@nmide/js-utils": "file:../libs/js-utils",
+    "@tauri-apps/api": "^2.4.1",
+    "@tauri-apps/plugin-fs": "^2.2.1",
+    "@tauri-apps/plugin-log": "^2.3.1",
+    "@tauri-apps/plugin-shell": "^2.2.1",
+    "fp-ts": "^2.16.9",
+    "io-ts": "^2.2.22"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.4.1",
+    "@testing-library/dom": "^10.4.0",
+    "@types/node": "22.5.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^25.0.1",
+    "typescript": "^5.8.3",
+    "vite": "^5.4.17",
+    "vite-plugin-node-polyfills": "^0.22.0",
+    "vitest": "^2.1.9"
+  }
+}

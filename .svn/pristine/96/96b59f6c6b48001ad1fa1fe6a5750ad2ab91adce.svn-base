@@ -1,0 +1,10 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="haskell.js"></script>
+    <script type="text/javascript" charset="utf-8">
+      Haskell.initFFI();
+    </script>
+  </head>
+  <body></body>
+</html>
