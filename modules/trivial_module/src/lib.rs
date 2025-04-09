@@ -23,7 +23,7 @@ impl core_module_lib::Module for Module {
         "trivial module"
     }
 
-    async fn init(&self, _core: &dyn Core) -> CoreModification {
+    async fn init(&self, core: &dyn Core) -> CoreModification {
         let state = StateInstructionBuilder::default().add("counter".to_string(), Value::Int(0));
         let ui = UIInstructionBuilder::default().add_node(
             Html::Div()
@@ -46,6 +46,12 @@ impl core_module_lib::Module for Module {
             None,
             None,
         );
+        core.add_handler(
+            Some("counter".to_string()),
+            None,
+            "trivial_module".to_string(),
+        )
+        .await;
         CoreModification::default().set_ui(ui).set_state(state)
     }
 
