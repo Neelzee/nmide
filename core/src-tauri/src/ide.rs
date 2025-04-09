@@ -1,5 +1,4 @@
 use crate::core::NmideCore;
-use crate::core::ReturnType;
 use crate::setup::setup;
 use crate::statics::COMPILE_TIME_MODULES;
 use anyhow::{Context as _, Result};
@@ -26,7 +25,7 @@ pub static NMIDE: tokio::sync::OnceCell<RwLock<AppHandle>> = tokio::sync::OnceCe
 
 /// see [init](crate::handlers::init)
 #[tauri::command]
-async fn init() -> ReturnType {
+async fn init() -> UIInstruction {
     crate::handlers::init().await
 }
 

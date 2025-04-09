@@ -13,12 +13,6 @@ use tauri::Emitter;
 
 pub struct NmideCore;
 
-#[derive(Serialize, Deserialize, Clone)]
-pub struct ReturnType {
-    pub inst: UIInstruction,
-    pub ui: Html,
-}
-
 #[async_trait]
 impl Core for NmideCore {
     async fn state(&self) -> State {
@@ -56,13 +50,7 @@ impl Core for NmideCore {
         let inst = ui_builder.get_instructions();
         let mut current_ui = NMIDE_UI.write().await;
         *current_ui = ui_builder.build(ui);
-        app.emit(
-            "nmide://render",
-            ReturnType {
-                inst,
-                ui: current_ui.clone(),
-            },
-        )
-        .expect("AppHandle emit should always succeed");
+        app.emit("nmide://render", inst)
+            .expect("AppHandle emit should always succeed");
     }
 }

@@ -1,79 +1,101 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { getHtml, renderHtml, THtml } from "./lib/renderHtml";
-import { Html, TUIInstruction } from "@nmide/js-utils/lib/Html";
+import { getHtml, parseHtml, THtml } from "./lib/renderHtml";
+import { TUIInstruction } from "@nmide/js-utils/lib/Html";
 import { TAttr } from "@nmide/js-utils";
-import { pipe } from "fp-ts/lib/function";
-import * as A from "fp-ts/Array";
+import { TEvent } from "@nmide/js-utils/lib/TEvent";
 
 document.addEventListener("DOMContentLoaded", () => {
   window.root = document.body;
-  listen("counter", event => {
-    console.log(event.payload);
-  });
-  listen<{ inst: TUIInstruction["op"], ui: Html }>("nmide://render", event => {
-    const { inst, ui } = event.payload;
-    console.log(event);
-    // TODO: Do actual VDOM stuff
-    document.body.textContent = "";
-    const html = parseInst({ op: inst }, getHtml(ui));
-    renderHtml(html);
-  });
-  invoke<{ inst: TUIInstruction["op"], ui: Html }>("init").then(({ inst, ui }) => {
-    console.log({ inst, ui });
-    const html = parseInst({ op: inst }, { kind: "main", kids: [], attrs: [] });
-    renderHtml(html);
-  });
+  listen<TUIInstruction["op"]>("nmide://render", event => {
+    parseInst({ op: event.payload });
+  }).catch(err => console.error("nmide://render", err));
+  invoke<TUIInstruction["op"]>("init").then(op => {
+    parseInst({ op });
+  }).catch(err => console.error("Init: ", err));
 });
 
-const parseInst = ({ op }: TUIInstruction, root: THtml): THtml => {
+const parseInst = ({ op }: TUIInstruction): void => {
   if (op === "noOp") {
-    return root;
+    return;
   }
   if ("addAttr" in op) {
-    return root;
+    addAttr(document.body, op.addAttr.attr);
+    return;
   }
   if ("add" in op) {
     const { ui, id, class: cls } = op.add;
-    const f = (parent: THtml) => { return { ...parent, kids: [...parent.kids, getHtml(ui)] }; };
+    const html = parseHtml(getHtml(ui));
     if (id !== null) {
-      return modifyTHtml(root, f, (p: THtml) => hasId(p.attrs, id));
+      const element = document.getElementById(id);
+      if (element !== null) {
+        element.appendChild(html);
+      }
+      return;
     }
-    if (cls !== null) {
-      return modifyTHtml(root, f, (p: THtml) => hasClass(p.attrs, cls));
+    if (cls != null) {
+      const elements = document.getElementsByClassName(cls);
+      for (let i = 0; i < elements.length; i++) {
+        const element = elements[i];
+        if (element instanceof HTMLElement) {
+          element.appendChild(html)
+        }
+      }
+      return;
     }
-    return { ...root, kids: [...root.kids, getHtml(ui)] };
+    document.body.appendChild(html);
+  }
+  if ("addAttrPred" in op) {
+    const { id, class: cls, attr } = op.addAttrPred;
+    if (id !== null) {
+      const element = document.getElementById(id);
+      if (element !== null) {
+        addAttr(element, attr);
+      }
+      return;
+    }
+    if (cls != null) {
+      const elements = document.getElementsByClassName(cls);
+      for (let i = 0; i < elements.length; i++) {
+        const element = elements[i];
+        if (element instanceof HTMLElement) {
+          addAttr(element, attr);
+        }
+      }
+      return;
+    }
   }
   if ("textAttrPred" in op) {
     const { id, class: cls, text } = op.textAttrPred;
-    const f = (n: THtml) => { return { ...n, text: text }; };
     if (id !== null) {
-      return modifyTHtml(root, f, (p: THtml) => hasId(p.attrs, id));
+      const element = document.getElementById(id);
+      if (element !== null) {
+        element.innerText = text;
+      }
+      return;
     }
-    if (cls !== null) {
-      return modifyTHtml(root, f, (p: THtml) => hasClass(p.attrs, cls));
+    if (cls != null) {
+      const elements = document.getElementsByClassName(cls);
+      for (let i = 0; i < elements.length; i++) {
+        const element = elements[i];
+        if (element !== null) {
+          if (element instanceof HTMLElement) {
+            element.innerText = text;
+          }
+        }
+      }
+      return;
     }
+    document.body.innerText = text;
   }
   if ("then" in op) {
     const { fst, snd } = op.then;
-    const new_root = parseInst({ op: fst }, root);
-    return parseInst({ op: snd }, new_root);
+    parseInst({ op: fst });
+    parseInst({ op: snd });
+    return;
   }
   console.debug("No parse for instruction: ", op);
-  return root;
 };
-
-const hasClass = (xs: TAttr[], cls: string): boolean => pipe(
-  xs,
-  A.filter(el => "class" in el),
-  A.reduce(false, (acc, e) => acc || e.class === cls)
-)
-
-const hasId = (xs: TAttr[], id: string): boolean => pipe(
-  xs,
-  A.filter(el => "id" in el),
-  A.reduce(false, (acc, e) => acc || e.id === id)
-);
 
 const modifyTHtml = (ui: THtml, f: ((h: THtml) => THtml), p: ((h: THtml) => boolean)): THtml => {
   if (p(ui)) {
@@ -81,3 +103,26 @@ const modifyTHtml = (ui: THtml, f: ((h: THtml) => THtml), p: ((h: THtml) => bool
   }
   return { ...ui, kids: ui.kids.map(k => modifyTHtml(k, f, p)) };
 };
+
+const addAttr = (element: HTMLElement, attr: TAttr) => {
+  if ("onClick" in attr) {
+    element.addEventListener("click", () => onClickParse(attr.onClick))
+    return;
+  }
+  if ("onInput" in attr) {
+    return;
+  }
+  if ("emitInput" in attr) {
+    return;
+  }
+  const attrs = Object.values(attr);
+  element.setAttribute(attrs[0], attrs[1]);
+}
+
+
+const onClickParse = (event: TEvent) => {
+  return () => {
+    invoke("event", { event })
+      .catch(err => console.error("Error from onClickParse invoke:", err));
+  };
+}

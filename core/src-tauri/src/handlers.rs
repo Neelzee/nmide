@@ -9,11 +9,11 @@ use futures;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    core::{NmideCore, ReturnType},
+    core::NmideCore,
     statics::{COMPILE_TIME_MODULES, NMIDE_STATE, NMIDE_UI},
 };
 
-pub async fn init() -> ReturnType {
+pub async fn init() -> UIInstruction {
     let modules = COMPILE_TIME_MODULES.read().await;
 
     let state = NmideCore.state().await;
@@ -34,8 +34,5 @@ pub async fn init() -> ReturnType {
     let inst = ui_builder.get_instructions();
     let mut current_ui = NMIDE_UI.write().await;
     *current_ui = ui_builder.build(ui);
-    ReturnType {
-        inst,
-        ui: current_ui.clone(),
-    }
+    inst
 }
