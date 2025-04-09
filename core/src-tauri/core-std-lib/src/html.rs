@@ -109,7 +109,10 @@ impl Html {
     }
 }
 
-// NOTE: This is at minimum, a semigroup, could be argued its a monoid and also a group.
+// NOTE: This is at minimum, a semigroup, could be argued its a monoid and also
+// a group. If we can agree that its field/attr properties are a part of the
+// type.
+// TODO: Abstract UIInstruction and SateInstruction into the same type/trait
 #[derive(Default, Deserialize, Serialize, Clone, TS)]
 #[serde(rename_all = "camelCase")]
 pub enum UIInstruction {

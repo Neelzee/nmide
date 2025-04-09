@@ -5,13 +5,17 @@ use crate::{
 };
 use async_trait::async_trait;
 
-pub(crate) mod modification;
-
 #[async_trait]
 pub trait Core: Send + Sync {
     async fn state(&self) -> State;
     async fn ui(&self) -> Html;
     async fn throw_event(&self, event: Event);
+    async fn add_handler(
+        &self,
+        event_name: Option<String>,
+        module_name: Option<String>,
+        handler_name: String,
+    );
 }
 
 #[derive(Default)]
