@@ -2,14 +2,39 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use ts_rs::TS;
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 pub enum Value {
+    #[default]
+    Null,
     Int(i32),
     Float(f32),
     Bool(bool),
     Str(String),
     List(Vec<Value>),
     Obj(HashMap<String, Value>),
+}
+
+impl Value {
+    pub fn null(self) -> Option<()> {
+        match self {
+            Self::Null => Some(()),
+            _ => None,
+        }
+    }
+
+    pub fn str(self) -> Option<String> {
+        match self {
+            Self::Str(s) => Some(s),
+            _ => None,
+        }
+    }
+
+    pub fn obj(self) -> Option<HashMap<String, Value>> {
+        match self {
+            Self::Obj(x) => Some(x),
+            _ => None,
+        }
+    }
 }
 
 impl PartialOrd for Value {
@@ -41,6 +66,10 @@ impl State {
     pub fn get<S: ToString>(&self, field: S) -> Option<&Value> {
         self.0.get(&(field.to_string()))
     }
+
+    pub fn build() -> StateInstructionBuilder {
+        StateInstructionBuilder::default()
+    }
 }
 
 #[derive(Default)]
@@ -58,6 +87,7 @@ pub(crate) enum StateInstruction {
     Mod {
         field: String,
         value: Value,
+        /// Old Value -> New Value -> Value
         combine: Box<dyn Fn(Value, Value) -> Value + Send + Sync + 'static>,
     },
     Rem {
@@ -94,8 +124,11 @@ impl StateInstructionBuilder {
         self.0
     }
 
-    pub fn add(self, field: String, value: Value) -> Self {
-        Self::new(self.0.combine(StateInstruction::Add { field, value }))
+    pub fn add<S: ToString>(self, field: S, value: Value) -> Self {
+        Self::new(self.0.combine(StateInstruction::Add {
+            field: field.to_string(),
+            value,
+        }))
     }
 
     pub fn remove(self, field: String) -> Self {

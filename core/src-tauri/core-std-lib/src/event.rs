@@ -11,10 +11,10 @@ pub struct Event {
 }
 
 impl Event {
-    pub fn new(event_name: String, module_name: String, args: Option<Value>) -> Self {
+    pub fn new<S: ToString>(event_name: S, module_name: S, args: Option<Value>) -> Self {
         Self {
-            event_name,
-            module_name,
+            event_name: event_name.to_string(),
+            module_name: module_name.to_string(),
             args,
         }
     }
