@@ -7,8 +7,6 @@ use core_std_lib::{
 use foreign_std_lib::module::rs_module::ModuleRef;
 use std::path::Path;
 
-pub mod js_module;
-
 pub trait ModuleBuilder {
     fn build(self) -> impl Module;
 }
