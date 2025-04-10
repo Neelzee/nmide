@@ -24,6 +24,7 @@
     "@vitejs/plugin-react": "^4.3.3",
     "esbuild": "^0.24.0",
     "eslint": "^9.16.0",
+    "eslint-config-prettier": "^10.1.1",
     "globals": "^15.13.0",
     "jsdom": "^25.0.1",
     "prettier": "3.5.3",
