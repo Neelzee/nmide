@@ -14,6 +14,7 @@ tested.
 A module can extend an application at either compile time, or during runtime.
 This could be achieved by using an interpreted language like JavaScript or
 Python. But it is easier to do \gls{abi} stuff in a low-level language like
+\todo{Add own section about ABI}
 Rust. A \gls{abi} is an interface between two programs. This could be a
 dynamic library used by a C program, where both binaries agree on how the data
 is stored. The reason they need to agree on how data is ordered in the memory,
@@ -31,6 +32,7 @@ so much of our infrastructure is written in C, but y'know.) These security
 issues are mostly caused by memory management. Would be cool if the C compiler
 could notify a developer if they were developing something that could cause an
 issue in the future. Enter, Rust.
+\todo{Rewrite this paragraph}
 
 \subsection{Rust}
 
@@ -63,6 +65,8 @@ and null references.
 \subsection{Tauri}
 
 Tauri is like Electron
+\todo{Expand}
+\todo{Not everyone knows what Electron is.}
 
 \subsubsection{Web View}
 
@@ -91,9 +95,9 @@ application which runs third party code.
 
 \subsubsection{\gls{ui} framework}
 
-As mentioned, the \gls{ui} of the application is rendered using \gls{html} and
-JavaScript, making development of the \gls{ui} similar to standard web development.
-This enabled a low development time of \gls{ui} components, since this is something
+The \gls{ui} of the application is rendered using \gls{html} and JavaScript,
+making development of the \gls{ui} similar to standard web development. This
+enabled a low development time of \gls{ui} components, since this is something
 that a lot of \gls{ui} and user experience designers have looked into. So
 existing code for this already exists and can be used.
 
@@ -108,6 +112,7 @@ re-creating the entire \gls{dom}, which makes the render time quick.
 This also allows for usage of existing JavaScript libraries, which can be used
 with the \gls{npm}. In the \gls{npm} registry, there are around
 \textit{34 million} libraries, all of which are usable in this architecture. If
+\todo{Source?}
 the functionality that these libraries are useful for the application, is
 another question. This functionality allows for quick development time for
 modules, which means features that are standard in \gls{ide} can be quickly and
@@ -160,6 +165,8 @@ modules. All features, from the file explorer to the text editor, everything is
 a module that can be enabled or disabled.
 
 \subsection{Elm-Architecture}
+
+\todo{Rewrite this, apparently Elm inspired TEA (The Elm Architecture)}
 
 An inspiration for the new module architecture is Elm-Lang. Elm is a functional
 language, aimed at frontend web development, but its architecture is quite
@@ -217,6 +224,8 @@ The new module architecture is shown in figure \ref{fig:moduleArchitecture}
   \label{fig:moduleArchitecture}
 \end{figure}
 
+\todo{Explain the module architecture in IDE terms, so with IDE examples}
+
 With this setup, however, the state is appending/overwriting -only, which means
 the state can only grow.
 
@@ -234,6 +243,7 @@ be easily translated to a Rust representation of the same type, using the
 JSON objects, and creates an automatic encoder/decoder between Rust and JSON.
 This ensures a good cooperation between the \textit{frontend} and
 \textit{backend}.
+\todo{Rewrite}
 
 \begin{center}
   \lstinputlisting
@@ -247,6 +257,8 @@ was that for each possible \gls{dom}-event, there would exist a way to send a
 Msg. Each Msg contains a Msg name, and some value, which enabled pattern
 matching on Msg, similar to Elm, for modules, so each module could choose to act
 on a Msg or not.
+
+\todo{Explain what these stuff are with concrete examples}
 
 \begin{center}
   \centering
@@ -567,6 +579,10 @@ state and \gls{ui} as the same issue; its some form of tree-manipulation.
 
 \subsection{Tree Manipulation}
 
+\todo{
+  Mention Magnolia here, and how the satisfaction/unit test thing can "prove"
+  this
+}
 This restructure changes the way the view is rendered. Instead of the view being
 re-rendered for each state-update, the view, or \gls{ui}-hierarchy, is only
 \todo{Mention earlier how React was used/considered due to the "smart" re-rendering}
@@ -691,6 +707,8 @@ libraries, not made with the application in mind, to be used, which also would
 greatly reduce the development time.
 
 \section{Testing} \label{sec:testing}
+
+\todo{Showcase example of testing the ide}
 
 A zero-core application is equivalent to a microservice architecture, in that
 testing is important to ensure changes in one module does not inadvertently

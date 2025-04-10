@@ -3,9 +3,9 @@
 \section{Magnolia}
 
 Magnolia is an experimental research language being developed \gls{bldl} at the
-University of Bergen. Magnolia is designed to support a high level of abstraction
-and ease of reasoning. This is achieved by \textit{concepts}, \textit{axioms} and
-\textit{implementations}.
+University of Bergen. Magnolia is designed to support a high level of 
+abstraction and ease of reasoning. This is achieved by \textit{concepts},
+\textit{axioms}, \textit{satisfaction}, and \textit{implementations}.
 
 \subsection{Magnolia Concept}
 
@@ -17,7 +17,7 @@ concept for addition with natural numbers.
 
 Something, Something, \dots, implementations of concepts need to uphold the
 axioms declared in the concept being implemented. This is done by using an
-external SMT-solver.
+external SMT-solver. Satisfaction, babay
 \todo{Cite Beate maybe?}
 
 \todo{
@@ -35,27 +35,26 @@ harder. An example of this is abstract algebra, which is the study of algebraic
 structures, which are structures that are very common in programming. A
 programmer will use these structures more often than not, knowingly or
 unknowingly, and a good programmer will explicitly seek these structures out.
-Using existing logic; something that other people have reasoned and verified,
-makes avoiding bugs easier.
 
 An important aspect of development, is logging. Knowing what actions have taken
 place is an essential tool when hunting down bugs. A common way to structure
 logs, would be composing logs, depending on when they occurred. As a concrete
 example, let's say we are making a text editor, and are in the need of a logging
 manager, which, among other things, should compose different log statements.
-Assuming we have some type \lstinline[language=Haskell]{Log A}, where there the
-type \lstinline[language=Haskell]{A}, is the result of the computation a given
-function, we want to be able to compose different, related, computations. But,
-importantly, the order of composition of the
-\lstinline[language=Haskell]{Log A}-type matters. Representing the composition
-of the \lstinline[language=Haskell]{Log A}-type as $\odot$, doing, and letting
-$a, b, c$ be of type \lstinline[language=Haskell]{Log A}:
+Assuming we have some type \bold{Log(A)}, where there the type \bold{A}, is the
+result of the computation a given function, we want to be able to compose
+different, related, computations. But, importantly, the order of composition
+of the \Bold{Log(A)}-type matters. Representing the composition of the \bold
+Log(A)}-type as $\odot$, doing, and letting $a, b, c$ be of type \bold{Log A}:
+
 \begin{equation}
   a \odot \left ( b \odot c \right ) = \left ( a \odot b \right ) \odot c
 \end{equation}
 
-Moving on, a good feature of a text editor, is being able to undo and redo
-actions. These are the actions that a user can do:
+Now we have a good logger, as the logs of the entire call stack is available for
+us to read when something goes wrong. Moving on, a good feature of a text
+editor, is being able to undo and redo actions. These are the actions that a
+user can do:
 
 \begin{itemize}
   \item Insert text at a position
@@ -66,11 +65,11 @@ actions. These are the actions that a user can do:
 
 Same as in the logging example, composing is a reasonable thing to implement,
 and should result in another action. Similarly, the order matters; deleting text
-and then inserting, is not the same as inserting and then deleting. But we want
-the \textit{inverse} of an action, so for every action we want an opposite
-action that undos an action. Then our composition of actions looks different.
-Say, $a$ is some action, and $c$ is some opposite action, then our composition
-looks like this:
+and then inserting, is not the same as inserting and then deleting. But what is
+different, is that we also want the \textit{inverse} of an action, so for every
+action we want an opposite action that undos an action. Then our composition of
+actions looks different. Say, $a$ is some action, and $c$ is some opposite
+action, then our composition looks like this:
 
 \begin{equation}
   a \odot c = U
@@ -81,72 +80,63 @@ inserting the empty string at any position, deleting the empty string at any
 position, or redoing or undoing any of the aforementioned actions.
 
 Both of these examples are relatively easy to implement, but harder to verify,
-that they work correctly; that the \textit{logic} holds. The following are
+or satisfy our properties; that the \textit{logic} holds. The following are
 examples of the logging and editor examples in Java, Rust, and Magnolia
 respectively.
 \todo{rewrite}
 
-\subsection{Java: Logging and Editor}
+\subsection{Logging example in Java, Rust, and Magnolia}
 
-This structure not could be implemented in something like Java, an
-Object-Oriented Language, as shown in listings \ref{lst:jmagma},
-\ref{lst:jsemigroup}, \ref{lst:jmonoid}, and \ref{lst:jgroup}. Note the empty
-interfaces; there is nothing that enforces the different laws on the properties.
-This can only be done by unit testing, which is not enforced on a consumer of
-the \gls{api}.
-\todo{rewrite}
-
-\begin{center}
-  \lstinputlisting
-    [ language=Java
-    , caption={Logging structure in Java}
-    , label=lst:jlogging]{./code/logging.java}
-\end{center}
-
-\begin{center}
-  \lstinputlisting
-    [ language=Java
-    , caption={Editor structure in Java}
-    , label=lst:jeditor]{./code/editor.java}
-\end{center}
-
-\subsection{Rust: Logging and Editor}
-
-These can also not be implemented using Rusts trait system.
 \todo{Expand}
 
 \begin{center}
   \lstinputlisting
+    [ language=Java
+    , caption={Logging structure (Java)}
+    , label=lst:jlogging]{./code/logging.java}
+\end{center}
+
+These can also not be implemented using Rusts trait system.
+
+\begin{center}
+  \lstinputlisting
     [ language=Rust
-    , caption={Logging structure in Rust}
+    , caption={Logging structure (Rust)}
     , label=lst:rlogging]{./code/logging.rs}
 \end{center}
 
 \begin{center}
   \lstinputlisting
-    [ language=Rust
-    , caption={Editor structure in Rust}
-    , label=lst:reditor]{./code/editor.rs}
-\end{center}
-
-\subsection{Magnolia Group}
-
-
-\todo{Expand}
-
-In Magnolia, however, this can be enforced on the \textit{interface}-level.
-
-\begin{center}
-  \lstinputlisting
     [ language=Magnolia
-    , caption={Logging structure in Magnolia}
+    , caption={Logging structure (Magnolia)}
     , label=lst:mlogging]{./code/logging.mg}
 \end{center}
 
+\subsection{Editor example in Java, Rust, and Magnolia}
+
+\todo{Expand}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Java
+    , caption={Editor structure (Java)}
+    , label=lst:jeditor]{./code/editor.java}
+\end{center}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Rust
+    , caption={Editor structure (Rust)}
+    , label=lst:reditor]{./code/editor.rs}
+\end{center}
+
+In Magnolia, however, this can be enforced on the \textit{interface}-level.
+\todo{Rewrite}
+
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
-    , caption={Editor structure in Magnolia}
+    , caption={Editor structure (Magnolia)}
     , label=lst:meditor]{./code/editor.mg}
 \end{center}
 
@@ -175,12 +165,12 @@ simply specifies that we only work with one set.
 
 \begin{definition}[Magma] \label{def:magma}
   A magma is a set $M$, with a binary operation $\oplus$, which is
-  \ref{def:closed}
+  \textit{closed} by definition \ref{def:closed}
 \end{definition}
 
 We can \textit{extend} the definition of magma, by adding associativity on the
-binary operation. This \ref{def:assoc}, as shown in the examples, simply
-specifies that the order we evaluate our composition matters.
+binary operation. The definition \ref{def:assoc}, as shown in the examples,
+simply specifies that the order we evaluate our composition matters.
 
 \begin{definition}[Associtativity Law] \label{def:assoc}
   For any binary operation $\oplus$, on a set $M$, $a, b, c \in M$.
@@ -193,7 +183,7 @@ This associativity gives us a semigroup, as shown in the definition
 
 \begin{definition}[Semigroup] \label{def:semi}
   A semigroup is a set $M$, with a binary operation $\oplus$, and $\oplus$ must
-  uphold \ref{def:closed} and \ref{def:assoc}.
+  uphold the definitions \ref{def:closed} and \ref{def:assoc}.
 \end{definition}
 
 By simply adding the identity law (\ref{def:ident}), we get a
@@ -203,12 +193,12 @@ monoid (\ref{def:monoid}), and adding the inverse law
 \begin{definition}[Identity Law] \label{def:ident}
   For any binary operation $\oplus$, on a set $M$,
   $\forall a, \exists U \in M$, such that
-  $a \oplus U = a$, and $U$ is unique.
+  $a \oplus U = a$, and $U$ is unique.
 \end{definition}
 
 \begin{definition}[Monoid] \label{def:monoid}
   A monoid is a set $M$, with a binary operation $\oplus$, and $\oplus$ must
-  uphold \ref{def:closed}, \ref{def:assoc} and \ref{def:ident}.
+  uphold the definitions \ref{def:closed}, \ref{def:assoc}, and \ref{def:ident}.
 \end{definition}
 
 \begin{definition}[Inverse Law] \label{def:inv}
@@ -221,18 +211,21 @@ monoid (\ref{def:monoid}), and adding the inverse law
 
 \begin{definition}[Group] \label{def:group}
   A group is a set $M$, with a binary operation $\oplus$, and $\oplus$ must
-  uphold \ref{def:closed}, \ref{def:assoc}, \ref{def:ident} and \ref{def:inv}.
+  uphold the definitions \ref{def:closed}, \ref{def:assoc}, \ref{def:ident},
+  and \ref{def:inv}.
 \end{definition}
 
-This definition \ref{def:group}, of course is identical to the structure we used
+The definition \ref{def:group}, of course is identical to the structure we used
 to model undo-redo, in our text editor example. To avoid common mistakes when
 implementing these structures, it would behoove a developer if they could encode
 these properties in something like an interface or a trait, however, this is not
 possible in either Java nor Rust.
 
+\todo{Add examples for each}
+
 \todo{Rewrite this to better fit the previous section}
 
-\subsection{Java Group}
+\subsection{Java: Magma \to Group}
 
 This structure not could be implemented in something like Java, an
 Object-Oriented Language, as shown in listings \ref{lst:jmagma},
@@ -244,72 +237,64 @@ the \gls{api}.
 \begin{center}
   \lstinputlisting
     [ language=Java
-    , caption={Magma concept in Java}
+    , caption={Magma concept (Java)}
     , label=lst:jmagma]{./code/magma.java}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Java
-    , caption={Semigroup concept in Java}
+    , caption={Semigroup concept (Java)}
     , label=lst:jsemigroup]{./code/semigroup.java}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Java
-    , caption={Monoid concept in Java}
+    , caption={Monoid concept (Java)}
     , label=lst:jmonoid]{./code/monoid.java}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Java
-    , caption={Group concept in Java}
+    , caption={Group concept (Java)}
     , label=lst:jgroup]{./code/group.java}
 \end{center}
 
-\begin{remark}
-  One could ensure the associativity, identity and inverse law are upheld using
-  unit tests, but this is not enforced on consumers of our \gls{api}; we cannot
-  enforce these laws on implementers.
-\end{remark}
+\subsection{Rust: Magma \to Group}
 
-\subsection{Haskell Group}
-
-This can also not be implemented in Haskell. Using typeclasses, one cannot
-enforce properties on the defined methods. Again, notice the empty extensions
-in listing \ref{lst:hsemigroup} and \ref{lst:hgroup}.
+\todo{Expand}
 
 \begin{center}
   \lstinputlisting
-    [ language=Haskell
-    , caption={Magma concept in Haskell}
-    , label=lst:hmagma]{./code/magma.hs}
+    [ language=Rust
+    , caption={Magma (Rust)}
+    , label=lst:rmagma]{./code/magma.rs}
 \end{center}
 
 \begin{center}
   \lstinputlisting
-    [ language=Haskell
-    , caption={Semigroup concept in Haskell, can only be upheld using unit tests}
-    , label=lst:hsemigroup]{./code/semigroup.hs}
+    [ language=Rust
+    , caption={Semigroup (Rust)}
+    , label=lst:rsemigroup]{./code/semigroup.rs}
 \end{center}
 
 \begin{center}
   \lstinputlisting
-    [ language=Haskell
-    , caption={Monoid concept in Haskell, can only be upheld using unit tests}
-    , label=lst:hmonoid]{./code/monoid.hs}
+    [ language=Rust
+    , caption={Monoid (Rust)}
+    , label=lst:rmonoid]{./code/monoid.rs}
 \end{center}
 
 \begin{center}
   \lstinputlisting
-    [ language=Haskell
-    , caption={Group concept in Haskell, can only be upheld using unit tests}
-    , label=lst:hgroup]{./code/group.hs}
+    [ language=Rust
+    , caption={Group (Rust)}
+    , label=lst:rgroup]{./code/group.rs}
 \end{center}
 
-\subsection{Magnolia Group}
+\subsection{Magnolia: Magma \to Group}
 
 In Magnolia, however, this can be enforced on the \textit{interface}-level. The
 example code shown in listing \ref{lst:magma}, showcases a concept
@@ -329,7 +314,7 @@ and Haskell.
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
-    , caption={Magma concept in Magnolia}
+    , caption={Magma (Magnolia)}
     , label=lst:magma]{./code/magma.mg}
 \end{center}
 
@@ -340,21 +325,21 @@ with the added property of associativity.
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
-    , caption={Semigroup concept in Magnolia}
+    , caption={Semigroup (Magnolia)}
     , label=lst:semigroup]{./code/semigroup.mg}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
-    , caption={Monoid concept in Magnolia}
+    , caption={Monoid (Magnolia)}
     , label=lst:monoid]{./code/monoid.mg}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
-    , caption={Group concept in Magnolia}
+    , caption={Group (Magnolia)}
     , label=lst:group]{./code/group.mg}
 \end{center}
 
@@ -374,24 +359,33 @@ Reusability is also an important feature in Magnolia, but this reusability is in
 the entire language. In libraries in other languages, functions are reused, in
 an attempt to avoid common logical mistakes, but these mistakes could still be
 there, hiding in plain view. In Magnolia, one can re-use the \textit{logic} of a
-function. The logging and group example can be written using Magnolia concepts
-as shown in listing \ref{lst:logging} and \ref{lst:editor} respectively.
+\todo{Expand}
+function. The logging and group example can be rewritten using Magnolia concepts
+as shown in listing \ref{lst:logging} and \ref{lst:editor} respectively, by
+reusing the concepts we created for semigroup in listing \ref{lst:semigroup} and group
+in listing \ref{lst:group}.
 
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
-    , caption={Logging example}
+    , caption={Logging example (Magnolia)}
     , label=lst:logging]{./code/logging.mg}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
-    , caption={Editor example}
+    , caption={Editor example (Magnolia)}
     , label=lst:editor]{./code/editor.mg}
 \end{center}
 
+Here we have used the \textit{renaming} of concepts in Magnolia, where we can
+rename types and functions to be more specific, for the specialized use case the
+concept is reused in.
+
 \subsection{Software Lifetimes}
+
+\todo{Fact check, cite and expand}
 
 Software in general, lasts around 30 years (source). This is quite a long time,
 but, this statistic is about more \textit{rigid} applications, which have an
@@ -415,16 +409,22 @@ text editor, to a fully fledged \gls{ide}.
 \section{Integrated Development Environment} \label{sec:ide}
 
 An \gls{ide}, aids a developer, as all the needed tools for development are
+\todo{Mention the tools, and how devs had it before.}
 integrated into one application. There are two different kinds of \gls{ide}s,
 generic and specialized. \todo{Source}
 
 A specialized \gls{ide} is one targeted towards a specific language, like
 Eclipse, (reference?), or IntelliJ (reference?), which target Java/JVM. It
 contains specialized features like the following:
+\todo{
+  Rewrite this because Eclipse, while generic, has plugin support which, allows
+  it to support different languages, as does IntelliJ.
+}
 
 \paragraph{Syntax Highlighting} Highlighting important keywords, identifiers
 and more, makes the language easier to read for the developer, allowing them to
-spot easy to miss errors, like misspelling of keywords.
+spot easy to miss errors, like misspelling of keywords, functions, and
+variables.
 
 \paragraph{Code Autocompletion} Suggesting keywords, method names or even entire
 code snippets, is a powerful tool an \gls{ide} can have. This is possible to
@@ -457,7 +457,7 @@ being able to visualize the project in a tree-like-structure, and navigate that,
 is useful. This feature usually comes with the ability to manipulate the project
 structure, by adding files, folders, moving files around, and deleting them.
 
-But creating any \gls{ide} would still limit the lifetime of the application.
+But creating any \gls{ide} would still limit the lifetime of the \gls{ide}.
 The best example of a long living active \gls{ide}, or, at least editor, is Vim
 (source?). Vim is not a feature full editor, but it is simple, lightweight, and
 works on any operating system. But most people use it, for how easy it is to
@@ -478,14 +478,14 @@ developers of the application did not think about, can be added. If this module
 architecture is well-designed, then this extension can be added without changing
 the core application.
 
-There are different methods an application can be extended. The most common one
+There are different ways an application can be extended. The most common one
 uses so-called \textit{live-reload}, in which, if a module drastic changes the
 functionality of an application, the application has to be restarted, or if it
 is a \textit{minor} change, the module is simply loaded. This method is
-extending of the application during runtime, which is the method most users
+extending the application during runtime, which is the method most users
 expect. Another method would be \textit{compile-time-extension}, in which
 modules are added before the application itself is compiled. There are some
-advantages and disadvantage in both approaches.
+advantages and disadvantage in all approaches.
 
 Something, something \dots, in Eclipse modules extending modules is quite
 common, using Eclipse Rich Client Platform. \cite{eclipseRcp}
@@ -498,6 +498,7 @@ come bundled with all the needed functionality. This is best achieved with the
 \textit{compile-time-extension} method, since the application can be installed
 with the expected modules. A compile time module is usually made using the same
 language as the core application.
+\todo{Maybe mention it could be faster due to compiler optimalization?}
 
 \subsection{Runtime Module}
 
@@ -572,6 +573,11 @@ achieve the wanted feature.
 
 \subsection{Module Family}
 
+\todo{
+  Redo this to be less specific, then add a specific section, which reflects
+  what has been done
+}
+
 \begin{figure}
   \centering
   \input{./figures/text-editor-simple}
@@ -587,6 +593,7 @@ This is a feature that naturally shows up in a \textit{true} modular system. If
 several modules together enable some feature, then those modules can be treated
 as a singular module by an external module developer, depending on what they
 want to extend.
+
 
 \section{Language Workbench}
 
@@ -639,6 +646,7 @@ that has since been outdated. The \gls{ide}s lifetime was limited by a
 dependency on external modules and features that where not maintained by the
 \gls{ide}-developers. This meant that for future development of Magnolia, an
 outdated \gls{ide} was needed, with outdated tooling. Furthermore, the Magnolia
+\todo{This could be its own section, maybe?}
 compiler was implemented as an Eclipse module, which means that development is
 limited to Eclipse, and only Eclipse, as a developer cannot compile Magnolia
 code without it.

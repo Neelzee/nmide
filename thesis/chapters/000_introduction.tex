@@ -10,22 +10,23 @@ concepts from the academic community, and are not common in \textit{mainstream}
 languages, and as such, have little to no support in modern \gls{ide}s. To solve
 this, researchers need ad hoc solutions for existing \gls{ide}s, adding the
 needed functionality to test out their language features. If this ad hoc
-solution is too extreme; outside of the standard functionality supported by the
-developers of the application, then the solution might be short lived. As the
-\gls{ide} is maintained, updated and improved, the features used to solve the
-niche needs of the experimental language might be deprecated.
+solution is too extreme; outside the standard functionality supported by the
+developers of the \gls{ide}, it might be short-lived. As the \gls{ide} is
+maintained, updated and improved, the features used to solve the niche needs of
+the experimental language might be deprecated.
 
 If, however, the \gls{ide} has integrated support for extending the standard
-functionality of the application, then the ad hoc solution is more stable. Such
-a system is known by many names. Plug-in architecture, exstension \gls{api}, or
-plugin system, to name a few. The common factor amongst these system, is that
-some component, be it a plug-in, an exstension, or a plugin, can extend the
-functionality of the application. This is a modular approach to extending the
-life time of an application; extending its software longevity. In many of these
-systems, these components, are composable, allowing for multiple components to
-work together in a modular fashion to add extra features to an application. This
-is way of adding functionality to an application is commonly used in \gls{ide}s,
-and can be taken to the extreme.
+functionality of the application, then the ad hoc solution will be more stable.
+Such a system is known by many names. Plug-in architecture, exstension
+\todo{Cite Eclipse, Intellij, VSCode, etc.}
+\gls{api}, or plugin system, to name a few. The common factor amongst these
+systems, is that some component, be it a plug-in, an exstension, a plugin, or a
+module, can extend the functionality of the application. This is a modular
+approach to extending the lifetime of an application; extending its software
+longevity. In many of these systems, these components, are composable,
+allowing for multiple components to work together in a modular fashion to add
+extra features to an application. This way of adding functionality to an
+application is commonly used in \gls{ide}s.
 
 
 \section{Modular Architecture}
@@ -38,7 +39,7 @@ existing modules. If, however it is the case that this feature is
 paradigm-shifting, then there will still be existing functionality that can be
 used, re-used or extended to facilitate this.
 
-If an application is designed to be modular from the start, then features not
+When an application is designed to be modular from the start, then features not
 thought of, by the original developers can be integrated into the application,
 and be stable. If an experimental research language introduces some paradigm
 shifting concept, then this can easily tested in such a modular \gls{ide}.
@@ -46,18 +47,18 @@ shifting concept, then this can easily tested in such a modular \gls{ide}.
 \section{Zero Core Application}
 
 Taking the modular architecture design to the extreme, the core application has
-no base features, everything is enabled by an external module. We have taken to
-call such a highly modular application, a \textit{zero core} application. To
-qualify for a \textit{zero core} application, the default application has no
-functionality; everything is aquaired by modules. Such a design facilitates a
-modular approach, enabling a module-developer to only focus on the functionality
-they want to extend, not the entire core.
+no base features, everything is enabled by an external module. We call such a
+highly modular application, a \textit{zero core} application. To qualify for a
+\textit{zero core} application, the default application has no functionality;
+everything is acquired by modules. Such a design facilitates a modular approach,
+enabling a module-developer to only focus on the functionality they want to
+extend, not the entire core.
 
 \section{Thesis Outline}
 
-Traditional \gls{ide}s encompass essential features such as syntax highlighting, code
-navigation, and hover-help, playing a crucial role in the software development
-process. However, their limitations become apparent when working with
+Traditional \gls{ide}s encompass essential features such as syntax highlighting,
+code navigation, and hover-help, playing a crucial role in the software 
+development process. However, their limitations become apparent when working with
 experimental languages. This paper advocates for modularization and
 \textit{composability} as key design principles, demonstrating their ability to
 extend the operational lifespan of software by allowing for ease-of adoption to
