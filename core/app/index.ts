@@ -4,16 +4,23 @@ import { Html, TUIInstruction } from "@nmide/js-utils/lib/Html";
 import { TAttr } from "@nmide/js-utils";
 import { TEvent } from "@nmide/js-utils/lib/TEvent";
 
-export type THtml = { kind: string, kids: THtml[], attrs: TAttr[], text?: string };
+export type THtml = {
+  kind: string;
+  kids: THtml[];
+  attrs: TAttr[];
+  text?: string;
+};
 
 document.addEventListener("DOMContentLoaded", () => {
   window.root = document.body;
-  listen<TUIInstruction["op"]>("nmide://render", event => {
+  listen<TUIInstruction["op"]>("nmide://render", (event) => {
     parseInst({ op: event.payload });
-  }).catch(err => console.error("nmide://render", err));
-  invoke<TUIInstruction["op"]>("init").then(op => {
-    parseInst({ op });
-  }).catch(err => console.error("Init: ", err));
+  }).catch((err) => console.error("nmide://render", err));
+  invoke<TUIInstruction["op"]>("init")
+    .then((op) => {
+      parseInst({ op });
+    })
+    .catch((err) => console.error("Init: ", err));
 });
 
 const parseInst = ({ op }: TUIInstruction): void => {
@@ -39,7 +46,7 @@ const parseInst = ({ op }: TUIInstruction): void => {
       for (let i = 0; i < elements.length; i++) {
         const element = elements[i];
         if (element instanceof HTMLElement) {
-          element.appendChild(html)
+          element.appendChild(html);
         }
       }
       return;
@@ -98,16 +105,9 @@ const parseInst = ({ op }: TUIInstruction): void => {
   console.debug("No parse for instruction: ", op);
 };
 
-const modifyTHtml = (ui: THtml, f: ((h: THtml) => THtml), p: ((h: THtml) => boolean)): THtml => {
-  if (p(ui)) {
-    return f(ui);
-  }
-  return { ...ui, kids: ui.kids.map(k => modifyTHtml(k, f, p)) };
-};
-
 const addAttr = (element: HTMLElement, attr: TAttr) => {
   if ("onClick" in attr) {
-    element.addEventListener("click", () => onClickParse(attr.onClick))
+    element.addEventListener("click", () => onClickParse(attr.onClick));
     return;
   }
   if ("onInput" in attr) {
@@ -118,26 +118,25 @@ const addAttr = (element: HTMLElement, attr: TAttr) => {
   }
   const attrs = Object.values(attr);
   element.setAttribute(attrs[0], attrs[1]);
-}
-
+};
 
 const onClickParse = (event: TEvent) => {
   return () => {
-    invoke("event", { event })
-      .catch(err => console.error("Error from onClickParse invoke:", err));
+    invoke("event", { event }).catch((err) =>
+      console.error("Error from onClickParse invoke:", err),
+    );
   };
-}
-
+};
 
 // TODO: Add docs
 const createElement = ({ attrs, kids, kind, text }: THtml) => {
-  const className = attrs.find(el => "class" in el)?.class;
-  const id = attrs.find(el => "id" in el)?.id;
-  const onClick = attrs.find(el => "onClick" in el)?.onClick;
+  const className = attrs.find((el) => "class" in el)?.class;
+  const id = attrs.find((el) => "id" in el)?.id;
+  const onClick = attrs.find((el) => "onClick" in el)?.onClick;
   //const onInput = attrs.find(el => "onInput" in el)?.onInput;
-  const src = attrs.find(el => "src" in el)?.src;
-  const type = attrs.find(el => "type" in el)?.type;
-  const checked = attrs.find(el => "checked" in el)?.checked;
+  const src = attrs.find((el) => "src" in el)?.src;
+  const type = attrs.find((el) => "type" in el)?.type;
+  const checked = attrs.find((el) => "checked" in el)?.checked;
 
   const elementType = kind === "frag" ? "div" : kind;
 
@@ -154,20 +153,19 @@ const createElement = ({ attrs, kids, kind, text }: THtml) => {
     if (checked !== undefined) element.checked = checked;
   }
   if (
-    (element instanceof HTMLScriptElement
-      || element instanceof HTMLImageElement
-      || element instanceof HTMLAudioElement
-      || element instanceof HTMLVideoElement)
-    && src !== undefined
+    (element instanceof HTMLScriptElement ||
+      element instanceof HTMLImageElement ||
+      element instanceof HTMLAudioElement ||
+      element instanceof HTMLVideoElement) &&
+    src !== undefined
   ) {
     element.src = src;
   }
 
-  kids.forEach(kid => element.appendChild(createElement(kid)));
+  kids.forEach((kid) => element.appendChild(createElement(kid)));
 
   return element;
-}
-
+};
 
 // TODO: Add docs
 export const parseHtml = (html: THtml) => {
@@ -176,19 +174,20 @@ export const parseHtml = (html: THtml) => {
   // and _unpack_ the kids of the node. This is not done.
   // The reason a lot of plugins do this, is because they might not have any
   // Html they want to render.
-  html.kids.flatMap(kid => kid.kind === "frag" ? kid.kids : [kid]);
-  const element = createElement(html);
-  return element;
-}
-
+  html.kids.flatMap((kid) => (kid.kind === "frag" ? kid.kids : [kid]));
+  return createElement(html);
+};
 
 export const getHtml = (html: Html): THtml => {
-  const elements = ["p", "main", "button", "div"];
-  for (let index = 0; index < elements.length; index++) {
-    const element = elements[index];
-    //@ts-ignore
-    if (element in html) return { kind: element, ...html[element], kids: html[element].kids.map(getHtml) };
-  }
-  //@ts-ignore
-  return { kind: "p", text: html?.text, kids: [], attrs: [] };
+  const kind = Object.keys(html).find(
+    (k) => k !== "kids" && k !== "attrs" && k !== "text",
+  );
+  return {
+    //@ts-expect-error This is valid as long as `Html` doesn't change
+    kind,
+    ...Object.keys(html)
+      .filter((f) => f !== kind)
+      //@ts-expect-error This will always be valid
+      .map((f) => html[f]),
+  };
 };

@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 const host = process.env.TAURI_DEV_HOST;
@@ -17,18 +17,16 @@ export default defineConfig({
     // it as a path, it needs to be installed for the core to work.
     fs: {
       allow: [".."],
-    }
+    },
   },
   // Env variables starting with the item of `envPrefix` will be exposed in tauri's source code through `import.meta.env`.
-  envPrefix: ['VITE_', 'TAURI_ENV_*'],
+  envPrefix: ["VITE_", "TAURI_ENV_*"],
   build: {
     // Tauri uses Chromium on Windows and WebKit on macOS and Linux
     target:
-      process.env.TAURI_ENV_PLATFORM == 'windows'
-        ? 'chrome105'
-        : 'safari13',
+      process.env.TAURI_ENV_PLATFORM == "windows" ? "chrome105" : "safari13",
     // don't minify for debug builds
-    minify: !process.env.TAURI_ENV_DEBUG ? 'esbuild' : false,
+    minify: !process.env.TAURI_ENV_DEBUG ? "esbuild" : false,
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_ENV_DEBUG,
     rollupOptions: {
@@ -48,10 +46,8 @@ export default defineConfig({
         "fp-ts/Either",
         "fp-ts/Eq",
         "io-ts",
-      ]
+      ],
     },
   },
-  plugins: [
-    nodePolyfills({ include: [] }),
-  ],
+  plugins: [nodePolyfills({ include: [] })],
 });
