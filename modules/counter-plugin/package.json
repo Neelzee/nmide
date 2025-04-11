@@ -3,15 +3,11 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "bun build ./index.ts --outdir ./build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@nmide/js-utils": "file:../../libs/js-utils",
     "core_modification": "link:core_modification"
-  },
-  "devDependencies": {
-    "esbuild": "^0.24.0"
   }
 }
