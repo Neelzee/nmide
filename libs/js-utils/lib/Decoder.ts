@@ -55,7 +55,3 @@ export const DMap = t.array(t.tuple([t.string, DValue]));
 export const DUpdateDecoder = t.array(t.tuple([t.string, DMap]));
 export const DInitDecoder = DUpdateDecoder;
 export const DViewDecoder = t.array(t.tuple([t.string, DHtml]));
-
-export const DUIInstructionDecoder = t.union([
-
-]);
