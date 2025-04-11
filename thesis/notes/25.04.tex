@@ -82,7 +82,7 @@ commits which is just "deleted file".
 
 \section{25.04.09}
 
-I should find out what happens when I throw and event in a handler.
+I should find out what happens when I throw an event in a handler.
 
 Done some important thinking. What should the logo of the application be?
 
@@ -170,3 +170,30 @@ sidetracked, and will work on my compiler instead.
 
 I also should rename the folders in my project so that they get cute icons from
 catppuccin icons plugin.
+
+\section{25.04.11}
+
+Got a Gleam library to work, which is neat. Got a lot of busywork ahead of me,
+which is fine, I guess. Basically redoing what I did in the fall. I should go
+in depth about the issue of pureness in the application, in respect to the JSMS.
+I should also mention how modular the Core is, which is future proofing the IDE
+itself.
+
+I think all I have left is to re-add module installation. I've decided, for this
+part at least, to remove module validation, and leave that as a TODO for later.
+Validation is for when I have people whom I don't trust, doing development, and
+currently there is just one person who does development, and it's me, and I know
+he will fuck up, but he also has to fix the fuck-ups.
+
+New plan/idea. Keep the "frontend" as thin as possible. So it should have no
+logic, or stuff like that. All it does is call "init" when the DOM is loaded,
+and then it doesn't event do rendering, it calls whatever \textit{rendering}
+method it has been supplied. That way, I can do a lot of stuff in Gleam, and be
+like \quote{look how cool I am, I have the IDE in different languages}. Which is
+cool. Even though its just JavaScript.
+
+I have misunderstood myself. I've been designing and implementing the JSMS using
+Gleam, instead of the rendering part of the frontend. Maybe call it the
+JavaScript Module Runtime instead, because it's kinda like a runtime, I guess?
+Based on my probably flawed understanding of what a runtime is. Or based on my
+overloading of the term runtime.
