@@ -1,8 +1,6 @@
 import * as t from "io-ts";
 import { TValue } from "./TMap";
 import { THtml } from "./THtml";
-import { Node } from "./tree";
-
 export const DValue: t.RecursiveType<any, TValue> = t.recursion("DValue", () =>
   t.union([
     t.type({ "int": t.number }),
@@ -13,13 +11,18 @@ export const DValue: t.RecursiveType<any, TValue> = t.recursion("DValue", () =>
     t.type({ "obj": t.array(t.tuple([t.string, DValue])) }),
   ])
 );
-export const DValueArr = t.array(DValue);
-export const DMsg = t.type({ "msg": t.tuple([t.string, DValue]) });
+
+export const DEvent = t.type({
+  eventName: t.string,
+  moduleName: t.string,
+  args: t.union([DValue, t.null]),
+});
+
 export const DAttrs = t.union([t.type({ "id": t.string }),
 t.type({ "class": t.string }),
 t.type({ "style": t.string }),
-t.type({ "onClick": DMsg }),
-t.type({ "onInput": DMsg }),
+t.type({ "onClick": DEvent }),
+t.type({ "onInput": DEvent }),
 t.type({ "emitInput": t.string }),
 t.type({ "src": t.string }),
 t.type({ "type": t.string }),
@@ -45,42 +48,14 @@ export const DHtml: t.RecursiveType<any, THtml> = t.recursion("DHtml",
   () => t.type({
     kind: DHtmlKind,
     kids: t.array(DHtml),
-    text: t.union([t.string, t.null]),
+    text: t.union([t.string, t.undefined]),
     attrs: t.array(DAttrs),
   }));
 export const DMap = t.array(t.tuple([t.string, DValue]));
-export const DMapArr = t.array(DMap);
 export const DUpdateDecoder = t.array(t.tuple([t.string, DMap]));
 export const DInitDecoder = DUpdateDecoder;
 export const DViewDecoder = t.array(t.tuple([t.string, DHtml]));
-export const DEvent = t.type({
-  event: t.string,
-  module: t.string,
-});
-const DNodeImpl = <T extends t.Mixed>(type: T): t.RecursiveType<any, Node<t.TypeOf<typeof type>>> => t.recursion(
-  "DNodeImpl",
-  () => t.type({
-    id: t.string,
-    kids: t.array(DNodeImpl<T>(type)),
-  })
-);
-export const DNode = <T extends t.Mixed>(type: T) => t.intersection([
-  DNodeImpl(type),
-  type,
+
+export const DUIInstructionDecoder = t.union([
+
 ]);
-export const DIns = <T extends t.Mixed>(_type: T) => t.union([
-  t.type({ f: t.Function }, "DRemIns"),
-  // TODO: Should encode that the field is restricted on the type T
-  t.type({ f: t.Function, field: t.string, g: t.Function }, "RModIns")
-]);
-export const DEventHandler = t.type({
-  handler: t.Function,
-  module: t.string,
-});
-export const DInsArr = <T extends t.Mixed>(type: T) => t.array(DIns<T>(type));
-export const DCoreModification = t.type({
-  uiModifications: t.array(DIns(DHtml)),
-  stateModifications: t.array(DIns(DMap)),
-  eventModifications: t.array(DIns(DEvent)),
-  newEventHandlers: t.array(t.tuple([t.string, DEventHandler]))
-});

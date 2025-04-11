@@ -58,7 +58,7 @@ export interface AppOption {
 
 export interface Payload<T> {
   payload: T
-};
+}
 
 export type AppConfig = Required<AppOption>;
 
@@ -132,13 +132,3 @@ export const defaultConfig: AppConfig = {
   pluginInstallers: [(_: string) => new Promise(r => r(undefined))],
 };
 
-export const getOpts = (opts?: AppOption): AppConfig => {
-  if (opts === undefined) {
-    return defaultConfig;
-  }
-  const partialConfig: Partial<AppConfig> = Object.fromEntries(
-    Object.entries(opts).filter(([_, f]) => f !== undefined)
-  );
-
-  return { ...defaultConfig, ...partialConfig };
-}

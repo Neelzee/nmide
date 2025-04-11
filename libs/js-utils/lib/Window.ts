@@ -1,8 +1,7 @@
 import { ModuleUnknown as Module } from "./Module";
 import { THtml } from "./THtml";
-import { TMap } from "./TMap";
 import { NmideClient, NmideLogger, Payload } from "./App";
-import { Core, Event, EventHandler } from "./Core";
+import { Core, Event } from "./Core";
 
 declare global {
   interface Window {
@@ -33,7 +32,7 @@ declare global {
     /**
      * State of the application
      */
-    state: TMap;
+    state: () => Promise<object>;
     /**
      * The HTMLElement that all THtml are children off. Corresponds to
      * document.body
@@ -42,7 +41,7 @@ declare global {
     /**
      * Map of all JSPs loaded.
      */
-    plugins: Map<string, Module>;
+    modules: Map<string, Module>;
     moduleCount: number;
     /**
      * Client used to call the `backend`. In the IDE configuration, this
@@ -83,9 +82,7 @@ declare global {
      * it exist outside the init-update-view-loop.
      */
     pluginInstallers: ((path: string) => Promise<string | undefined>)[],
-
-    uiMap: Map<THtml, HTMLElement>;
     events: Event[];
-    eventHandlers: Map<string, EventHandler[]>;
+    eventHandlers: Map<string, string[]>;
   }
 }
