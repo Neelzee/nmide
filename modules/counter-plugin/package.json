@@ -8,7 +8,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@nmide/js-utils": "file:../../libs/js-utils"
+    "@nmide/js-utils": "file:../../libs/js-utils",
+    "core_modification": "link:core_modification"
   },
   "devDependencies": {
     "esbuild": "^0.24.0"

@@ -1,25 +1,14 @@
-import { Core, CoreManager, CoreModification } from "@nmide/js-utils/lib/Core";
-import HtmlBuilder from "@nmide/js-utils/lib/HtmlBuilder";
-import { tInt } from "@nmide/js-utils";
+import { empty_core_modification, build_module, Core, CoreModification, Event } from "core_modification";
 
 const module = "CounterPlugin";
-window.plugins.set(
-  module,
-  {
-    init: async (core: Core): Promise<CoreModification> => {
-      const cb = new CoreManager(core);
-      return cb
-        .addUI(
-          new HtmlBuilder()
-            .kind("div")
-            .kids(new HtmlBuilder()
-              .kind("button")
-              .attrs({ onClick: { msg: ["counter-event", tInt(1)] } })
-              .text(`Count: ${cb.findField("count")}`)
-            ).build(),
-          _ => true
-        )
-        .build();
-    }
-  }
-)
+console.log(empty_core_modification());
+
+const init = (core: Core): Promise<CoreModification> => {
+  throw new Error();
+};
+
+const handler = (event: Event, core: Core): Promise<CoreModification> => {
+  throw new Error();
+};
+
+const mod = build_module(module, init, handler);
