@@ -1,0 +1,25 @@
+{
+  "name": "core_modification",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "scripts": {
+    "build": "gleam build --target=javascript && bun build build/dev/javascript/core_modification/core_modification.mjs --outdir ./build"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "version": "0.1.0",
+  "description": "",
+  "main": "build/core_modification.js",
+  "module": "build/core_modification.js",
+  "types": "build/dev/javascript/core_modification/core_modification.d.mts",
+  "files": [
+    "build/core_modification.js",
+    "build/dev/javascript/core_modification/core_modification.d.mts"
+  ],
+  "keywords": ["gleam", "utils"],
+  "author": "Nils Michael Fitjar",
+  "license": "MIT"
+}
