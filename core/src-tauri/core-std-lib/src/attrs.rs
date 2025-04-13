@@ -1,10 +1,11 @@
 use serde::{Deserialize, Serialize};
-
+use ts_rs::TS;
 use crate::event::Event;
 
 // TODO: Correct documentation
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum Attr {
     /// ```html
     /// <div id="foobar"/>
@@ -81,6 +82,20 @@ pub enum Attr {
 }
 
 impl Attr {
+    pub fn as_string_rep(&self) -> &str {
+        match self {
+            Attr::Id(_) => "id",
+            Attr::Class(_) => "class",
+            Attr::Style(_) => "style",
+            Attr::Type(_) => "type",
+            Attr::Checked(_) => "checked",
+            Attr::OnClick(_) => "onClick",
+            Attr::OnInput(_) => "onInput",
+            Attr::EmitInput(_) => "emitInput",
+            Attr::Src(_) => "src",
+        }
+    }
+
     pub fn is(&self, s: &str) -> bool {
         match (self, s.to_lowercase().as_str()) {
             (Attr::Id(_), "id") => true,

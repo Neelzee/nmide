@@ -5,12 +5,14 @@
 use crate::attrs::Attr;
 use core_macros::define_html;
 use serde::{Deserialize, Serialize};
+use crate::instruction::Instruction;
 use ts_rs::TS;
 
 define_html!(
     attr_type = Attr,
-    #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+    #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, TS)]
     #[serde(rename_all = "camelCase")]
+    #[ts(export)]
     Div,
     P,
     H1,
@@ -79,13 +81,13 @@ impl Html {
 
     pub(crate) fn modify<F, P>(self, f: F, p: P) -> Self
     where
-        F: Fn(Self) -> Self + Copy,
-        P: Fn(&Self) -> bool + Copy,
+        F: Fn(Self) -> Self + Clone,
+        P: Fn(&Self) -> bool + Clone,
     {
         if p(&self) {
             f(self)
         } else {
-            let new_kids = self.kids().into_iter().map(|k| k.modify(f, p)).collect();
+            let new_kids = self.kids().into_iter().map(|k| k.modify(f.clone(), p.clone())).collect();
             self.replace_kids(new_kids)
         }
     }
@@ -103,306 +105,290 @@ impl Html {
             _ => false,
         }
     }
-
-    pub fn set_text<S: ToString>(self, text: S) -> Self {
-        self.text(text)
-    }
 }
 
-// NOTE: This is at minimum, a semigroup, could be argued its a monoid and also
-// a group. If we can agree that its field/attr properties are a part of the
-// type.
-// TODO: Abstract UIInstruction and SateInstruction into the same type/trait
-#[derive(Default, Deserialize, Serialize, Clone, TS)]
-#[serde(rename_all = "camelCase")]
-pub enum UIInstruction {
-    #[default]
-    NoOp,
-    AddAttr {
-        field: String,
-        #[ts(type = "TAttr")]
-        attr: Attr,
-    },
-    SetAttr {
-        field: String,
-        #[ts(type = "TAttr")]
-        attr: Attr,
-    },
-    RemAttr {
-        field: String,
-    },
-    Add {
-        #[ts(type = "Html")]
-        ui: Html,
-        id: Option<String>,
-        class: Option<String>,
-    },
-    Rem {
-        id: Option<String>,
-        class: Option<String>,
-    },
-    AddAttrPred {
-        field: String,
-        id: Option<String>,
-        class: Option<String>,
-        #[ts(type = "TAttr")]
-        attr: Attr,
-    },
-    SetAttrPred {
-        field: String,
-        id: Option<String>,
-        class: Option<String>,
-        #[ts(type = "TAttr")]
-        attr: Attr,
-    },
-    RemAttrPred {
-        id: Option<String>,
-        class: Option<String>,
-        field: String,
-    },
-    TextAttrPred {
-        id: Option<String>,
-        class: Option<String>,
-        text: String,
-    },
-    Then {
-        fst: Box<UIInstruction>,
-        snd: Box<UIInstruction>,
-    },
+pub struct UIInstructionBuilder {
+    count: usize,
+    node: Vec<(usize, Instruction<Html>)>,
+    text: Vec<(usize, Instruction<String>)>,
+    attr: Vec<(usize, Instruction<Attr>)>,
 }
 
-impl UIInstruction {
-    pub fn combine(self, other: Self) -> Self {
-        match (&self, &other) {
-            (Self::NoOp, _) => other,
-            (_, Self::NoOp) => self,
-            (Self::Add { ui, .. }, Self::Rem { id, class })
-            | (Self::Rem { id, class }, Self::Add { ui, .. })
-                if (id.is_some() || class.is_some()) =>
-            {
-                let is_removed = if let Some(id) = id {
-                    ui.cmp_id(id)
-                } else if let Some(class) = class {
-                    ui.cmp_class(class)
-                } else {
-                    false
-                };
-                if is_removed {
-                    Self::NoOp
-                } else {
-                    Self::Then {
-                        fst: Box::new(self),
-                        snd: Box::new(other),
-                    }
-                }
-            }
-            _ => Self::Then {
-                fst: Box::new(self),
-                snd: Box::new(other),
-            },
+impl Default for UIInstructionBuilder {
+    fn default() -> Self {
+        Self {
+            count: 0,
+            node: Vec::new(),
+            text: Vec::new(),
+            attr: Vec::new(),
         }
     }
 }
 
-#[derive(Default)]
-pub struct UIInstructionBuilder(UIInstruction);
-
 impl UIInstructionBuilder {
-    pub(crate) fn new(ins: UIInstruction) -> Self {
-        Self(ins)
+    pub(crate) fn new(inst: (Vec<(usize, Instruction<Html>)>, Vec<(usize, Instruction<String>)>, Vec<(usize, Instruction<Attr>)>)) -> Self {
+        let (node, text, attr) = inst;
+        Self {
+            count: 0,
+            node,
+            text,
+            attr
+        }
     }
 
-    pub(crate) fn instruction(self) -> UIInstruction {
-        self.0
+    pub fn instruction(&self) -> (Vec<(usize, Instruction<Html>)>, Vec<(usize, Instruction<String>)>, Vec<(usize, Instruction<Attr>)>) {
+        (self.node.clone(), self.text.clone(), self.attr.clone())
     }
 
     pub fn set_text(self, id: Option<String>, class: Option<String>, text: String) -> Self {
-        Self::new(
-            self.0
-                .combine(UIInstruction::TextAttrPred { id, class, text }),
-        )
+        let mut texts = self.text;
+        texts.push((self.count, Instruction::Add(id, class, text)));
+        Self {
+            count: self.count + 1,
+            text: texts,
+            ..self
+        }
     }
 
     pub fn add_node(self, ui: Html, id: Option<String>, class: Option<String>) -> Self {
-        Self::new(self.0.combine(UIInstruction::Add { ui, id, class }))
+        let mut nodes = self.node;
+        nodes.push((self.count, Instruction::Add(id, class, ui)));
+        Self {
+            count: self.count + 1,
+            node: nodes,
+            ..self
+        }
     }
 
     pub fn rem_node(self, id: Option<String>, class: Option<String>) -> Self {
-        Self::new(self.0.combine(UIInstruction::Rem { id, class }))
-    }
-
-    pub fn root_add(self, field: String, attr: Attr) -> Self {
-        Self::new(self.0.combine(UIInstruction::AddAttr { field, attr }))
+        let mut nodes = self.node;
+        nodes.push((self.count, Instruction::Rem(id, class, Html::Div())));
+        Self {
+            count: self.count + 1,
+            node: nodes,
+            ..self
+        }
     }
 
     pub fn add_attr(
         self,
-        field: String,
         id: Option<String>,
         class: Option<String>,
         attr: Attr,
     ) -> Self {
-        Self::new(self.0.combine(UIInstruction::AddAttrPred {
-            field,
-            id,
-            class,
-            attr,
-        }))
+        let mut attrs = self.attr;
+        attrs.push((self.count, Instruction::Add(id, class, attr)));
+        Self {
+            count: self.count + 1,
+            attr: attrs,
+            ..self
+        }
     }
 
-    pub fn root_remove(self, field: String) -> Self {
-        Self::new(self.0.combine(UIInstruction::RemAttr { field }))
-    }
-
-    pub fn rem_attr(self, field: String, id: Option<String>, class: Option<String>) -> Self {
-        Self::new(
-            self.0
-                .combine(UIInstruction::RemAttrPred { field, id, class }),
-        )
-    }
-
-    pub fn root_set(self, field: String, attr: Attr) -> Self {
-        Self::new(self.0.combine(UIInstruction::SetAttr { field, attr }))
+    pub fn rem_attr(self, attr: Attr, id: Option<String>, class: Option<String>) -> Self {
+        let mut attrs = self.attr;
+        attrs.push((self.count, Instruction::Rem(id, class, attr)));
+        Self {
+            count: self.count + 1,
+            attr: attrs,
+            ..self
+        }
     }
 
     pub fn set_attr(
         self,
-        field: String,
         id: Option<String>,
         class: Option<String>,
         attr: Attr,
     ) -> Self {
-        Self::new(self.0.combine(UIInstruction::SetAttrPred {
-            field,
-            id,
-            class,
-            attr,
-        }))
+        let mut attrs = self.attr;
+        attrs.push((self.count, Instruction::Mod(id, class, attr)));
+        Self {
+            count: self.count + 1,
+            attr: attrs,
+            ..self
+        }
+    }
+    fn node_instruction(node: Html, inst: Instruction<Html>) -> Html {
+        match inst {
+            Instruction::NoOp => node,
+            // ADD
+            Instruction::Add(Some(id), Some(class), child) => node.modify(
+                |n| { n.adopt(child.clone()) },
+                |n| { n.cmp_id(&id) && n.cmp_class(&class) }
+            ),
+            Instruction::Add(Some(id), _, child) => node.modify(
+                |n| { n.adopt(child.clone()) },
+                |n| { n.cmp_id(&id) }
+            ),
+            Instruction::Add(_, Some(class), child) => node.modify(
+                |n| { n.adopt(child.clone()) },
+                |n| { n.cmp_class(&class) }
+            ),
+            Instruction::Add(_, _, child) => node,
+            // REM
+            Instruction::Rem(oid, ocl, _) => {
+                let child = |n: &Html| {
+                    match (oid.clone(), ocl.clone()) {
+                        (Some(id), Some(class)) =>
+                            n.cmp_id(&id) && n.cmp_class(&class),
+                        (Some(id), None) =>
+                            n.cmp_id(&id),
+                        (None, Some(class)) =>
+                            n.cmp_class(&class),
+                        _ => false,
+                    }
+                };
+                let parent = |p: &Html| p.kids().iter().any(|k| child(k));
+                node.modify(
+                    |p| {
+                        let kids = p.kids().into_iter().filter(child).collect();
+                        p.replace_kids(kids)
+                    },
+                    parent
+                )
+            }
+            Instruction::Mod(_, _, _) => node,
+            Instruction::Then(f, s) =>
+                Self::node_instruction(Self::node_instruction(node, *f), *s)
+        }
     }
 
-    // HACK: `Panic`king is done instead of having a type-level error handling, to make it
-    // easier to implement
-    fn _build(ins: UIInstruction, ui: Html) -> Html {
-        match ins {
-            UIInstruction::NoOp => ui,
-            UIInstruction::AddAttr { field, attr } => {
-                if ui.has_attr(&field) {
-                    panic!("UI element already has attribute: {field}");
-                }
-                ui.add_attr(attr)
+    fn text_instruction(node: Html, inst: Instruction<String>) -> Html {
+        match inst {
+            Instruction::NoOp => node,
+            // ADD
+            Instruction::Add(Some(id), Some(class), text) => node.modify(
+                |n| { n.set_text(text.clone()) },
+                |n| { n.cmp_id(&id) && n.cmp_class(&class) }
+            ),
+            Instruction::Add(Some(id), _, text) => node.modify(
+                |n| { n.set_text(text.clone()) },
+                |n| { n.cmp_id(&id) }
+            ),
+            Instruction::Add(_, Some(class), text) => node.modify(
+                |n| { n.set_text(text.clone()) },
+                |n| { n.cmp_class(&class) }
+            ),
+            Instruction::Add(_, _, child) => node,
+            // REM
+            Instruction::Rem(oid, ocl, _) => {
+                let p = |n: &Html| {
+                    match (oid.clone(), ocl.clone()) {
+                        (Some(id), Some(class)) =>
+                            n.cmp_id(&id) && n.cmp_class(&class),
+                        (Some(id), None) =>
+                            n.cmp_id(&id),
+                        (None, Some(class)) =>
+                            n.cmp_class(&class),
+                        _ => false,
+                    }
+                };
+                node.modify(
+                    |n| n.set_text(""),
+                    p
+                )
             }
-            UIInstruction::SetAttr { field, attr } => {
-                if !ui.has_attr(&field) {
-                    panic!("UI element does not have attribute: {field}, to set");
-                }
-                ui.set_attr(&field, attr)
+            Instruction::Mod(oid, ocl, txt) => {
+                let p = |n: &Html| {
+                    match (oid.clone(), ocl.clone()) {
+                        (Some(id), Some(class)) =>
+                            n.cmp_id(&id) && n.cmp_class(&class),
+                        (Some(id), None) =>
+                            n.cmp_id(&id),
+                        (None, Some(class)) =>
+                            n.cmp_class(&class),
+                        _ => false,
+                    }
+                };
+                node.modify(
+                    |n| {
+                        let t = n.text();
+                        n.set_text(format!("{}{}", t, txt))
+                    },
+                    p
+                )
             }
-            UIInstruction::RemAttr { field } => {
-                if !ui.has_attr(&field) {
-                    panic!("UI element does not have attribute: {field}, to remove");
-                }
-                ui.rem_attr(&field)
+            Instruction::Then(f, s) =>
+                Self::text_instruction(Self::text_instruction(node, *f), *s)
+        }
+    }
+
+    fn attr_instruction(node: Html, inst: Instruction<Attr>) -> Html {
+        match inst {
+            Instruction::NoOp => node,
+            // ADD
+            Instruction::Add(Some(id), Some(class), attr) => node.modify(
+                |n| { n.add_attr(attr.clone()) },
+                |n| { n.cmp_id(&id) && n.cmp_class(&class) }
+            ),
+            Instruction::Add(Some(id), _, attr) => node.modify(
+                |n| { n.add_attr(attr.clone()) },
+                |n| { n.cmp_id(&id) }
+            ),
+            Instruction::Add(_, Some(class), attr) => node.modify(
+                |n| { n.add_attr(attr.clone()) },
+                |n| { n.cmp_class(&class) }
+            ),
+            Instruction::Add(_, _, child) => node,
+            // REM
+            Instruction::Rem(oid, ocl, attr) => {
+                let p = |n: &Html| {
+                    match (oid.clone(), ocl.clone()) {
+                        (Some(id), Some(class)) =>
+                            n.cmp_id(&id) && n.cmp_class(&class),
+                        (Some(id), None) =>
+                            n.cmp_id(&id),
+                        (None, Some(class)) =>
+                            n.cmp_class(&class),
+                        _ => false,
+                    }
+                };
+                node.modify(
+                    |n| n.rem_attr(attr.as_string_rep()),
+                    p
+                )
             }
-            UIInstruction::Then { fst, snd } => {
-                let fst_ins = *fst;
-                let snd_ins = *snd;
-                Self::_build(snd_ins, Self::_build(fst_ins, ui))
+            Instruction::Mod(oid, ocl, attr) => {
+                let p = |n: &Html| {
+                    match (oid.clone(), ocl.clone()) {
+                        (Some(id), Some(class)) =>
+                            n.cmp_id(&id) && n.cmp_class(&class),
+                        (Some(id), None) =>
+                            n.cmp_id(&id),
+                        (None, Some(class)) =>
+                            n.cmp_class(&class),
+                        _ => false,
+                    }
+                };
+                node.modify(
+                    |n| n.set_attr(attr.as_string_rep(), attr.clone()),
+                    p
+                )
             }
-            UIInstruction::Add { ui: kid, id, class } => {
-                if let Some(id) = id {
-                    return ui.modify(|h| h.adopt(kid.clone()), |h| h.cmp_id(&id));
-                }
-                if let Some(class) = class {
-                    return ui.modify(|h| h.adopt(kid.clone()), |h| h.cmp_class(&class));
-                }
-                ui.adopt(kid)
-            }
-            UIInstruction::Rem { id, class } => {
-                if let Some(id) = id {
-                    return ui.modify(
-                        |h| {
-                            let new_kids =
-                                h.kids().into_iter().filter(|k| !k.cmp_id(&id)).collect();
-                            h.replace_kids(new_kids)
-                        },
-                        |h| h.kids().iter().any(|k| k.cmp_id(&id)),
-                    );
-                }
-                if let Some(class) = class {
-                    return ui.modify(
-                        |h| {
-                            let new_kids = h
-                                .kids()
-                                .into_iter()
-                                .filter(|k| !k.cmp_class(&class))
-                                .collect();
-                            h.replace_kids(new_kids)
-                        },
-                        |h| h.kids().iter().any(|k| k.cmp_class(&class)),
-                    );
-                }
-                ui
-            }
-            UIInstruction::AddAttrPred {
-                field,
-                id,
-                class,
-                attr,
-            } => {
-                if let Some(id) = id {
-                    return ui.modify(|h| h.add_attr(attr.clone()), |h| h.cmp_id(&id));
-                }
-                if let Some(class) = class {
-                    return ui.modify(|h| h.add_attr(attr.clone()), |h| h.cmp_class(&class));
-                }
-                ui.add_attr(attr)
-            }
-            UIInstruction::SetAttrPred {
-                field,
-                id,
-                class,
-                attr,
-            } => {
-                if let Some(id) = id {
-                    return ui.modify(|h| h.set_attr(&field, attr.clone()), |h| h.cmp_id(&id));
-                }
-                if let Some(class) = class {
-                    return ui.modify(
-                        |h| h.set_attr(&field, attr.clone()),
-                        |h| h.cmp_class(&class),
-                    );
-                }
-                ui.set_attr(&field, attr)
-            }
-            UIInstruction::RemAttrPred { id, class, field } => {
-                if let Some(id) = id {
-                    return ui.modify(|h| h.rem_attr(&field), |h| h.cmp_id(&id));
-                }
-                if let Some(class) = class {
-                    return ui.modify(|h| h.rem_attr(&field), |h| h.cmp_class(&class));
-                }
-                ui.rem_attr(&field)
-            }
-            UIInstruction::TextAttrPred { id, class, text } => {
-                if let Some(id) = id {
-                    return ui.modify(|h| h.set_text(text.clone()), |h| h.cmp_id(&id));
-                }
-                if let Some(class) = class {
-                    return ui.modify(|h| h.set_text(text.clone()), |h| h.cmp_class(&class));
-                }
-                ui.set_text(text)
-            }
+            Instruction::Then(f, s) =>
+                Self::attr_instruction(Self::attr_instruction(node, *f), *s)
         }
     }
 
     // HACK: `Panic`king is done instead of having a type-level error handling, to make it
     // easier to implement
     // TODO: Make type-level error handling
-    pub fn build(self, state: Html) -> Html {
-        Self::_build(self.0, state)
+    pub fn build(self, ui: Html) -> Html {
+        let (node, text, attr) = self.instruction();
+        let mut root = ui;
+        for i in 0..self.count {
+            if let Some((_, inst)) = node.iter().find(|(j, _)| *j == i) {
+                root = Self::node_instruction(root, inst.clone());
+            }
+            if let Some((_, inst)) = text.iter().find(|(j, _)| *j == i) {
+                root = Self::text_instruction(root, inst.clone());
+            }
+            if let Some((_, inst)) = attr.iter().find(|(j, _)| *j == i) {
+                root = Self::attr_instruction(root, inst.clone());
+            }
+        }
+        root
     }
 
-    pub fn get_instructions(&self) -> UIInstruction {
-        self.0.clone()
-    }
 }

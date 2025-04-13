@@ -1,9 +1,12 @@
 use crate::{
     event::Event,
-    html::{Html, UIInstruction, UIInstructionBuilder},
-    state::{State, StateInstruction, StateInstructionBuilder},
+    html::{Html, UIInstructionBuilder},
+    state::{State, StateInstructionBuilder},
 };
 use async_trait::async_trait;
+use crate::attrs::Attr;
+use crate::instruction::Instruction;
+use crate::state::Value;
 
 #[async_trait]
 pub trait Core: Send + Sync {
@@ -20,8 +23,8 @@ pub trait Core: Send + Sync {
 
 #[derive(Default)]
 pub struct CoreModification {
-    state_inst: StateInstruction,
-    ui_inst: UIInstruction,
+    state_inst: Instruction<Value>,
+    ui_inst: (Vec<(usize, Instruction<Html>)>, Vec<(usize, Instruction<String>)>, Vec<(usize, Instruction<Attr>)>),
 }
 
 impl CoreModification {
@@ -40,9 +43,14 @@ impl CoreModification {
     }
 
     pub fn combine(self, other: Self) -> Self {
+        let (mut node, mut text, mut attr) = self.ui_inst;
+        let (mut n, mut t, mut a) = other.ui_inst;
+        node.append(&mut n);
+        text.append(&mut t);
+        attr.append(&mut a);
         Self {
             state_inst: self.state_inst.combine(other.state_inst),
-            ui_inst: self.ui_inst.combine(other.ui_inst),
+            ui_inst: (node, text, attr)
         }
     }
 
