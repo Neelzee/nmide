@@ -2,12 +2,12 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "core_modification",
+      "name": "lib_gleam",
       "devDependencies": {
         "@types/bun": "latest",
       },
       "peerDependencies": {
-        "typescript": "^5.8.3",
+        "typescript": "^5",
       },
     },
   },

@@ -24,6 +24,5 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
-  },
-  "include": ["./build/dev/javascript/core_modification/*"]
+  }
 }
