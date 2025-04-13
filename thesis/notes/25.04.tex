@@ -197,3 +197,55 @@ Gleam, instead of the rendering part of the frontend. Maybe call it the
 JavaScript Module Runtime instead, because it's kinda like a runtime, I guess?
 Based on my probably flawed understanding of what a runtime is. Or based on my
 overloading of the term runtime.
+
+\section{25.04.12}
+
+I got a cooler system for module installation. I am using the html event system,
+to throw an event when the moduleCount is 0, which indicates that all modules
+have been installed. This is checked several places, because currently, with no
+modules, it is triggered as soon as the ideModuleInstaller function is finished,
+but normally, it will be triggered when the last module does
+window.module.insert, which would bring the moduleCount to 0. I dont know if it
+works 100 \%, like most of my code, I just \textit{feel} like it should. Which
+is what \textit{vibe-coding} is too me. None of that LLM shit. Sure, sometimes
+it's easier to get the wrong answer from Chet, than it is to google the same
+question and get another LLM article about it, but that's more an information
+issue. I think we \textit{proper} developers should use vibe-coding to mean
+\textit{I am writing so much code in different places, vibing it to be correct}.
+
+\section{25.04.13}
+
+I should \textit{sharp}(skjerp) myself, I've been avoiding doing type stuff in
+TypeScript, because I am lazy. I've made a lot of the types in Rust and Gleam,
+and I couldn't be bothered to properly use them in TypeScript. The IDE kinda
+works, but I have no modules to show for it. And the JSMS doesnt work at all.
+Why it doesn't work, I don't know, but it's not helping that the types are
+sometimes wrong. I think Gleam could be silently erroring, either that or I
+still haven't figured out how to do module installation. To be fair, the JSMS
+stuff I am doing, is basically runtime extension of the IDE, so I think I could,
+tomorrow or something, stash all the changes I've made, and just do a compile
+time JSMS. I also think I should remove the T*-types, meaning there should be no
+difference between the Rust and TypeScript types. The reason there is a
+difference now, is because I couldn't be bothered to do pattern matching in
+TypeScript, because, to be fair, it sucks. But I think I just have to bite that
+bullet, and \textit{sharp}(adult up) myself, and get to it. Here is the general
+plan:
+
+\begin{enumerate}
+  \item Delete ts_* modules in core-foreign-lib
+  \item Add TS, Serialize, Deserialize to core Rust types
+  \item Sketch out the API between the frontend, backend and the JSMS runtime
+  \item Implement the sketched out API
+  \item \dots
+  \item Profit?
+\end{enumerate}
+
+I'll probably do a mix of coding and writing in the coming weeks. Hopefully I
+won't do much development in May, but I'll probably have to, I have some stuff I
+want to do:
+
+\begin{itemize}
+  \item Refactor the compile time module installation
+  \item Add tests
+  \item Make more modules
+\end{itemize}
