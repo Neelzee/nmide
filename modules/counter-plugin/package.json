@@ -8,6 +8,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "core_modification": "link:core_modification"
+    "lib_gleam": "link:lib_gleam"
   }
 }

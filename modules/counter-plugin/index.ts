@@ -1,12 +1,19 @@
-import { empty_core_modification, build_module, Core, CoreModification, Event } from "core_modification";
+import { empty_core_modification, Core, Event } from "lib_gleam";
 
 const module = "CounterPlugin";
 // @ts-ignore
-window.modules.set(
+window.__nmideConfig__.modules.set(
   module,
   {
     name: module,
-    init: async (_: Core) => empty_core_modification(),
-    handler: async (_: Event, __: Core) => empty_core_modification(),
+    init: async (core: Core) => {
+      core.registrate_handler(module, "counter", null)
+        .catch(err => console.error("error from module: ", err));
+      return empty_core_modification();
+    },
+    handler: async (event: Event, __: Core) => {
+      console.log("Module got event: ", event);
+      return empty_core_modification();
+    },
   }
 );
