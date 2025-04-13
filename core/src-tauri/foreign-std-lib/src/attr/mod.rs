@@ -6,6 +6,3 @@
 /// Rust-Attr
 #[cfg(feature = "rs")]
 pub mod rs_attrs;
-#[cfg(feature = "ts")]
-/// TypeScript Attr
-pub mod ts_attrs;

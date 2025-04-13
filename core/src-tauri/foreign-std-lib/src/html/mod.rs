@@ -8,6 +8,3 @@ pub mod c_html;
 #[cfg(feature = "rs")]
 /// Rust-Html
 pub mod rs_html;
-#[cfg(feature = "ts")]
-/// TypeScript Html
-pub mod ts_html;
