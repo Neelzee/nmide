@@ -10,7 +10,7 @@ use async_trait::async_trait;
 use core_std_lib::{
     core::Core,
     event::Event,
-    html::{Html, UIInstruction},
+    html::{Html},
     state::State,
 };
 use serde::{Deserialize, Serialize};
@@ -112,11 +112,11 @@ impl Core for NmideCore {
             .expect("AppHandle should be initialized")
             .read()
             .await;
-        let inst = ui_builder.get_instructions();
+        let inst = ui_builder.instruction();
         let mut current_ui = NMIDE_UI.write().await;
         // TODO: Optimize the instruction set before building
         *current_ui = ui_builder.build(ui);
-        // TODO: Do a NoOp check before needlessly rerendering
+        // TODO: Do a NoOp check before needlessly re-rendering
         app.emit("nmide://render", inst)
             .expect("AppHandle emit should always succeed");
     }

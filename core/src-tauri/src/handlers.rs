@@ -1,19 +1,18 @@
 use std::future::IntoFuture;
 
-use anyhow::Context;
 use core_std_lib::{
-    core::{Core, CoreModification},
-    html::{Html, UIInstruction},
+    core::{Core},
+    html::{Html},
 };
 use futures;
-use serde::{Deserialize, Serialize};
-
+use core_std_lib::attrs::Attr;
+use core_std_lib::instruction::Instruction;
 use crate::{
     core::NmideCore,
     statics::{COMPILE_TIME_MODULES, NMIDE_STATE, NMIDE_UI},
 };
 
-pub async fn init() -> UIInstruction {
+pub async fn init() -> (Vec<(usize, Instruction<Html>)>, Vec<(usize, Instruction<String>)>, Vec<(usize, Instruction<Attr>)>) {
     let modules = COMPILE_TIME_MODULES.read().await;
 
     let state = NmideCore.state().await;
@@ -31,7 +30,7 @@ pub async fn init() -> UIInstruction {
     let mut st = NMIDE_STATE.write().await;
     *st = new_state;
     drop(st);
-    let inst = ui_builder.get_instructions();
+    let inst = ui_builder.instruction();
     let mut current_ui = NMIDE_UI.write().await;
     *current_ui = ui_builder.build(ui);
     inst
