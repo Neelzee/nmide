@@ -10,6 +10,6 @@ export * from "./lib/MapBuilder";
 export * from "./lib/Module";
 export * from "./lib/Types";
 export * from "./lib/Utils";
-export * from "./lib/Window";
 export * from "./lib/App";
 export * from "./lib/Core";
+export * from "./lib/TEvent";
