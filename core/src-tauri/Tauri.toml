@@ -31,7 +31,7 @@ csp = "asset: https://asset.localhost; connect-src ipc: http://ipc.localhost"
 capabilities = ["nmide-capabilities"]
 
 [app.security.assetProtocol]
-scope = ["$APPDATA/plugins/*"]
+scope = ["$APPDATA/modules/*"]
 enable = true
 
 [[app.windows]]
