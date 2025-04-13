@@ -96,12 +96,21 @@ macro_rules! define_html {
                 }
             }
 
-            pub fn text<S: ToString>(self, s: S) -> Self {
+            pub fn set_text<S: ToString>(self, s: S) -> Self {
                 match self {
                 $(
                     Self::$name { kids, attrs, text: _ } => {
                         Self::$name { kids, attrs, text: Some(s.to_string()) }
                     },
+                )*
+                }
+
+            }
+
+            pub fn text(&self) -> String {
+                match self {
+                $(
+                    Self::$name { text, .. } => text.clone().unwrap_or("".to_string()),
                 )*
                 }
 
