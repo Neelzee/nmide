@@ -29,7 +29,7 @@ impl core_module_lib::Module for Module {
             Html::Div()
                 .adopt(
                     Html::Button()
-                        .text("Click")
+                        .set_text("Click")
                         .add_attr(Attr::OnClick(Event::new(
                             "counter".to_string(),
                             "trivial_module".to_string(),
@@ -39,7 +39,7 @@ impl core_module_lib::Module for Module {
                 )
                 .adopt(
                     Html::P()
-                        .text("Count: 0")
+                        .set_text("Count: 0")
                         .add_attr(Attr::Id("PID".to_string())),
                 )
                 .add_attr(Attr::Id("DivId".to_string())),
@@ -61,10 +61,6 @@ impl core_module_lib::Module for Module {
                 let state = StateInstructionBuilder::default().modify(
                     "counter".to_string(),
                     v.clone(),
-                    |l, r| match (l, r) {
-                        (Value::Int(i), Value::Int(j)) => Value::Int(i + j),
-                        _ => Value::Int(0),
-                    },
                 );
                 let ui = if let Some(Value::Int(old)) = core.state().await.get("counter") {
                     UIInstructionBuilder::default().set_text(
