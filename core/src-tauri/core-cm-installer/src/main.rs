@@ -10,30 +10,30 @@ fn main() {
     let mut args = std::env::args();
     args.next();
     let mut conf = String::new();
-    let mut out = String::new();
     let mut cargo = String::new();
-    for a in args.into_iter() {
-        if a.contains("--conf=") {
-            conf = a.replace("--conf=", "");
-            continue;
-        }
-        if a.contains("--out=") {
-            out = a.replace("--out=", "");
+    let mut out = String::new();
+    for arg in args {
+        if arg.contains("--out=") {
+            out = arg.replace("--out=", "");
             continue
         }
-        if a.contains("--cargo=") {
-            cargo = a.replace("--cargo=", "");
+        if arg.contains("--conf=") {
+            conf = arg.replace("--conf=", "");
+            continue
+        }
+        if arg.contains("--cargo=") {
+            cargo = arg.replace("--cargo=", "");
         }
     }
     let mut module_imports = Vec::new();
     let mut module_reg = Vec::new();
-    let module_toml_path = Path::new(&conf);
+    let module_toml_path = Path::new(&conf).canonicalize().expect(&format!("Can't canonicalize config: {conf:?}"));
     if module_toml_path.exists() {
         let module_content = fs::read_to_string(module_toml_path)
             .expect("Path should exist, and be of valid encoding.");
         let module_config: Value =
             toml::from_str(&module_content).expect("Module should be a valid TOML");
-        let cargo_path = Path::new(&cargo);
+        let cargo_path = Path::new(&cargo).canonicalize().unwrap();
 
         let mut tbl = toml::Table::new();
         let mut mods = Vec::new();
@@ -68,7 +68,7 @@ fn main() {
 
         let c = toml::to_string_pretty(&tbl).and_then(|p| Ok(p.replace("[[dependencies]]\n", ""))).unwrap();
 
-        let mut file = File::open(cargo_path).expect("Cargo.toml file not found");
+        let mut file = File::open(&cargo_path).expect("Cargo.toml file not found");
         let mut buf = String::new();
         file.read_to_string(&mut buf).expect("Cargo.toml file read error");
 
@@ -84,8 +84,8 @@ fn main() {
         final_buffer.push_str(&format!("\n{c}"));
 
         fs::write(cargo_path, final_buffer).unwrap();
-
-        let mut reg_file = fs::File::create(Path::new(&out).join("module_reg.rs")).unwrap();
+        let p = Path::new(&out).join("module_reg.rs");
+        let mut reg_file = File::create(p).unwrap();
         for import in &module_imports {
             writeln!(reg_file, "{}", import).unwrap();
         }

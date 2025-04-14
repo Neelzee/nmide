@@ -854,6 +854,7 @@ dependencies = [
  "anyhow",
  "anyhow-tauri",
  "async-trait",
+ "core-cm-installer",
  "core-module-lib",
  "core-std-lib",
  "env",
@@ -869,7 +870,6 @@ dependencies = [
  "tauri-plugin-log",
  "tauri-plugin-shell",
  "tokio",
- "toml",
  "trivial_module",
 ]
 
@@ -877,7 +877,6 @@ dependencies = [
 name = "core-cm-installer"
 version = "0.1.0"
 dependencies = [
- "env",
  "toml",
 ]
 
