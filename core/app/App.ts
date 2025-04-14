@@ -1,5 +1,5 @@
-import { TUIInstruction } from "@nmide/js-utils/lib/Html";
-import { Module, TEvent } from "@nmide/js-utils";
+import { Html, TUIInstruction } from "@nmide/js-utils/lib/Html";
+import { Instruction, Module, TEvent } from "@nmide/js-utils";
 import { tsRenderer } from "./lib/tsRenderer.ts";
 import { handlerRegistration } from "./lib/handlerRegistration.ts";
 import { eventThrower } from "./lib/eventThrower.ts";
@@ -18,10 +18,10 @@ export interface AppConfig {
   },
   moduleInstallers: (() => Promise<void>)[],
   runtimes: {
-    initializers: (() => Promise<CoreModification>)[]
-    handlers: ((event: TEvent) => Promise<CoreModification>)[]
+    initializers: (() => Promise<CoreModification[]>)[]
+    handlers: ((event: TEvent) => Promise<CoreModification[]>)[]
   },
-  render: (op: TUIInstruction) => Promise<void>,
+  render: (op: [Instruction<Html>, Instruction<string>, Instruction<Attr>]) => Promise<void>,
   eventThrower: (event: TEvent) => Promise<void>,
   handlerRegistration: (
     module: string,

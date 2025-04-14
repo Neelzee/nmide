@@ -3,12 +3,13 @@ use crate::setup::setup;
 use crate::statics::{COMPILE_TIME_MODULES, NMIDE_STATE, NMIDE_UI};
 use anyhow::{Context as _, Result};
 use core_module_lib::Module;
-use core_std_lib::core::Core;
+use core_std_lib::core::{Core, CoreModification};
 use core_std_lib::event::Event;
 use core_std_lib::html::Html;
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
+use futures::StreamExt;
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 use tauri::Manager as _;
@@ -28,10 +29,12 @@ pub(crate) mod module_reg {
 
 pub static NMIDE: tokio::sync::OnceCell<RwLock<AppHandle>> = tokio::sync::OnceCell::const_new();
 
+
 /// see [init](crate::handlers::init)
 #[tauri::command]
-async fn init() -> (Vec<(usize, Instruction<Html>)>, Vec<(usize, Instruction<String>)>, Vec<(usize, Instruction<Attr>)>) {
-    crate::handlers::init().await
+async fn init(mods: Vec<CoreModification>) -> (Instruction<Html>, Instruction<String>, Instruction<Attr>) {
+    let cm = mods.into_iter().fold(CoreModification::default(), CoreModification::append);
+    crate::handlers::init(cm).await
 }
 
 // TODO: Implement

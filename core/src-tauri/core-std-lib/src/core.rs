@@ -4,6 +4,8 @@ use crate::{
     state::{State, StateInstructionBuilder},
 };
 use async_trait::async_trait;
+use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 use crate::attrs::Attr;
 use crate::instruction::Instruction;
 use crate::state::Value;
@@ -21,50 +23,61 @@ pub trait Core: Send + Sync {
     );
 }
 
-#[derive(Default)]
+#[derive(Serialize, Deserialize, TS)]
+#[ts(export)]
 pub struct CoreModification {
-    state_inst: Instruction<Value>,
-    ui_inst: (Vec<(usize, Instruction<Html>)>, Vec<(usize, Instruction<String>)>, Vec<(usize, Instruction<Attr>)>),
+    state: Instruction<Value>,
+    ui: (Instruction<Html>, Instruction<String>, Instruction<Attr>),
+}
+
+impl Default for CoreModification {
+    fn default() -> Self {
+        Self {
+            state: Instruction::NoOp,
+            ui: (Instruction::NoOp, Instruction::NoOp, Instruction::NoOp),
+        }
+    }
 }
 
 impl CoreModification {
+    pub fn append(a: Self, b: Self) -> Self {
+        a.combine(b)
+    }
+
     pub fn set_state(self, builder: StateInstructionBuilder) -> Self {
         Self {
-            state_inst: builder.instruction(),
+            state: builder.instruction(),
             ..self
         }
     }
 
     pub fn set_ui(self, builder: UIInstructionBuilder) -> Self {
         Self {
-            ui_inst: builder.instruction(),
+            ui: builder.instruction(),
             ..self
         }
     }
 
     pub fn combine(self, other: Self) -> Self {
-        let (mut node, mut text, mut attr) = self.ui_inst;
-        let (mut n, mut t, mut a) = other.ui_inst;
-        node.append(&mut n);
-        text.append(&mut t);
-        attr.append(&mut a);
+        let (mut node, mut text, mut attr) = self.ui;
+        let (n,  t,  a) = other.ui;
         Self {
-            state_inst: self.state_inst.combine(other.state_inst),
-            ui_inst: (node, text, attr)
+            state: self.state.combine(other.state),
+            ui: (node.combine(n), text.combine(t), attr.combine(a))
         }
     }
 
     pub fn build(self, state: State, ui: Html) -> (State, Html) {
         (
-            StateInstructionBuilder::new(self.state_inst).build(state),
-            UIInstructionBuilder::new(self.ui_inst).build(ui),
+            StateInstructionBuilder::new(self.state).build(state),
+            UIInstructionBuilder::new(self.ui).build(ui),
         )
     }
 
     pub fn build_state(self, state: State) -> (State, UIInstructionBuilder) {
         (
-            StateInstructionBuilder::new(self.state_inst).build(state),
-            UIInstructionBuilder::new(self.ui_inst),
+            StateInstructionBuilder::new(self.state).build(state),
+            UIInstructionBuilder::new(self.ui),
         )
     }
 }

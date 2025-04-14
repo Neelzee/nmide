@@ -1,6 +1,7 @@
 export { default as HtmlBuilder } from "./lib/HtmlBuilder";
 export * from "./lib/TAttr";
 export * from "./lib/THtml";
+export * from "./lib/Html";
 export * from "./lib/TMap";
 export * from "./lib/TMsg";
 export * as Debug from "./lib/Debug";
@@ -13,3 +14,4 @@ export * from "./lib/Utils";
 export * from "./lib/App";
 export * from "./lib/Core";
 export * from "./lib/TEvent";
+export * from "./lib/Instruction";

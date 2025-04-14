@@ -1,7 +1,6 @@
 import {
   Core,
   Event,
-  combine_modifications,
   CoreModification,
 } from "lib_gleam";
 import { invoke } from "@tauri-apps/api/core";
@@ -27,7 +26,7 @@ export const tsHandler = async ({ event, module, args }: Event) => {
       .filter(m => m !== undefined)
       .map(m => m.handler({ event, module, args }, core))
   );
-  return combine_modifications(modifications);
+  return modifications;
 }
 
 export const tsInit = async () => {
@@ -45,5 +44,5 @@ export const tsInit = async () => {
   const modifications: CoreModification[] = await Promise.all(
     modules.map(m => m.init(core))
   );
-  return combine_modifications(modifications);
+  return modifications;
 }

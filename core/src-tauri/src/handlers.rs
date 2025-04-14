@@ -6,13 +6,14 @@ use core_std_lib::{
 };
 use futures;
 use core_std_lib::attrs::Attr;
+use core_std_lib::core::CoreModification;
 use core_std_lib::instruction::Instruction;
 use crate::{
     core::NmideCore,
     statics::{COMPILE_TIME_MODULES, NMIDE_STATE, NMIDE_UI},
 };
 
-pub async fn init() -> (Vec<(usize, Instruction<Html>)>, Vec<(usize, Instruction<String>)>, Vec<(usize, Instruction<Attr>)>) {
+pub async fn init(cm: CoreModification) -> (Instruction<Html>, Instruction<String>, Instruction<Attr>) {
     let modules = COMPILE_TIME_MODULES.read().await;
 
     let state = NmideCore.state().await;
@@ -25,6 +26,7 @@ pub async fn init() -> (Vec<(usize, Instruction<Html>)>, Vec<(usize, Instruction
         .into_iter()
         .reduce(|acc, ins| acc.combine(ins))
         .unwrap_or_default()
+        .combine(cm)
         .build_state(state);
 
     let mut st = NMIDE_STATE.write().await;

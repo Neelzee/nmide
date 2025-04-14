@@ -108,64 +108,52 @@ impl Html {
 }
 
 pub struct UIInstructionBuilder {
-    count: usize,
-    node: Vec<(usize, Instruction<Html>)>,
-    text: Vec<(usize, Instruction<String>)>,
-    attr: Vec<(usize, Instruction<Attr>)>,
+    node: Instruction<Html>,
+    text: Instruction<String>,
+    attr: Instruction<Attr>,
 }
 
 impl Default for UIInstructionBuilder {
     fn default() -> Self {
         Self {
-            count: 0,
-            node: Vec::new(),
-            text: Vec::new(),
-            attr: Vec::new(),
+            node: Instruction::NoOp,
+            text: Instruction::NoOp,
+            attr: Instruction::NoOp,
         }
     }
 }
 
 impl UIInstructionBuilder {
-    pub(crate) fn new(inst: (Vec<(usize, Instruction<Html>)>, Vec<(usize, Instruction<String>)>, Vec<(usize, Instruction<Attr>)>)) -> Self {
+    pub(crate) fn new(inst: (Instruction<Html>, Instruction<String>, Instruction<Attr>)) -> Self {
         let (node, text, attr) = inst;
         Self {
-            count: 0,
             node,
             text,
             attr
         }
     }
 
-    pub fn instruction(&self) -> (Vec<(usize, Instruction<Html>)>, Vec<(usize, Instruction<String>)>, Vec<(usize, Instruction<Attr>)>) {
+    pub fn instruction(&self) -> (Instruction<Html>, Instruction<String>, Instruction<Attr>) {
         (self.node.clone(), self.text.clone(), self.attr.clone())
     }
 
     pub fn set_text(self, id: Option<String>, class: Option<String>, text: String) -> Self {
-        let mut texts = self.text;
-        texts.push((self.count, Instruction::Add(id, class, text)));
         Self {
-            count: self.count + 1,
-            text: texts,
+            text: self.text.combine(Instruction::Add(id, class, text)),
             ..self
         }
     }
 
     pub fn add_node(self, ui: Html, id: Option<String>, class: Option<String>) -> Self {
-        let mut nodes = self.node;
-        nodes.push((self.count, Instruction::Add(id, class, ui)));
         Self {
-            count: self.count + 1,
-            node: nodes,
+            node: self.node.combine(Instruction::Add(id, class, ui)),
             ..self
         }
     }
 
     pub fn rem_node(self, id: Option<String>, class: Option<String>) -> Self {
-        let mut nodes = self.node;
-        nodes.push((self.count, Instruction::Rem(id, class, Html::Div())));
         Self {
-            count: self.count + 1,
-            node: nodes,
+            node: self.node.combine(Instruction::Rem(id, class, Html::Div())),
             ..self
         }
     }
@@ -176,21 +164,15 @@ impl UIInstructionBuilder {
         class: Option<String>,
         attr: Attr,
     ) -> Self {
-        let mut attrs = self.attr;
-        attrs.push((self.count, Instruction::Add(id, class, attr)));
         Self {
-            count: self.count + 1,
-            attr: attrs,
+            attr: self.attr.combine(Instruction::Add(id, class, attr)),
             ..self
         }
     }
 
     pub fn rem_attr(self, attr: Attr, id: Option<String>, class: Option<String>) -> Self {
-        let mut attrs = self.attr;
-        attrs.push((self.count, Instruction::Rem(id, class, attr)));
         Self {
-            count: self.count + 1,
-            attr: attrs,
+            attr: self.attr.combine(Instruction::Rem(id, class, attr)),
             ..self
         }
     }
@@ -201,11 +183,8 @@ impl UIInstructionBuilder {
         class: Option<String>,
         attr: Attr,
     ) -> Self {
-        let mut attrs = self.attr;
-        attrs.push((self.count, Instruction::Mod(id, class, attr)));
         Self {
-            count: self.count + 1,
-            attr: attrs,
+            attr: self.attr.combine(Instruction::Mod(id, class, attr)),
             ..self
         }
     }
@@ -376,19 +355,7 @@ impl UIInstructionBuilder {
     // TODO: Make type-level error handling
     pub fn build(self, ui: Html) -> Html {
         let (node, text, attr) = self.instruction();
-        let mut root = ui;
-        for i in 0..self.count {
-            if let Some((_, inst)) = node.iter().find(|(j, _)| *j == i) {
-                root = Self::node_instruction(root, inst.clone());
-            }
-            if let Some((_, inst)) = text.iter().find(|(j, _)| *j == i) {
-                root = Self::text_instruction(root, inst.clone());
-            }
-            if let Some((_, inst)) = attr.iter().find(|(j, _)| *j == i) {
-                root = Self::attr_instruction(root, inst.clone());
-            }
-        }
-        root
+        Self::attr_instruction(Self::text_instruction(Self::node_instruction(ui, node), text), attr)
     }
 
 }

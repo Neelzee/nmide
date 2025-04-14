@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { emit, listen } from "@tauri-apps/api/event";
-import { TUIInstruction } from "@nmide/js-utils/lib/Html";
-import { Module, TEvent, THtml } from "@nmide/js-utils";
+import { Module, TEvent, Html } from "@nmide/js-utils";
+import { Instruction } from "@nmide/js-utils";
 import {
   Core,
   Event,
@@ -15,8 +15,6 @@ import {
   NMIDE_MODULES_INSTALLED_EVENT
 } from "./nmideConstants.ts";
 import { run } from "./main.ts";
-import { eventThrower } from "./lib/eventThrower.ts";
-import { handlerRegistration } from "./lib/handlerRegistration.ts";
 import { tsInit, tsHandler } from "./tsRuntime.ts";
 
 run({
@@ -66,8 +64,8 @@ run({
     });
   },
   run: () => {
-    listen<TUIInstruction["ui"]>("nmide://render", ({ payload: obj }) => {
-      window.__nmideConfig__.render({ ui: obj })
+    listen<[Instruction<Html>, Instruction<string>, Instruction<Attr>]>("nmide://render", ({ payload: obj }) => {
+      window.__nmideConfig__.render(obj)
         .catch(err => window.__nmideConfig__.log.error("Error on render: ", err));
     }).catch((err) => window.__nmideConfig__.log.error("nmide://render", err));
 
@@ -78,7 +76,7 @@ run({
           const init = window.__nmideConfig__.runtimes.handlers[i];
           promises.push(init(event));
         }
-        return combine_modifications(await Promise.all(promises));
+        return await Promise.all(promises);
       })().then(_cm => {
           invoke<void>("event", { event: event })
             .catch((err) => console.error("Handler: ", err))
@@ -98,18 +96,12 @@ run({
         promises.push(init());
       }
       const mods = await Promise.all(promises);
-      return combine_modifications(mods);
+      return mods.flat()
     })
-      .then(cm => {
-        if (typeof cm !== "object") {
-          return { state: "noOp", ui: ["noOp", "noOp", "noOp"] };
-        }
-        return cm;
-      })
       .then(cm =>
-      invoke<TUIInstruction["ui"]>("init", { state: cm.state, ui: cm.ui })
+      invoke<[Instruction<Html>, Instruction<string>, Instruction<Attr>]>("init", { mods: cm })
         .then((op) => {
-          window.__nmideConfig__.render({ ui: op })
+          window.__nmideConfig__.render(op)
             .catch(err => window.__nmideConfig__.log.error("Error on render: ", err));
         })
         .catch((err) => console.error("Init: ", err))

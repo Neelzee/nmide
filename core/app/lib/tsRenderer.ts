@@ -17,26 +17,10 @@ const getElementById = (element: HTMLElement, id: string): HTMLElement | undefin
   }
 }
 
-export const tsRenderer = async (op: TUIInstruction) => {
-  const { ui } = op;
-  for (let i = 0; i < ui[0].length + ui[1].length + ui[2].length; i++) {
-    const html = ui[0].find(([j, _]) => j == i);
-    if (html !== undefined) {
-      evalHtml(html[1]);
-      continue;
-    }
-
-    const text = ui[1].find(([j, _]) => j == i);
-    if (text !== undefined) {
-      evalText(text[1]);
-      continue;
-    }
-
-    const attr = ui[2].find(([j, _]) => j == i);
-    if (attr !== undefined) {
-      evalAttr(attr[1]);
-    }
-  }
+export const tsRenderer = async (ui: [Instruction<Html>, Instruction<string>, Instruction<Attr>]) => {
+  evalHtml(ui[0]);
+  evalText(ui[1]);
+  evalAttr(ui[2]);
 }
 
 const evalState = async (op: Instruction<TValue>) => {
@@ -86,7 +70,7 @@ const evalHtml = (op: Instruction<Html>) => {
   window.__nmideConfig__.log.debug("No parse for instruction: ", op);
 }
 
-const evalAttr = (op: Instruction<TAttr>) => {
+const evalAttr = (op: Instruction<Attr>) => {
   if (op === "noOp" || op === null || op === undefined) {
     return;
   }
