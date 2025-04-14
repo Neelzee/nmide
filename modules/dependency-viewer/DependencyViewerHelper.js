@@ -1,15 +1,12 @@
 window.plugins.set(
   "DependencyViewerHelper",
   {
-    init: () => [],
-    update: (_, __) => [],
-    view: (_) => {
-      return {
-        kind: "Frag",
-        kids: [],
-        text: null,
-        attrs: [],
-      };
+    name: "DependencyViewerHelper",
+    init: async (_) => {
+      return { state: "noOp", ui: ["noOp", "noOp", "noOp"] };
+    },
+    handler: (_, __) => {
+      return { state: "noOp", ui: ["noOp", "noOp", "noOp"] };
     },
     render: (graph) => {
       if (graph === "") return;

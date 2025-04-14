@@ -9,10 +9,12 @@ import {
   tLookupOr
 } from "@nmide/js-utils"
 
-window.plugins.set(
+//@ts-ignore
+window.__nmideConfig__.modules.set(
   "DependencyViewer",
   {
-    init: (): TMap => {
+    name: "DependencyViewer",
+    init: (_: unknown): TMap => {
       return new MapBuilder()
         .add("DependencyViewerInit", false)
         .build();
