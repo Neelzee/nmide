@@ -9,7 +9,6 @@ import { handlerRegistration } from "./lib/handlerRegistration.ts";
 import { eventThrower } from "./lib/eventThrower.ts";
 
 export const tsHandler = async ({ event, module, args }: Event) => {
-
   const core = {
     state: await invoke<object>("state").catch(err => console.error(err)),
     ui: await invoke<object>("ui").catch(err => console.error(err)),

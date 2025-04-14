@@ -6,26 +6,26 @@ use crate::state::Value;
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct Event {
-    event_name: String,
-    module_name: String,
+    event: String,
+    module: String,
     args: Option<Value>,
 }
 
 impl Event {
     pub fn new<S: ToString>(event_name: S, module_name: S, args: Option<Value>) -> Self {
         Self {
-            event_name: event_name.to_string(),
-            module_name: module_name.to_string(),
+            event: event_name.to_string(),
+            module: module_name.to_string(),
             args,
         }
     }
 
     pub fn event_name(&self) -> &str {
-        &self.event_name
+        &self.event
     }
 
     pub fn module_name(&self) -> &str {
-        &self.module_name
+        &self.module
     }
 
     pub fn args(&self) -> Option<&Value> {

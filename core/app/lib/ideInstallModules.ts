@@ -52,12 +52,7 @@ export const ideInstallModules: T.Task<string[]> = pipe(
         }
       ),
       /*
-      A.append<T.Task<string | undefined>>(() => new Promise(resolve => {
-        const checkInterval = setInterval(() => {
-          clearInterval(checkInterval);
-          resolve(undefined);
-        }, 450);
-      })),
+      A.append<T.Task<string | undefined>>(() => ),
        */
       T.sequenceArray,
     ))

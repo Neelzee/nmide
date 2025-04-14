@@ -2,6 +2,7 @@ import { Html, TUIInstruction } from "@nmide/js-utils/lib/Html";
 import { TAttr, TEvent, THtml, TValue } from "@nmide/js-utils";
 import { invoke } from "@tauri-apps/api/core";
 import { Instruction } from "@nmide/js-utils/lib/Instruction.ts";
+import { emit } from "@tauri-apps/api/event";
 
 const getElementById = (element: HTMLElement, id: string): HTMLElement | undefined => {
   if (element.matches(`#${id}`)) {
@@ -199,7 +200,7 @@ const addAttr = (element: HTMLElement, attr: TAttr) => {
 
 const onClickParse = (event: TEvent) => {
   return () => {
-    invoke("event", { event }).catch((err) =>
+    emit("nmide://event", { event }).catch((err) =>
       console.error("Error from onClickParse invoke:", err),
     );
   };
