@@ -1,83 +1,10 @@
-[build-dependencies]
-env = "1.0.1"
-toml = "0.8.20"
-
-[build-dependencies.tauri-build]
-features = []
-optional = true
-version = "2.1.1"
-
-[dependencies]
-anyhow = "1.0.97"
-async-trait = "0.1.88"
-futures = "0.3.31"
-log = "0.4.27"
-once_cell = "1.21.3"
-serde_json = "1.0.140"
-
-[dependencies.actix-cors]
-optional = true
-version = "0.7.1"
-
-[dependencies.actix-files]
-optional = true
-version = "0.6.6"
-
-[dependencies.actix-web]
-optional = true
-version = "4.10.2"
-
-[dependencies.anyhow-tauri]
-optional = true
-version = "1.0.0"
-
-[dependencies.core-module-lib]
-path = "./core-module-lib"
-
-[dependencies.core-std-lib]
-path = "./core-std-lib"
-
-[dependencies.serde]
-features = ["derive"]
-version = "1.0.219"
-
-[dependencies.tauri]
-features = ["protocol-asset", "config-toml"]
-optional = true
-version = "2.4.1"
-
-[dependencies.tauri-plugin-dialog]
-optional = true
-version = "2.2.1"
-
-[dependencies.tauri-plugin-fs]
-optional = true
-version = "2.2.1"
-
-[dependencies.tauri-plugin-log]
-optional = true
-version = "2.3.1"
-
-[dependencies.tauri-plugin-shell]
-optional = true
-version = "2.2.1"
-
-[dependencies.tokio]
-features = ["full"]
-version = "1.44.2"
-
-[dependencies.trivial_module]
-path = "../../modules/trivial_module/"
-
-[features]
-custom-protocol = ["tauri/custom-protocol"]
-default = ["ide"]
-ide = ["dep:tauri", "dep:tauri-plugin-log", "dep:tauri-plugin-fs", "dep:tauri-plugin-shell", "dep:tauri-plugin-dialog", "dep:tauri-build"]
-server = ["dep:actix-web", "dep:actix-files", "dep:actix-cors"]
-
-[lib]
-crate-type = ["staticlib", "cdylib", "rlib"]
-name = "core_lib"
+[workspace]
+members = [ "core-macros",
+            "core-module-lib",
+            "core-std-lib",
+            "foreign-std-lib",
+            "core-cm-installer"
+          ]
 
 [package]
 authors = ["Nils Michael Fitjar <nfi005@uib.no>"]
@@ -90,5 +17,50 @@ readme = "../../README.md"
 repository = "https://github.com/Neelzee/nmide"
 version = "1.1.0"
 
-[workspace]
-members = ["core-macros", "core-module-lib", "core-std-lib", "foreign-std-lib"]
+[lib]
+crate-type = ["staticlib", "cdylib", "rlib"]
+name = "core_lib"
+
+[build-dependencies]
+env = "1.0.1"
+toml = "0.8.20"
+tauri-build = { features = [], optional = true, version = "2.1.1" }
+
+[dependencies]
+anyhow = "1.0.97"
+async-trait = "0.1.88"
+futures = "0.3.31"
+log = "0.4.27"
+once_cell = "1.21.3"
+serde_json = "1.0.140"
+actix-cors = { optional = true, version = "0.7.1" }
+actix-files = { optional = true, version = "0.6.6" }
+actix-web = { optional = true, version = "4.10.2" }
+anyhow-tauri = { optional = true, version = "1.0.0" }
+core-module-lib = { path = "./core-module-lib" }
+core-std-lib = { path = "./core-std-lib" }
+serde = { features = ["derive"], version = "1.0.219" }
+tauri = { features = ["protocol-asset", "config-toml"], optional = true, version = "2.4.1" }
+tauri-plugin-dialog = { optional = true, version = "2.2.1" }
+tauri-plugin-fs = { optional = true, version = "2.2.1"}
+tauri-plugin-log = { optional = true, version = "2.3.1" }
+tauri-plugin-shell = { optional = true, version = "2.2.1" }
+tokio = { features = ["full"], version = "1.44.2" }
+
+[features]
+custom-protocol = ["tauri/custom-protocol"]
+default = ["ide"]
+ide = [ "dep:tauri",
+        "dep:tauri-plugin-log",
+        "dep:tauri-plugin-fs",
+        "dep:tauri-plugin-shell",
+        "dep:tauri-plugin-dialog",
+        "dep:tauri-build"
+      ]
+server = [ "dep:actix-web", "dep:actix-files", "dep:actix-cors" ]
+
+# ============================================================================ #
+
+
+[dependencies.trivial_module]
+path = "../../modules/trivial_module/"

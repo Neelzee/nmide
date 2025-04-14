@@ -4,8 +4,8 @@ version = "1.0.0"
 identifier = "no.nilsmf.uib"
 
 [build]
-beforeDevCommand = "npm run dev"
-beforeBuildCommand = "npm run build"
+beforeDevCommand = "bun run dev"
+beforeBuildCommand = "bun run build"
 devUrl = "http://localhost:5173"
 frontendDist = "../dist"
 
