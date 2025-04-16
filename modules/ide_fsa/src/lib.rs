@@ -196,7 +196,7 @@ impl core_module_lib::Module for Module {
         )
         .await;
         core.add_handler(
-            Some("fsa_dir".to_string()),
+            Some("fsa-dir".to_string()),
             None,
             "trivial_module".to_string(),
         )
