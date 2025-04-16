@@ -5,7 +5,7 @@ identifier = "no.nilsmf.uib"
 
 [build]
 beforeDevCommand = "cargo run --manifest-path=./src-tauri/core-cm-installer/Cargo.toml -- --out=./src-tauri/target --conf=./modules/Modules.toml --cargo=./src-tauri/Cargo.toml && bun run dev"
-beforeBuildCommand = "bun run build"
+beforeBuildCommand = "cargo run --manifest-path=./src-tauri/core-cm-installer/Cargo.toml -- --out=./src-tauri/target --conf=./modules/Modules.toml --cargo=./src-tauri/Cargo.toml && bun run build"
 devUrl = "http://localhost:5173"
 frontendDist = "../dist"
 

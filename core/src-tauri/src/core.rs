@@ -1,6 +1,7 @@
 use core_module_lib::Module;
 use std::collections::HashMap;
 use tokio::sync::RwLock;
+use log::info;
 
 use crate::{
     ide::NMIDE,
@@ -56,6 +57,12 @@ impl ModuleEventRegister {
         module: Option<String>,
         handler: String,
     ) {
+        info!(
+            "[backend][handler-register] register module: {}, to event {:?}, to module name {:?}",
+            handler,
+            event,
+            module
+        );
         if let Some(evt) = event {
             let mut modules = self.event.write().await;
             let mut vec = modules.get(&evt).cloned().unwrap_or(Vec::new());
@@ -74,50 +81,24 @@ impl ModuleEventRegister {
 #[async_trait]
 impl Core for NmideCore {
     async fn state(&self) -> State {
+        info!("[backend] state");
         let st = NMIDE_STATE.read().await;
         st.clone()
     }
 
     async fn ui(&self) -> Html {
+        info!("[backend] ui");
         let ui = NMIDE_UI.read().await;
         ui.clone()
     }
 
-    async fn throw_event(&self, event: core_std_lib::event::Event) {
-        let mods = COMPILE_TIME_MODULES.read().await;
-        let module_futures = MODULE_EVENT_REGISTER
-            .read()
-            .await
-            .get_module_names(&event)
-            .await
-            .into_iter()
-            .flat_map(|m| mods.get(&m))
-            .map(|m| m.handler(&event, self));
-        let state = NmideCore.state().await;
-        let ui = NmideCore.ui().await;
-
-        let cm = futures::future::join_all(module_futures)
-            .await
-            .into_iter()
-            .reduce(|acc, cm| acc.combine(cm))
-            .unwrap_or_default();
-
-        let (new_state, ui_builder) = cm.build_state(state);
-
-        let mut st = NMIDE_STATE.write().await;
-        *st = new_state;
-        drop(st);
+    async fn throw_event(&self, event: Event) {
         let app = NMIDE
             .get()
             .expect("AppHandle should be initialized")
             .read()
             .await;
-        let inst = ui_builder.instruction();
-        let mut current_ui = NMIDE_UI.write().await;
-        // TODO: Optimize the instruction set before building
-        *current_ui = ui_builder.build(ui);
-        // TODO: Do a NoOp check before needlessly re-rendering
-        app.emit("nmide://render", inst)
+        app.emit("nmide://event", event)
             .expect("AppHandle emit should always succeed");
     }
 

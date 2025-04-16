@@ -62,5 +62,17 @@ server = [ "dep:actix-web", "dep:actix-files", "dep:actix-cors" ]
 # ============================================================================ #
 
 
+[dependencies.ide_framework]
+path = "../../modules/ide_framework/"
+
+
+[dependencies.ide_fsa]
+path = "../../modules/ide_fsa/"
+
+
+[dependencies.magnolia_dependency]
+path = "../../modules/magnolia_dependency/"
+
+
 [dependencies.trivial_module]
 path = "../../modules/trivial_module/"

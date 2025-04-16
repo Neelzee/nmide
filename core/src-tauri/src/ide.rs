@@ -17,7 +17,8 @@ use tauri::Emitter;
 use tokio::sync::RwLock;
 use core_std_lib::attrs::Attr;
 use core_std_lib::instruction::Instruction;
-use core_std_lib::state::{StateInstructionBuilder, Value};
+use core_std_lib::state::{Value};
+use log::info;
 
 pub(crate) mod module_reg {
     use core_module_lib::Module;
@@ -33,19 +34,16 @@ pub static NMIDE: tokio::sync::OnceCell<RwLock<AppHandle>> = tokio::sync::OnceCe
 /// see [init](crate::handlers::init)
 #[tauri::command]
 async fn init(mods: Vec<CoreModification>) -> (Instruction<Html>, Instruction<String>, Instruction<Attr>) {
+    info!("[backend] init");
     let cm = mods.into_iter().fold(CoreModification::default(), CoreModification::append);
     crate::handlers::init(cm).await
 }
 
 // TODO: Implement
 #[tauri::command]
-async fn handler() -> () {
-    ()
-}
-
-#[tauri::command]
-async fn event(event: Event) {
-    NmideCore.throw_event(event).await
+async fn handler(event: Event, mods: Vec<CoreModification>) -> () {
+    info!("[backend] handler {:?}", event);
+    crate::handlers::handler(event, mods).await
 }
 
 #[tauri::command]
@@ -97,7 +95,7 @@ pub async fn run() {
             setup(ide_setup(app).expect("IDE-setup should always succeed"));
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![init, event, state, ui, handler])
+        .invoke_handler(tauri::generate_handler![init, state, ui, handler])
         .run(tauri::generate_context!())
         .expect("IDE Application should not error");
 }
@@ -163,6 +161,10 @@ async fn setup_compile_time_modules() -> Result<()> {
     let mut modules: HashMap<String, Box<dyn Module>> = HashMap::new();
 
     module_reg::register_modules(&mut modules);
+
+    info!(
+        "[backend] modules: {:?}", modules.iter().map(|(_, m)| (*m).name()).collect::<Vec<&str>>()
+    );
 
     let mut m = COMPILE_TIME_MODULES.write().await;
     *m = modules;

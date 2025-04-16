@@ -2,3 +2,6 @@
 counter-plugin = { kind = "js" }
 trivial = { kind = "js" }
 trivial_module = { path = "../../modules/trivial_module/" }
+magnolia_dependency = { path = "../../modules/magnolia_dependency/" }
+ide_fsa = { path = "../../modules/ide_fsa/" }
+ide_framework = { path = "../../modules/ide_framework/" }
