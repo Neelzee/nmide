@@ -10,12 +10,6 @@
     ]
   },
   "include": [
-    "main.ts",
-    "init.ts",
-    "update.ts",
-    "view.ts"
+    "index.ts",
   ],
-  "exclude": [
-    "__tests__/*"
-  ]
 }

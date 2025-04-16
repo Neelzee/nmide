@@ -1,52 +1,45 @@
-import "@nmide/js-utils";
-import { isTObj, THtml, tList, tLookupOr, TMap, TMsg, tObj, tObjLookup, TValueList, TValueStr } from "@nmide/js-utils";
-import * as A from "fp-ts/Array";
-import { pipe } from "fp-ts/lib/function";
+import {
+  CoreModification,
+  Core,
+  Event,
+  emptyCm,
+  Value,
+  HtmlBuilder,
+  Html
+} from "@nmide/js-utils";
 
-let init = false;
-
-window.plugins.set(
-  "ide-errors",
+const module_name = "ide-errors";
+window.__nmideConfig__.modules.set(
+  module_name,
   {
-    init: (): TMap => {
-      if (init) return [["ide-errors", { list: [] }]];
-      init = true;
-      window.log.error = (msg, ...xs) => {
-        console.log("unhandled error inputs: ", xs);
-        window.emit("msg", { msg: ["general-error", tObj(["info", msg])] });
-      };
-
-      return [["ide-errors", { list: [] }]];
+    init: async (core: Core): CoreModification => {
+      await core.registerHandler(module_name, "fsa-error", null);
+      return emptyCm();
     },
-    update: (msg: TMsg, model: TMap): TMap => {
-      if (msg.msg[0].includes("error")) {
-        const errors = tLookupOr<TValueList>("ide-errors")(tList([]))(model);
-        errors.list.push(msg.msg[1]);
-        return [["ide-errors", errors]];
-      }
-      return [];
-    },
-    view: (model: TMap): THtml => {
-      const errors = tLookupOr<TValueList>("ide-errors")(tList([]))(model)
-        .list
-        .filter(isTObj);
-      return {
-        kind: "div",
-        attrs: [{ id: "location-status-bar" }],
-        kids: pipe(
-          errors,
-          A.filterMap(tObjLookup<TValueStr>("info")),
-          A.map(s => {
+    handler: async (event: Event, core: Core): CoreModification => {
+      const { args } = event;
+      const kp: [string, Value][] = Object.keys(args).map(k => [k, args[k]]);
+      const elm: Html = {
+        li: {
+          kids: kp.map(([f, v]) => {
             return {
-              kind: "p",
-              attrs: [],
-              kids: [],
-              text: s.str
+              span: {
+                kids: [
+                  { label: { kids: [], attrs: [], text: f } },
+                  { p: { kids: [], attrs: [], text: JSON.stringify(v) } },
+                ],
+                attrs: [],
+                text: null,
+              }
             };
-          })
-        ),
-        text: null,
-      }
+          }),
+          attrs: [],
+          text: "",
+        }
+      };
+      return new HtmlBuilder()
+        .add(elm, "errors", null)
+        .build();
     },
   }
 )
