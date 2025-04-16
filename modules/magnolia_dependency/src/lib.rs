@@ -28,21 +28,50 @@ const MODULE_NAME: &'static str = "magnolia_dependency";
 #[async_trait]
 impl core_module_lib::Module for Module {
     fn name(&self) -> &str {
-        "trivial module"
+        MODULE_NAME
     }
 
     async fn init(&self, core: &dyn Core) -> CoreModification {
         core.add_handler(Some("get_magnolia_graph".to_string()), None, MODULE_NAME.to_string())
             .await;
         CoreModification::default()
+            .set_ui(
+                UIInstructionBuilder::default()
+                    .add_node(
+                        Html::Div {
+                            kids: vec![
+                                Html::Button()
+                                    .set_text("Graph")
+                                    .add_attr(Attr::OnClick(Event::new(
+                                        "get_magnolia_graph".to_string(),
+                                        MODULE_NAME.to_string(),
+                                        Some(Value::Str("/home/nmf/magnolia-basic-library/src".to_string())),
+                                    )))
+                            ],
+                            attrs: vec![Attr::Id("graph-btn-div".to_string())],
+                            text: None,
+                        },
+                        None,
+                        None,
+                    )
+            )
     }
 
-    async fn handler(&self, event: &Event, _: &dyn Core) -> CoreModification {
+    async fn handler(&self, event: &Event, core: &dyn Core) -> CoreModification {
         match (event.event_name(), event.args()) {
             ("get_magnolia_graph", Some(Value::Str(path))) => {
-                let graph = get_graph(path);
-                let state = StateInstructionBuilder::default().add("magnolia_graph", graph);
-                CoreModification::default().set_state(state)
+                let field = format!("graph:{path}");
+                match core.state().await.get(&field) {
+                    Some(g) => {
+                        core.throw_event(Event::new("graph", MODULE_NAME, Some(g.clone()))).await;
+                        CoreModification::default()
+                    },
+                    None => {
+                        let graph = get_graph(path);
+                        core.throw_event(Event::new("graph", MODULE_NAME, Some(graph.clone()))).await;
+                        CoreModification::default().set_state(StateInstructionBuilder::default().add(field, graph))
+                    },
+                }
             }
             _ => CoreModification::default(),
         }
@@ -51,9 +80,9 @@ impl core_module_lib::Module for Module {
 
 #[derive(Debug)]
 pub(crate) struct MagnoliaModule {
-    path: String,
-    name: String,
-    dependencies: Vec<String>,
+    pub path: String,
+    pub name: String,
+    pub dependencies: Vec<String>,
 }
 
 impl MagnoliaModule {
@@ -71,36 +100,34 @@ impl MagnoliaModule {
             name = caps.next().unwrap().unwrap().as_str().to_string();
             dependencies = caps.next()
                 .and_then(|p| p)
-                .and_then(|p| {
-                    Some(
-                        p.as_str()
-                            .split(",")
-                            .map(|s| s.trim())
-                            .map(|s| s.to_string())
-                            .filter(|s| !s.contains("//"))
-                            .collect()
-                    )
-                }).unwrap_or(Vec::new());
+                .map(|m| m.as_str().to_string())
+                .map(|p| p.trim()
+                    .split(",")
+                    .map(|s| s.trim())
+                    .map(|s| s.to_string())
+                    .filter(|s| !s.contains("//"))
+                    .collect()
+                ).unwrap_or_default();
         }
 
         Self {
             path: path.to_str().unwrap_or_default().to_string(),
             name,
-            dependencies: Vec::new(),
+            dependencies,
         }
     }
 
     pub fn to_obj(self) -> Value {
         let mut mp = HashMap::new();
         mp.insert("name".to_string(), Value::Str(self.name));
-        mp.insert("dependencies".to_string(), Value::Str(self.dependencies.into_iter().map(Value::Str).collect()));
+        mp.insert("dependencies".to_string(), Value::List(self.dependencies.into_iter().map(Value::Str).collect::<Vec<Value>>()));
 
         Value::Obj(mp)
     }
 }
 
 pub(crate) fn get_graph(path: &str) -> Value {
-    get_modules(Path::new(path)).into_iter().map(MagnoliaModule::to_obj).collect()
+    Value::List(get_modules(Path::new(path)).into_iter().map(MagnoliaModule::to_obj).collect::<Vec<Value>>())
 }
 
 pub(crate) fn get_modules(path: &Path) -> Vec<MagnoliaModule> {
