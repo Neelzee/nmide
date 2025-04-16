@@ -1,6 +1,6 @@
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/lib/function";
-import { Box, Ins, isModIns, ModIns, RemIns } from "./instruction";
+import { Box, Ins, isModIns, ModIns, RemIns } from "./InstructionHelper";
 
 // TODO: Add docs
 export const evalTree = <T extends object, G extends keyof T = keyof T>(b: Box<T>, ins: Ins<T, G>[]) => pipe(

@@ -1,18 +1,10 @@
 // TODO: Add docs
 
-import { TValue } from "./TMap";
 import { Eq, fromEquals } from "fp-ts/Eq";
 import { Eq as SEq } from "fp-ts/string";
 import { Html } from "./Html";
-
-export type Event = {
-  // Event name
-  event: string,
-  // Module id
-  module: string,
-  // Optional Arguments
-  args?: TValue,
-};
+import { Value } from "./Value";
+import { Event } from "./Event";
 
 export const EventEq: Eq<Event> = fromEquals(
   (
@@ -31,4 +23,5 @@ export type Core = {
    * List of events
    */
   readonly eventThrower: (evt: Event) => Promise<void>;
+  readonly registerHandler: (name: string, event: string, module: string) => Promise<void>;
 };
