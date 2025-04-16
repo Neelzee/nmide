@@ -1,7 +1,4 @@
-import { Html, TUIInstruction } from "@nmide/js-utils/lib/Html";
-import { TAttr, TEvent, THtml, TValue } from "@nmide/js-utils";
-import { invoke } from "@tauri-apps/api/core";
-import { Instruction } from "@nmide/js-utils/lib/Instruction.ts";
+import { Attr, Event, Html, Value, Instruction } from "@nmide/js-utils";
 import { emit } from "@tauri-apps/api/event";
 
 const getElementById = (element: HTMLElement, id: string): HTMLElement | undefined => {
@@ -23,7 +20,7 @@ export const tsRenderer = async (ui: [Instruction<Html>, Instruction<string>, In
   evalAttr(ui[2]);
 }
 
-const evalState = async (op: Instruction<TValue>) => {
+const evalState = async (op: Instruction<Value>) => {
   if (op === "noOp" || op === null || op === undefined) {
     return;
   }
@@ -59,6 +56,7 @@ const evalHtml = (op: Instruction<Html>) => {
       return;
     }
     window.__nmideConfig__.root.appendChild(html);
+    return;
   }
   if ("then" in op) {
     const fst = op.then[0];
@@ -167,7 +165,7 @@ const evalText = (op: Instruction<string>) => {
   window.__nmideConfig__.log.debug("No parse for instruction: ", op);
 }
 
-const addAttr = (element: HTMLElement, attr: TAttr) => {
+const addAttr = (element: HTMLElement, attr: Attr) => {
   if ("onClick" in attr) {
     element.addEventListener("click", () => onClickParse(attr.onClick));
     return;
@@ -182,16 +180,23 @@ const addAttr = (element: HTMLElement, attr: TAttr) => {
   element.setAttribute(attrs[0], attrs[1]);
 };
 
-const onClickParse = (event: TEvent) => {
+const onClickParse = (event: Event) => {
   return () => {
-    emit("nmide://event", { event }).catch((err) =>
+    emit("nmide://event", event).catch((err) =>
       console.error("Error from onClickParse invoke:", err),
     );
   };
 };
 
+type THtml = {
+  kind: keyof Html,
+  kids: THtml[],
+  attrs: Attr[],
+  text: string | null,
+}
+
 // TODO: Add docs
-const createElement = ({ attrs, kids, kind, text }: THtml) => {
+const createElement = ({ kind, attrs, kids, text }: THtml) => {
   const className = attrs.find((el) => "class" in el)?.class;
   const id = attrs.find((el) => "id" in el)?.id;
   const onClick = attrs.find((el) => "onClick" in el)?.onClick;
@@ -231,19 +236,11 @@ const createElement = ({ attrs, kids, kind, text }: THtml) => {
 
 // TODO: Add docs
 export const parseHtml = (html: THtml) => {
-  // HACK: A lot of plugins use "frag" to mean an empty HTML node, this was/is
-  // rendered as a `div`. The preferred behaviour is to not render it at all,
-  // and _unpack_ the kids of the node. This is not done.
-  // The reason a lot of plugins do this, is because they might not have any
-  // Html they want to render.
-  html.kids = html.kids.flatMap((kid) => (kid.kind === "frag" ? kid.kids : [kid]));
   return createElement(html);
 };
 
 export const getHtml = (html: Html): THtml => {
-  const kind = Object.keys(html).find(
-    (k) => k !== "kids" && k !== "attrs" && k !== "text",
-  );
+  const kind = Object.keys(html)[0];
   return {
     kind,
     //@ts-expect-error This is valid as long as `Html` doesn't change

@@ -2,17 +2,19 @@ import {
   Core,
   Event,
   CoreModification,
-} from "lib_gleam";
+} from "@nmide/js-utils";
 import { invoke } from "@tauri-apps/api/core";
 import { handlerRegistration } from "./lib/handlerRegistration.ts";
 import { eventThrower } from "./lib/eventThrower.ts";
 
 export const tsHandler = async ({ event, module, args }: Event) => {
-  const core = {
-    state: await invoke<object>("state").catch(err => console.error(err)),
-    ui: await invoke<object>("ui").catch(err => console.error(err)),
-    registrate_handler: handlerRegistration,
-    throw_event: eventThrower,
+  const core: Core = {
+    // @ts-expect-error This will succeed
+    state: invoke<object>("state").catch(err => console.error(err)),
+    // @ts-expect-error This will succeed
+    ui: invoke<object>("ui").catch(err => console.error(err)),
+    registerHandler: handlerRegistration,
+    throwEvent: eventThrower,
   };
 
   const event_modules = window.__nmideConfig__.handlerRegister.event.get(event);
@@ -31,11 +33,13 @@ export const tsHandler = async ({ event, module, args }: Event) => {
 
 export const tsInit = async () => {
 
-  const core = {
-    state: await invoke<object>("state").catch(err => console.error(err)),
-    ui: await invoke<object>("ui").catch(err => console.error(err)),
-    registrate_handler: handlerRegistration,
-    throw_event: eventThrower,
+  const core: Core = {
+    // @ts-expect-error This will succeed
+    state: invoke<object>("state").catch(err => console.error(err)),
+    // @ts-expect-error This will succeed
+    ui: invoke<object>("ui").catch(err => console.error(err)),
+    registerHandler: handlerRegistration,
+    throwEvent: eventThrower,
   };
 
   // TODO: Figure out a way to sort modules by runtime

@@ -1,13 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
-import { emit, listen } from "@tauri-apps/api/event";
-import { Module, TEvent, Html } from "@nmide/js-utils";
+import { listen } from "@tauri-apps/api/event";
+import { Module, Event, Html } from "@nmide/js-utils";
 import { Instruction } from "@nmide/js-utils";
-import {
-  Core,
-  Event,
-  state_from_obj,
-  combine_modifications
-} from "lib_gleam";
 import { ideInstallModules } from "./lib/ideInstallModules.ts";
 import { AppConfig, defaultConfig } from "./App.ts"
 import {
@@ -69,7 +63,7 @@ run({
         .catch(err => window.__nmideConfig__.log.error("Error on render: ", err));
     }).catch((err) => window.__nmideConfig__.log.error("nmide://render", err));
 
-    listen<{ event: TEvent }>("nmide://event", ({ payload: { event } }) => {
+    listen<Event>("nmide://event", ({ payload: event }) => {
       (async () => {
         const promises = [];
         for (let i = 0; i < window.__nmideConfig__.runtimes.handlers.length; i++) {
@@ -77,8 +71,10 @@ run({
           promises.push(init(event));
         }
         return await Promise.all(promises);
-      })().then(_cm => {
-          invoke<void>("event", { event: event })
+      })().then(cm => {
+        const mods = cm.flat();
+        console.log("event: ", event);
+          invoke<void>("handler", { event: event, mods })
             .catch((err) => console.error("Handler: ", err))
         }
       );
@@ -116,14 +112,3 @@ run({
       },
   }
 );
-
-
-const deObjectify = (o: object): [string, unknown][] => {
-  return Object.entries(o).map(([k, v]) => {
-    if (typeof v === "object") {
-      return [k, deObjectify(v)];
-    } else {
-      return [k, v];
-    }
-  });
-}
