@@ -1,4 +1,4 @@
-import { Attr, Event, Html, Value, Instruction } from "@nmide/js-utils";
+import { Attr, Event, Html, Instruction } from "@nmide/js-utils";
 import { emit } from "@tauri-apps/api/event";
 
 const getElementById = (element: HTMLElement, id: string): HTMLElement | undefined => {
@@ -18,15 +18,6 @@ export const tsRenderer = async (ui: [Instruction<Html>, Instruction<string>, In
   evalHtml(ui[0]);
   evalText(ui[1]);
   evalAttr(ui[2]);
-}
-
-const evalState = async (op: Instruction<Value>) => {
-  if (op === "noOp" || op === null || op === undefined) {
-    return;
-  }
-  if ("add" in op) {
-
-  }
 }
 
 const evalHtml = (op: Instruction<Html>) => {

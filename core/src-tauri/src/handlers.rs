@@ -16,7 +16,7 @@ use crate::{
     statics::{COMPILE_TIME_MODULES, NMIDE_STATE, NMIDE_UI},
 };
 use crate::ide::NMIDE;
-use crate::statics::MODULE_EVENT_REGISTER;
+use crate::statics::{MODULE_EVENT_REGISTER};
 
 pub async fn init(cm: CoreModification) -> (Instruction<Html>, Instruction<String>, Instruction<Attr>) {
     let modules = COMPILE_TIME_MODULES.read().await;
@@ -81,7 +81,12 @@ pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
     let mut current_ui = NMIDE_UI.write().await;
     // TODO: Optimize the instruction set before building
     *current_ui = ui_builder.build(ui);
-    // TODO: Do a NoOp check before needlessly re-rendering
-    app.emit("nmide://render", inst)
-        .expect("AppHandle emit should always succeed");
+
+    if event.event_name() != "nmide://exit" && event.module_name() != "nmide" {
+        // TODO: Do a NoOp check before needlessly re-rendering
+        app.emit("nmide://render", inst)
+            .expect("AppHandle emit should always succeed");
+    }
+    info!("[backend][handler] Exiting");
+    app.exit(0);
 }

@@ -3,22 +3,23 @@ use crate::setup::setup;
 use crate::statics::{COMPILE_TIME_MODULES, NMIDE_STATE, NMIDE_UI};
 use anyhow::{Context as _, Result};
 use core_module_lib::Module;
+use core_std_lib::attrs::Attr;
 use core_std_lib::core::{Core, CoreModification};
 use core_std_lib::event::Event;
 use core_std_lib::html::Html;
+use core_std_lib::instruction::Instruction;
+use core_std_lib::state::Value;
+use futures::StreamExt;
+use log::info;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
-use futures::StreamExt;
-use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
-use tauri::Manager as _;
 use tauri::Emitter;
+use tauri::RunEvent;
+use tauri::Manager as _;
 use tokio::sync::RwLock;
-use core_std_lib::attrs::Attr;
-use core_std_lib::instruction::Instruction;
-use core_std_lib::state::{Value};
-use log::info;
 
 pub(crate) mod module_reg {
     use core_module_lib::Module;
@@ -30,12 +31,15 @@ pub(crate) mod module_reg {
 
 pub static NMIDE: tokio::sync::OnceCell<RwLock<AppHandle>> = tokio::sync::OnceCell::const_new();
 
-
 /// see [init](crate::handlers::init)
 #[tauri::command]
-async fn init(mods: Vec<CoreModification>) -> (Instruction<Html>, Instruction<String>, Instruction<Attr>) {
+async fn init(
+    mods: Vec<CoreModification>,
+) -> (Instruction<Html>, Instruction<String>, Instruction<Attr>) {
     info!("[backend] init");
-    let cm = mods.into_iter().fold(CoreModification::default(), CoreModification::append);
+    let cm = mods
+        .into_iter()
+        .fold(CoreModification::default(), CoreModification::append);
     crate::handlers::init(cm).await
 }
 
@@ -73,6 +77,10 @@ async fn view(tmodel: TMap) -> Vec<(String, THtml)> {
 }
 */
 
+pub struct NmideAppData {
+    pub is_exiting: bool,
+}
+
 /// Runs the Tauri application
 ///
 /// # Panics
@@ -84,7 +92,7 @@ pub async fn run() {
     setup_compile_time_modules()
         .await
         .expect("Compile time module setup should always succeed");
-    tauri::Builder::default()
+    let mut app = tauri::Builder::default()
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
@@ -96,8 +104,35 @@ pub async fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![init, state, ui, handler])
-        .run(tauri::generate_context!())
-        .expect("IDE Application should not error");
+        .build(tauri::generate_context!())
+        .expect("IDE Application should build successfully");
+
+    app.run(move |app_handle, event| {
+        match &event {
+            RunEvent::ExitRequested { api, code, .. } => {
+                app_handle
+                    .get_webview_window("main")
+                    .expect("Webview: `main` should exist")
+                    .destroy()
+                    .expect("Webview: `main` should not exist")
+            }
+            RunEvent::WindowEvent {
+                event: tauri::WindowEvent::CloseRequested { api, .. },
+                ..
+            } => {
+                app_handle.emit(
+                    "nmide://event",
+                    Event::new(
+                        "nmide://exit",
+                        "nmide",
+                        None,
+                    )
+                ).expect("Emit should succeed");
+                api.prevent_close();
+            }
+            _ => (),
+        }
+    })
 }
 // TODO: Mention that this setup is only for run-time modules
 //
@@ -163,7 +198,11 @@ async fn setup_compile_time_modules() -> Result<()> {
     module_reg::register_modules(&mut modules);
 
     info!(
-        "[backend] modules: {:?}", modules.iter().map(|(_, m)| (*m).name()).collect::<Vec<&str>>()
+        "[backend] modules: {:?}",
+        modules
+            .iter()
+            .map(|(_, m)| (*m).name())
+            .collect::<Vec<&str>>()
     );
 
     let mut m = COMPILE_TIME_MODULES.write().await;

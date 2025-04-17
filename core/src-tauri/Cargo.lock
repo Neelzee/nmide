@@ -861,6 +861,7 @@ dependencies = [
  "futures",
  "ide_framework",
  "ide_fsa",
+ "ide_pm",
  "log",
  "magnolia_dependency",
  "once_cell",
@@ -2256,6 +2257,16 @@ dependencies = [
  "once_cell",
  "regex",
  "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "ide_pm"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "core-module-lib",
+ "core-std-lib",
  "serde_json",
 ]
 

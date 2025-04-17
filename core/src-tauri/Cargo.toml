@@ -70,6 +70,10 @@ path = "../../modules/ide_framework/"
 path = "../../modules/ide_fsa/"
 
 
+[dependencies.ide_pm]
+path = "../../modules/ide_pm/"
+
+
 [dependencies.magnolia_dependency]
 path = "../../modules/magnolia_dependency/"
 
