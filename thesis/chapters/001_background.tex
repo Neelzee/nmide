@@ -41,11 +41,12 @@ place is an essential tool when hunting down bugs. A common way to structure
 logs, would be composing logs, depending on when they occurred. As a concrete
 example, let's say we are making a text editor, and are in the need of a logging
 manager, which, among other things, should compose different log statements.
-Assuming we have some type \bold{Log(A)}, where there the type \bold{A}, is the
+Assuming we have some type \textbf{Log(A)}, where there the type \textbf{A}, is the
 result of the computation a given function, we want to be able to compose
 different, related, computations. But, importantly, the order of composition
-of the \Bold{Log(A)}-type matters. Representing the composition of the \bold
-Log(A)}-type as $\odot$, doing, and letting $a, b, c$ be of type \bold{Log A}:
+of the \textbf{Log(A)}-type matters. Representing the composition of the
+\textbf{Log(A)}-type as $\odot$, doing, and letting $a, b, c$ be of type
+\textbf{Log A}:
 
 \begin{equation}
   a \odot \left ( b \odot c \right ) = \left ( a \odot b \right ) \odot c
@@ -225,7 +226,7 @@ possible in either Java nor Rust.
 
 \todo{Rewrite this to better fit the previous section}
 
-\subsection{Java: Magma \to Group}
+\subsection{Java: Magma to Group}
 
 This structure not could be implemented in something like Java, an
 Object-Oriented Language, as shown in listings \ref{lst:jmagma},
@@ -262,7 +263,7 @@ the \gls{api}.
     , label=lst:jgroup]{./code/group.java}
 \end{center}
 
-\subsection{Rust: Magma \to Group}
+\subsection{Rust: Magma to Group}
 
 \todo{Expand}
 
@@ -294,7 +295,7 @@ the \gls{api}.
     , label=lst:rgroup]{./code/group.rs}
 \end{center}
 
-\subsection{Magnolia: Magma \to Group}
+\subsection{Magnolia: Magma to Group}
 
 In Magnolia, however, this can be enforced on the \textit{interface}-level. The
 example code shown in listing \ref{lst:magma}, showcases a concept

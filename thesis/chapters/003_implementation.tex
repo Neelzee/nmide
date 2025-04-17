@@ -18,8 +18,7 @@ Python. But it is easier to do \gls{abi} stuff in a low-level language like
 Rust. A \gls{abi} is an interface between two programs. This could be a
 dynamic library used by a C program, where both binaries agree on how the data
 is stored. The reason they need to agree on how data is ordered in the memory,
-is that accessing into unsuspecting memory could lead to \textit{undefined}
-behavior.
+is that accessing into unowned memory could lead to \textit{undefined} behavior.
 
 \todo{Connect these two sections better}
 
@@ -164,7 +163,7 @@ make everything modular. The only thing the \gls{ide} can do, is to manage
 modules. All features, from the file explorer to the text editor, everything is
 a module that can be enabled or disabled.
 
-\subsection{Elm-Architecture}
+\subsection{The Elm Architecture}
 
 \todo{Rewrite this, apparently Elm inspired TEA (The Elm Architecture)}
 
@@ -683,6 +682,7 @@ UI-hierarchy, by adding a button which throws an
 counter field with the value from the \lstinline[language=Haskell]{Event}.
 
 \subsection{Backend Agnostic Frontend}
+\todo{This is not true anymore}
 
 As mentioned in the previous section, the tech stack splits the application into
 two, loosely coupled parts. The \textit{frontend} and \textit{backend}. This
@@ -705,6 +705,31 @@ could be created, only offering simple functionality, like access to the file
 system. This plan would still keep the support for external JavaScript
 libraries, not made with the application in mind, to be used, which also would
 greatly reduce the development time.
+
+\section{Modules}
+
+\todo{Introduction}
+
+Here are some examples of modules implemented using the proposed architecture.
+
+\subsection{Magnolia Dependency Graph Visualizer}
+
+\todo{Implement and showcase this module}
+
+\subsection{\gls{ide} Module Family}
+
+\todo{Showcase the modules created to have a rudimentary IDE}
+\todo{Mention QOF modules for future module developers}
+\todo{Mention Project Management}
+
+\subsection{Caching}
+\todo{Properly implement this}
+In Magnolia, caching of \gls{lsp} queries is important. And caching of the
+compiled code.
+
+\subsection{Magnolia Language Server}
+
+\todo{Implement a rudimentary Magnolia LS}
 
 \section{Testing} \label{sec:testing}
 
@@ -737,7 +762,9 @@ nothing breaks.
 
 \subsubsection{Contract Testing}
 
-\todo{Mention https://docs.pact.io/}
+\todo{
+  Mention %\cite{GROSS200322}
+}
 
 As a module developer, on is designing some kind of \gls{api}, but the developer
 has no say in how a consumer of the \gls{api} consumes it. In a microservice
@@ -765,6 +792,13 @@ increases tenfold, this is more difficult. A notice can still be sent, but it is
 not feasible to ensure all consumers commit time to change their ways. Contract
 testing ensures that, if a change like this occurs, the maintainer of the
 \gls{api} is notified by which consumer this change breaks.
+
+This process could be partially automated, as all modules have to register the
+event they want to handle. Furthermore, all events thrown are also explicitly
+done through the core instance, meaning a \textit{test-core} could be created,
+which registers which event is thrown from what module, and all dependencies
+between modules can be noted.
+\todo{Implement this}
 
 \subsection{End-To-End-Testing}
 

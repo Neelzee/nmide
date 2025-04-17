@@ -12,7 +12,7 @@ it increments a global counter. Everytime a module is loaded, (pushed to a map),
 the same global counter is decremented. Finally, every 50 ms the core checks if
 the counter is 0. The only way for it to be less than 0, is if a single script,
 \textit{installs}/\textit{loads} more than one module, which can be noted in the
-wiki as \bold{DONT}. So that is a module developer skill issue.
+wiki as \textbf{DONT}. So that is a module developer skill issue.
 
 Thought I was close to finished with the rework, but I forgot to make my
 instruction set, (the tree-DSL), JSON-safe, (something that can be represented
