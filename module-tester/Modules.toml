@@ -1,0 +1,7 @@
+[modules]
+counter-plugin = { path = "../modules/counter-plugin/", kind = "ts" }
+trivial_module = { path = "../modules/trivial_module/" }
+magnolia_dependency = { path = "../modules/magnolia_dependency/" }
+ide_fsa = { path = "../modules/ide_fsa/" }
+ide_framework = { path = "../modules/ide_framework/" }
+ide_pm = { path = "../modules/ide_pm/" }
