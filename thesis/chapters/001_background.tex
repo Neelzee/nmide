@@ -3,7 +3,7 @@
 \section{Magnolia}
 
 Magnolia is an experimental research language being developed \gls{bldl} at the
-University of Bergen. Magnolia is designed to support a high level of 
+University of Bergen. Magnolia is designed to support a high level of
 abstraction and ease of reasoning. This is achieved by \textit{concepts},
 \textit{axioms}, \textit{satisfaction}, and \textit{implementations}.
 
@@ -12,6 +12,32 @@ abstraction and ease of reasoning. This is achieved by \textit{concepts},
 Something, Something, \dots, concepts declare types, functions and properties
 which those functions need to uphold. A simple example of this would be a
 concept for addition with natural numbers.
+
+\begin{center}
+  \lstinputlisting
+    [ language=Magnolia
+    , caption={Natural numbers (Magnolia)}
+    , label=lst:nat
+    ]{./code/magnolia-nat.mg}
+\end{center}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Magnolia
+    , caption={Natural numbers implementation (Magnolia)}
+    , label=lst:nat
+    ]{./code/magnolia-add.mg}
+\end{center}
+
+What ties the concept and implementation together, is the satisfaction.
+
+\begin{center}
+  \lstinputlisting
+    [ language=Magnolia
+    , caption={Satisfaction of the natural numbers (Magnolia)}
+    , label=lst:nat
+    ]{./code/magnolia-add.mg}
+\end{center}
 
 \subsection{Magnolia Implementation}
 
@@ -97,8 +123,6 @@ respectively.
     , label=lst:jlogging]{./code/logging.java}
 \end{center}
 
-These can also not be implemented using Rusts trait system.
-
 \begin{center}
   \lstinputlisting
     [ language=Rust
@@ -141,15 +165,18 @@ In Magnolia, however, this can be enforced on the \textit{interface}-level.
     , label=lst:meditor]{./code/editor.mg}
 \end{center}
 
-\subsection{Abstract Algebra}
+The interesting thing about these two structures, is that they are similar,
+even though they are used for two different things. Both the logging example,
+and the text editor example, are some binary operation over some set. In the
+first example, our set was all different log statements of the type
+\textbf{Log A}, and composing these logs, gave us another \textbf{Log A} type.
+While in the second example, we were working on the set of actions, which we
+could compose, which also gave us another action, but we also had an action
+representing no-operation, and an \textit{inverse} operation, undoing an action.
+This is related to mathematics, specifically abstract algebra, the study of
+algebraic structures.
 
-Both the logging example, and the text editor example, are some binary
-operation over some set. In the first example, our set was all different log
-statements of the type \lstinline[language=Haskell]{Log A}, and composing these
-logs, gave us another \lstinline[language=Haskell]{Log A} type. While in the
-second example, we were working on the set of actions, which we could compose,
-which also gave us another action, but we also had an action representing
-no-operation, and an \textit{inverse} operation, undoing an action.
+\subsection{Abstract Algebra}
 
 In the first example, we are working with a \textit{semigroup}, and in the
 second example, we are working with a \textit{group}. These are known as
@@ -164,6 +191,11 @@ simply specifies that we only work with one set.
   $a \oplus b = c$.
 \end{definition}
 
+\paragraph{Closure} Addition with the integers, ($\mathbb{Z}$), is a kind of
+  closure, as per the definition \ref{def:closed}, since no matter what integer
+  you put into the equation, you will still get a positive integer. And since
+  this is the only requirement a magma has, this example is also a magma.
+
 \begin{definition}[Magma] \label{def:magma}
   A magma is a set $M$, with a binary operation $\oplus$, which is
   \textit{closed} by definition \ref{def:closed}
@@ -173,7 +205,7 @@ We can \textit{extend} the definition of magma, by adding associativity on the
 binary operation. The definition \ref{def:assoc}, as shown in the examples,
 simply specifies that the order we evaluate our composition matters.
 
-\begin{definition}[Associtativity Law] \label{def:assoc}
+\begin{definition}[Associativity Law] \label{def:assoc}
   For any binary operation $\oplus$, on a set $M$, $a, b, c \in M$.
   $a \oplus \left ( b \oplus c \right ) = \left ( a \oplus b \right ) \oplus c$,
   must hold.
@@ -187,7 +219,11 @@ This associativity gives us a semigroup, as shown in the definition
   uphold the definitions \ref{def:closed} and \ref{def:assoc}.
 \end{definition}
 
-By simply adding the identity law (\ref{def:ident}), we get a
+\paragraph{Semigroup} Multiplication with the positive integers, ($\mathbb{N}$), is
+  associative, since no matter where we put parentheses; what order we
+  evaluate this equation: $2 * 3 * 4$, we will get the same answer.
+
+By simply requiring the identity law (\ref{def:ident}), we get a
 monoid (\ref{def:monoid}), and adding the inverse law
 (\ref{def:inv}), we get a group.
 
@@ -201,6 +237,11 @@ monoid (\ref{def:monoid}), and adding the inverse law
   A monoid is a set $M$, with a binary operation $\oplus$, and $\oplus$ must
   uphold the definitions \ref{def:closed}, \ref{def:assoc}, and \ref{def:ident}.
 \end{definition}
+
+\paragraph{Monoid} To make a monoid, we can choose the binary operation to be
+  $\times$, and our set to be the natural numbers, ($\mathbb{N}$). We know addition
+  is closed, and associative, so choosing $U = 1$, we get a monoid. Any number
+  from our set $\mathbb{N}$ multiplied with $1$, gives us the number we choose.
 
 \begin{definition}[Inverse Law] \label{def:inv}
   For any binary operation $\oplus$, on a set $M$,
@@ -221,8 +262,7 @@ to model undo-redo, in our text editor example. To avoid common mistakes when
 implementing these structures, it would behoove a developer if they could encode
 these properties in something like an interface or a trait, however, this is not
 possible in either Java nor Rust.
-
-\todo{Add examples for each}
+\todo{Rewrite this}
 
 \todo{Rewrite this to better fit the previous section}
 
@@ -384,17 +424,6 @@ Here we have used the \textit{renaming} of concepts in Magnolia, where we can
 rename types and functions to be more specific, for the specialized use case the
 concept is reused in.
 
-\subsection{Software Lifetimes}
-
-\todo{Fact check, cite and expand}
-
-Software in general, lasts around 30 years (source). This is quite a long time,
-but, this statistic is about more \textit{rigid} applications, which have an
-unchanging scope. In more \textit{chaotic} fields, this number is reduced, as
-paradigm shifts within certain fields, which results in the need for drastic
-changes in the existing applications, where the needed work to change the code,
-can be more than to create a new application.
-
 \subsection{Software Longevity}
 
 Most examples of \textit{popular} software, are open source, like \gls{vim}.
@@ -406,6 +435,8 @@ users wants. The users of \gls{vim} can be split into two categories,
 \textit{standard users}, and \textit{module developers}. \gls{vim} has an
 extensive module ecosystem, which can extend \gls{vim}s functionality from a
 text editor, to a fully fledged \gls{ide}.
+\todo{Currently, a weak argument for modularity}
+\todo{Mention Eclipse and IntelliJ here as well?}
 
 \section{Integrated Development Environment} \label{sec:ide}
 
@@ -530,12 +561,6 @@ exstensive module architecture. \footnotemark
   \unskip, \url{https://marketplace.visualstudio.com/search?target=VSCode\&category=All\%20categories\&sortBy=Installs} % vscode
 }
 
-\footnotetext{
-  Nvim and Vim's marketplace is GitHub, so the results are found by searching
-  GitHub for Nvim plugins and Vim plugins respectively, furthermore, all Vim
-  plugins can be used by Nvim.
-}
-
 \begin{table}[]
   \centering
   \caption{Module Ecosystem per \gls{ide}}
@@ -551,6 +576,11 @@ exstensive module architecture. \footnotemark
   \end{tabular}
 \end{table}
 
+\footnotetext{
+  Nvim and Vim's marketplace is GitHub, so the results are found by searching
+  GitHub for Nvim plugins and Vim plugins respectively, furthermore, all Vim
+  plugins can be used by Nvim.
+}
 
 \subsubsection{Module Marketplace}
 
@@ -639,7 +669,7 @@ application.
   \end{tabular}
 \end{table}
 
-\section{Existing Magnolia \gls{ide}}
+\section{Existing Magnolia IDE}
 
 The current \gls{ide} for Magnolia \cite{baggeIde}, is a many-years-old version
 of Eclipse, using modules and functionality from the core Eclipse application,

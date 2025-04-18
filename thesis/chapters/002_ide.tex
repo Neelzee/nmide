@@ -22,21 +22,24 @@ The largest limiting factor in module oriented applications, is the
 an application with, like in "Visual Studio Code", where its
 JavaScript/HTML/CSS. Or IntelliJ, where one can use Java or Kotlin. But what
 does language agnostic mean in the context of programming languages? It is, and
-always will be C. Any \textit{serious} language has some form of C-\gls{abi}.
-So, for a module application to be Language Agnostic, it must be able to invoke
-C Modules.
+always will be C. Rust, the language chosen to implement this, also has bindings
+to C. This means that Rust can invoke C libraries. This is important for
+language agnosticism, as any language that has bindings to C, has then, through
+C, bindings to Rust. This is called an \gls{abi}, specifically the C-\gls{abi}.
 
 \begin{figure}
-  \label{fig:fm1}
   \begin{center}
     \input{./figures/foreign-module-1}
+    \caption{Foreign modules being invoked by a singular C-module}
+    \label{fig:fm1}
   \end{center}
 \end{figure}
 
 \begin{figure}
-  \label{fig:fm2}
   \begin{center}
     \input{./figures/foreign-module-2}
+    \caption{Foreign modules being invoked by an individual C-module}
+    \label{fig:fm2}
   \end{center}
 \end{figure}
 

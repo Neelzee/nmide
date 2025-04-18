@@ -37,7 +37,9 @@ issue in the future. Enter, Rust.
 
 Rust is a low-level, general purpose programming language.
 
-\subsubsection{Rust \gls{abi}}
+\subsubsection{Rust Application Binary Interface}
+
+\todo{rewrite}
 
 Rusts \gls{abi} is not stable! Because it is not supported by their semantic
 versioning. This means even a bug fix in the compiler, could break the
@@ -92,7 +94,7 @@ I love types, and despise not having them. So TypeScript 4 eva.
 This framework gives a lot of security which is needed in an
 application which runs third party code.
 
-\subsubsection{\gls{ui} framework}
+\subsubsection{User Interface framework}
 
 The \gls{ui} of the application is rendered using \gls{html} and JavaScript,
 making development of the \gls{ui} similar to standard web development. This
@@ -148,10 +150,12 @@ issues to existing \gls{ide}s, how does one allow for \textit{everything}?
 Furthermore, anything created this way, would be subpar to existing software,
 which would lead to the next maintainer having to fix the core application. This
 in turn, would add a lot of complexity, which the maintainers would have to deal with.
+\todo{expand/rewrite this}
 
 \section{Module V.2} \label{sec:mod2}
 
 After 7–8 months of working on this, everything was scrapped for this new plan:
+\todo{rewrite this intro}
 
 \begin{enumerate}
   \item Everything is a module
@@ -308,33 +312,13 @@ reason about modules if \textit{all} they do is read or write to some state.
 \paragraph{State}
 State is the \textit{state} of the application. In this case, it has the same
 structure as a JSON object. A few values are set at the start of the
-application, an example of the state can be seen in listing
-\ref{lst:moduleState}
-
-\begin{lstlisting}[language=JavaScript, caption={State Example}, label=lst:moduleState]
-  {
-    "field": 0,
-    "field-1": [1, 2, 3],
-    "object": {
-      "nested-object": {
-        "field": [1, 2, 3]
-      },
-      "object-field": "foobar"
-    }
-  }
-\end{lstlisting}
-
-\begin{center}
-  \lstinputlisting
-    [ language=Haskell
-    , caption={Module Types}
-    , label=lst:moduleTypes
-    ]{./code/plugin-types.hs}
-\end{center}
+application.
+\todo{Should write more "generic"}
 
 The way rendering worked in the core application, was to \textit{parse} the
 \gls{html}-representation given by a module, and translating it into actual
 \gls{html} which was added to the \gls{dom}.
+\todo{rewrite}
 
 \subsubsection{Backend-Frontend State Coalescing}
 
@@ -425,7 +409,11 @@ drop A + B amount of fields. Therefore, a module developer should avoid
 collisions.
 
 \begin{center}
-  \lstinputlisting[language=Haskell, caption={State Collision}, label=Listing]{./code/state-collision.hs}
+  \lstinputlisting
+  [ language=Haskell
+  , caption={State Collision}
+  , label=Listing
+  ]{./code/state-collision.hs}
 \end{center}
 
 \todo{Mention how updating two fields on the same object also counts as a collision}
@@ -435,6 +423,10 @@ returns a subtree of the state. We then have to analyze the new coalesced tree
 for each new subtree that is added, to figure out if there occurs any collision.
 And then notifying the module developer of which field this collision occurred
 on, and which modules tried to modify that field.
+
+\subsubsection{Module v2 cons}
+
+\todo{Sum up all the issues with this architecture}
 
 \subsection{Everything is a module}
 
@@ -590,7 +582,27 @@ modification, so a unified algorithm to solve this can be used. If there is an
 easy way to translate a \gls{ui} modification to a state modification, and back
 again. To solve this, instead of having a module return the actual
 modifications, meaning, the updated core, a module returns a set of instructions
-of what to do with the Core.
+of what to do with the core.
+
+This makes the modification of the core, a kind of monoid, as given the
+definition \ref{def:monoid}, we can construct one:
+
+\begin{exmp}
+  $M$ be $M = \{ NoOp, Add(F, A), Mod(F, A), Rem(F, A), Then \}$,
+  where $F$ is the field on the core being modified, and $A$ is the value
+  pertaining to that field.
+  Let the binary operator be the infix function $combine$, such that $combine$
+  upholds the definitions \ref{def:closed}, \ref{def:assoc}, and
+  \ref{def:ident}.
+  Let identity, $U$, be $NoOp$.
+\end{exmp}
+
+This unfortunately cannot be encoded in Rusts type system, but when implementing
+$combine$, we can map the variants along with the specific fields being added
+($Add$), modified ($Mod$), or removed ($Rem$), to get a more optimized
+instruction set. If we are modifying a value on field $foobar$, but in the same
+instruction set, remove it, then the modifying instruction is an $NoOp$.
+
 \todo{Add trivial module example, or something}
 
 Using this as a module developer is quite abstract, so to facilitate development
@@ -706,31 +718,6 @@ system. This plan would still keep the support for external JavaScript
 libraries, not made with the application in mind, to be used, which also would
 greatly reduce the development time.
 
-\section{Modules}
-
-\todo{Introduction}
-
-Here are some examples of modules implemented using the proposed architecture.
-
-\subsection{Magnolia Dependency Graph Visualizer}
-
-\todo{Implement and showcase this module}
-
-\subsection{\gls{ide} Module Family}
-
-\todo{Showcase the modules created to have a rudimentary IDE}
-\todo{Mention QOF modules for future module developers}
-\todo{Mention Project Management}
-
-\subsection{Caching}
-\todo{Properly implement this}
-In Magnolia, caching of \gls{lsp} queries is important. And caching of the
-compiled code.
-
-\subsection{Magnolia Language Server}
-
-\todo{Implement a rudimentary Magnolia LS}
-
 \section{Testing} \label{sec:testing}
 
 \todo{Showcase example of testing the ide}
@@ -793,6 +780,38 @@ not feasible to ensure all consumers commit time to change their ways. Contract
 testing ensures that, if a change like this occurs, the maintainer of the
 \gls{api} is notified by which consumer this change breaks.
 
+\subsection{End-To-End-Testing}
+
+The final step in the testing pipeline, is to test the entire application
+together. This is known as \gls{e2e}, but this is expensive.
+
+\section{Modules}
+
+\todo{Introduction}
+
+Here are some examples of modules implemented using the proposed architecture.
+
+\subsection{Magnolia Dependency Graph Visualizer}
+
+\todo{Implement and showcase this module}
+
+\subsection{IDE Module Family}
+
+\todo{Showcase the modules created to have a rudimentary IDE}
+\todo{Mention QOF modules for future module developers}
+\todo{Mention Project Management}
+
+\subsection{Caching}
+\todo{Properly implement this}
+In Magnolia, caching of \gls{lsp} queries is important. And caching of the
+compiled code.
+
+\subsection{Magnolia Language Server}
+
+\todo{Implement a rudimentary Magnolia LS}
+
+\subsection{Automating Contract Testing}
+
 This process could be partially automated, as all modules have to register the
 event they want to handle. Furthermore, all events thrown are also explicitly
 done through the core instance, meaning a \textit{test-core} could be created,
@@ -800,7 +819,3 @@ which registers which event is thrown from what module, and all dependencies
 between modules can be noted.
 \todo{Implement this}
 
-\subsection{End-To-End-Testing}
-
-The final step in the testing pipeline, is to test the entire application
-together. This is known as \gls{e2e}, but this is expensive.
