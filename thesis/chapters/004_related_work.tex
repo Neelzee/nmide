@@ -11,7 +11,12 @@ since a change in the view should be reflected in the model, and encoding this
 can be very involved. Luckily, there exists frameworks that make this task
 easier. \textit{WarmDrink}, \cite{warmDrink} \cite{dslMdcs} is a JavaScript
 framework that allow a developer to declarative specify structural changes in
-an application. \todo{Find out if this is actually possible}
+an application. This can be achieved, since the \gls{ide} exposes a simple
+\gls{api} for runtime systems. A runtime system specifically for a \gls{mdcs}
+could be implemented for JavaScript modules. This could also be done for the
+Rust modules, by utilizing the crate developed by Svartveit. \cite{mcdsRust}
+The module developer experience is important, so it's good that there exist
+\gls{mdcs} tooling to ease a module developers experience. \cite{toolMcds}
 
 Another issue in \gls{gui}s is optimizing performance in regard to events
 triggered by user actions, such as scrolling, resizing or typing. These events
@@ -48,25 +53,12 @@ individually, by \textit{mocking} the expected state and events. This means that
 breaking changes in one module can be detected before \gls{e2e} testing, which
 is expensive. \todo{Add source} But this can only verify the general logic of a
 module and module family, not the UI. To achieve such automation, one could rely
-on an automated testing framework, like the one in \cite{autoUi}.
-
-\paragraph{\gls{mdcs}} Since the data and the \gls{ui}
-in the core application is separated, it allows for use of Multi-way Dataflow
-Constraint Systems. Leveraging \gls{mdcs}-frameworks, like \textit{WarmDrink} as
-mentioned in \cite{warmDrink} and \cite{dslMdcs}
-
-\paragraph{JavaScript Module System} Due to the good compatibility with existing
-JavaScript libraries, this zero core application can utilize things like
-\textit{flushable promises} \cite{flush}
-
-\paragraph{Expected \gls{ui} behaviour} When creating a \gls{ui}, it is
-important that it behaves in a manner which the user expects \cite{leastGui}.
-
-\paragraph{Rust Module System} Since the core application is made using Rust,
-one could use a \gls{mdcs}-framework made for Rust \cite{mcdsRust}.
-
-\paragraph{\gls{mdcs} tooling} Having good tooling for a framework is important,
-as shown in \cite{toolMcds}
+on an automated testing framework, like the one in \cite{autoUi}. Or if one is
+working with a \textit{simple} JavaScript runtime, one could use third party
+software like \textit{Playwright} for creating tests, as it can auto generate
+the \gls{dsl}, while the developer uses the module or entire \gls{ide} if it is
+an \gls{e2e} test. This would help a module developer to discover behavior that
+a user might not expect \cite{leastGui}.
 
 
 \section{Abstract Algebra}
@@ -77,4 +69,7 @@ which is why \textit{Algebraic Specification}, for specifying system behavior,
 was popular in the 80s. You got stuff like \cite{cafeObj}.
 
 
-\paragraph{\gls{stf}} It is used by the compiler \cite{wig} for stuff.
+\section{Syntactic Theory Functor}
+
+\gls{stf} is used by the compiler \cite{wig} for stuff. Amongst them being
+resolving renaming, and flatting the \gls{asr} to be shown to the developer.

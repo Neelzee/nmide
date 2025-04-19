@@ -1,11 +1,10 @@
 concept NaturalNumbers = {
-  type Number;
-  function Zero(): Number;
-  function Succ(number: Number): Number;
-  function _+_(a: Number, b: Number): Number;
-  axiom unit(a: Number) {
-    assert Zero() + Zero() == Zero();
-    assert Zero() + a == a;
-    assert a + Zero() == a;
+  type N;
+  function zero(): N;
+  function succ(number: N): N;
+  function _+_(a: N, b: N): N;
+  axiom unit(a: N) {
+    assert zero() + a == a;
+    assert a + zero() == a;
   };
 };

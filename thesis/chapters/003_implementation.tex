@@ -35,7 +35,49 @@ issue in the future. Enter, Rust.
 
 \subsection{Rust}
 
-Rust is a low-level, general purpose programming language.
+Rust is a low-level, general purpose programming language, designed for, amongst
+other things, type safety, memory safety, and concurrency. When programming in
+Rust, the bugs common in other languages, like null pointers, buffer overflow
+and data races are detected at compile time. Most of these are features of Rusts
+ownership rules. These rules, enforced by the compiler, ensure that values are
+safely dropped, (freed), this ensures that all variables referenced in Rust
+have a value, and can be safely evaluated. It works by simply dropping values
+when they are out of scope. The example in listing \ref{lst:ownership}, the
+\textbf{name} variable is declared, and used as an argument in the
+\textbf{greeting} function. We cannot call the function again with
+\textbf{name}, since at the end of \textbf{greeting}, before it returns,
+\textbf{name} is dropped, since once we called \textbf{greeting}, the
+\textbf{main} method no longer \textit{owned} \textbf{name}, as the ownership
+was transferred to \textbf{greeting}. We could \textit{fix} this by changing the
+argument type from \textit{name: String}, to \textit{name: \&String}, (commonly
+written as \textit{name: \&str}), and adding the borrow symbol to the argument in
+the method invocation, as shown in listing \ref{lst:ownership-ref}.
+
+\begin{center}
+  \lstinputlisting
+    [ language=Rust
+    , caption={Ownership example (Rust)}
+    , label=lst:ownership
+    ]{./code/rust-ownership.rs}
+\end{center}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Rust
+    , caption={Ownership example with reference (Rust)}
+    , label=lst:ownership-ref
+    ]{./code/rust-ownership-ref.rs}
+\end{center}
+
+This same principle ensure the other mentioned features of the language,
+including performance, as with the borrow checker, there is no need for a
+garbage collector. Furthermore, Rust has good cross-platform support, ensuring
+we can write OS-agnostic code, and compile it to specific targets, without much
+hassle. Since Rust is low-level, it has good bindings to C, ensuring
+compatibility with future models, made in other languages, by use of the Rust
+\gls{abi}.
+
+\todo{Mention macros}
 
 \subsubsection{Rust Application Binary Interface}
 
@@ -46,82 +88,66 @@ versioning. This means even a bug fix in the compiler, could break the
 \gls{abi}. So if an application, written in Rust, is compiled in version 1.8.0,
 if this application relies on a Rust library that is compiled in version 1.8.0,
 everything is okay. But if the application is later recompiled with a compiler
-in version 1.8.1, then \textit{undefined} behavior could occur.
+in version 1.8.1, then \textit{undefined} behavior could occur. One of the ways
+undefined behavior was avoided, was using the \textit{abi\_stable}-crate, which
+enables \textit{safe} loading of external libraries, meaning modules.
+\todo{Explain this more concretely}
 
-\todo{Rewrite the stuff below}
-
-Started with Rust, because a \textit{low-level} language was assumed to be
-necessary, to facilitate ease of C integration, which would allow for an
-extendable application, which was language agnostic.
-
-Furthermore, using Rust in this low-level environment, gives the added advantage
-of the compiler knowing then a value is unused, and automatically
-\textit{deallocating} this memory. This helps avoid memory leakage. Further
-safety can be encoding in Rust robust type system, avoiding dangling pointers
-and null references.
-
-
-\todo{Rewrite the stuff above}
+If ever the types in the core application change, either by
+expansion or renaming or such, the crate would crash the application during
+startup, because the existing module would have a different expectation of what
+types existed, which again, could lead to undefined behavior. The only thing
+that needs to be handled, are \textit{panic}s, which are Rust's exceptions.
 
 \subsection{Tauri}
 
-Tauri is like Electron
-\todo{Expand}
-\todo{Not everyone knows what Electron is.}
+Tauri is a framework for Rust, which enables us to create a cross-platform
+application. Any frontend framework that compiles to \gls{html}, JavaScript and
+\gls{css} can be used as the \gls{gui}. This framework also adds support for
+invoking Rust methods in the frontend framework, and vice-versa. This allows for
+support of JavaScript modules, without much fuzz. Tauri archives with
+\gls{ipc}, which allows for isolated processes to communicate securely. For
+JavaScript to Rust, this is achieved with something called \textit{Commands},
+which acts as an abstraction on top of the \gls{ipc}, which turns the
+invocation to a frontend-backend architecture.
 
 \subsubsection{Web View}
 
-The Tauri framework renders the \gls{ui} using something called a
-\textit{web view}, similar to Electron
-
-Framework we chose was Tauri, \gls{ui} components can be created using
-JavaScript.
-
-Communication between the Rust and JavaScript parts is JSON-RPC, which,
-effectively, is the same as a client-server
-
-Allows for modules in two different languages, with little effort. One that
-targets the JavaScript environment, and one that targets Rust, with the
-possibility to create bindings from Rust to C, enabling a whole sleuth of other
-languages to be used.
-
-\subsubsection{TypeScript}
-
-I love types, and despise not having them. So TypeScript 4 eva.
+\todo{Is this needed?}
 
 \subsubsection{Security}
 
 This framework gives a lot of security which is needed in an
 application which runs third party code.
+\todo{Expand}
+\todo{Look into isolation pattern from Tauri}
 
-\subsubsection{User Interface framework}
+\subsubsection{TypeScript}
 
-The \gls{ui} of the application is rendered using \gls{html} and JavaScript,
-making development of the \gls{ui} similar to standard web development. This
-enabled a low development time of \gls{ui} components, since this is something
-that a lot of \gls{ui} and user experience designers have looked into. So
-existing code for this already exists and can be used.
+Any frontend framework that compiles to \gls{html}, JavaScript and \gls{css} can
+be used with Tauri, so TypeScript was chosen. TypeScript offers a lot of
+features over JavaScript, amongst them being able to \textit{type} functions,
+ensuring null/undefined-safety. Furthermore, by using crates like
+\textit{ts-rs}, Rust types can be annotated with attribute macros, which create
+a one-to-one mapping between the Rust type, and the serialized JSON object, to
+be used in TypeScript, allowing for even more type safety, and ensuring that the
+types used in the \gls{ide} only have to be defined one place.
 
-Since any JavaScript frontend framework could be used, React was chosen, one of
-the reason for this choice was due to its popularity, which again, would speed
-up the development time of the application, but also due to the way React
-renders. Between two different re-renders of the application, React can check
-the difference between the \gls{vdom}, which is React's representation of the
-\gls{dom}. It then only changes what is needed in the \gls{dom}, instead of
-re-creating the entire \gls{dom}, which makes the render time quick.
-
-This also allows for usage of existing JavaScript libraries, which can be used
-with the \gls{npm}. In the \gls{npm} registry, there are around
-\textit{34 million} libraries, all of which are usable in this architecture. If
-\todo{Source?}
-the functionality that these libraries are useful for the application, is
-another question. This functionality allows for quick development time for
-modules, which means features that are standard in \gls{ide} can be quickly and
-easily added. A concrete example of this, is the text editor. A text editor in
-itself is quite complex, especially if one needs the added functionality of
-\gls{lsp} support. This can be solved quite easily by adding the \textit{Monaco}
-library, which is the VS Code text editor, with integrated \gls{lsp} client
-support.
+Allowing for any JavaScript library to be used, enabled a low development time
+of \gls{ui} components, since this is something that a lot of \gls{ui} and user
+experience designers have looked into. So existing code for this already exists
+and can be used. \gls{npm}, for example, is a package registry for JavaScript.
+It contains around \textit{34 million} libraries, all of which are usable in
+this architecture. If the functionality that these libraries are useful for the
+application, is another question. This functionality allows for quick
+development time for modules, which means features that are standard in
+\gls{ide} can be quickly and easily added. A concrete example of this, is the
+text editor. A text editor in itself is quite complex, especially if one needs
+the added functionality of \gls{lsp} support. This can be solved quite easily by
+adding the \textit{Monaco} library, which is the VS Code text editor, with
+integrated \gls{lsp} client support. While \textit{Monaco} might not support all
+the needed features of a language like Magnolia, it works for many other
+languages.
 
 While this is not the best approach to implementing a text editor, a more
 modular approach, by turning the text editor into a module family would be more
@@ -139,6 +165,14 @@ day one of development. The general plan was this:
   \item Extend the \gls{ide}, to allow for a module architecture
   \item Modules call the application using some DSL
 \end{enumerate}
+
+Since any JavaScript frontend framework could be used, React was chosen, one of
+the reason for this choice was due to its popularity, which again, would speed
+up the development time of the application, but also due to the way React
+renders. Between two different re-renders of the application, React can check
+the difference between the \gls{vdom}, which is React's representation of the
+\gls{dom}. It then only changes what is needed in the \gls{dom}, instead of
+re-creating the entire \gls{dom}, which makes the render time quick.
 
 This was the more straight forward way to work, because as we could model it of
 existing \gls{ide}s, like \textit{Visual Studio Code} or \textit{Eclipse}.
@@ -234,7 +268,7 @@ the state can only grow.
 
 This setup is also not really modular, as a single module cannot invoke another
 module without being impure. The only way to invoke/trigger another module, is
-to throw a \textit{Msg}, which would trigger an update -> view - cycle. So
+to throw a \textit{Msg}, which would trigger an update -> view -> cycle. So
 a module cannot \textit{listen} for a single message, all modules are triggered
 by the same \textit{Msg}, and handled accordingly.
 
@@ -342,6 +376,33 @@ no distinction between a floating-point number, and a decimal number. This
 its from the frontend or backend This will be discussed more in the next
 section.
 
+This lead to the development of two systems. \gls{rsms} and \gls{jsms}.
+\todo{Mention in the next section how RSMS and JSMS are just backend frontend}
+It was necessary to distinguish the different module systems, due to the way
+they would be loaded by the core application.
+\todo{Mention different methods of loading modules}
+The \gls{rsms}, being written in Rust, meant it needed extra safeguards, as
+loading of shared object files, during runtime, could lead to undefined
+behavior.
+\todo{Expand this point}
+
+The \gls{jsms} is similar to the Rust example, except that the undefined
+behavior, in this case, is exceptions being thrown. Since third party code is
+being run, nothing can be trusted.
+\todo{Mention this earlier}
+All module invocations and outputs needs to be sanitized before it can be used
+in the core application. This is achieved by wrapping all invocations in a
+\textit{try-catch}, and using the \textit{io-fp} library to decode types during
+runtime. This means that all modules in \gls{jsms} are actually of the type
+shown in listing \ref{lst:jsmsModule}. Which using \textit{io-fp}, can be
+handled as shown in listing \ref{lst:jsmsHandlingInit}. This
+\lstinline[language=Haskell]{Either Error State} or
+\lstinline[language=Haskell]{Either Error HTML} can be handled by other modules,
+if there is a way to recover from the error. The \textit{standard} way for the
+core to \textit{correct} this error, is to \textit{just} log the error. But this
+turns an unrecoverable error into a recoverable one, given that it is an
+acceptable result to \textit{ignore} the error.
+
 \subsection{State Collision} \label{sec:collision}
 
 A state collision occurs when two or more modules updates the same field, during
@@ -424,64 +485,6 @@ for each new subtree that is added, to figure out if there occurs any collision.
 And then notifying the module developer of which field this collision occurred
 on, and which modules tried to modify that field.
 
-\subsubsection{Module v2 cons}
-
-\todo{Sum up all the issues with this architecture}
-
-\subsection{Everything is a module}
-
-The new plan came with a change of viewpoint. Think of
-\textit{everything being a module}, this pushed for a modularization between the
-then tightly coupled parts, the \textit{frontend} and \textit{backend}. As
-mentioned, having two different languages could allow for easier support of
-modules written in different programming languages, but for this to work in an
-optimal way, both the \textit{frontend} and \textit{backend} should be loosely
-coupled. This lead to the development of two systems. \gls{rsms} and \gls{jsms}.
-\todo{Mention in the next section how RSMS and JSMS are just backend frontend}
-It was necessary to distinguish the different module systems, due to the way
-they would be loaded by the core application.
-\todo{Mention different methods of loading modules}
-The \gls{rsms}, being written in Rust, meant it needed extra safeguards, as
-loading of shared object files, during runtime, could lead to undefined
-behavior.
-\todo{Expand this point}
-One of the ways undefined behavior was avoided, was using the
-\textit{abi\_stable}-crate, which enables \textit{safe} loading of external
-libraries, which is all a module is.
-\todo{Mention how the Rust ABI is not stable}
-Furthermore, if ever the types in the core application change, either by
-expansion or renaming or such, the crate would crash the application during
-startup, because the existing module would have a different expectation of what
-types existed, which again, could lead to undefined behavior. The only thing
-that needs to be handled, are \textit{panic}s, which are Rust's exceptions.
-
-The \gls{jsms} is similar to the Rust example, except that the undefined
-behavior, in this case, is exceptions being thrown. Since third party code is
-being run, nothing can be trusted.
-\todo{Mention this earlier}
-All module invocations and outputs needs to be sanitized before it can be used
-in the core application. This is achieved by wrapping all invocations in a
-\textit{try-catch}, and using the \textit{io-fp} library to decode types during
-runtime. This means that all modules in \gls{jsms} are actually of the type
-shown in listing \ref{lst:jsmsModule}. Which using \textit{io-fp}, can be
-handled as shown in listing \ref{lst:jsmsHandlingInit}. This
-\lstinline[language=Haskell]{Either Error State} or
-\lstinline[language=Haskell]{Either Error HTML} can be handled by other modules,
-if there is a way to recover from the error. The \textit{standard} way for the
-core to \textit{correct} this error, is to \textit{just} log the error. But this
-turns an unrecoverable error into a recoverable one, given that it is an
-acceptable result to \textit{ignore} the error.
-
-One thing did change, however. Instead of using React as the frontend framework,
-TypeScript was chosen, which simplified the integration between the backend and
-frontend, as the complexity of React's state management could be avoided, along
-with React's hydration. Given the rendering was now more \textit{hands-on}, the
-core could expose a lot of the functionality for rendering, which modules could
-change. This would increase the difference between the \gls{jsms} and
-\gls{rsms}, as the backend was not privy to this API, but this was not seen as
-an issue, as this API would turn module non-pure.
-\todo{Mention earlier pureness}
-
 \begin{center}
   \lstinputlisting
     [ language=TypeScript
@@ -514,114 +517,7 @@ an issue, as this API would turn module non-pure.
     ]{./code/jsms-handling-view.ts}
 \end{center}
 
-Given that the application uses a web view to render, and modules can be written
-in JavaScript, it means that existing JavaScript libraries can be used in the
-application. This, with the implementation of the \gls{jsms}, meant that this
-could be actually tested out.
-
-\begin{figure}
-  \centering
-  \includegraphics[scale=0.5]{./pics/doom}
-  \caption{Application running Doom using \textit{js-dos}}
-  \label{fig:doom}
-\end{figure}
-
-\section{Module V.3} \label{sec:mod3}
-
-The third and hopefully final, plan:
-
-\begin{enumerate}
-  \item Everything is a module
-  \item Modules can \textit{invoke} modules
-\end{enumerate}
-
-A module only exposes a singular function:
-
-\paragraph{Init} Returns a collection of core modifications
-
-In the previous architecture version, each module directly changed the state,
-which caused issues. Instead, each modification a module does, \textit{acts}, as
-a direct modification, but is in fact, translated to a DSL which can be analyzed
-for possible collisions. This was discovered to be a need, as in the new
-version, the \gls{ui} was also restructured, to allow for less re-rendering, and
-this restructuring, made it clear that changing the state, or changing the
-\gls{ui} is just tree manipulations, which will be discussed more later.
-
-\subsubsection{Removing abstractions}
-
-It became prudent, due to the change of architecture, to change the entire
-frontend, moving away from React, and using \textit{bare-bones} TypeScript. This
-would enable easier integration into the \gls{jsms}.
-
-\subsection{Core Modifications}
-
-Learning from the issues outlined in section \ref{sec:collision}, instead of a
-module returning the new core, it will rather return a set of instruction on
-\textit{how} the core is to be modified, resulting in what the module developer
-wants the core to be. The reason for turning it around in this manner, is that,
-the new architectural change also came with a change on how the \gls{ui} is
-modeled, as it is now up to the core to figure out an inexpensive way to do
-rendering. Since the core has \gls{ui}-structure which is a representation of
-what the \gls{dom} should be, it can be treated as a Virtual-\gls{dom}, similar
-as to how React does it. This also means that there could be a collision on
-\gls{ui}-change, as well as on a state-change. Instead of solving the equivalent
-problems twice, it was decided to try to treat the issues with collisions in
-state and \gls{ui} as the same issue; its some form of tree-manipulation.
-
-\subsection{Tree Manipulation}
-
-\todo{
-  Mention Magnolia here, and how the satisfaction/unit test thing can "prove"
-  this
-}
-This restructure changes the way the view is rendered. Instead of the view being
-re-rendered for each state-update, the view, or \gls{ui}-hierarchy, is only
-\todo{Mention earlier how React was used/considered due to the "smart" re-rendering}
-modified by modules. This modification is similar to the earlier state
-modification, so a unified algorithm to solve this can be used. If there is an
-easy way to translate a \gls{ui} modification to a state modification, and back
-again. To solve this, instead of having a module return the actual
-modifications, meaning, the updated core, a module returns a set of instructions
-of what to do with the core.
-
-This makes the modification of the core, a kind of monoid, as given the
-definition \ref{def:monoid}, we can construct one:
-
-\begin{exmp}
-  $M$ be $M = \{ NoOp, Add(F, A), Mod(F, A), Rem(F, A), Then \}$,
-  where $F$ is the field on the core being modified, and $A$ is the value
-  pertaining to that field.
-  Let the binary operator be the infix function $combine$, such that $combine$
-  upholds the definitions \ref{def:closed}, \ref{def:assoc}, and
-  \ref{def:ident}.
-  Let identity, $U$, be $NoOp$.
-\end{exmp}
-
-This unfortunately cannot be encoded in Rusts type system, but when implementing
-$combine$, we can map the variants along with the specific fields being added
-($Add$), modified ($Mod$), or removed ($Rem$), to get a more optimized
-instruction set. If we are modifying a value on field $foobar$, but in the same
-instruction set, remove it, then the modifying instruction is an $NoOp$.
-
-\todo{Add trivial module example, or something}
-
-Using this as a module developer is quite abstract, so to facilitate development
-of modules, a helper class was created, which \textit{translates} modifications
-to instructions. These instructions can then be analyzed for possible
-collisions.
-
-\begin{center}
-  \lstinputlisting
-   [ language=Haskell
-   , caption={Module Type}
-   , label=lst:moduleType
-   ]{./code/module-example.hs}
-\end{center}
-
-As one can see in listing \ref{lst:moduleType}, a module only exposes its name,
-and an \lstinline[language=haskell]{init} function, which takes the
-\lstinline[language=haskell]{Core}, which is a representation of
-the core application shown in listing \ref{lst:coreAdt}.
+\todo{These are just put here, add some text explaining why}
 
 \begin{center}
   \lstinputlisting
@@ -692,6 +588,162 @@ UI-hierarchy, by adding a button which throws an
 \lstinline[language=Haskell]{EventHandler} shown in
 \ref{lst:moduleEventHandler}, which again, modifies the core by changing the
 counter field with the value from the \lstinline[language=Haskell]{Event}.
+
+
+\subsubsection{Module v2 cons}
+
+\todo{Sum up all the issues with this architecture}
+React sucks?
+
+\section{Module V.3} \label{sec:mod3}
+
+The third and hopefully final, plan:
+
+\begin{enumerate}
+  \item Everything is a module
+  \item Modules can \textit{invoke} modules
+\end{enumerate}
+
+A module only exposes a singular function:
+
+\paragraph{Init} Returns a collection of core modifications
+
+In the previous architecture version, each module directly changed the state,
+which caused issues. Instead, each modification a module does, \textit{acts}, as
+a direct modification, but is in fact, translated to a DSL which can be analyzed
+for possible collisions. This was discovered to be a need, as in the new
+version, the \gls{ui} was also restructured, to allow for less re-rendering, and
+this restructuring, made it clear that changing the state, or changing the
+\gls{ui} is just tree manipulations, which will be discussed more later.
+
+\subsection{Everything is a module}
+
+The new plan came with a change of viewpoint. Think of
+\textit{everything being a module}, this pushed for a modularization between the
+then tightly coupled parts, the \textit{frontend} and \textit{backend}. As
+mentioned, having two different languages could allow for easier support of
+modules written in different programming languages, but for this to work in an
+optimal way, both the \textit{frontend} and \textit{backend} should be loosely
+coupled.
+\todo{Mention runtimes}
+
+\subsection{Vanilla TypeScript}
+
+Instead of using React as the frontend framework, TypeScript was chosen, which
+simplified the integration between the backend and frontend, as the complexity
+of React's state management could be avoided, along with React's hydration.
+Given the rendering was now more \textit{hands-on}, the core could expose a lot
+of the functionality for rendering, which modules could change. This would
+increase the difference between the \gls{jsms} and \gls{rsms}, as the backend
+was not privy to this API, but this was not seen as an issue, as this API would
+turn module non-pure.
+\todo{Mention pureness earlier}
+
+\subsubsection{Removing abstractions}
+
+It became prudent, due to the change of architecture, to change the entire
+frontend, moving away from React, and using \textit{bare-bones} TypeScript. This
+would enable easier integration into the \gls{jsms}.
+
+\subsection{Core Modifications}
+
+Learning from the issues outlined in section \ref{sec:collision}, instead of a
+module returning the new core, it will rather return a set of instruction on
+\textit{how} the core is to be modified, resulting in what the module developer
+wants the core to be. The reason for turning it around in this manner, is that,
+the new architectural change also came with a change on how the \gls{ui} is
+modeled, as it is now up to the core to figure out an inexpensive way to do
+rendering. Since the core has \gls{ui}-structure which is a representation of
+what the \gls{dom} should be, it can be treated as a Virtual-\gls{dom}, similar
+as to how React does it. This also means that there could be a collision on
+\gls{ui}-change, as well as on a state-change. Instead of solving the equivalent
+problems twice, it was decided to try to treat the issues with collisions in
+state and \gls{ui} as the same issue; its some form of tree-manipulation.
+
+\subsection{Tree Manipulation}
+
+\todo{
+  Mention Magnolia here, and how the satisfaction/unit test thing can "prove"
+  this
+}
+This restructure changes the way the view is rendered. Instead of the view being
+re-rendered for each state-update, the view, or \gls{ui}-hierarchy, is only
+\todo{Mention earlier how React was used/considered due to the "smart" re-rendering}
+modified by modules. This modification is similar to the earlier state
+modification, so a unified algorithm to solve this can be used. If there is an
+easy way to translate a \gls{ui} modification to a state modification, and back
+again. To solve this, instead of having a module return the actual
+modifications, meaning, the updated core, a module returns a set of instructions
+of what to do with the core.
+
+\begin{center}
+  \lstinputlisting
+   [ language=Rust
+   , caption={Instruction (Rust)}
+   , label=lst:inst
+   ]{./core/src-tauri/core-std-lib/src/instruction.rs}
+\end{center}
+
+The listing \ref{lst:inst}, shows of how the \textbf{Instruction}-set makes the
+modification of the core, a kind of monoid, as given the definition
+\ref{def:monoid}, we can construct one:
+
+\begin{exmp}
+  $M$ be $M = \{ NoOp, Add(F, A), Mod(F, A), Rem(F, A), Then \}$,
+  where $F$ is the field on the core being modified, and $A$ is the value
+  pertaining to that field.
+  Let the binary operator be the infix function $combine$, such that $combine$
+  upholds the definitions \ref{def:closed}, \ref{def:assoc}, and
+  \ref{def:ident}.
+  Let identity, $U$, be $NoOp$.
+\end{exmp}
+
+This, unfortunately, cannot be encoded in Rusts type system, but when implementing
+$combine$, we can map the variants along with the specific fields being added
+($Add$), modified ($Mod$), or removed ($Rem$), to get a more optimized
+instruction set. If we are modifying a value on field $foobar$, but in the same
+instruction set, remove it, then the modifying instruction is an $NoOp$.
+
+\todo{Add trivial module example, or something}
+
+Using this as a module developer is quite abstract, so to facilitate development
+of modules, a helper class was created, which \textit{translates} modifications
+to instructions. As shown in listing \ref{lst:ui-builder} and
+\ref{lst:state-builder}, a module developer simply invokes different methods on
+the builder, eventually building a \textbf{CoreModification}, to be sent.
+
+\begin{center}
+  \lstinputlisting
+   [ language=Rust
+   , caption={UI Builder (Rust)}
+   , label=lst:ui-builder
+   ]{./code/module-ui-builder.rs}
+\end{center}
+
+\begin{center}
+  \lstinputlisting
+   [ language=Rust
+   , caption={State Builder (Rust)}
+   , label=lst:state-builder
+   ]{./code/module-state-builder.rs}
+\end{center}
+
+This allows for an ergonomic way for module developer to create modifications on
+the core, without having to understand the syntax of the
+\textbf{Instruction}-set.
+
+\begin{center}
+  \lstinputlisting
+   [ language=Haskell
+   , caption={Module Type}
+   , label=lst:moduleType
+   ]{./code/module-example.hs}
+\end{center}
+
+As one can see in listing \ref{lst:moduleType}, a module only exposes its name,
+and an \lstinline[language=haskell]{init} function, which takes the
+\lstinline[language=haskell]{Core}, which is a representation of
+the core application shown in listing \ref{lst:coreAdt}.
 
 \subsection{Backend Agnostic Frontend}
 \todo{This is not true anymore}

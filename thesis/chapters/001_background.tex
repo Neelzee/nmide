@@ -21,25 +21,66 @@ concept for addition with natural numbers.
     ]{./code/magnolia-nat.mg}
 \end{center}
 
+In the listing \ref{lst:nat}, we are specifying concept called
+\textit{NaturalNumbers}, which declares a type \textbf{N}, and three methods
+that act upon the type \textbf{N}. We have the function, (also called a
+constructor), \textbf{zero}, which takes zero arguments, and should return
+something of type \textbf{N}. With this constructor, we can instantiate our
+numbers. To get new numbers, we have the function \textbf{succ}, which should
+give the \textit{succ}essor to the passed number. That way, we can represent $0$
+as \textbf{zero()}, $1$ as \textbf{succ(zero())}, and $2$ as
+\textbf{succ(succ(zero()))}. The final function, is an infix operator. $+$ takes
+two arguments, of type \textbf{N}, and returns an \textbf{N}. Of course, this
+should be interpreted as addution, meaning \textbf{succ(zero())} $+$
+\textbf{succ(succ(zero()))} $=$ \textbf{succ(succ(succ(zero())))}, or using
+numbers: $1 + 2 = 3$. Finally, the last statement in the concept, is an axiom,
+stating that given any $a$, if we add \textbf{zero()} to $a$, we should get $a$.
+However, this interpretation depends on our implementation
+of the concept.
+\todo{Add more examples showcasing what is needed from a Magnolia IDE}
+\todo{Renaming}
+\todo{Showing all imports are DAG's}
+
+\subsection{Magnolia Implementation}
+
+As one can see in listing \ref{lst:impl}, we have implemented the concept
+specified in \ref{lst:nat}, by using concrete values for \textbf{N}. There is an
+implementation for all the functions, giving us the functionality we set out to
+specify with our concept, but there is nothing stopping us from straying away
+from the specification, by implementing it incorrectly. As can be seen in
+listing \ref{lst:impl-wrong}.
+\todo{Add more examples showcasing what is needed from a Magnolia IDE}
+
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
     , caption={Natural numbers implementation (Magnolia)}
-    , label=lst:nat
+    , label=lst:impl
     ]{./code/magnolia-add.mg}
 \end{center}
 
-What ties the concept and implementation together, is the satisfaction.
+\begin{center}
+  \lstinputlisting
+    [ language=Magnolia
+    , caption={Invalid implementation (Magnolia)}
+    , label=lst:impl-wrong
+    ]{./code/magnolia-add-wrong.mg}
+\end{center}
+
+Here we have implemented our addiction operator in such a way, where it breaks
+our axiom. This is where the \textit{satisfaction} comes in, it is what ties the
+concept and implementation together, by ensuring our axiom are upheld.
+
+
+\subsection{Magnolia Satisfaction}
 
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
     , caption={Satisfaction of the natural numbers (Magnolia)}
-    , label=lst:nat
+    , label=lst:sat
     ]{./code/magnolia-add.mg}
 \end{center}
-
-\subsection{Magnolia Implementation}
 
 Something, Something, \dots, implementations of concepts need to uphold the
 axioms declared in the concept being implemented. This is done by using an
@@ -393,6 +434,7 @@ of \textit{reusability}. From the invention of the GO-TO-statement,
 to functions, and external libraries, being able to reuse existing software is
 an important tool for a developer. It avoids \textit{re-inventing the wheel}, as
 common functionality can be externalized and reused in several different places.
+\todo{Can probably expand this by going more in depth}
 
 \subsection{Reuse in Magnolia}
 
@@ -439,6 +481,7 @@ text editor, to a fully fledged \gls{ide}.
 \todo{Mention Eclipse and IntelliJ here as well?}
 
 \section{Integrated Development Environment} \label{sec:ide}
+\todo{Turn each paragraph into a subsection?}
 
 An \gls{ide}, aids a developer, as all the needed tools for development are
 \todo{Mention the tools, and how devs had it before.}
@@ -502,7 +545,7 @@ lifetime of the module is extended.
 
 \section{Module Architecture}
 
-\todo{Talk about modules in \gls{ide}s}
+\todo{Talk about modules in IDEs}
 
 A modular application, is an application which can be extended by other pieces
 of software. This extensibility is useful as features that the original
@@ -549,7 +592,7 @@ vast module ecosystem. From simple modules that change the color scheme, or
 add file icons to more complex modules that add support for other languages.
 A good variety of a module ecosystem can help ensure the longevity of an
 \gls{ide}. In the table \ref{tbl:mod}, we can see that \gls{ide}s have an
-exstensive module architecture. \footnotemark
+extensive module architecture. \footnotemark
 
 \footnotetext{
   \unskip Data found by looking at the marketplace\footnotemark for the modules,
@@ -634,7 +677,7 @@ computer languages. \cite{lwb}
 \todo{Expand}
 
 \section{Language Server}
-
+\todo{Go more in depth about language server stuff}
 The most important features in a modern \gls{ide} are possible due to the
 \gls{lsp}. \gls{lsp} is a protocol for a language server and editor,
 (the client), with which they communicate, allowing for many of the features
@@ -706,7 +749,27 @@ singular response. The actual response of the \gls{lsp} is a list, but this is
 \textit{always} a singleton. However, in Magnolia a singular type could have
 multiple definitions, and resolving this can be complex.
 
-Mention renaming?
+\subsection{Renaming}
+
+As shown earlier, in Magnolia, one can make some concept, and reuse this concept
+in another one. An example of this can be shown in listings \ref{lst:foo}, and
+\ref{lst:bar}, where we have the concept \textit{Foo} being used in \ref{lst:bar}.
+\todo{Make this true}
+\todo{Add a non-empty-list example}
+
+\subsection{Dependency Cycles}
+
+Programming languages have different ways to avoid this problem.
+\todo{Figure out what this problem is called}
+The easiest, is to simply disallow such import structures, which is something
+Magnolia does. All imports have to be \gls{dag}'s. In most programming languages
+this is trivial to solve for developers, as if suddenly a project has a cyclic
+import, it can be solved quite easily. This could be complex, but in most cases
+this is an easy fix. However, due to the heavy reuse in Magnolia, the cycles
+could be quite large and harder to reason about without a tool to visualize the
+dependency graph.
+\todo{rewrite}
+
 
 Mention \gls{asr}s?
 
