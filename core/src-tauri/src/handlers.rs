@@ -7,6 +7,7 @@ use core_std_lib::{
 use futures;
 use log::info;
 use tauri::Emitter;
+use core_module_lib::Module;
 use core_std_lib::attrs::Attr;
 use core_std_lib::core::CoreModification;
 use core_std_lib::event::Event;
@@ -18,75 +19,47 @@ use crate::{
 use crate::ide::NMIDE;
 use crate::statics::{MODULE_EVENT_REGISTER};
 
-pub async fn init(cm: CoreModification) -> (Instruction<Html>, Instruction<String>, Instruction<Attr>) {
+pub async fn init(cm: CoreModification) {
     let modules = COMPILE_TIME_MODULES.read().await;
 
     let state = NmideCore.state().await;
     let ui = NmideCore.ui().await;
 
-    let module_futures = modules.values().map(|m| m.init(&NmideCore));
+    let module_futures = modules.values().map(|m| m.init(Box::new(NmideCore)));
 
-    let (new_state, ui_builder) = futures::future::join_all(module_futures)
-        .await
-        .into_iter()
-        .reduce(|acc, ins| acc.combine(ins))
-        .unwrap_or_default()
-        .combine(cm)
-        .build_state(state);
-
-    let mut st = NMIDE_STATE.write().await;
-    *st = new_state;
-    drop(st);
-    let inst = ui_builder.instruction();
-    let mut current_ui = NMIDE_UI.write().await;
-    *current_ui = ui_builder.build(ui);
-    inst
+    futures::future::join_all(module_futures).await;
 }
 
 pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
-    let mods = COMPILE_TIME_MODULES.read().await;
-    let module_futures = MODULE_EVENT_REGISTER
-        .read()
-        .await
-        .get_module_names(&event)
-        .await
-        .into_iter()
-        .flat_map(|m| mods.get(&m))
-        .map(|m| m.handler(&event, &NmideCore));
-    let state = NmideCore.state().await;
-    let ui = NmideCore.ui().await;
+    let event_name = event.event_name().to_string();
+    let module = event.module_name().to_string();
+    tokio::spawn({
+        async move {
+            let evt = event.clone();
+            let mods = COMPILE_TIME_MODULES.read().await;
+            let mut modules = Vec::new();
+            for mod_name in MODULE_EVENT_REGISTER.read().await.get_module_names(&evt).await {
+                if let Some(m) = mods.get(&mod_name) {
+                    modules.push(m.handler(evt.clone(), Box::new(NmideCore)));
+                }
+            }
+            futures::future::join_all(modules).await;
+        }
+    });
 
-    let cm = futures::future::join_all(module_futures)
-        .await
-        .into_iter()
-        .fold(CoreModification::default(), |acc, cm| acc.combine(cm))
-        .combine(
-            modifications.into_iter().fold(
-                CoreModification::default(),
-                |acc, cm| acc.combine(cm)
-            )
-        );
+    let cm = modifications.into_iter().fold(
+        CoreModification::default(),
+        |acc, cm| acc.combine(cm)
+    );
 
-    let (new_state, ui_builder) = cm.build_state(state);
+    NmideCore.get_sender().await.send(cm).await.expect("Channel should be open");
 
-    let mut st = NMIDE_STATE.write().await;
-    *st = new_state;
-    drop(st);
-    let app = NMIDE
-        .get()
-        .expect("AppHandle should be initialized")
-        .read()
-        .await;
-    let inst = ui_builder.instruction();
-    let mut current_ui = NMIDE_UI.write().await;
-    // TODO: Optimize the instruction set before building
-    *current_ui = ui_builder.build(ui);
-
-    if event.event_name() != "nmide://exit" && event.module_name() != "nmide" {
-        // TODO: Do a NoOp check before needlessly re-rendering
-        app.emit("nmide://render", inst)
-            .expect("AppHandle emit should always succeed");
+    if event_name == "nmide://exit" && module == "nmide" {
+        let app = NMIDE.get()
+            .expect("AppHandle should be initialized")
+            .read()
+            .await;
+        info!("[backend][handler] Exiting");
+        app.exit(0);
     }
-    info!("[backend][handler] Exiting");
-    app.exit(0);
 }

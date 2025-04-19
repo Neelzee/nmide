@@ -1,4 +1,5 @@
 use crate::core::NmideCore;
+use crate::statics::NMIDE_SENDER;
 use crate::setup::setup;
 use crate::statics::{COMPILE_TIME_MODULES, NMIDE_STATE, NMIDE_UI};
 use anyhow::{Context as _, Result};
@@ -20,6 +21,7 @@ use tauri::Emitter;
 use tauri::RunEvent;
 use tauri::Manager as _;
 use tokio::sync::RwLock;
+use tokio::sync::mpsc::{self, Receiver, Sender};
 
 pub(crate) mod module_reg {
     use core_module_lib::Module;
@@ -35,17 +37,17 @@ pub static NMIDE: tokio::sync::OnceCell<RwLock<AppHandle>> = tokio::sync::OnceCe
 #[tauri::command]
 async fn init(
     mods: Vec<CoreModification>,
-) -> (Instruction<Html>, Instruction<String>, Instruction<Attr>) {
+) {
     info!("[backend] init");
     let cm = mods
         .into_iter()
         .fold(CoreModification::default(), CoreModification::append);
-    crate::handlers::init(cm).await
+    crate::handlers::init(cm).await;
 }
 
 // TODO: Implement
 #[tauri::command]
-async fn handler(event: Event, mods: Vec<CoreModification>) -> () {
+async fn handler(event: Event, mods: Vec<CoreModification>) {
     info!("[backend] handler {:?}", event);
     crate::handlers::handler(event, mods).await
 }
@@ -106,6 +108,39 @@ pub async fn run() {
         .invoke_handler(tauri::generate_handler![init, state, ui, handler])
         .build(tauri::generate_context!())
         .expect("IDE Application should build successfully");
+
+
+    tokio::spawn({
+        let (sender, mut recv)
+            = mpsc::channel::<CoreModification>(100);
+        NMIDE_SENDER.set(sender).expect("NMIDE_SENDER not set yet");
+        async move {
+            while let Some(modification) = recv.recv().await {
+                info!("[backend] modification: {:?}", modification);
+                let state = NmideCore.state().await;
+                let ui = NmideCore.ui().await;
+
+                let (new_state, ui_builder)
+                    = modification.build_state(state);
+
+                let mut st = NMIDE_STATE.write().await;
+                *st = new_state;
+                drop(st);
+                let app = NMIDE
+                    .get()
+                    .expect("AppHandle should be initialized")
+                    .read()
+                    .await;
+                let inst = ui_builder.instruction();
+                let mut current_ui = NMIDE_UI.write().await;
+                // TODO: Optimize the instruction set before building
+                *current_ui = ui_builder.build(ui);
+                // TODO: Do a NoOp check before needlessly re-rendering
+                app.emit("nmide://render", inst)
+                    .expect("AppHandle emit should always succeed");
+            }
+        }
+    });
 
     app.run(move |app_handle, event| {
         match &event {

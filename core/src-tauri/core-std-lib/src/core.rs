@@ -9,6 +9,7 @@ use ts_rs::TS;
 use crate::attrs::Attr;
 use crate::instruction::Instruction;
 use crate::state::Value;
+use tokio::sync::mpsc::{Sender};
 
 #[async_trait]
 pub trait Core: Send + Sync {
@@ -21,9 +22,11 @@ pub trait Core: Send + Sync {
         module_name: Option<String>,
         handler_name: String,
     );
+
+    async fn get_sender(&self) -> Sender<CoreModification>;
 }
 
-#[derive(Serialize, Deserialize, TS)]
+#[derive(Debug, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct CoreModification {
     state: Instruction<Value>,

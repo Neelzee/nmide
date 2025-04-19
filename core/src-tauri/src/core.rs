@@ -1,4 +1,5 @@
 use core_module_lib::Module;
+use tokio::sync::mpsc::{self, Receiver, Sender};
 use std::collections::HashMap;
 use tokio::sync::RwLock;
 use log::info;
@@ -16,8 +17,8 @@ use core_std_lib::{
 };
 use serde::{Deserialize, Serialize};
 use tauri::Emitter;
-
-pub struct NmideCore;
+use core_std_lib::core::CoreModification;
+use crate::statics::NMIDE_SENDER;
 
 #[derive(Default)]
 pub struct ModuleEventRegister {
@@ -78,6 +79,8 @@ impl ModuleEventRegister {
     }
 }
 
+pub struct NmideCore;
+
 #[async_trait]
 impl Core for NmideCore {
     async fn state(&self) -> State {
@@ -111,5 +114,9 @@ impl Core for NmideCore {
         let mut reg = MODULE_EVENT_REGISTER.write().await;
         reg.register_module(event_name, module_name, handler_name)
             .await;
+    }
+
+    async fn get_sender(&self) -> Sender<CoreModification> {
+        NMIDE_SENDER.get().expect("Sender should be initialized").clone()
     }
 }

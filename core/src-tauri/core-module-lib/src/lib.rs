@@ -14,8 +14,8 @@ pub trait ModuleBuilder {
 #[async_trait]
 pub trait Module: Send + Sync {
     fn name(&self) -> &str;
-    async fn init(&self, core: &dyn Core) -> CoreModification;
-    async fn handler(&self, event: &Event, core: &dyn Core) -> CoreModification;
+    async fn init(&self, core: Box<dyn Core>);
+    async fn handler(&self, event: Event, core: Box<dyn Core>);
 }
 
 pub struct RsModule {
