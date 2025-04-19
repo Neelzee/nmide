@@ -1,7 +1,6 @@
 {
   pkgs ? import <nixpkgs> { },
 }:
-
 let
   rustListing = pkgs.stdenvNoCC.mkDerivation {
     name = "listings-rust";
@@ -16,9 +15,9 @@ let
       cp $src/listings-rust.sty $out/tex/latex/listings-rust/
     '';
   };
-
   tex = pkgs.texlive.combined.scheme-full;
   file = "thesis";
+  projectRoot = ./..;
 in
 pkgs.stdenvNoCC.mkDerivation rec {
   name = "thesis";
@@ -33,18 +32,17 @@ pkgs.stdenvNoCC.mkDerivation rec {
     "buildPhase"
     "installPhase"
   ];
-
   buildPhase = ''
     export PATH="${pkgs.lib.makeBinPath buildInputs}"
     export SOURCE_DATE_EPOCH="$(date +%s)"
     mkdir -p .cache/texmf-var
+    ln -s ${projectRoot}/core core
     export TEXINPUTS=".:${rustListing}/tex/latex//:"
     env TEXMFHOME=.cache TEXMFVAR=.cache/texmf-var \
       latexmk -interaction=nonstopmode \
               -latexoption=-shell-escape \
               -pdf -f "${file}".tex
   '';
-
   installPhase = ''
     mkdir -p $out
     cp "${file}".pdf $out/
