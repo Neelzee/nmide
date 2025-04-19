@@ -26,19 +26,20 @@ impl Module for ProjectManagerModule {
         MODULE_NAME
     }
 
-    async fn init(&self, core: &dyn Core) -> CoreModification {
+    async fn init(&self, core: Box<dyn Core>) {
         core.add_handler(
             Some("nmide://exit".to_string()),
             Some("nmide".to_string()),
             MODULE_NAME.to_string()
         ).await;
-        CoreModification::default().set_state(
+        let mods = CoreModification::default().set_state(
             StateInstructionBuilder::default()
                 .add(STATE_FIELD, Value::Obj(HashMap::new()))
-        )
+        );
+        core.get_sender().await.send(mods).await.expect("Channel should be opened");
     }
 
-    async fn handler(&self, event: &Event, core: &dyn Core) -> CoreModification {
+    async fn handler(&self, event: Event, core: Box<dyn Core>) {
         match event.event_name() {
             "nmide://exit" => {
                 let obj = core.state().await
@@ -59,10 +60,8 @@ impl Module for ProjectManagerModule {
                     .unwrap_or(HashMap::new());
 
                 writeln!(file, "{}", serde_json::to_string_pretty(&cache).unwrap()).unwrap();
-
-                CoreModification::default()
             },
-            _ => CoreModification::default()
+            _ => ()
         }
     }
 }

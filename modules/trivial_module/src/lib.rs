@@ -23,7 +23,7 @@ impl core_module_lib::Module for Module {
         "trivial module"
     }
 
-    async fn init(&self, core: &dyn Core) -> CoreModification {
+    async fn init(&self, core: Box<dyn Core>) {
         let state = StateInstructionBuilder::default().add("counter".to_string(), Value::Int(0));
         let ui = UIInstructionBuilder::default().add_node(
             Html::Div()
@@ -52,10 +52,12 @@ impl core_module_lib::Module for Module {
             "trivial_module".to_string(),
         )
         .await;
-        CoreModification::default().set_ui(ui).set_state(state)
+        let mods = CoreModification::default().set_ui(ui).set_state(state);
+        core.get_sender().await.send(mods).await.expect("Channel should be opened");
     }
 
-    async fn handler(&self, event: &Event, core: &dyn Core) -> CoreModification {
+    async fn handler(&self, event: Event, core: Box<dyn Core>) {
+        let sender = core.get_sender().await;
         match (event.event_name(), event.args()) {
             ("counter", Some(v)) => {
                 let state = StateInstructionBuilder::default().modify(
@@ -71,9 +73,10 @@ impl core_module_lib::Module for Module {
                 } else {
                     UIInstructionBuilder::default()
                 };
-                CoreModification::default().set_state(state).set_ui(ui)
+                let mods = CoreModification::default().set_state(state).set_ui(ui);
+                sender.send(mods).await.expect("Channel should be opened");
             }
-            _ => CoreModification::default(),
+            _ => (),
         }
     }
 }

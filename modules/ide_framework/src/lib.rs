@@ -23,8 +23,8 @@ impl Module for FrameworkModule {
         MODULE_NAME
     }
 
-    async fn init(&self, _: &dyn Core) -> CoreModification {
-        CoreModification::default().set_ui(
+    async fn init(&self, core: Box<dyn Core>) {
+        let mods = CoreModification::default().set_ui(
             UIInstructionBuilder::default().add_node(
                 Html::Main()
                     .add_attr(Attr::Id("root".to_string()))
@@ -49,10 +49,9 @@ impl Module for FrameworkModule {
                 None,
                 None,
             ),
-        )
+        );
+        core.get_sender().await.send(mods).await.expect("Channel should be opened");
     }
 
-    async fn handler(&self, _: &Event, _: &dyn Core) -> CoreModification {
-        CoreModification::default()
-    }
+    async fn handler(&self, _: Event, _: Box<dyn Core>) {}
 }

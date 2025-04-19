@@ -31,10 +31,10 @@ impl core_module_lib::Module for Module {
         MODULE_NAME
     }
 
-    async fn init(&self, core: &dyn Core) -> CoreModification {
+    async fn init(&self, core: Box<dyn Core>) {
         core.add_handler(Some("get_magnolia_graph".to_string()), None, MODULE_NAME.to_string())
             .await;
-        CoreModification::default()
+        let mods = CoreModification::default()
             .set_ui(
                 UIInstructionBuilder::default()
                     .add_node(
@@ -54,26 +54,28 @@ impl core_module_lib::Module for Module {
                         None,
                         None,
                     )
-            )
+            );
+        core.get_sender().await.send(mods).await.expect("Channel should be opened");
     }
 
-    async fn handler(&self, event: &Event, core: &dyn Core) -> CoreModification {
+    async fn handler(&self, event: Event, core: Box<dyn Core>) {
+        let sender = core.get_sender().await;
         match (event.event_name(), event.args()) {
             ("get_magnolia_graph", Some(Value::Str(path))) => {
                 let field = format!("graph:{path}");
                 match core.state().await.get(&field) {
                     Some(g) => {
                         core.throw_event(Event::new("graph", MODULE_NAME, Some(g.clone()))).await;
-                        CoreModification::default()
                     },
                     None => {
                         let graph = get_graph(path);
                         core.throw_event(Event::new("graph", MODULE_NAME, Some(graph.clone()))).await;
-                        CoreModification::default().set_state(StateInstructionBuilder::default().add(field, graph))
+                        let mods = CoreModification::default().set_state(StateInstructionBuilder::default().add(field, graph));
+                        core.get_sender().await.send(mods).await.expect("Channel should be opened");
                     },
                 }
             }
-            _ => CoreModification::default(),
+            _ => (),
         }
     }
 }

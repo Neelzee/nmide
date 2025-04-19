@@ -182,7 +182,7 @@ impl core_module_lib::Module for Module {
         module_name()
     }
 
-    async fn init(&self, core: &dyn Core) -> CoreModification {
+    async fn init(&self, core: Box<dyn Core>) {
         core.add_handler(
             Some("fsa-write".to_string()),
             None,
@@ -201,17 +201,13 @@ impl core_module_lib::Module for Module {
             "trivial_module".to_string(),
         )
         .await;
-        CoreModification::default()
     }
 
-    async fn handler(&self, event: &Event, core: &dyn Core) -> CoreModification {
+    async fn handler(&self, event: Event, core: Box<dyn Core>) {
         let state = core.state().await;
-        match update(event, &state) {
-            Ok(st) => CoreModification::default().set_state(st),
-            Err(err_event) => {
-                core.throw_event(err_event).await;
-                CoreModification::default()
-            }
+        match update(&event, &state) {
+            Ok(st) => core.get_sender().await.send(CoreModification::default().set_state(st)).await.expect("Channel should be opened"),
+            Err(err_event) => core.throw_event(err_event).await,
         }
     }
 }
