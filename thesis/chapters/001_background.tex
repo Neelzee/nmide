@@ -447,24 +447,27 @@ function. The logging and group example can be rewritten using Magnolia concepts
 as shown in listing \ref{lst:logging} and \ref{lst:editor} respectively, by
 reusing the concepts we created for semigroup in listing \ref{lst:semigroup} and group
 in listing \ref{lst:group}.
+\todo{rewrite}
 
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
     , caption={Logging example (Magnolia)}
-    , label=lst:logging]{./code/logging.mg}
+    , label=lst:logging]{./code/logging-solution.mg}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
     , caption={Editor example (Magnolia)}
-    , label=lst:editor]{./code/editor.mg}
+    , label=lst:editor]{./code/editor-solution.mg}
 \end{center}
 
-Here we have used the \textit{renaming} of concepts in Magnolia, where we can
-rename types and functions to be more specific, for the specialized use case the
-concept is reused in.
+Indeed, reuse is so useful, that in Magnolia one can rename concepts one use.
+In the listings \ref{lst:logging} and \ref{lst:editor}, we have renamed the type
+and function into something that makes more sense in the specific use case.
+While it is useful for us developing the concept, to know that our logging
+concept is a semigroup, when using an implementation, this is less relevant.
 
 \subsection{Software Longevity}
 
@@ -477,8 +480,12 @@ users wants. The users of \gls{vim} can be split into two categories,
 \textit{standard users}, and \textit{module developers}. \gls{vim} has an
 extensive module ecosystem, which can extend \gls{vim}s functionality from a
 text editor, to a fully fledged \gls{ide}.
-\todo{Currently, a weak argument for modularity}
+\todo{Currently, a weak argument for modularity, rewrite it}
 \todo{Mention Eclipse and IntelliJ here as well?}
+
+\subsection{Modularity in software}
+
+\todo{Is configuration a form of modularization?}
 
 \section{Integrated Development Environment} \label{sec:ide}
 \todo{Turn each paragraph into a subsection?}
@@ -560,10 +567,7 @@ is a \textit{minor} change, the module is simply loaded. This method is
 extending the application during runtime, which is the method most users
 expect. Another method would be \textit{compile-time-extension}, in which
 modules are added before the application itself is compiled. There are some
-advantages and disadvantage in all approaches.
-
-Something, something \dots, in Eclipse modules extending modules is quite
-common, using Eclipse Rich Client Platform. \cite{eclipseRcp}
+advantages and disadvantage in both approaches.
 
 \subsection{Compile Time Module}
 
@@ -582,27 +586,44 @@ language as the core application.
 Runtime modules are usually also interpreted, but they can still be a
 library, same as in a compile time module.
 
+\subsection{Modular Architecture in IDEs}
+
+\gls{ide}s are one of the most common application that supports extensions by
+third-party code. \gls{ide}s like \gls{eclipse} and \gls{intellij} are
+specialized for working with Java, but they can still support other languages
+with the help of modules. A module (called plug-in in \gls{eclipse}),
+\gls{eclipse} can be extended with functionality like syntax highlighting, code
+completion, Go-to-definitions, debugging, and more, for standard programming
+languages. A lot of this functionality, comes from module-to-module extension,
+as in \gls{eclipse} modules can extend modules, with the use of the Eclipse Rich
+Client Platform. \cite{eclipseRcp}
+
 \subsection{Module Ecosystem}
 
 \todo{Expand}
-More modules == better, right?
 
 In modern \gls{ide}s, with an extensive module architecture, there exists a
 vast module ecosystem. From simple modules that change the color scheme, or
 add file icons to more complex modules that add support for other languages.
 A good variety of a module ecosystem can help ensure the longevity of an
 \gls{ide}. In the table \ref{tbl:mod}, we can see that \gls{ide}s have an
-extensive module architecture. \footnotemark
+extensive module ecosystem. \footnotemark
 
 \footnotetext{
   \unskip Data found by looking at the marketplace\footnotemark for the modules,
   \unskip in order:
   \unskip \url{https://marketplace.eclipse.org/content/welcome-eclipse-marketplace}% Eclipse
   \unskip, \url{https://plugins.jetbrains.com/} % Intellij
-  \unskip, \url{https://github.com/search?q=vim+plugin\&type=repositories} % Vim
-  \unskip, \url{https://github.com/search?q=nvim+plugin\&type=repositories} % Nvim
   \unskip, \url{https://marketplace.visualstudio.com/search?target=VSCode\&category=All\%20categories\&sortBy=Installs} % vscode
 }
+
+\gls{vscode} is the popular \gls{ide} \cite{topIde}, and this could be due to
+the amount of modules it has to offer. The amount of modules attributed to
+\gls{vscode} could be the cause of a positive feedback loop. \gls{vscode} is
+popular because it has many modules to extend the functionality, making it able
+to cover many use cases. Since \gls{vscode} is popular, developers use, and make
+modules for \gls{vscode}. All of which strengthen the longevity of the
+\gls{ide}.
 
 \begin{table}[]
   \centering
@@ -612,24 +633,21 @@ extensive module architecture. \footnotemark
     \hline
     \gls{ide} & Module count \\ \hline
     Eclipse & $\sim1200$ \\ \hline
-    Intellij & $\sim9500$ \\ \hline
-    \gls{vim} & $\sim11500$ \\ \hline
-    Nvim & $\sim16100$ \\ \hline
+    IntelliJ & $\sim9500$ \\ \hline
     VS Code & $\sim71700$ \\ \hline
   \end{tabular}
 \end{table}
 
-\footnotetext{
-  Nvim and Vim's marketplace is GitHub, so the results are found by searching
-  GitHub for Nvim plugins and Vim plugins respectively, furthermore, all Vim
-  plugins can be used by Nvim.
-}
-
 \subsubsection{Module Marketplace}
 
-It is important to be able to get modules.
-
-\todo{Mention the need for a module marketplace}
+Having modules is all well and good, but if a user cannot not easily get the
+module, it's not useful. The top \gls{ide}s mentioned, \gls{eclipse},
+\gls{intellij}, and \gls{vscode} all have access to their respective
+\textit{module marketplace}, a dedicated webpage to find modules, integrated
+into the application. This is the most user-friendly method for a user to search
+for and find modules, as they can simply do a keyword search for the language
+they are wanting support for, say Haskell, and get the necessary modules
+available to use with a simple click of a button.
 
 \subsection{Granularity}
 
@@ -712,6 +730,20 @@ application.
   \end{tabular}
 \end{table}
 
+An example of this in action, say a developer is working on a file
+\textit{main.ts}, in their Typescript project. They hover over a type imported
+from, and defined in \textit{types.ts}. This is what happens:
+
+\begin{enumerate}
+  \item The editor detects the user is hovering over a \textit{special} word
+  \item The editor sends a request to the Typescript \gls{ls}
+  \item The \gls{ls} responds
+  \item The editor formats the response into a small window showcasing the
+    documentation and implementation of the type
+\end{enumerate}
+
+\todo{Add concrete example}
+
 \section{Existing Magnolia IDE}
 
 The current \gls{ide} for Magnolia \cite{baggeIde}, is a many-years-old version
@@ -774,3 +806,39 @@ dependency graph.
 Mention \gls{asr}s?
 
 Mention the need for two different external programs, a compiler and a solver?
+
+\section{Zero Core IDE}
+\todo{Add intro}
+\todo{Tie it with this is similar to a microservice architecture}
+There is also a provider, some module providing data, and some consumer, some
+module using the data. If either the consumer or the provider is maintained by a
+third party, then there is some informal \textit{contract} between them. The
+consumer expects the outputs of a provider to be in some certain format, which
+in the case for \gls{rest} \gls{api}s usually is \gls{json}, but with
+specification formats like OpenApi \cite{openApi}, one can also specify the
+structure of the \gls{json} response, with what fields and values it can have.
+One can also specify what values are valid in a request. But even if one does
+use such a format, changes in scope can require the provider to change the
+\gls{api}, which could affect the consumer, because the consumer assumed
+something about their informal contract, that all numbers provided are
+integers, for example. And if suddenly the provider changes, and returns
+floating point numbers, the consumer could crash trying to parse a string as
+an integer.
+
+The same concept applies to a zero core \gls{ide}. Modules have an implicit, and
+informal contract between them. So the same measures, used in microservice
+architecture, to mitigate these issues, can be used in this zero core \gls{ide}.
+Unit testing of code is essential in software development, especially when
+developing against third party systems. Instead, invoking these third party
+systems at test time, mocking is used. This mocking is part of how a consumer
+assumes a provider should act. Mocking of modules is trivial, as all one needs
+to mock is the state, the \gls{ui}, or that some event happens. At a larger
+scale we test the module family, to see if its change has affected the other
+modules. This can be done with contract testing, as discussed in
+\cite{GROSS200322}. All modules composing the \gls{ide} can be loaded in a test
+environment, where all interactions are recorded, and used to generate a
+dependency graph, showing what modules depend on whom. This can show that
+certain modules are more tightly connected than assumed, meaning they are in the
+same module family, it can also show what module families communicate with other
+module families, showing module communities.
+\todo{Add diagram?}

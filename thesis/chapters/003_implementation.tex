@@ -272,6 +272,10 @@ to throw a \textit{Msg}, which would trigger an update -> view -> cycle. So
 a module cannot \textit{listen} for a single message, all modules are triggered
 by the same \textit{Msg}, and handled accordingly.
 
+This is equivalent to a microservice architecture, in the sense that a module
+can send a request, (Msg), to another module, and later get a response, (Msg).
+\todo{Add diagram?}
+
 An example of the module types can be shown in listing
 \ref{lst:moduleTypesState}. These are the types used in the state. The reason
 for representing a JSON object as a list of key-value pairs, is that this could
@@ -307,15 +311,13 @@ on a Msg or not.
 \end{center}
 
 In listing \ref{lst:pluginCounterExample}, an example of a counter module can be
-seen. This module initializes a state, containing the field
-\lstinline[language=Haskell]{"counter"}, with the value
-\lstinline[language=Haskell]{VInt 0}.
+seen. This module initializes a state, containing the field \textbf{"counter"},
+with the value \textbf{VInt 0}.
 
-The \textit{update} function the module exposes, matches on a
-\lstinline[language=Haskell]{"counter"} msg, with a
-\lstinline[language=Haskell]{VInt i} value. If the given Msg matches this, then
-the module adds to the \lstinline[language=Haskell]{"counter"}-field, the value
-from the Msg, which is 1.
+The \textit{update} function the module exposes, matches on a \textbf{"counter"}
+msg, with a \textbf{VInt i} value. If the given Msg matches this, then the
+module adds to the \textbf{"counter"}-field, the value from the Msg, which is
+$1$.
 
 Finally, the \textit{view} function renders a button, which when pushed by a
 user, sends the \textit{counter-Msg}.
@@ -337,11 +339,12 @@ msg-state combination, can be noticed, and ensure modules are not unnecessarily
 invoked. It also lowers the complexity for module developers, as it is easier to
 reason about modules if \textit{all} they do is read or write to some state.
 
-\todo{
-  Add some abstract example of module A writing something to the state, which is
-  read by module B, but can be extended by letting module C change the state
-  before module B reads it.
-}
+If we have the modules $A$ and $B$, where their relationship is $A \to B$,
+meaning $A$ \textit{invokes} $B$ by sending some Msg, which $B$ reacts too, and
+we want something to happen before $B$ reacts, we can add a new module, $C$,
+which also reacts to the same Msg, but if we know the name of the module $B$,
+we can set the name of module $C$ to be \textit{above} the order, relative to
+$B$, ensuring that $C$ always triggers before $B$.
 
 \paragraph{State}
 State is the \textit{state} of the application. In this case, it has the same
@@ -593,7 +596,14 @@ counter field with the value from the \lstinline[language=Haskell]{Event}.
 \subsubsection{Module v2 cons}
 
 \todo{Sum up all the issues with this architecture}
-React sucks?
+
+\begin{enumerate}
+  \item React sucks
+  \item Modules cannot invoke modules
+  \item Slow
+  \item Not parallel
+  \item Ever growing state
+\end{enumerate}
 
 \section{Module V.3} \label{sec:mod3}
 
@@ -755,6 +765,23 @@ as is the case per the previous plan, all logic pertaining to the core is in the
 \textit{frontend}, cannot the backend be anything, as long as it fulfills the
 following criteria.
 
+\subsection{Making the Core evaluate modifications asynchronously}
+
+Due to Rust first class focus on concurrency, it was trivial to make the core
+modifications run asynchronously. In previous iterations, the core evaluated
+one event at a time, waiting until all modules had finished their computations,
+before emulating the change and allowing for the next event to be evaluated. But
+this caused a noticeable \textit{lag} if an event was long. This was solved by
+changing the core modification evaluation from a simple method to be invoked, to
+an \gls{mpsc} channel system. Using \textit{tokio}, a Rust crate for
+asynchronous development, a channel for core modifications was created, and
+instead of the core collecting all modifications, each module is invoked and
+\textit{awaited} for in a separate thread, where in each module, if they have a
+core modification, sends the modification to the core channel, which works on
+a first come, first server basis. Here the core can evaluate the changes, also
+on a separate thread.
+\todo{Mention in v2 how file system stuff made stuff sluggish}
+
 \begin{itemize}
   \item File system modification
   \item Module loading
@@ -801,10 +828,6 @@ nothing breaks.
 
 \subsubsection{Contract Testing}
 
-\todo{
-  Mention %\cite{GROSS200322}
-}
-
 As a module developer, on is designing some kind of \gls{api}, but the developer
 has no say in how a consumer of the \gls{api} consumes it. In a microservice
 architecture, the common way to work around this, is to version control the
@@ -817,7 +840,7 @@ to deprecate an older less used version, forcing consumers to move on to the
 newer version of the \gls{api}.
 
 Instead of relying on such a versioning system, module developers could use
-\textit{contract testing}. \todo{Find sources}
+\textit{contract testing}.
 
 \paragraph{Contract Testing} Imagine some \gls{api}, and several consumers,
 $A, B, C$, The \gls{api} developer is serving some data, in this case an
@@ -831,6 +854,20 @@ increases tenfold, this is more difficult. A notice can still be sent, but it is
 not feasible to ensure all consumers commit time to change their ways. Contract
 testing ensures that, if a change like this occurs, the maintainer of the
 \gls{api} is notified by which consumer this change breaks.
+
+The issue is to create these contracts. Using frameworks like Pact \cite{pact},
+a developer creates a \gls{dsl} test, where they describe how the provider or
+consumer reacts to certain interactions. But since everything is a module, we
+can automate this.
+
+\subsection{Automating Contract Testing}
+
+This process could be partially automated, as all modules have to register the
+event they want to handle. Furthermore, all events thrown are also explicitly
+done through the core instance, meaning a \textit{test-core} could be created,
+which registers which event is thrown from what module, and all dependencies
+between modules can be noted.
+\todo{Implement this}
 
 \subsection{End-To-End-Testing}
 
@@ -861,13 +898,3 @@ compiled code.
 \subsection{Magnolia Language Server}
 
 \todo{Implement a rudimentary Magnolia LS}
-
-\subsection{Automating Contract Testing}
-
-This process could be partially automated, as all modules have to register the
-event they want to handle. Furthermore, all events thrown are also explicitly
-done through the core instance, meaning a \textit{test-core} could be created,
-which registers which event is thrown from what module, and all dependencies
-between modules can be noted.
-\todo{Implement this}
-
