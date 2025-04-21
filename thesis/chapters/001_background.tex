@@ -5,13 +5,21 @@
 Magnolia is an experimental research language being developed \gls{bldl} at the
 University of Bergen. Magnolia is designed to support a high level of
 abstraction and ease of reasoning. This is achieved by \textit{concepts},
-\textit{axioms}, \textit{satisfaction}, and \textit{implementations}.
+\textit{axioms}, \textit{implementations}, and \textit{satisfaction}.
 
 \subsection{Magnolia Concept}
 
-Something, Something, \dots, concepts declare types, functions and properties
-which those functions need to uphold. A simple example of this would be a
-concept for addition with natural numbers.
+A concept in Magnolia is an \gls{api}. Commonly, the term \gls{api} is used
+specifically for \gls{rest} \gls{api}s, but it also covers concepts, like in
+Magnolia, interfaces in Java, traits in Rust, or type-classes in Haskell. What
+all of these variations have in common, is that they specify a method for two
+different procedures to communicate with each other.  In a \gls{rest} \gls{api}
+this could be a microservice architecture, where several servers send and
+receive requests and responses, or in a programming project, it could be the
+\textbf{List} interface in Java, which informs implementers of that interface,
+which methods are needed to qualify as a \textbf{List}. In Magnolia a concept
+concepts declare types, functions and properties which those functions need to
+uphold. A simple example of this would be a concept for addition with natural numbers.
 
 \begin{center}
   \lstinputlisting
@@ -35,8 +43,45 @@ should be interpreted as addution, meaning \textbf{succ(zero())} $+$
 \textbf{succ(succ(zero()))} $=$ \textbf{succ(succ(succ(zero())))}, or using
 numbers: $1 + 2 = 3$. Finally, the last statement in the concept, is an axiom,
 stating that given any $a$, if we add \textbf{zero()} to $a$, we should get $a$.
-However, this interpretation depends on our implementation
-of the concept.
+
+This axiom is what allows for us to put constraints on our concepts, which
+allows for improvement in our \gls{api}. Unlike other \gls{api}s, like traits or
+\gls{rest}, such specific constraints can only be achieved by using unit tests,
+which is not enforced on the implementor. But with axioms, this is possible in
+Magnolia. This pattern is quite useful, since it allows for \textit{reuse} of
+logic. The listings \ref{lst:list} specifies a list interface, we can
+instantiate a list, and do operations on it, like getting adding an element to
+the list, or by concatenating two lists. We can also fetch the first element of
+the list, by using \textbf{head}, note the \textit{guard} attached to the
+function statement, this guard ensures that when this method is invoked, the
+list we get the first element from, cannot be empty, (equal to \textbf{nil()}),
+this ensures that our function is \textit{total}, and not \textit{partial}. This
+means that for any argument, we have a corresponding result. If we did not have
+this guard, then what would happen if we \textit{took} \textbf{head} of a list
+with no elements? In languages like Java, we would get null, but this does not
+exist in Magnolia. We could expand upon the list \gls{api} by creating a
+non-empty variant of list, as shown in \ref{lst:nonList}, which is the same as
+list, except to instantiate it, we need to supply an element, ensuring when we
+have a \textbf{NonEmptyList} variant, we can safely get an element from it,
+since there will at minimum, be one element in the list.
+
+\begin{center}
+  \lstinputlisting
+    [ language=Magnolia
+    , caption={List concept (Magnolia)}
+    , label=lst:list
+    ]{./code/magnolia-list.mg}
+\end{center}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Magnolia
+    , caption={NonEmptyList concept (Magnolia)}
+    , label=lst:nonList
+    ]{./code/magnolia-non-list.mg}
+\end{center}
+
+However, this interpretation depends on our implementation of the concept.
 \todo{Add more examples showcasing what is needed from a Magnolia IDE}
 \todo{Renaming}
 \todo{Showing all imports are DAG's}
@@ -71,7 +116,6 @@ Here we have implemented our addiction operator in such a way, where it breaks
 our axiom. This is where the \textit{satisfaction} comes in, it is what ties the
 concept and implementation together, by ensuring our axiom are upheld.
 
-
 \subsection{Magnolia Satisfaction}
 
 \begin{center}
@@ -79,7 +123,7 @@ concept and implementation together, by ensuring our axiom are upheld.
     [ language=Magnolia
     , caption={Satisfaction of the natural numbers (Magnolia)}
     , label=lst:sat
-    ]{./code/magnolia-add.mg}
+    ]{./code/magnolia-sat.mg}
 \end{center}
 
 Something, Something, \dots, implementations of concepts need to uphold the
@@ -115,9 +159,11 @@ of the \textbf{Log(A)}-type matters. Representing the composition of the
 \textbf{Log(A)}-type as $\odot$, doing, and letting $a, b, c$ be of type
 \textbf{Log A}:
 
-\begin{equation}
-  a \odot \left ( b \odot c \right ) = \left ( a \odot b \right ) \odot c
-\end{equation}
+\begin{definition}[Log Composition] \label{def:logComp}
+  \begin{equation}
+    a \odot \left ( b \odot c \right ) = \left ( a \odot b \right ) \odot c
+  \end{equation}
+\end{definition}
 
 Now we have a good logger, as the logs of the entire call stack is available for
 us to read when something goes wrong. Moving on, a good feature of a text
@@ -155,6 +201,13 @@ respectively.
 
 \subsection{Logging example in Java, Rust, and Magnolia}
 
+In the Java listing (\ref{lst:jlogging}) and Rust listing (\ref:rlogging) we
+have implementations which might not uphold our constraints. We can add unit
+tests, that ensure the implementations satisfy the definition \ref{def:logComp},
+but this safeguard only exists in our project, and once our \gls{api} can be
+implemented by third-party developers, we have no guarantee they will follow our
+constraints.
+
 \todo{Expand}
 
 \begin{center}
@@ -171,6 +224,15 @@ respectively.
     , label=lst:rlogging]{./code/logging.rs}
 \end{center}
 
+In Magnolia, however, it is possible. In the \ref{lst:mlogging} listing, we can
+add an axiom, which is the same as our requirement definition
+\ref{def:listComp}. For implementers, \textit{consumers}, of our \gls{api}, we
+can now ensure they implement correctly, as long as they add the simple
+declaration showed in listing \ref{lst:mlogSat}. This will be ensured, because
+in a standard Magnolia work routine, a developer will invoke an \gls{smt}
+solver, which will ensure the concepts, and the implementations implementing
+concepts are sound; that they are satisfiable.
+
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
@@ -178,9 +240,20 @@ respectively.
     , label=lst:mlogging]{./code/logging.mg}
 \end{center}
 
+\begin{center}
+  \lstinputlisting
+    [ language=Magnolia
+    , caption={Magnolia logging satisfaction}
+    , label=lst:mlogSat]{./code/logging-sat.mg}
+\end{center}
+
 \subsection{Editor example in Java, Rust, and Magnolia}
 
-\todo{Expand}
+The Java and Rust listings, (\ref{lst:jeditor}, \ref{lst:reditor}), also have no
+method of ensuring the satisfiability of future implementations. But what is
+more interesting, is that we can see, clearily in the case of the Magnolia
+listing \ref{lst:meditor}, that there is some kind of relation between these
+\gls{api}s.
 
 \begin{center}
   \lstinputlisting
@@ -196,9 +269,6 @@ respectively.
     , label=lst:reditor]{./code/editor.rs}
 \end{center}
 
-In Magnolia, however, this can be enforced on the \textit{interface}-level.
-\todo{Rewrite}
-
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
@@ -206,16 +276,14 @@ In Magnolia, however, this can be enforced on the \textit{interface}-level.
     , label=lst:meditor]{./code/editor.mg}
 \end{center}
 
-The interesting thing about these two structures, is that they are similar,
-even though they are used for two different things. Both the logging example,
-and the text editor example, are some binary operation over some set. In the
-first example, our set was all different log statements of the type
-\textbf{Log A}, and composing these logs, gave us another \textbf{Log A} type.
-While in the second example, we were working on the set of actions, which we
-could compose, which also gave us another action, but we also had an action
-representing no-operation, and an \textit{inverse} operation, undoing an action.
-This is related to mathematics, specifically abstract algebra, the study of
-algebraic structures.
+Both the logging example, and the text editor example, are some binary operation
+over some set. In the first example, our set was all different log statements of
+the type \textbf{Log A}, and composing these logs, gave us another
+\textbf{Log A} type. While in the second example, we were working on the set of
+actions, which we could compose, which also gave us another action, but we also
+had an action representing no-operation, and an \textit{inverse} operation,
+undoing an action. This is related to mathematics, specifically abstract
+algebra, the study of algebraic structures.
 
 \subsection{Abstract Algebra}
 
@@ -378,20 +446,20 @@ the \gls{api}.
 
 \subsection{Magnolia: Magma to Group}
 
-In Magnolia, however, this can be enforced on the \textit{interface}-level. The
+In Magnolia, however, this can be required on the \textit{interface}-level. The
 example code shown in listing \ref{lst:magma}, showcases a concept
 representation a binary operation, which has one function, \textit{binop}, which
 takes in two values of type \textit{T}, and returns \textit{T}. Note that the
 actual implementation of this function is missing. This is because a concept
 encodes the properties of a users code. The actual implementation of the
 binary function needs to uphold the properties of the concept that is
-being implemented. Note that this is unlike the Java and Haskell example, in
+being implemented. Note that this is unlike the Java and Rust example, in
 which we have no way to encode the property of our binary function. So any
 consumer of our \gls{api} would not be explicitly bound to our restriction of
 the associativity law \ref{def:assoc}, identify law \ref{def:ident}, and the
 inverse law \ref{def:inv}, required by semigroup and group. The closure
 definition, \ref{def:closed}, however, can be encoded by the type system in Java
-and Haskell.
+and Rust.
 
 \begin{center}
   \lstinputlisting

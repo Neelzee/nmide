@@ -1,0 +1,3 @@
+satisfaction = {
+  loggingImpl models Log;
+};
