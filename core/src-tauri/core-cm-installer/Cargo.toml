@@ -1,8 +1,0 @@
-[package]
-description = "Core Compiler-Time Module installer"
-name = "core-cm-installer"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-toml = "0.8.20"

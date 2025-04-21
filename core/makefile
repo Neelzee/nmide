@@ -1,12 +1,15 @@
-addModules : cleanCore
+modules : clean
 	cargo run \
-		--manifest-path=./src-tauri/core-cm-installer/Cargo.toml -- \
+		--manifest-path=./cm-installer/Cargo.toml -- \
 		--out=./src-tauri/target \
-		--conf=./modules/Modules.toml \
-		--cargo=./src-tauri/Cargo.toml
+		--conf=./Modules.toml \
+		--modules=./modules \
+		--cargo=./src-tauri/Cargo.toml \
+		--dist=./dist/external \
+		--index=./index.html
 
-cleanCore :
+clean :
 	rm -rf ./src-tauri/target/debug/build/core-*
 
-nmide : addModules
-	cargo build --manifest-path=./src-tauri/Cargo.toml
+nmide : modules
+	#cargo build --manifest-path=./src-tauri/Cargo.toml

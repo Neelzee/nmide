@@ -4,7 +4,6 @@ members = [
   "core-module-lib",
   "core-std-lib",
   "foreign-std-lib",
-  "core-cm-installer",
 ]
 
 [package]
@@ -64,20 +63,25 @@ server = ["dep:actix-web", "dep:actix-files", "dep:actix-cors"]
 
 
 [dependencies.ide_framework]
-path = "../../modules/ide_framework/"
+features = []
+path = "/home/nmf/nmide/modules/ide_framework"
 
 
 [dependencies.ide_fsa]
-path = "../../modules/ide_fsa/"
+features = []
+path = "/home/nmf/nmide/modules/ide_fsa"
 
 
 [dependencies.ide_pm]
-path = "../../modules/ide_pm/"
+features = []
+path = "/home/nmf/nmide/modules/ide_pm"
 
 
 [dependencies.magnolia_dependency]
-path = "../../modules/magnolia_dependency/"
+features = []
+path = "/home/nmf/nmide/modules/magnolia_dependency"
 
 
 [dependencies.trivial_module]
-path = "../../modules/trivial_module/"
+features = []
+path = "/home/nmf/nmide/modules/trivial_module"
