@@ -9,7 +9,9 @@ modules : clean
 		--index=./index.html
 
 clean :
-	rm -rf ./src-tauri/target/debug/build/core-*
+	rm -rf ./src-tauri/target/debug/build/core-* && \
+	rm -rf ./dist/external && \
+	mkdir -p ./dist/external
 
 nmide : modules
 	#cargo build --manifest-path=./src-tauri/Cargo.toml

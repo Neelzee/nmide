@@ -34,14 +34,14 @@ pub(crate) fn install(index: String, dist: String, mods: Vec<Module>) {
         copy_cmd.arg(format!("{}/{}.{}", &dist, m.name, m.kind.as_ext()));
         run_cmd(copy_cmd);
         let script = format!(
-                "<script src='./dist/external/{}.{}' type={}></script>",
-                &m.name,
-                m.kind.as_ext(),
-                if m.kind == Kind::MJavaScript {
+            "<script src='./dist/external/{}.{}' type={}></script>",
+            &m.name,
+            m.kind.as_ext(),
+            if m.kind == Kind::MJavaScript {
                     "module"
                 } else {
                     "\"\""
-                }
+                },
             );
         scripts.push(script);
     }
