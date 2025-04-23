@@ -55,9 +55,9 @@ the list, or by concatenating two lists. We can also fetch the first element of
 the list, by using \textbf{head}, note the \textit{guard} attached to the
 function statement, this guard ensures that when this method is invoked, the
 list we get the first element from, cannot be empty, (equal to \textbf{nil()}),
-this ensures that our function is \textit{total}, and not \textit{partial}. This
-means that for any argument, we have a corresponding result. If we did not have
-this guard, then what would happen if we \textit{took} \textbf{head} of a list
+this means that our function is not \textit{total}, but \textit{partial}. This
+means that for any argument, we might not have a corresponding result. If we did
+not have this guard, then what would happen if we \textit{took} \textbf{head} of a list
 with no elements? In languages like Java, we would get null, but this does not
 exist in Magnolia. We could expand upon the list \gls{api} by creating a
 non-empty variant of list, as shown in \ref{lst:nonList}, which is the same as

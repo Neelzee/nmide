@@ -13,36 +13,56 @@ tested.
 
 A module can extend an application at either compile time, or during runtime.
 This could be achieved by using an interpreted language like JavaScript or
-Python. But it is easier to do \gls{abi} stuff in a low-level language like
-\todo{Add own section about ABI}
-Rust. A \gls{abi} is an interface between two programs. This could be a
+Python. But it is easier to do \gls{abi} stuff in a lower level language like
+Rust. But what does \textit{lower level} language mean? And what is an \gls{abi}?
+
+\subsection{Low level languages}
+
+Programming languages has changed over time. In the beginning, a program was a
+series of ones and zeros, representing instructions a computer should do. Since
+then, we have moved several abstraction layers above what is commonly referred
+as \textit{bare metal} programming. From writing in hexadecimal instead of
+binary, to machine instructions, to more generic programming language, like C.
+What was different with C, compared to writing direct machine instructions, was
+that an external program, a compiler, could translate C code to machine
+instructions specific to the computers' \gls{cpu} architecture, this meant a
+single program, written in C, could be compiled to many different computers. So,
+at the time C came out, it was considered a \textit{high level} programming
+language, because the language a developer was writing in, had a higher level of
+abstraction. Today this notion of \textit{low} and \textit{high} level languages
+has changed, as C is considered to be a low level language, since one codes
+close to how a \gls{cpu} thinks.
+
+\subsection{Application Binary Interface (ABI)}
+
+An \gls{abi} is an interface between two programs. This could be a
 dynamic library used by a C program, where both binaries agree on how the data
 is stored. The reason they need to agree on how data is ordered in the memory,
 is that accessing into unowned memory could lead to \textit{undefined} behavior.
 
 \todo{Connect these two sections better}
+\todo{Explain low level \cite{cNotLowLevel}}
 
-\paragraph{Why not C?} C? You mean CD? C-Deez nutz. Something, something, C has
-good parts, like the C-\gls{abi}, which most languages have bindings too. Using
-C would mean allowing those languages to interface with our project, meaning,
-one step closer to a language agnostic module architecture. But C has issues,
-like being the number one cause in security issues. (This is just because
-so much of our infrastructure is written in C, but y'know.) These security
-issues are mostly caused by memory management. Would be cool if the C compiler
-could notify a developer if they were developing something that could cause an
-issue in the future. Enter, Rust.
+\paragraph{Why not C?} C has good parts, like the C-\gls{abi}, which most
+languages have bindings too. Using C would mean allowing those languages to
+interface with our project, meaning, one step closer to a language agnostic
+module architecture. But C has issues, like being the number one cause in
+security issues. (This is just because so much of our infrastructure is written
+in C, but y'know.) These security issues are mostly caused by memory management.
+Would be cool if the C compiler could notify a developer if they were developing
+something that could cause an issue in the future. Enter, Rust.
 \todo{Rewrite this paragraph}
 
 \subsection{Rust}
 
-Rust is a low-level, general purpose programming language, designed for, amongst
-other things, type safety, memory safety, and concurrency. When programming in
-Rust, the bugs common in other languages, like null pointers, buffer overflow
-and data races are detected at compile time. Most of these are features of Rusts
+Rust is a general purpose programming language, designed for, amongst other
+things, type safety, memory safety, and concurrency. When programming in Rust,
+the bugs common in other languages, like null pointers, buffer overflow and data
+races are detected at compile time. Most of these are features of Rusts
 ownership rules. These rules, enforced by the compiler, ensure that values are
-safely dropped, (freed), this ensures that all variables referenced in Rust
-have a value, and can be safely evaluated. It works by simply dropping values
-when they are out of scope. The example in listing \ref{lst:ownership}, the
+safely dropped, (freed), this ensures that all variables referenced in Rust have
+a value, and can be safely evaluated. It works by simply dropping values when
+they are out of scope. The example in listing \ref{lst:ownership}, the
 \textbf{name} variable is declared, and used as an argument in the
 \textbf{greeting} function. We cannot call the function again with
 \textbf{name}, since at the end of \textbf{greeting}, before it returns,
@@ -223,7 +243,7 @@ therefore being more modular.
 \begin{figure}
   \centering
   \input{./figures/elm-architecture}
-  \caption{Elm Architecture}
+  \caption{Elm Architecture (Figure adapted from \cite{elmFig})}
   \label{fig:elmArchitecture}
 \end{figure}
 
@@ -252,13 +272,31 @@ which is rendered by the core.
     ]{./code/plugin-example.hs}
 \end{center}
 
-The new module architecture is shown in figure \ref{fig:moduleArchitecture}
-
 \begin{figure}
   \centering
   \input{./figures/plugin-architecture}
-  \caption{Example Module Architecture}
+  \caption{Module Architecture}
   \label{fig:moduleArchitecture}
+\end{figure}
+
+The new module architecture is shown in figure \ref{fig:moduleArchitecture}. A
+module is initialized by invoking the \textbf{init} method, which returns a
+state. This can be seen in figure \ref{fig:moduleInit}. After the state
+initialization, the modules' \textbf{view} method is invoked, which initializes
+the \gls{ui} for the user, which can be seen in figure \ref{fig:moduleInitView}.
+
+\begin{figure}
+  \centering
+  \input{./figures/plugin-init}
+  \caption{Module state initialization stage}
+  \label{fig:moduleInit}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \input{./figures/plugin-init-view}
+  \caption{Module view initialization stage}
+  \label{fig:moduleInitView}
 \end{figure}
 
 \todo{Explain the module architecture in IDE terms, so with IDE examples}
@@ -601,7 +639,7 @@ counter field with the value from the \lstinline[language=Haskell]{Event}.
   \item React sucks
   \item Modules cannot invoke modules
   \item Slow
-  \item Not parallel
+  \item Not asynchronous
   \item Ever growing state
 \end{enumerate}
 
@@ -894,6 +932,10 @@ Here are some examples of modules implemented using the proposed architecture.
 \todo{Properly implement this}
 In Magnolia, caching of \gls{lsp} queries is important. And caching of the
 compiled code.
+
+\subsection{Editor Module Family}
+
+\todo{Implement a rudimentary editor}
 
 \subsection{Magnolia Language Server}
 

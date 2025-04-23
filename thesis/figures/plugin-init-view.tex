@@ -1,0 +1,9 @@
+\begin{tikzpicture}
+  \node [rectangle, draw, minimum height=4cm, minimum width=7cm, dotted] at (2, 0) {};
+  \node [] at (2, 2.5) {View initialization};
+
+  \node (i) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (4, 0) {Core};
+  \node (p) [rectangle, draw, minimum height=1cm, minimum width=2cm] at (0, 0) {Module};
+  \draw[->] (p.north) to[out=60, in=120] node[midway, above] {Html} (i.north);
+  \draw[->] (i.south) to[out=-120, in=-60] node[midway, above] {View} (p.south);
+\end{tikzpicture}
