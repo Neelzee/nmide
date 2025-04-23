@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import { nodePolyfills } from "vite-plugin-node-polyfills";
+import nodePolyfills from "vite-plugin-node-stdlib-browser";
 
 const host = process.env.TAURI_DEV_HOST;
 
@@ -49,5 +49,5 @@ export default defineConfig({
       ],
     },
   },
-  plugins: [nodePolyfills({ include: [] })],
+  plugins: [nodePolyfills()],
 });
