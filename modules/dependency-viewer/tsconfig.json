@@ -6,7 +6,8 @@
     "moduleResolution": "node",
     "outDir": "./dist",
     "lib": [
-      "dom"
+      "dom",
+      "es2015.collection"
     ]
   },
   "include": [

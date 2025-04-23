@@ -4,6 +4,7 @@
   "description": "Dependency Graph Viewer",
   "main": "main.ts",
   "scripts": {
+    "build": "bun run build.js",
     "test": "vitest"
   },
   "author": "neelzee",
