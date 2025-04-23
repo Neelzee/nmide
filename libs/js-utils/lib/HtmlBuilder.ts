@@ -4,26 +4,54 @@ import { Instruction } from "./Instruction";
 import { CoreModification } from "./CoreModification";
 import { combine } from "./InstructionHelper";
 
+type HtmlKind = Html extends { [K: string]: any } ? keyof Html : never;
 export class HtmlBuilder {
-  private node: Instruction<Html>;
-  private text: Instruction<string>;
-  private attr: Instruction<Attr>;
+  private _kind: HtmlKind;
+  private _kids: Array<Html | HtmlBuilder>
+  private _attrs: Array<Attr>;
+  private _text: string | null;
 
   constructor() {
-    this.node = "noOp";
-    this.text = "noOp";
-    this.attr = "noOp";
+    this._kind = "div";
+    this._kids = [];
+    this._attrs = [];
+    this._text = null;
   }
 
-  add(node: Html, id: string | null, cls: string | null): HtmlBuilder {
-    this.node = combine(this.node, { add: [id, cls, node] });
+  kind(kind: HtmlKind): HtmlBuilder {
+    this._kind = kind;
     return this;
   }
 
-  build(): CoreModification {
-    return {
-      state: "noOp",
-      ui: [this.node, this.text, this.attr]
-    };
+  kids(...kids: (Html | HtmlBuilder)[]): HtmlBuilder {
+    this._kids.push(...kids);
+    return this;
+  }
+
+  text(text: string): HtmlBuilder {
+    this._text = text;
+    return this;
+  }
+
+  attrs(...attrs: Attr[]): HtmlBuilder {
+    this._attrs.push(...attrs);
+    return this;
+  }
+
+  build(): Html {
+    const obj = {};
+    // @ts-ignore keyof Html is a string
+    obj[this._kind] = {
+      attrs: this._attrs,
+      kids: this._kids.map(h => {
+        if (h instanceof HtmlBuilder) {
+          return h.build();
+        } else {
+          return h;
+        }
+      }),
+      text: this._text
+    }
+    return obj as Html;
   }
 }

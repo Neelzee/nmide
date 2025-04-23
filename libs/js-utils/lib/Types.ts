@@ -108,6 +108,9 @@ export const isList = (x: unknown): x is ValuePrimitive[] =>
   Array.isArray(x) && !isObj(x);
 
 export const tValueMaybe = <T>(t: T): O.Option<Value> => {
+  if (t === null) {
+    return O.some("null")
+  }
   if (isFloat(t)) {
     return O.some(tFloat(t));
   }
