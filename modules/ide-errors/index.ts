@@ -4,16 +4,17 @@ import {
   Event,
   emptyCm,
   Value,
-  HtmlBuilder,
-  Html
+  Html,
+  UiBuilder,
+  installModule
 } from "@nmide/js-utils";
 
-const module_name = "ide-errors";
-window.__nmideConfig__.modules.set(
-  module_name,
+
+installModule(
   {
+    name: "ide-errors",
     init: async (core: Core): CoreModification => {
-      await core.registerHandler(module_name, "fsa-error", null);
+      await core.registerHandler("ide-errors", "fsa-error", null);
       return emptyCm();
     },
     handler: async (event: Event, core: Core): CoreModification => {
@@ -37,9 +38,9 @@ window.__nmideConfig__.modules.set(
           text: "",
         }
       };
-      return new HtmlBuilder()
+      return new UiBuilder()
         .add(elm, "errors", null)
         .build();
     },
   }
-)
+);
