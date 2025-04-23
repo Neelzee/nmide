@@ -95,12 +95,8 @@ run({
       return mods.flat()
     })
       .then(cm =>
-      invoke<[Instruction<Html>, Instruction<string>, Instruction<Attr>]>("init", { mods: cm })
-        .then((op) => {
-          window.__nmideConfig__.render(op)
-            .catch(err => window.__nmideConfig__.log.error("Error on render: ", err));
-        })
-        .catch((err) => console.error("Init: ", err))
+      invoke<void>("init", { mods: cm })
+        .catch((err) => console.error("Init: , with args: ", err, { mods: cm }))
     );
   }
 },

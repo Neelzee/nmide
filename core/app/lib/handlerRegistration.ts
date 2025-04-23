@@ -3,6 +3,7 @@ export const handlerRegistration = async (
   event_name: string | null,
   module_name: string | null
 ) => {
+  console.log("Module: ", module, event_name, module_name);
   if (event_name !== null) {
     let list = window.__nmideConfig__.handlerRegister.event.get(event_name)
     list = list === undefined ? [] : list;

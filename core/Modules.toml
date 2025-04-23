@@ -1,9 +1,8 @@
 [modules]
-DependencyViewerHelper = { kind = "mjs" }
-CounterModule = { kind = "js" }
 trivial_module = { path = "../modules/trivial_module/" }
 magnolia_dependency = { path = "../modules/magnolia_dependency/" }
 ide_fsa = { path = "../modules/ide_fsa/" }
 ide_framework = { path = "../modules/ide_framework/" }
 ide_pm = { path = "../modules/ide_pm/" }
 ide_errors = { path = "../modules/ide-errors/", package-manager = "bun", kind = "ts" }
+dependency-viewer = { path = "../modules/dependency-viewer", package-manager = "bun", kind = "mjs" }
