@@ -67,7 +67,7 @@ impl core_module_lib::Module for Module {
             ("counter", Some(v))
                 if v.is_int() || v.obj().is_some_and(|o| o.contains_key("eventArgs")) =>
             {
-                let state = StateInstructionBuilder::default().modify(
+                let state = StateInstructionBuilder::default().set(
                     "counter".to_string(),
                     if v.is_int() {
                         v.clone()
