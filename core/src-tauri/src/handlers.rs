@@ -21,12 +21,8 @@ use crate::statics::{MODULE_EVENT_REGISTER};
 
 pub async fn init(cm: CoreModification) {
     let modules = COMPILE_TIME_MODULES.read().await;
-
-    let state = NmideCore.state().await;
-    let ui = NmideCore.ui().await;
-
     let module_futures = modules.values().map(|m| m.init(Box::new(NmideCore)));
-
+    NmideCore.get_sender().await.send(cm).await.expect("Nmide core receiver should not be closed");
     futures::future::join_all(module_futures).await;
 }
 
