@@ -25,16 +25,44 @@ impl Value {
         }
     }
 
-    pub fn str(self) -> Option<String> {
+    pub fn is_int(&self) -> bool {
         match self {
-            Self::Str(s) => Some(s),
+            Self::Int(i) => true,
+            _ => false,
+        }
+    }
+
+    pub fn int(self) -> Option<i32> {
+        match self {
+            Self::Int(i) => Some(i),
             _ => None,
         }
     }
 
-    pub fn obj(self) -> Option<HashMap<String, Value>> {
+    pub fn str(&self) -> Option<String> {
         match self {
-            Self::Obj(x) => Some(x),
+            Self::Str(s) => Some(s.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn is_obj(&self) -> bool {
+        match self {
+            Self::Obj(_) => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_str(&self) -> bool {
+        match self {
+            Self::Str(_) => true,
+            _ => false,
+        }
+    }
+
+    pub fn obj(&self) -> Option<HashMap<String, Value>> {
+        match self {
+            Self::Obj(x) => Some(x.clone()),
             _ => None,
         }
     }

@@ -41,7 +41,7 @@ pub enum Attr {
     /// where `msg` is the value [`tmsg`] in `onclick`
     ///
     /// [`tmsg`]: ../msg/mod.rs
-    OnClick(Event),
+    Click(Event),
     /// only valid for `input`
     /// given this dom
     /// ```html
@@ -89,7 +89,7 @@ impl Attr {
             Attr::Style(_) => "style",
             Attr::Type(_) => "type",
             Attr::Checked(_) => "checked",
-            Attr::OnClick(_) => "onClick",
+            Attr::Click(_) => "onClick",
             Attr::OnInput(_) => "onInput",
             Attr::EmitInput(_) => "emitInput",
             Attr::Src(_) => "src",
@@ -103,7 +103,7 @@ impl Attr {
             (Attr::Style(_), "style") => true,
             (Attr::Type(_), "type") => true,
             (Attr::Checked(_), "checked") => true,
-            (Attr::OnClick(_), "onClick") => true,
+            (Attr::Click(_), "onClick") => true,
             (Attr::OnInput(_), "onInput") => true,
             (Attr::EmitInput(_), "emitInput") => true,
             (Attr::Src(_), "src") => true,

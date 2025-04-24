@@ -54,7 +54,8 @@ define_html!(
     Frag,
     Script,
     Tbody,
-    Main
+    Main,
+    TextArea
 );
 
 impl Html {
