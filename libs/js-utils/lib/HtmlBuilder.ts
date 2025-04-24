@@ -4,7 +4,7 @@ import { Instruction } from "./Instruction";
 import { CoreModification } from "./CoreModification";
 import { combine } from "./InstructionHelper";
 
-type HtmlKind = Html extends { [K: string]: any } ? keyof Html : never;
+export type HtmlKind = Html extends { [K: string]: any } ? keyof Html : never;
 export class HtmlBuilder {
   private _kind: HtmlKind;
   private _kids: Array<Html | HtmlBuilder>

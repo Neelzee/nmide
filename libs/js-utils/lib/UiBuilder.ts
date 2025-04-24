@@ -16,8 +16,17 @@ export class UiBuilder {
     this.attr = "noOp";
   }
 
-  add(node: Html | HtmlBuilder, id: string | null, cls: string | null): UiBuilder {
-    this.node = combine(this.node, { add: [id, cls, node instanceof HtmlBuilder ? node.build() : node] });
+  add(node: Html | HtmlBuilder, id?: string | null, cls?: string | null): UiBuilder {
+    this.node = combine(
+      this.node,
+      {
+        add: [
+          id === undefined ? null : id,
+          cls === undefined ? null : cls,
+          node instanceof HtmlBuilder ? node.build() : node
+        ]
+      }
+    );
     return this;
   }
 

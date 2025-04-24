@@ -10,6 +10,7 @@ export type ValuePrimitive = number
   | ValuePrimitive[]
   | { [key in string]?: Value };
 
+export type ValueNull = "null";
 export type ValueInt = { int: number };
 export const isTInt = (x: object): x is ValueInt => "int" in x;
 export type ValueFloat = { float: number };
