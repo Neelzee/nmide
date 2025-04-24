@@ -42,7 +42,7 @@ impl core_module_lib::Module for Module {
                             kids: vec![
                                 Html::Button()
                                     .set_text("Graph")
-                                    .add_attr(Attr::OnClick(Event::new(
+                                    .add_attr(Attr::Click(Event::new(
                                         "get_magnolia_graph".to_string(),
                                         MODULE_NAME.to_string(),
                                         Some(Value::Str("/home/nmf/magnolia-basic-library/src".to_string())),
@@ -61,14 +61,23 @@ impl core_module_lib::Module for Module {
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
         let sender = core.get_sender().await;
         match (event.event_name(), event.args()) {
-            ("get_magnolia_graph", Some(Value::Str(path))) => {
+            ("get_magnolia_graph", Some(val)) if val.is_str() || val.obj().is_some_and(|o| o.contains_key("eventArgs")) => {
+                let path = if val.is_str() {
+                    val.str().unwrap()
+                } else {
+                    let p = val.obj().unwrap().get("eventArgs").unwrap().str();
+                    if p.is_none() {
+                        return;
+                    }
+                    p.unwrap()
+                };
                 let field = format!("graph:{path}");
                 match core.state().await.get(&field) {
                     Some(g) => {
                         core.throw_event(Event::new("graph", MODULE_NAME, Some(g.clone()))).await;
                     },
                     None => {
-                        let graph = get_graph(path);
+                        let graph = get_graph(&path);
                         core.throw_event(Event::new("graph", MODULE_NAME, Some(graph.clone()))).await;
                         let mods = CoreModification::default().set_state(StateInstructionBuilder::default().add(field, graph));
                         core.get_sender().await.send(mods).await.expect("Channel should be opened");
