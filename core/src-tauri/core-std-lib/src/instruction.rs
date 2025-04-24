@@ -22,7 +22,7 @@ impl<T> Instruction<T> {
         match (&self, &other) {
             (Self::NoOp, _) => other,
             (_, Self::NoOp) => self,
-            _ => Self::Then(Box::new(self), Box::new(other))
+            _ => Self::Then(Box::new(self), Box::new(other)),
         }
     }
 }

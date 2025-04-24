@@ -1,7 +1,7 @@
+use crate::instruction::Instruction;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use ts_rs::TS;
-use crate::instruction::Instruction;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
@@ -26,10 +26,7 @@ impl Value {
     }
 
     pub fn is_int(&self) -> bool {
-        match self {
-            Self::Int(i) => true,
-            _ => false,
-        }
+        matches!(self, Self::Int(_))
     }
 
     pub fn int(self) -> Option<i32> {
@@ -47,17 +44,11 @@ impl Value {
     }
 
     pub fn is_obj(&self) -> bool {
-        match self {
-            Self::Obj(_) => true,
-            _ => false,
-        }
+        matches!(self, Self::Obj(_))
     }
 
     pub fn is_str(&self) -> bool {
-        match self {
-            Self::Str(_) => true,
-            _ => false,
-        }
+        matches!(self, Self::Str(_))
     }
 
     pub fn obj(&self) -> Option<HashMap<String, Value>> {
@@ -135,7 +126,7 @@ impl State {
 
         let last = fields.next().unwrap();
 
-        let mut vec = fields.into_iter().collect::<Vec<&str>>();
+        let mut vec = fields.collect::<Vec<&str>>();
 
         let init = {
             let mut mp = HashMap::new();
@@ -162,22 +153,25 @@ impl State {
 
     pub(crate) fn modify<S: ToString>(self, field: S, value: Value) -> Self {
         let mut map = self.0;
-        match (map.get(&field.to_string()).cloned().unwrap_or_default(), value) {
+        match (
+            map.get(&field.to_string()).cloned().unwrap_or_default(),
+            value,
+        ) {
             (Value::Int(i), Value::Int(j)) => {
                 map.insert(field.to_string(), Value::Int(i + j));
-            },
+            }
             (Value::Float(i), Value::Int(j)) => {
                 map.insert(field.to_string(), Value::Float(i + j as f32));
-            },
+            }
             (Value::Float(i), Value::Float(j)) => {
                 map.insert(field.to_string(), Value::Float(i + j));
-            },
+            }
             (Value::Int(i), Value::Float(j)) => {
                 map.insert(field.to_string(), Value::Float(i as f32 + j));
-            },
+            }
             (Value::Str(i), Value::Str(j)) => {
                 map.insert(field.to_string(), Value::Str(format!("{}{}", i, j)));
-            },
+            }
             (Value::List(mut xs), x) => {
                 xs.push(x);
                 map.insert(field.to_string(), Value::List(xs));
@@ -185,7 +179,7 @@ impl State {
             (Value::Null, o) => {
                 map.insert(field.to_string(), o);
             }
-            _ => () // unimplemented modification
+            _ => (), // unimplemented modification
         }
 
         Self(map)
@@ -206,15 +200,18 @@ impl StateInstructionBuilder {
     }
 
     pub fn add<S: ToString>(self, field: S, value: Value) -> Self {
-        Self {
-            0: self.0.combine(Instruction::Add(Some(field.to_string()), None, value))
-        }
+        Self(
+            self.0
+                .combine(Instruction::Add(Some(field.to_string()), None, value)),
+        )
     }
 
     pub fn remove(self, field: String) -> Self {
-        Self {
-            0: self.0.combine(Instruction::Rem(Some(field.to_string()), None, Value::default()))
-        }
+        Self(self.0.combine(Instruction::Rem(
+            Some(field.to_string()),
+            None,
+            Value::default(),
+        )))
     }
 
     pub fn set(self, field: String, value: Value) -> Self {
@@ -222,9 +219,10 @@ impl StateInstructionBuilder {
     }
 
     pub fn modify(self, field: String, value: Value) -> Self {
-        Self {
-            0: self.0.combine(Instruction::Mod(Some(field.to_string()), None, value))
-        }
+        Self(
+            self.0
+                .combine(Instruction::Mod(Some(field.to_string()), None, value)),
+        )
     }
 
     // HACK: `Panic`king is done instead of having a type-level error handling, to make it

@@ -1,3 +1,6 @@
+use crate::attrs::Attr;
+use crate::instruction::Instruction;
+use crate::state::Value;
 use crate::{
     event::Event,
     html::{Html, UIInstructionBuilder},
@@ -5,11 +8,8 @@ use crate::{
 };
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use tokio::sync::mpsc::Sender;
 use ts_rs::TS;
-use crate::attrs::Attr;
-use crate::instruction::Instruction;
-use crate::state::Value;
-use tokio::sync::mpsc::{Sender};
 
 #[async_trait]
 pub trait Core: Send + Sync {
@@ -62,11 +62,11 @@ impl CoreModification {
     }
 
     pub fn combine(self, other: Self) -> Self {
-        let (mut node, mut text, mut attr) = self.ui;
-        let (n,  t,  a) = other.ui;
+        let (node, text, attr) = self.ui;
+        let (n, t, a) = other.ui;
         Self {
             state: self.state.combine(other.state),
-            ui: (node.combine(n), text.combine(t), attr.combine(a))
+            ui: (node.combine(n), text.combine(t), attr.combine(a)),
         }
     }
 

@@ -1,6 +1,6 @@
+use crate::event::Event;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
-use crate::event::Event;
 
 // TODO: Correct documentation
 #[derive(Debug, Clone, PartialEq, PartialOrd, Serialize, Deserialize, TS)]

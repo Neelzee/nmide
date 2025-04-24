@@ -1,6 +1,6 @@
+use crate::state::Value;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
-use crate::state::Value;
 
 #[derive(Debug, Clone, PartialEq, PartialOrd, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
