@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-use std::fs;
 use async_trait::async_trait;
 use core_std_lib::{
     attrs::Attr,
@@ -8,10 +6,12 @@ use core_std_lib::{
     html::{Html, UIInstructionBuilder},
     state::{StateInstructionBuilder, Value},
 };
+use regex::Regex;
+use std::collections::HashMap;
+use std::fs;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Read};
 use std::path::Path;
-use regex::Regex;
 
 pub struct ModuleBuilder;
 
@@ -32,36 +32,45 @@ impl core_module_lib::Module for Module {
     }
 
     async fn init(&self, core: Box<dyn Core>) {
-        core.add_handler(Some("get_magnolia_graph".to_string()), None, MODULE_NAME.to_string())
-            .await;
-        let mods = CoreModification::default()
-            .set_ui(
-                UIInstructionBuilder::default()
-                    .add_node(
-                        Html::Div {
-                            kids: vec![
-                                Html::Button()
-                                    .set_text("Graph")
-                                    .add_attr(Attr::Click(Event::new(
-                                        "get_magnolia_graph".to_string(),
-                                        MODULE_NAME.to_string(),
-                                        Some(Value::Str("/home/nmf/magnolia-basic-library/src".to_string())),
-                                    )))
-                            ],
-                            attrs: vec![Attr::Id("graph-btn-div".to_string())],
-                            text: None,
-                        },
-                        None,
-                        None,
-                    )
+        core.add_handler(
+            Some("get_magnolia_graph".to_string()),
+            None,
+            MODULE_NAME.to_string(),
+        )
+        .await;
+        let mods =
+            CoreModification::default().set_ui(
+                UIInstructionBuilder::default().add_node(
+                    Html::Div {
+                        kids: vec![Html::Button().set_text("Graph").add_attr(Attr::Click(
+                            Event::new(
+                                "get_magnolia_graph".to_string(),
+                                MODULE_NAME.to_string(),
+                                Some(Value::Str(
+                                    "/home/nmf/magnolia-basic-library/src".to_string(),
+                                )),
+                            ),
+                        ))],
+                        attrs: vec![Attr::Id("graph-btn-div".to_string())],
+                        text: None,
+                    },
+                    None,
+                    None,
+                ),
             );
-        core.get_sender().await.send(mods).await.expect("Channel should be opened");
+        core.get_sender()
+            .await
+            .send(mods)
+            .await
+            .expect("Channel should be opened");
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
         let sender = core.get_sender().await;
         match (event.event_name(), event.args()) {
-            ("get_magnolia_graph", Some(val)) if val.is_str() || val.obj().is_some_and(|o| o.contains_key("eventArgs")) => {
+            ("get_magnolia_graph", Some(val))
+                if val.is_str() || val.obj().is_some_and(|o| o.contains_key("eventArgs")) =>
+            {
                 let path = if val.is_str() {
                     val.str().unwrap()
                 } else {
@@ -74,14 +83,21 @@ impl core_module_lib::Module for Module {
                 let field = format!("graph:{path}");
                 match core.state().await.get(&field) {
                     Some(g) => {
-                        core.throw_event(Event::new("graph", MODULE_NAME, Some(g.clone()))).await;
-                    },
+                        core.throw_event(Event::new("graph", MODULE_NAME, Some(g.clone())))
+                            .await;
+                    }
                     None => {
                         let graph = get_graph(&path);
-                        core.throw_event(Event::new("graph", MODULE_NAME, Some(graph.clone()))).await;
-                        let mods = CoreModification::default().set_state(StateInstructionBuilder::default().add(field, graph));
-                        core.get_sender().await.send(mods).await.expect("Channel should be opened");
-                    },
+                        core.throw_event(Event::new("graph", MODULE_NAME, Some(graph.clone())))
+                            .await;
+                        let mods = CoreModification::default()
+                            .set_state(StateInstructionBuilder::default().add(field, graph));
+                        core.get_sender()
+                            .await
+                            .send(mods)
+                            .await
+                            .expect("Channel should be opened");
+                    }
                 }
             }
             _ => (),
@@ -98,7 +114,8 @@ pub(crate) struct MagnoliaModule {
 
 impl MagnoliaModule {
     pub fn new(path: &Path) -> Self {
-        let re = Regex::new(r"package\s*([\w.]+)(?:\s*//.*?)?(?:\s*imports\s*([\s\S]*?))?;").unwrap();
+        let re =
+            Regex::new(r"package\s*([\w.]+)(?:\s*//.*?)?(?:\s*imports\s*([\s\S]*?))?;").unwrap();
 
         let mut file = File::open(path).unwrap();
         let mut contents = String::new();
@@ -109,16 +126,19 @@ impl MagnoliaModule {
             let mut caps = caps.iter();
             caps.next();
             name = caps.next().unwrap().unwrap().as_str().to_string();
-            dependencies = caps.next()
+            dependencies = caps
+                .next()
                 .and_then(|p| p)
                 .map(|m| m.as_str().to_string())
-                .map(|p| p.trim()
-                    .split(",")
-                    .map(|s| s.trim())
-                    .map(|s| s.to_string())
-                    .filter(|s| !s.contains("//"))
-                    .collect()
-                ).unwrap_or_default();
+                .map(|p| {
+                    p.trim()
+                        .split(",")
+                        .map(|s| s.trim())
+                        .map(|s| s.to_string())
+                        .filter(|s| !s.contains("//"))
+                        .collect()
+                })
+                .unwrap_or_default();
         }
 
         Self {
@@ -131,27 +151,41 @@ impl MagnoliaModule {
     pub fn to_obj(self) -> Value {
         let mut mp = HashMap::new();
         mp.insert("name".to_string(), Value::Str(self.name));
-        mp.insert("dependencies".to_string(), Value::List(self.dependencies.into_iter().map(Value::Str).collect::<Vec<Value>>()));
+        mp.insert(
+            "dependencies".to_string(),
+            Value::List(
+                self.dependencies
+                    .into_iter()
+                    .map(Value::Str)
+                    .collect::<Vec<Value>>(),
+            ),
+        );
 
         Value::Obj(mp)
     }
 }
 
 pub(crate) fn get_graph(path: &str) -> Value {
-    Value::List(get_modules(Path::new(path)).into_iter().map(MagnoliaModule::to_obj).collect::<Vec<Value>>())
+    Value::List(
+        get_modules(Path::new(path))
+            .into_iter()
+            .map(MagnoliaModule::to_obj)
+            .collect::<Vec<Value>>(),
+    )
 }
 
 pub(crate) fn get_modules(path: &Path) -> Vec<MagnoliaModule> {
     fs::read_dir(path)
         .unwrap()
         .filter_map(|e| e.ok())
-        .flat_map(|d| {
-            match d.file_type() {
-                Ok(df) if df.is_file() && d.file_name().to_str().is_some_and(|p| p.ends_with(".mg")) => vec![MagnoliaModule::new(&d.path())],
-                Ok(df) if df.is_dir() => get_modules(&d.path()),
-                _ => Vec::new(),
+        .flat_map(|d| match d.file_type() {
+            Ok(df)
+                if df.is_file() && d.file_name().to_str().is_some_and(|p| p.ends_with(".mg")) =>
+            {
+                vec![MagnoliaModule::new(&d.path())]
             }
+            Ok(df) if df.is_dir() => get_modules(&d.path()),
+            _ => Vec::new(),
         })
         .collect()
 }
-
