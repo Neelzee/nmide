@@ -53,21 +53,27 @@ impl core_module_lib::Module for Module {
         )
         .await;
         let mods = CoreModification::default().set_ui(ui).set_state(state);
-        core.get_sender().await.send(mods).await.expect("Channel should be opened");
+        core.get_sender()
+            .await
+            .send(mods)
+            .await
+            .expect("Channel should be opened");
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
         let sender = core.get_sender().await;
         println!("{:?}", event.args());
         match (event.event_name(), event.args()) {
-            ("counter", Some(v)) if v.is_int() || v.obj().is_some_and(|o| o.contains_key("eventArgs")) => {
+            ("counter", Some(v))
+                if v.is_int() || v.obj().is_some_and(|o| o.contains_key("eventArgs")) =>
+            {
                 let state = StateInstructionBuilder::default().modify(
                     "counter".to_string(),
                     if v.is_int() {
                         v.clone()
                     } else {
                         v.obj().unwrap().get("eventArgs").unwrap().clone()
-                    }
+                    },
                 );
                 let ui = if let Some(v) = core.state().await.get("counter") {
                     UIInstructionBuilder::default().set_text(
@@ -78,7 +84,8 @@ impl core_module_lib::Module for Module {
                             if v.is_int() {
                                 v.clone().int().unwrap()
                             } else {
-                                v.clone().obj()
+                                v.clone()
+                                    .obj()
                                     .and_then(|o| o.get("eventArgs").cloned())
                                     .and_then(|val| val.clone().int())
                                     .unwrap_or(0)
