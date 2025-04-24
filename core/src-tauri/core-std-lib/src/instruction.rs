@@ -11,8 +11,6 @@ pub enum Instruction<T> {
     Add(Option<String>, Option<String>, T),
     /// Removes the given T where the id is found.
     Rem(Option<String>, Option<String>, T),
-    /// Modifies the given T where the id is found.
-    Mod(Option<String>, Option<String>, T),
     /// Combines two instruction into one
     Then(Box<Instruction<T>>, Box<Instruction<T>>),
 }

@@ -173,12 +173,6 @@ impl UIInstructionBuilder {
         }
     }
 
-    pub fn set_attr(self, id: Option<String>, class: Option<String>, attr: Attr) -> Self {
-        Self {
-            attr: self.attr.combine(Instruction::Mod(id, class, attr)),
-            ..self
-        }
-    }
     fn node_instruction(node: Html, inst: Instruction<Html>) -> Html {
         match inst {
             Instruction::NoOp => node,
@@ -211,7 +205,6 @@ impl UIInstructionBuilder {
                     parent,
                 )
             }
-            Instruction::Mod(_, _, _) => node,
             Instruction::Then(f, s) => Self::node_instruction(Self::node_instruction(node, *f), *s),
         }
     }
@@ -241,21 +234,6 @@ impl UIInstructionBuilder {
                 };
                 node.modify(|n| n.set_text(""), p)
             }
-            Instruction::Mod(oid, ocl, txt) => {
-                let p = |n: &Html| match (oid.clone(), ocl.clone()) {
-                    (Some(id), Some(class)) => n.cmp_id(&id) && n.cmp_class(&class),
-                    (Some(id), None) => n.cmp_id(&id),
-                    (None, Some(class)) => n.cmp_class(&class),
-                    _ => false,
-                };
-                node.modify(
-                    |n| {
-                        let t = n.text();
-                        n.set_text(format!("{}{}", t, txt))
-                    },
-                    p,
-                )
-            }
             Instruction::Then(f, s) => Self::text_instruction(Self::text_instruction(node, *f), *s),
         }
     }
@@ -284,15 +262,6 @@ impl UIInstructionBuilder {
                     _ => false,
                 };
                 node.modify(|n| n.rem_attr(attr.as_string_rep()), p)
-            }
-            Instruction::Mod(oid, ocl, attr) => {
-                let p = |n: &Html| match (oid.clone(), ocl.clone()) {
-                    (Some(id), Some(class)) => n.cmp_id(&id) && n.cmp_class(&class),
-                    (Some(id), None) => n.cmp_id(&id),
-                    (None, Some(class)) => n.cmp_class(&class),
-                    _ => false,
-                };
-                node.modify(|n| n.set_attr(attr.as_string_rep(), attr.clone()), p)
             }
             Instruction::Then(f, s) => Self::attr_instruction(Self::attr_instruction(node, *f), *s),
         }

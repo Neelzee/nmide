@@ -150,40 +150,6 @@ impl State {
         map.remove(&field.to_string());
         Self(map)
     }
-
-    pub(crate) fn modify<S: ToString>(self, field: S, value: Value) -> Self {
-        let mut map = self.0;
-        match (
-            map.get(&field.to_string()).cloned().unwrap_or_default(),
-            value,
-        ) {
-            (Value::Int(i), Value::Int(j)) => {
-                map.insert(field.to_string(), Value::Int(i + j));
-            }
-            (Value::Float(i), Value::Int(j)) => {
-                map.insert(field.to_string(), Value::Float(i + j as f32));
-            }
-            (Value::Float(i), Value::Float(j)) => {
-                map.insert(field.to_string(), Value::Float(i + j));
-            }
-            (Value::Int(i), Value::Float(j)) => {
-                map.insert(field.to_string(), Value::Float(i as f32 + j));
-            }
-            (Value::Str(i), Value::Str(j)) => {
-                map.insert(field.to_string(), Value::Str(format!("{}{}", i, j)));
-            }
-            (Value::List(mut xs), x) => {
-                xs.push(x);
-                map.insert(field.to_string(), Value::List(xs));
-            }
-            (Value::Null, o) => {
-                map.insert(field.to_string(), o);
-            }
-            _ => (), // unimplemented modification
-        }
-
-        Self(map)
-    }
 }
 
 #[derive(Default)]
@@ -218,13 +184,6 @@ impl StateInstructionBuilder {
         self.remove(field.clone()).add(field, value)
     }
 
-    pub fn modify(self, field: String, value: Value) -> Self {
-        Self(
-            self.0
-                .combine(Instruction::Mod(Some(field.to_string()), None, value)),
-        )
-    }
-
     // HACK: `Panic`king is done instead of having a type-level error handling, to make it
     // easier to implement
     // TODO: Make type-level error handling
@@ -236,7 +195,6 @@ impl StateInstructionBuilder {
         match instruction {
             Instruction::Add(Some(field), _, value) => state.add(field, value),
             Instruction::Rem(Some(field), _, _) => state.rem(field),
-            Instruction::Mod(Some(field), _, new_value) => state.modify(field, new_value),
             Instruction::Then(f, s) => Self::eval(*s, Self::eval(*f, state)),
             _ => state,
         }
