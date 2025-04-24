@@ -3,7 +3,7 @@ const esbuild = require('esbuild');
 esbuild.build({
   entryPoints: ["./index.ts"],
   bundle: true,
-  outfile: "../../core/plugins/ide-editor.js",
+  outfile: "build/index.js",
   minify: true,
   external: [],
   loader: {

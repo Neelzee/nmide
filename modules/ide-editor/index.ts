@@ -1,30 +1,39 @@
-import "@nmide/js-utils";
-import { emptyHtml, TMap, TMsg } from "@nmide/js-utils";
-import { editor } from "monaco-editor";
+import {
+  Core,
+  CoreModification,
+  emptyCm,
+  Event, HtmlBuilder,
+  installModule, UiBuilder
+} from "@nmide/js-utils";
 
-let init = false;
-window.plugins.set(
-  "ide-editor",
+const moduleName = "ide-editor";
+
+installModule(
   {
-    init: () => [],
-    view: (_: TMap) => {
-      if (init) return [];
-      const root = document.getElementById("root");
-      if (root === null) return [];
-      const container = document.createElement("div");
-      container.id = "ide_container";
-      root.appendChild(container);
-      init = true;
-      const _editor = editor.create(container, {
-        // Text in the editor
-        value: `function hello() {
-  alert("Hello, World!);
-}`,
-        language: "javascript",
-        automaticLayout: true,
-      });
-      return emptyHtml();
+    name: moduleName,
+    init: async (core: Core): CoreModification => {
+      await core.registerHandler(moduleName, "editor-click", null)
+        .catch(err => console.error(moduleName, err));
+      return new UiBuilder()
+        .add(
+          new HtmlBuilder()
+            .attrs({ id: "editor-div" })
+            .kids(
+              new HtmlBuilder()
+                .kind("textArea")
+                .attrs(
+                  { id: "editor-area" },
+                  { click: { event: "editor-click", module: moduleName, args: null } },
+                )
+            ),
+        )
+        .build();
     },
-    update: (_: TMsg, __: TMap) => [],
+    handler: async (event: Event, _: Core): CoreModification => {
+      if (event.event === "editor-click") {
+        console.log("editor: ", event);
+      }
+      return emptyCm();
+    }
   }
-)
+);
