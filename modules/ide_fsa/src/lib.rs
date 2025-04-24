@@ -206,7 +206,12 @@ impl core_module_lib::Module for Module {
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
         let state = core.state().await;
         match update(&event, &state) {
-            Ok(st) => core.get_sender().await.send(CoreModification::default().set_state(st)).await.expect("Channel should be opened"),
+            Ok(st) => core
+                .get_sender()
+                .await
+                .send(CoreModification::default().set_state(st))
+                .await
+                .expect("Channel should be opened"),
             Err(err_event) => core.throw_event(err_event).await,
         }
     }
