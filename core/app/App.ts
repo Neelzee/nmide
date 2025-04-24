@@ -26,7 +26,7 @@ export interface AppConfig {
     initializers: (() => Promise<CoreModification[]>)[]
     handlers: ((event: Event) => Promise<CoreModification[]>)[]
   },
-  render: (op: [Instruction<Html>, Instruction<string>, Instruction<Attr>]) => Promise<void>,
+  render: (ui: [Instruction<Html>, Instruction<string>, Instruction<Attr>]) => Promise<void>,
   eventThrower: (event: Event) => Promise<void>,
   handlerRegistration: (
     module: string,

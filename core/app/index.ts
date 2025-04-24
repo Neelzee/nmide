@@ -58,8 +58,8 @@ run({
     });
   },
   run: () => {
-    listen<[Instruction<Html>, Instruction<string>, Instruction<Attr>]>("nmide://render", ({ payload: obj }) => {
-      window.__nmideConfig__.render(obj)
+    listen<[Instruction<Html>, Instruction<string>, Instruction<Attr>]>("nmide://render", ({ payload: ui }) => {
+      window.__nmideConfig__.render(ui)
         .catch(err => window.__nmideConfig__.log.error("Error on render: ", err));
     }).catch((err) => window.__nmideConfig__.log.error("nmide://render", err));
 

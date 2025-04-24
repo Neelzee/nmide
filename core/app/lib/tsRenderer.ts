@@ -1,4 +1,10 @@
-import { Attr, Event, Html, Instruction } from "@nmide/js-utils";
+import {
+  Attr,
+  Event,
+  Html, HtmlKind,
+  Instruction,
+  ValueNull, ValueObj
+} from "@nmide/js-utils";
 import { emit } from "@tauri-apps/api/event";
 
 const getElementById = (element: HTMLElement, id: string): HTMLElement | undefined => {
@@ -157,8 +163,13 @@ const evalText = (op: Instruction<string>) => {
 }
 
 const addAttr = (element: HTMLElement, attr: Attr) => {
-  if ("onClick" in attr) {
-    element.addEventListener("click", () => onClickParse(attr.onClick));
+  if ("click" in attr) {
+    element.addEventListener(
+      "click",
+      function (this, ev: MouseEvent) {
+        clickParse(attr.click, this, ev)();
+      }
+    );
     return;
   }
   if ("onInput" in attr) {
@@ -171,16 +182,47 @@ const addAttr = (element: HTMLElement, attr: Attr) => {
   element.setAttribute(attrs[0], attrs[1]);
 };
 
-const onClickParse = (event: Event) => {
+const clickParse = (event: Event, ts: HTMLElement, _: MouseEvent) => {
+  let args: ValueObj = { obj: { } };
+  if (ts instanceof HTMLInputElement || ts.tagName === "TEXTAREA") {
+    // @ts-expect-error selectionStart exists on ts
+    if (ts.selectionStart !== null) {
+      // @ts-expect-error selectionStart exists on ts
+      const pos: number = ts.selectionStart;
+      // @ts-expect-error value exists on ts
+      const txt: string = ts.value;
+      let ln = 1;
+      let cn = 1;
+      for (let i = 0; i < pos; i++) {
+        if (txt[i] === "\n") {
+          ln++;
+          cn = 1;
+        } else {
+          cn++;
+        }
+      }
+      args = {
+        obj: {
+          lineNumber: { int: ln },
+          columnNumber: { int: cn },
+        }
+      };
+    }
+  }
+  args = { obj: { ...args.obj,  id: { str: ts.id }, } };
+  if (event.args !== null) {
+    args = { obj: { ...args.obj, eventArgs: event.args } };
+  }
+
   return () => {
-    emit("nmide://event", event).catch((err) =>
+    emit("nmide://event", { ...event, args }).catch((err) =>
       console.error("Error from onClickParse invoke:", err),
     );
   };
 };
 
 type THtml = {
-  kind: keyof Html,
+  kind: HtmlKind,
   kids: THtml[],
   attrs: Attr[],
   text: string | null,
@@ -190,7 +232,7 @@ type THtml = {
 const createElement = ({ kind, attrs, kids, text }: THtml) => {
   const className = attrs.find((el) => "class" in el)?.class;
   const id = attrs.find((el) => "id" in el)?.id;
-  const onClick = attrs.find((el) => "onClick" in el)?.onClick;
+  const onClick = attrs.find((el) => "click" in el)?.click;
   //const onInput = attrs.find(el => "onInput" in el)?.onInput;
   const src = attrs.find((el) => "src" in el)?.src;
   const type = attrs.find((el) => "type" in el)?.type;
@@ -198,12 +240,18 @@ const createElement = ({ kind, attrs, kids, text }: THtml) => {
 
   const elementType = kind === "frag" ? "div" : kind;
 
-  const element = document.createElement(elementType);
+  // @ts-expect-error elementType is a string type
+  const element: HTMLElement = document.createElement(elementType);
   element.textContent = text ? text : null;
   if (className !== undefined) element.className = className;
   if (id !== undefined) element.id = id;
   if (onClick !== undefined)
-    element.addEventListener("click", onClickParse(onClick));
+    element.addEventListener(
+      "click",
+      function (this, ev: MouseEvent) {
+        clickParse(onClick, this, ev)();
+      }
+    );
   //if (onInput !== undefined)
   //element.addEventListener("onInput", OnInputParse(onInput));
   if (element instanceof HTMLInputElement) {
