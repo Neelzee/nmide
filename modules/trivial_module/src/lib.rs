@@ -30,7 +30,7 @@ impl core_module_lib::Module for Module {
                 .adopt(
                     Html::Button()
                         .set_text("Click")
-                        .add_attr(Attr::OnClick(Event::new(
+                        .add_attr(Attr::Click(Event::new(
                             "counter".to_string(),
                             "trivial_module".to_string(),
                             Some(Value::Int(1)),
@@ -58,17 +58,32 @@ impl core_module_lib::Module for Module {
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
         let sender = core.get_sender().await;
+        println!("{:?}", event.args());
         match (event.event_name(), event.args()) {
-            ("counter", Some(v)) => {
+            ("counter", Some(v)) if v.is_int() || v.obj().is_some_and(|o| o.contains_key("eventArgs")) => {
                 let state = StateInstructionBuilder::default().modify(
                     "counter".to_string(),
-                    v.clone(),
+                    if v.is_int() {
+                        v.clone()
+                    } else {
+                        v.obj().unwrap().get("eventArgs").unwrap().clone()
+                    }
                 );
-                let ui = if let Some(Value::Int(old)) = core.state().await.get("counter") {
+                let ui = if let Some(v) = core.state().await.get("counter") {
                     UIInstructionBuilder::default().set_text(
                         Some("PID".to_string()),
                         None,
-                        format!("Count: {}", old),
+                        format!(
+                            "Count: {}",
+                            if v.is_int() {
+                                v.clone().int().unwrap()
+                            } else {
+                                v.clone().obj()
+                                    .and_then(|o| o.get("eventArgs").cloned())
+                                    .and_then(|val| val.clone().int())
+                                    .unwrap_or(0)
+                            }
+                        ),
                     )
                 } else {
                     UIInstructionBuilder::default()
