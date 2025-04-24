@@ -13,5 +13,5 @@ clean :
 	rm -rf ./dist/external && \
 	mkdir -p ./dist/external
 
-nmide : modules
+nmide :
 	#cargo build --manifest-path=./src-tauri/Cargo.toml
