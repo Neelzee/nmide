@@ -6,19 +6,44 @@ developing the application.
 
 \section{User Perspectives}
 
-This application has to consider different users. In \gls{ide}'s like Eclipse or
-IntelliJ, there is the primary user base, the developers who are using the
-\gls{ide} to develop, and then there are the secondary user base, the developers
-whom develop \textit{plugins} for the \gls{ide}. While in this zero core
-\gls{ide} module developers are quite important, as they are the ones who add
-the functionality to the \gls{ide}.
+This application has to consider different users. In \gls{ide}'s like
+\gls{eclipse} or \gls{intellij}, there is the primary user base, the developers
+who are using the \gls{ide} to develop, and then there are the secondary user
+base, the developers whom develop \textit{plugins} for the \gls{ide}. Being the
+primary user base, most of the new features implemented by either \gls{ide} are
+related to the development experience. There are still changes to that the
+\textit{plugin} developers are interested in, namely \gls{api} changes.
+\gls{intellij} for example, lists their \textit{incompatible \gls{api} changes}
+\cite{intellijBrokenApi}. Breaking changes between \gls{ide} versions is
+something normal users of the \gls{ide} do not worry about. As usually when a new
+version is released, it means more features for the developer to utilize
+around with. While \textit{plugin} developers have to ensure their
+\textit{plugins} still work. One of the reasons behind \gls{ide} version changes
+can break a \textit{plugin}, is due to how they interact with their \gls{ide}.
+In \gls{intellij} a \textit{plugin} is created by implementing a Java interface
+for the functionality one wants.
+
+\begin{exmp}
+  If one wanted \gls{intellij} to recognize that a file with the extension "mg",
+  and give it a certain icon, one would have to implement the \textbf{Language}
+  interface and override the \textbf{getIcon} method to return the wanted icon.
+\end{exmp}
+
+So a change in the \gls{ide} architecture could break a \textit{plugin} for the
+newer version of the \gls{ide}, as with Bagge's Magnolia \gls{ide}
+\cite{baggeIde}. While in this zero core \gls{ide} module developers are quite
+important, as they are the ones who add the functionality to the \gls{ide}.
+Therefore, the core \gls{api} has to be more stable, and it is by virtue of not
+having much functionality.
 
 \subsection{Module Developer}
 
 Being a zero core application; all functionality comes from modules, the module
-developer experience is the most important. An important part of this is to have
-good documentation of the different aspect of the core, and examples of how it
-behaves.
+developer experience is the most important. To achieve this, documentation is
+important. If a module developer has a question about how the core might react,
+it should be answered by the documentation. In \gls{eclipse}, this is in the
+form of \textit{Javadoc}s, which specify, with examples how the \gls{eclipse}
+runtime handles \textit{plugins}. \footnote{\url{https://help.eclipse.org/latest/rtopic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/runtime/Plugin.html}}
 
 \subsubsection{Language Agnostic Modules}
 
@@ -35,7 +60,7 @@ C, bindings to Rust. This is called an \gls{abi}, specifically the C-\gls{abi}.
 \begin{figure}
   \begin{center}
     \input{./figures/foreign-module-1}
-    \caption{Foreign modules being invoked by a singular C-module}
+    \caption{Foreign modules being invoked by a singular Translation-module}
     \label{fig:fm1}
   \end{center}
 \end{figure}
@@ -43,7 +68,7 @@ C, bindings to Rust. This is called an \gls{abi}, specifically the C-\gls{abi}.
 \begin{figure}
   \begin{center}
     \input{./figures/foreign-module-2}
-    \caption{Foreign modules being invoked by an individual C-module}
+    \caption{Foreign modules being invoked by an individual Translation-module}
     \label{fig:fm2}
   \end{center}
 \end{figure}
