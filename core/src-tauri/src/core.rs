@@ -1,24 +1,15 @@
-use core_module_lib::Module;
-use tokio::sync::mpsc::{self, Receiver, Sender};
-use std::collections::HashMap;
-use tokio::sync::RwLock;
-use log::info;
-
-use crate::{
-    ide::NMIDE,
-    statics::{COMPILE_TIME_MODULES, MODULE_EVENT_REGISTER, NMIDE_STATE, NMIDE_UI},
-};
+use crate::statics::{MODULE_EVENT_REGISTER, NMIDE, NMIDE_SENDER, NMIDE_STATE, NMIDE_UI};
 use async_trait::async_trait;
 use core_std_lib::{
-    core::Core,
+    core::{Core, CoreModification},
     event::Event,
-    html::{Html},
+    html::Html,
     state::State,
 };
-use serde::{Deserialize, Serialize};
+use log::info;
+use std::collections::HashMap;
 use tauri::Emitter;
-use core_std_lib::core::CoreModification;
-use crate::statics::NMIDE_SENDER;
+use tokio::sync::{mpsc::Sender, RwLock};
 
 #[derive(Default)]
 pub struct ModuleEventRegister {
@@ -60,9 +51,7 @@ impl ModuleEventRegister {
     ) {
         info!(
             "[backend][handler-register] register module: {}, to event {:?}, to module name {:?}",
-            handler,
-            event,
-            module
+            handler, event, module
         );
         if let Some(evt) = event {
             let mut modules = self.event.write().await;
@@ -117,6 +106,9 @@ impl Core for NmideCore {
     }
 
     async fn get_sender(&self) -> Sender<CoreModification> {
-        NMIDE_SENDER.get().expect("Sender should be initialized").clone()
+        NMIDE_SENDER
+            .get()
+            .expect("Sender should be initialized")
+            .clone()
     }
 }

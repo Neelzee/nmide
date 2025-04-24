@@ -55,7 +55,7 @@ pub fn setup(paths: (PathBuf, PathBuf)) {
                 }
                 _ => None,
             })
-            .map(|pth| {
+            .map(|_pth| {
                 // TODO: This should print to stderr, and not panic, but is useful for
                 // development
                 /*Nmlugin::new(pth.as_path()).unwrap_or_else(|err| {

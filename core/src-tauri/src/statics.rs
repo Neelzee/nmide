@@ -1,12 +1,10 @@
-use crate::core::{ModuleEventRegister, NmideCore};
+use crate::core::ModuleEventRegister;
 use core_module_lib::Module;
-use core_std_lib::{html::Html, state::State};
+use core_std_lib::{core::CoreModification, html::Html, state::State};
 use once_cell::sync::{Lazy, OnceCell};
 use std::{collections::HashMap, path::PathBuf};
-use std::sync::mpsc::Receiver;
-use tokio::sync::mpsc::Sender;
-use tokio::sync::RwLock;
-use core_std_lib::core::CoreModification;
+use tauri::AppHandle;
+use tokio::sync::{mpsc::Sender, RwLock};
 
 // TODO: Add runtime module support
 pub static RUNTIME_MODULES: tokio::sync::OnceCell<Vec<()>> = tokio::sync::OnceCell::const_new();
@@ -21,5 +19,7 @@ pub static COMPILE_TIME_MODULES: Lazy<RwLock<HashMap<String, Box<dyn Module>>>> 
 pub static MODULE_EVENT_REGISTER: Lazy<RwLock<ModuleEventRegister>> =
     Lazy::new(|| RwLock::new(ModuleEventRegister::default()));
 
-pub static NMIDE_SENDER: tokio::sync::OnceCell<Sender<CoreModification>>
-    = tokio::sync::OnceCell::const_new();
+pub static NMIDE_SENDER: tokio::sync::OnceCell<Sender<CoreModification>> =
+    tokio::sync::OnceCell::const_new();
+
+pub static NMIDE: tokio::sync::OnceCell<RwLock<AppHandle>> = tokio::sync::OnceCell::const_new();
