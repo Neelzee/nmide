@@ -1,7 +1,8 @@
 use async_trait::async_trait;
 use core_module_lib::{self, Module};
 use core_std_lib::attrs::Attr;
-use core_std_lib::core::{Core, CoreModification};
+use core_std_lib::core::{Core};
+use core_std_lib::core_modification::CoreModification;
 use core_std_lib::event::Event;
 use core_std_lib::html::{Html, UIInstructionBuilder};
 

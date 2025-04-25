@@ -1,5 +1,6 @@
 use core_module_lib::Module;
-use core_std_lib::core::{Core, CoreModification};
+use core_std_lib::core::Core;
+use core_std_lib::core_modification::CoreModification;
 use core_std_lib::event::Event;
 use core_std_lib::state::{StateInstructionBuilder, Value};
 use std::collections::HashMap;

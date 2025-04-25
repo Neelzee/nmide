@@ -1,7 +1,8 @@
 use async_trait::async_trait;
 use core_std_lib::{
     attrs::Attr,
-    core::{Core, CoreModification},
+    core::Core,
+    core_modification::CoreModification,
     event::Event,
     html::{Html, UIInstructionBuilder},
     state::{State, StateInstructionBuilder, Value},
