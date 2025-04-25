@@ -29,6 +29,8 @@ pub mod state;
 
 pub mod core;
 
+pub mod core_modification;
+
 pub mod event;
 
 pub mod instruction;

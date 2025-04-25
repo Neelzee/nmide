@@ -1,3 +1,1 @@
-satisfaction = {
-  loggingImpl models Log;
-};
+satisfaction loggingImplSatsLog = loggingImpl models Log;

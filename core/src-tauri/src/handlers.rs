@@ -2,10 +2,7 @@ use crate::{
     core::NmideCore,
     statics::{COMPILE_TIME_MODULES, MODULE_EVENT_REGISTER, NMIDE},
 };
-use core_std_lib::{
-    core::{Core, CoreModification},
-    event::Event,
-};
+use core_std_lib::{core::Core, core_modification::CoreModification, event::Event};
 use futures;
 use log::info;
 
@@ -64,4 +61,3 @@ pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
         app.exit(0);
     }
 }
-

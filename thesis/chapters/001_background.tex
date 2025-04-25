@@ -82,9 +82,6 @@ since there will at minimum, be one element in the list.
 \end{center}
 
 However, this interpretation depends on our implementation of the concept.
-\todo{Add more examples showcasing what is needed from a Magnolia IDE}
-\todo{Renaming}
-\todo{Showing all imports are DAG's}
 
 \subsection{Magnolia Implementation}
 
@@ -94,7 +91,6 @@ implementation for all the functions, giving us the functionality we set out to
 specify with our concept, but there is nothing stopping us from straying away
 from the specification, by implementing it incorrectly. As can be seen in
 listing \ref{lst:impl-wrong}.
-\todo{Add more examples showcasing what is needed from a Magnolia IDE}
 
 \begin{center}
   \lstinputlisting
@@ -126,15 +122,23 @@ concept and implementation together, by ensuring our axiom are upheld.
     ]{./code/magnolia-sat.mg}
 \end{center}
 
-Something, Something, \dots, implementations of concepts need to uphold the
-axioms declared in the concept being implemented. This is done by using an
-external SMT-solver. Satisfaction, babay
-\todo{Cite Beate maybe?}
+When implementing a concept in Magnolia, one could do so incorrectly. In other
+programming languages, one might still have \textit{encoded} some meaning in an
+interface, like that in the interface \textbf{Action} in listing
+\ref{lst:jeditor}, is an associative operation. To detect this, one would have
+to create a unit test for each implementation of the interface, while in
+Magnolia one writes a satisfaction as shown in listing \ref{lst:sat}, which in
+turn is \textit{transpiled} to a format understandable by an \gls{smt} solver.
 
-\todo{
-  Expand, maybe exploring generic concepts, axioms and implementation, noting
-  how a developer would use Magnolia?
-}
+\subsubsection{Satisfiability Modulo Theories solvers}
+
+An \gls{smt} solver is a program that takes our implementation, and say whether
+our implementations satisfies our concept. In \cite{beateVerification}, Skogvik 
+lays out different \gls{smt} solvers and compare them against each other, with
+the Magnolia library as input. One of Skogviks conclusions are that while
+verification of some program is good to have, some features needed for a new
+\gls{ide} would be to integrate it with this functionality.
+
 
 \subsection{Mathematics and Programming}
 
@@ -185,19 +189,21 @@ action we want an opposite action that undos an action. Then our composition of
 actions looks different. Say, $a$ is some action, and $c$ is some opposite
 action, then our composition looks like this:
 
-\begin{equation}
-  a \odot c = U
-\end{equation}
+\begin{definition}[Action Composition] \label{def:actComp}
+  \begin{equation}
+    a \odot c = U
+  \end{equation}
+\end{definition}
 
 Where $U$ is an action representing \textit{no-operation}. This could be
 inserting the empty string at any position, deleting the empty string at any
 position, or redoing or undoing any of the aforementioned actions.
 
 Both of these examples are relatively easy to implement, but harder to verify,
-or satisfy our properties; that the \textit{logic} holds. The following are
-examples of the logging and editor examples in Java, Rust, and Magnolia
-respectively.
-\todo{rewrite}
+to satisfy our properties; that the \textit{logic} holds. In Java and Rust, to
+ensue that we have implemented something correctly, one would create a unit
+test. But there is nothing to ensure that we create this test correctly, that
+we cover all the edge cases, or if we are testing the correct thing.
 
 \subsection{Logging example in Java, Rust, and Magnolia}
 
@@ -207,8 +213,6 @@ tests, that ensure the implementations satisfy the definition \ref{def:logComp},
 but this safeguard only exists in our project, and once our \gls{api} can be
 implemented by third-party developers, we have no guarantee they will follow our
 constraints.
-
-\todo{Expand}
 
 \begin{center}
   \lstinputlisting
@@ -226,7 +230,7 @@ constraints.
 
 In Magnolia, however, it is possible. In the \ref{lst:mlogging} listing, we can
 add an axiom, which is the same as our requirement definition
-\ref{def:listComp}. For implementers, \textit{consumers}, of our \gls{api}, we
+\ref{def:actComp}. For implementers, \textit{consumers} of our \gls{api}, we
 can now ensure they implement correctly, as long as they add the simple
 declaration showed in listing \ref{lst:mlogSat}. This will be ensured, because
 in a standard Magnolia work routine, a developer will invoke an \gls{smt}
@@ -370,10 +374,8 @@ The definition \ref{def:group}, of course is identical to the structure we used
 to model undo-redo, in our text editor example. To avoid common mistakes when
 implementing these structures, it would behoove a developer if they could encode
 these properties in something like an interface or a trait, however, this is not
-possible in either Java nor Rust.
-\todo{Rewrite this}
-
-\todo{Rewrite this to better fit the previous section}
+possible in either Java nor Rust. We cannot enforce things like the definition
+\ref{def:assoc} on our operators.
 
 \subsection{Java: Magma to Group}
 
@@ -414,7 +416,7 @@ the \gls{api}.
 
 \subsection{Rust: Magma to Group}
 
-\todo{Expand}
+The same issue with property enforcement exists in Rust.
 
 \begin{center}
   \lstinputlisting
@@ -493,16 +495,25 @@ with the added property of associativity.
     , label=lst:group]{./code/group.mg}
 \end{center}
 
-So Magnolia facilitates reuse, and extension of logic. \todo{expand}
+So Magnolia facilitates reuse, and extension of logic. In Magnolia we can build
+upon existing proven algebraic structures like a group, and reuse their
+properties. For example, with the editor example, we can do optimizations on
+the actions. Since the user of the editor reacts slower than our code, we can
+batch several actions together, and evaluate them together. If the user keeps
+writing and deleting the same sentence over and over again, we could evaluate
+them as an "NoOp", and not do the expensive IO operation.
 
 \section{Reusable Software}
 
 One of the most important features in any programming language, is the notion
-of \textit{reusability}. From the invention of the GO-TO-statement,
-to functions, and external libraries, being able to reuse existing software is
-an important tool for a developer. It avoids \textit{re-inventing the wheel}, as
-common functionality can be externalized and reused in several different places.
-\todo{Can probably expand this by going more in depth}
+of \textit{reusability}. From the invention of the GO-TO-statement, with which
+we could repeat code statements $N$ times instead of writing them $N$ times, to
+functions, where we could run the same piece of code several times in a
+program, with different inputs, reuse has been an essential tool for a
+programmer. It avoids \textit{re-inventing the wheel}, as common functionality
+can be externalized and reused in several different places. This ensures
+fewer points of failure. Instead of having to test several different places in
+a project, we can test the function being used different places.
 
 \subsection{Reuse in Magnolia}
 
@@ -510,12 +521,10 @@ Reusability is also an important feature in Magnolia, but this reusability is in
 the entire language. In libraries in other languages, functions are reused, in
 an attempt to avoid common logical mistakes, but these mistakes could still be
 there, hiding in plain view. In Magnolia, one can re-use the \textit{logic} of a
-\todo{Expand}
 function. The logging and group example can be rewritten using Magnolia concepts
 as shown in listing \ref{lst:logging} and \ref{lst:editor} respectively, by
 reusing the concepts we created for semigroup in listing \ref{lst:semigroup} and group
 in listing \ref{lst:group}.
-\todo{rewrite}
 
 \begin{center}
   \lstinputlisting
@@ -561,7 +570,7 @@ text editor, to a fully fledged \gls{ide}.
 An \gls{ide}, aids a developer, as all the needed tools for development are
 \todo{Mention the tools, and how devs had it before.}
 integrated into one application. There are two different kinds of \gls{ide}s,
-generic and specialized. \todo{Source}
+generic and specialized.
 
 A specialized \gls{ide} is one targeted towards a specific language, like
 Eclipse, (reference?), or IntelliJ (reference?), which target Java/JVM. It
@@ -571,56 +580,98 @@ contains specialized features like the following:
   it to support different languages, as does IntelliJ.
 }
 
-\paragraph{Syntax Highlighting} Highlighting important keywords, identifiers
-and more, makes the language easier to read for the developer, allowing them to
-spot easy to miss errors, like misspelling of keywords, functions, and
-variables.
+\subsection{Syntax Highlighting}
 
-\paragraph{Code Autocompletion} Suggesting keywords, method names or even entire
-code snippets, is a powerful tool an \gls{ide} can have. This is possible to
-achieve, in some form, without being specialized, by for example, suggesting
-text that already exist in the document, but is most useful if it is
-specialized, and can suggest built-in methods. This allows a developer to not
-having to remember exactly how methods are named, is the method to split a
-string by some delimiter, \textit{split\_by} or \textit{split\_on}? As long as
-the developer writes \textit{split}, the correct method name will be suggested.
+Highlighting important keywords, identifiers and more, makes the language easier
+to read for the developer, allowing them to spot easy to miss errors, like
+misspelling of keywords, functions, and variables. In the pictures
+\ref{pic:stx}, and \ref{pic:noStx} we can see the difference between having
+syntax highlighting. In \ref{pic:stx} we can clearly see what is, and is not a
+latex command, if we wrote \textit{\\begn} instead of \textit{\\begin}, we can
+notice the discrepancy, as we expect it to, in this case, be purple. We are
+using visualization to make developers notice issues.
 
-\paragraph{Go-To-Definitions} Being able to quickly navigate to methods and read
-their implementation is a useful tool for a developer, as less time has to be
-spent navigating the project structure, to figure out where some method was
-implemented, and more time can be spent actually developing.
+\begin{figure} \label{pic:stx}
+  \centering
+  \includegraphics[width=0.5\textwidth]{syntax-highlighting.png}
+  \caption{Syntax Highlighting (\LaTeX\ in \gls{nvim})}
+\end{figure}
 
-\paragraph{Pretty Printing/Formatting} Following the languages style guide.
+\begin{figure} \label{pic:noStx}
+  \centering
+  \includegraphics[width=0.5\textwidth]{no-syntax-highlighting.png}
+  \caption{No Syntax Highlighting (\LaTeX\ in \gls{nvim})}
+\end{figure}
+
+\subsection{Code Autocompletion}
+
+Suggesting keywords, method names or even entire code snippets, is a powerful
+tool an \gls{ide} can have. This is possible to achieve, in some form, without
+being specialized, by for example, suggesting text that already exist in the
+document, but is most useful if it is specialized, and can suggest built-in
+methods. This allows a developer to not having to remember exactly how methods
+are named, is the method to split a string by some delimiter, \textit{split\_by}
+or \textit{split\_on}? As long as the developer writes \textit{split}, the
+correct method name will be suggested.
+
+\begin{figure} \label{pic:completion}
+  \centering
+  \includegraphics[width=0.5\textwidth]{context-completion.png}
+  \caption{\gls{vscode} suggesting appropriate methods (Rust)}
+\end{figure}
+
+\subsection{Go-To-Definitions}
+Being able to quickly navigate to methods and read their implementation is a
+useful tool for a developer, as less time has to be spent navigating the project
+structure, to figure out where some method was implemented, and more time can be
+spent actually developing.
+
+\subsection{Pretty Printing/Formatting}
+Following the languages style guide.
 \todo{Expand, add examples like with Rust}
 
-\paragraph{Boilerplate Code Generation} For unit tests, getters and setters,
-(where relevant), and similar.
+\subsection{Boilerplate Code Generation}
+For unit tests, getters and setters, (where relevant), and similar.
 
-A lot of these features are possible due to \gls{lsp} which allow for a
-standardized way for compilers to give code-support to \gls{ide}'s.
+\begin{figure} \label{pic:generate}
+  \centering
+  \includegraphics{generate.png}
+  \caption{Window for generating boilerplate code for a unit test (Kotlin in \gls{intellij})}
+\end{figure}
 
-A generic \gls{ide} contains the features that are common among development in
-any programming language, like:
+These are features also within a generic \gls{ide}, but most are available
+through the \gls{ide} module architecture. A generic \gls{ide} contains the
+features that are common among development across any programming language. But
+the following features are not exclusive to generic \gls{ide}s.
 
-\paragraph{File Explorer} Most project nowadays is larger than one file, so
-being able to visualize the project in a tree-like-structure, and navigate that,
-is useful. This feature usually comes with the ability to manipulate the project
-structure, by adding files, folders, moving files around, and deleting them.
+\subsection{File Explorer}
 
-But creating any \gls{ide} would still limit the lifetime of the \gls{ide}.
-The best example of a long living active \gls{ide}, or, at least editor, is Vim
-(source?). Vim is not a feature full editor, but it is simple, lightweight, and
-works on any operating system. But most people use it, for how easy it is to
-extend; Its lifetime has been greatly extended by the ease of modularization.
-Any popular module for Vim is open-source, and therefore, if any module had an
-active community around it, if the \textit{lead} developer of the module stopped
-developing it, that community can continue to develop the module, either by
-getting maintenance access to the repository, or by forking it. Ensuring the
-lifetime of the module is extended.
+Most project nowadays is larger than one file, so being able to visualize the
+project in a tree-like-structure, and navigate that, is useful. This feature
+usually comes with the ability to manipulate the project structure, by adding
+files, folders, moving files around, and deleting them.
+
+\subsection{Version Control System Integration}
+
+\gls{vcs} is an integral part of development. Being able to sync ones work
+between different machines and developers is essential.
+
+\subsection{Integrated Terminal}
+
+An \gls{ide} is an all-encompassing tool for development related work, which
+includes a terminal.
+
+\subsection{Module Market \& Installation}
+
+An important part of the user experience in a modular \gls{ide}, is being able
+to seamlessly add, install and use modules. An integral part of this is the
+module marketplace. This is a term for the place where a user can find modules,
+and with the click of a button, install them. Depending on what feature this
+module adds, the installation process could be as simple as adding it during the
+runtime, or if it's a more complex or integrated feature to the \gls{ide},
+requires a restart of the \gls{ide}.
 
 \section{Module Architecture}
-
-\todo{Talk about modules in IDEs}
 
 A modular application, is an application which can be extended by other pieces
 of software. This extensibility is useful as features that the original
@@ -639,17 +690,13 @@ advantages and disadvantage in both approaches.
 
 \subsection{Compile Time Module}
 
-\todo{Expand}
 As an example, a standard user of any application will expect the application to
 come bundled with all the needed functionality. This is best achieved with the
 \textit{compile-time-extension} method, since the application can be installed
-with the expected modules. A compile time module is usually made using the same
-language as the core application.
+with the expected modules.
 \todo{Maybe mention it could be faster due to compiler optimalization?}
 
 \subsection{Runtime Module}
-
-\todo{Expand}
 
 Runtime modules are usually also interpreted, but they can still be a
 library, same as in a compile time module.
@@ -664,11 +711,9 @@ with the help of modules. A module (called plug-in in \gls{eclipse}),
 completion, Go-to-definitions, debugging, and more, for standard programming
 languages. A lot of this functionality, comes from module-to-module extension,
 as in \gls{eclipse} modules can extend modules, with the use of the Eclipse Rich
-Client Platform. \cite{eclipseRcp}
+Client Platform \cite{eclipseRcp}.
 
 \subsection{Module Ecosystem}
-
-\todo{Expand}
 
 In modern \gls{ide}s, with an extensive module architecture, there exists a
 vast module ecosystem. From simple modules that change the color scheme, or
@@ -677,13 +722,7 @@ A good variety of a module ecosystem can help ensure the longevity of an
 \gls{ide}. In the table \ref{tbl:mod}, we can see that \gls{ide}s have an
 extensive module ecosystem. \footnotemark
 
-\footnotetext{
-  \unskip Data found by looking at the marketplace\footnotemark for the modules,
-  \unskip in order:
-  \unskip \url{https://marketplace.eclipse.org/content/welcome-eclipse-marketplace}% Eclipse
-  \unskip, \url{https://plugins.jetbrains.com/} % Intellij
-  \unskip, \url{https://marketplace.visualstudio.com/search?target=VSCode\&category=All\%20categories\&sortBy=Installs} % vscode
-}
+\footnotetext{Data found by looking at the marketplace\footnotemark for the modules, in order:\url{https://marketplace.eclipse.org/content/welcome-eclipse-marketplace}, \url{https://plugins.jetbrains.com/}, \url{https://marketplace.visualstudio.com/search?target=VSCode\&category=All\%20categories\&sortBy=Installs}}
 
 \gls{vscode} is the popular \gls{ide} \cite{topIde}, and this could be due to
 the amount of modules it has to offer. The amount of modules attributed to
@@ -733,10 +772,11 @@ achieve the wanted feature.
 
 \subsection{Module Family}
 
-\todo{
-  Redo this to be less specific, then add a specific section, which reflects
-  what has been done
-}
+A module family are several modules enabling a single
+\textit{feature}. A user of the \gls{ide} might think that being able to browse
+the project using a file explorer integrated into the \gls{ide} as a single
+feature, in a modular system, that facilitates reuse, this would be made up of
+several different modules.
 
 \begin{figure}
   \centering
@@ -763,7 +803,7 @@ computer languages. \cite{lwb}
 \todo{Expand}
 
 \section{Language Server}
-\todo{Go more in depth about language server stuff}
+
 The most important features in a modern \gls{ide} are possible due to the
 \gls{lsp}. \gls{lsp} is a protocol for a language server and editor,
 (the client), with which they communicate, allowing for many of the features
@@ -810,8 +850,6 @@ from, and defined in \textit{types.ts}. This is what happens:
     documentation and implementation of the type
 \end{enumerate}
 
-\todo{Add concrete example}
-
 \section{Existing Magnolia IDE}
 
 The current \gls{ide} for Magnolia \cite{baggeIde}, is a many-years-old version
@@ -854,30 +892,60 @@ multiple definitions, and resolving this can be complex.
 As shown earlier, in Magnolia, one can make some concept, and reuse this concept
 in another one. An example of this can be shown in listings \ref{lst:foo}, and
 \ref{lst:bar}, where we have the concept \textit{Foo} being used in \ref{lst:bar}.
-\todo{Make this true}
-\todo{Add a non-empty-list example}
+
+String concatenation is a monoid, so is list concatenation.
+\todo{Add proof? Isomorphism?}
+
+Even though they are related, it is more useful to have specific names for each
+concept. In \ref{lst:strConc} and \ref{list:listConc} we are importing the
+monoid, (from listing \ref{lst:monoid}), and renaming the \textbf{unit} and
+\textbf{binop} operation to something that are specific to the concepts,
+\textbf{emptyString}, $+$ and \textbf{emptyList}, $++$ respectively.
+
+\begin{center}
+  \lstinputlisting
+    [ language=Magnolia
+    , caption={String concatenation (Magnolia)}
+    , label=lst:strConc
+    ]{./code/string-conc.mg}
+\end{center}
+
+\begin{center}
+  \lstinputlisting
+    [ language=Magnolia
+    , caption={String concatenation (Magnolia)}
+    , label=lst:lstConc
+    ]{./code/list-conc.mg}
+\end{center}
 
 \subsection{Dependency Cycles}
 
-Programming languages have different ways to avoid this problem.
-\todo{Figure out what this problem is called}
-The easiest, is to simply disallow such import structures, which is something
-Magnolia does. All imports have to be \gls{dag}'s. In most programming languages
-this is trivial to solve for developers, as if suddenly a project has a cyclic
-import, it can be solved quite easily. This could be complex, but in most cases
-this is an easy fix. However, due to the heavy reuse in Magnolia, the cycles
-could be quite large and harder to reason about without a tool to visualize the
-dependency graph.
-\todo{rewrite}
+Programming languages have different ways to avoid the problem of imports of
+modules forming a cyclic graph. The easiest, is to simply disallow such import
+structures, which is something Magnolia does. All imports have to be
+\gls{dag}'s. In most programming languages this is trivial to solve for
+developers, as if suddenly a project has a cyclic import, it can be solved quite
+easily. This could be complex, but in most cases this is an easy fix. However,
+due to the heavy reuse in Magnolia, the cycles could be quite large and harder
+to reason about without a tool to visualize the dependency graph.
 
+\subsection{External software dependency}
+
+Magnolia depends on a compiler, like all compiled programming languages, but
+also an \gls{smt} solver. While the new compiler for Magnolia, at the time of
+writing is still under development, \cite{wiig}, but once released will be quite
+stable. This is in contrast to the \gls{smt} solver environment. Skogvik
+\cite{beateVerification} noted the different competitions for developers of
+\gls{smt} solvers, this means there might be a new and better \gls{smt} solver,
+which means it needs to be easy for a user of the \gls{ide} to change the
+\gls{smt} solver they are using to validate their program with.
 
 Mention \gls{asr}s?
 
-Mention the need for two different external programs, a compiler and a solver?
-
 \section{Zero Core IDE}
+
 \todo{Add intro}
-\todo{Tie it with this is similar to a microservice architecture}
+
 There is also a provider, some module providing data, and some consumer, some
 module using the data. If either the consumer or the provider is maintained by a
 third party, then there is some informal \textit{contract} between them. The
@@ -902,11 +970,12 @@ systems at test time, mocking is used. This mocking is part of how a consumer
 assumes a provider should act. Mocking of modules is trivial, as all one needs
 to mock is the state, the \gls{ui}, or that some event happens. At a larger
 scale we test the module family, to see if its change has affected the other
-modules. This can be done with contract testing, as discussed in
-\cite{GROSS200322}. All modules composing the \gls{ide} can be loaded in a test
-environment, where all interactions are recorded, and used to generate a
-dependency graph, showing what modules depend on whom. This can show that
-certain modules are more tightly connected than assumed, meaning they are in the
-same module family, it can also show what module families communicate with other
-module families, showing module communities.
-\todo{Add diagram?}
+modules. This can be done with contract testing, as discussed by Gross and Mayer
+\cite{GROSS200322}. They propose a module architecture, where each module expose
+some testing interface. However, in the architecture propose by us, all modules
+composing the \gls{ide} can be loaded in a test environment, where all
+interactions are recorded, and used to generate a dependency graph, showing what
+modules depend on whom. This can show that certain modules are more tightly
+connected than assumed, meaning they are in the same module family, it can also
+show what module families communicate with other module families, showing module
+communities.

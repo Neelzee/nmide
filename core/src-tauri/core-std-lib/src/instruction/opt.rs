@@ -9,7 +9,7 @@ impl<T: PartialEq + Clone> Instruction<T> {
         todo!()
     }
 
-    fn rems(xs: &[Instruction<T>]) -> Vec<(Some(String), Some(String))> {
+    fn rems(xs: &[Instruction<T>]) -> Vec<(Option<String>, Option<String>)> {
         xs.into_iter().filter_map(|i| {
             match i {
                 Instruction::Rem(a, b, _) => todo!(),

@@ -1,3 +1,2 @@
-satisfation {
-  implNaturalNumbers models NaturalNumbers;
-};
+satisfation implNaturalNumbersIsValid
+  = implNaturalNumbers models NaturalNumbers;

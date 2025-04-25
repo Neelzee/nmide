@@ -1,9 +1,6 @@
 use abi_stable::library::{LibraryError, LibraryPath, RootModule};
 use async_trait::async_trait;
-use core_std_lib::{
-    core::{Core, CoreModification},
-    event::Event,
-};
+use core_std_lib::{core::Core, core_modification::CoreModification, event::Event};
 use foreign_std_lib::module::rs_module::ModuleRef;
 use std::path::Path;
 

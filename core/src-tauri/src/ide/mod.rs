@@ -4,10 +4,7 @@ use crate::{
     statics::{NMIDE, NMIDE_SENDER, NMIDE_STATE, NMIDE_UI},
 };
 use core_std_lib::{
-    core::{Core, CoreModification},
-    event::Event,
-    html::Html,
-    state::Value,
+    core::Core, core_modification::CoreModification, event::Event, html::Html, state::Value,
 };
 use log::info;
 use std::collections::HashMap;

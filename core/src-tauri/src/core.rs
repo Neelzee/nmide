@@ -1,10 +1,7 @@
 use crate::statics::{MODULE_EVENT_REGISTER, NMIDE, NMIDE_SENDER, NMIDE_STATE, NMIDE_UI};
 use async_trait::async_trait;
 use core_std_lib::{
-    core::{Core, CoreModification},
-    event::Event,
-    html::Html,
-    state::State,
+    core::Core, core_modification::CoreModification, event::Event, html::Html, state::State,
 };
 use log::info;
 use std::collections::HashMap;

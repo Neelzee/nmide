@@ -185,95 +185,38 @@ application which runs third party code.
 
 \subsubsection{Module Validation}
 
-\todo{Mention module validation}
+Running third-party-code can dangerous. If this code is not validate or doesn't
+come from a trusted source, it could be an attack vector. Luckily, Tauri does
+some of this work for us, but even if we have validated that a module is wanted,
+there is still the remaining use that has been the reason for 100\% of all
+CVE's, human error.
 
-\todo{Also expand on the module-validation part, third-party-code, and all that.}
+The Rust compiler can ensure that the Rust modules are valid during compile
+time, for runtime this is a bit trickier. But for JavaScript modules, which the
+\gls{ide} supports out-of-the-box, this is a bigger issue. This lead to the
+development of two systems. \gls{rsms} and \gls{jsms}.
 
-Before the finalization of this state representation, there was some
-discussion, on how best to represent a number. Because, in JavaScript, there is
-no distinction between a floating-point number, and a decimal number. This
-\textit{leakage} was stopped by adding extra validation in the core, using the
-\textit{io-fp} library, which validates data sent from a module, regardless if
-its from the frontend or backend This will be discussed more in the next
-section.
-
-This lead to the development of two systems. \gls{rsms} and \gls{jsms}.
-\todo{Mention in the next section how RSMS and JSMS are just backend frontend}
 It was necessary to distinguish the different module systems, due to the way
-they would be loaded by the core application.
-\todo{Mention different methods of loading modules}
-The \gls{rsms}, being written in Rust, meant it needed extra safeguards, as
-loading of shared object files, during runtime, could lead to undefined
-behavior.
-\todo{Expand this point}
+they would be loaded and invoked by the core application. Since the core is
+written in Rust, the \gls{rsms} doesn't have to do any validation or
+translation when communicating with compile time modules. With runtime modules
+this also ended up being trivial, but will be discussed more in depth later.
 
-The \gls{jsms} is similar to the Rust example, except that the undefined
-behavior, in this case, is exceptions being thrown. Since third party code is
-being run, nothing can be trusted.
-\todo{Mention this earlier}
-All module invocations and outputs needs to be sanitized before it can be used
-in the core application. This is achieved by wrapping all invocations in a
+In the \gls{jsms}, managing of modules can lead to is exceptions being thrown.
+Since third party code is being run, nothing can be trusted. All module
+invocations and outputs needs to be sanitized before it can be used in the core
+application. This is achieved by wrapping all invocations in a
 \textit{try-catch}, and using the \textit{io-fp} library to decode types during
-runtime. This means that all modules in \gls{jsms} are actually of the type
-shown in listing \ref{lst:jsmsModule}. Which using \textit{io-fp}, can be
-handled as shown in listing \ref{lst:jsmsHandlingInit}. This
-\lstinline[language=Haskell]{Either Error State} or
-\lstinline[language=Haskell]{Either Error HTML} can be handled by other modules,
-if there is a way to recover from the error. The \textit{standard} way for the
-core to \textit{correct} this error, is to \textit{just} log the error. But this
-turns an unrecoverable error into a recoverable one, given that it is an
-acceptable result to \textit{ignore} the error.
-
-\begin{center}
-  \lstinputlisting
-    [ language=TypeScript
-    , caption={JSMS Module Type}
-    , label=lst:jsmsModule
-    ]{./code/jsms-example.ts}
-\end{center}
-
-\begin{center}
-  \lstinputlisting
-    [ language=TypeScript
-    , caption={Module Module-Init Handling}
-    , label=lst:jsmsHandlingInit
-    ]{./code/jsms-handling-init.ts}
-\end{center}
-
-\begin{center}
-  \lstinputlisting
-    [ language=TypeScript
-    , caption={Module Module-Update Handling}
-    , label=lst:jsmsHandlingUpdate
-    ]{./code/jsms-handling-update.ts}
-\end{center}
-
-\begin{center}
-  \lstinputlisting
-    [ language=TypeScript
-    , caption={Module Module-View Handling}
-    , label=lst:jsmsHandlingView
-    ]{./code/jsms-handling-view.ts}
-\end{center}
-
-\todo{These are just put here, add some text explaining why}
-
-\begin{center}
-  \lstinputlisting
-   [ language=Haskell
-   , caption={Module Unverified Type}
-   , label=lst:moduleTypeUnverified
-   ]{./code/module-unverified-example.ts}
-\end{center}
-
-This architecture also has the issue about verification of modules, but only on
-functions, as simple fields can be validated using the
+runtime. This enables us to safely invoke modules, as we can translate all
+computations into a product type, where it is either an success, giving us the
+wanted computation from the module, or an error. But even with types, we cannot
+verify functions. Since during runtime, we are in the JavaScript environment,
+we can only validate if something is a function, using the
 \lstinline[language=JavaScript]{typeof} operator. It is possible to do
-\textit{some} verification on functions in TypeScript, but this is only a) Is it
+\textit{some} verification on functions in JavaScript, but this is only a) Is it
 a function, and b) does it have the correct amount of arguments. In this case,
 one. Nothing about the typing of the function can be ascertained at runtime,
 without explicitly invoking the function.
-
 
 \section{Module V.1} \label{sec:mod1}
 
@@ -306,7 +249,6 @@ issues to existing \gls{ide}s, how does one allow for \textit{everything}?
 Furthermore, anything created this way, would be subpar to existing software,
 which would lead to the next maintainer having to fix the core application. This
 in turn, would add a lot of complexity, which the maintainers would have to deal with.
-\todo{expand/rewrite this}
 
 \section{Module V.2} \label{sec:mod2}
 
@@ -324,8 +266,6 @@ modules. All features, from the file explorer to the text editor, everything is
 a module that can be enabled or disabled.
 
 \subsection{The Elm Architecture}
-
-\todo{Rewrite this, apparently Elm inspired TEA (The Elm Architecture)}
 
 An inspiration for the new module architecture is Elm-Lang \cite{elmLang}. Elm
 is a functional language, aimed at frontend web development, but its
@@ -363,14 +303,6 @@ Invoked every time a \textit{Msg} is sent.
 \paragraph{View} Returns a collection which represents \gls{html},
 which is rendered by the core.
 
-\begin{center}
-  \lstinputlisting
-    [ language=Haskell
-    , caption={Module Type}
-    , label=lst:pluginExample
-    ]{./code/plugin-example.hs}
-\end{center}
-
 A module is initialized by invoking the \textbf{init} method, which returns a
 state. This can be seen in figure \ref{fig:moduleInit}. After the state
 initialization, the modules' \textbf{view} method is invoked, which initializes
@@ -403,15 +335,22 @@ value. So an int would be \textbf{\{ int: 0 \}}.
 The reason for representing a JSON object as key-value pairs, is that this could
 be easily translated to a Rust representation of the same type, using the
 \textit{Serde} crate. This allows for creating Rust structs which represents
-JSON objects, and creates an automatic encoder/decoder between Rust and JSON.
+JSON objects, and creates an automatic encoder/decoder between Rust and
+\gls{json}. Using the \textit{ts\_rs}, we could also automatically create the
+TypeScript type that represents the automatically encoded/decoded \gls{json}.
 This ensures a good cooperation between the \textit{frontend} and
 \textit{backend}.
-\todo{Rewrite}
+
+\subsection{IDE lifecycle}
 
 The general idea was that for each possible \gls{dom}-event, there would exist a
 way to send a Msg. Each Msg contains a Msg name, and some value, which enabled
 pattern matching on Msg, similar to Elm, for modules, so each module could
-choose to act on a Msg or not.
+choose to act on a Msg or not. So, after the initialization of the \gls{ide},
+any time the user interacted with the \gls{gui} the modules would react to the
+Msg. The trivial plugin, would simply return an empty state on \textbf{init} and
+\textbf{update}, while on \textbf{view}, it would return a \textit{frag}
+element, which is a React element that evaluates to no \gls{dom} change.
 
 In listing \ref{lst:pluginCounterExample}, an example of a counter module can be
 seen. This module initializes a state, containing the field \textbf{"counter"},
@@ -428,7 +367,7 @@ user, sends the \textit{counter-Msg}.
 \begin{center}
   \lstinputlisting
     [ language=Haskell
-    , caption={Module Architecture}
+    , caption={Counter Module (Haskell)}
     , label=lst:pluginCounterExample]{./code/plugin-counter-example.hs}
 \end{center}
 
@@ -449,13 +388,9 @@ which also reacts to the same Msg, but if we know the name of the module $B$,
 we can set the name of module $C$ to be \textit{above} the order, relative to
 $B$, ensuring that $C$ always triggers before $B$.
 
-But this introduces a possibility for some hierarchy in the module ecosystem.
-For example, a module could act as a framework, and therefore needs to only be
-loaded once, creating new locations, with styling.
-
 \subsection{Module v2 Cons}
 
-\subsubsection{Module v2 cons}
+\todo{Mention in v2 how file system stuff made stuff sluggish}
 
 \todo{Sum up all the issues with this architecture}
 
@@ -467,46 +402,26 @@ loaded once, creating new locations, with styling.
   \item Ever growing state
 \end{enumerate}
 
+\paragraph{Not modular} This setup is also not really modular, as a single
+module cannot invoke another module without being impure. The only way to
+invoke/trigger another module, is to throw a \textit{Msg}, which would trigger
+an update -> view -> cycle. So a module cannot \textit{listen} for a single
+message, all modules are triggered by the same \textit{Msg}, and handled
+accordingly, synchronously. Meaning if a given Msg triggers a computational
+heavy method, the \gls{ide} will \textit{hang}, and act \textit{sluggish} until
+the computation has finished.
 
-With this setup, however, the state is appending/overwriting -only, which means
-the state can only grow.
-
-This setup is also not really modular, as a single module cannot invoke another
-module without being impure. The only way to invoke/trigger another module, is
-to throw a \textit{Msg}, which would trigger an update -> view -> cycle. So
-a module cannot \textit{listen} for a single message, all modules are triggered
-by the same \textit{Msg}, and handled accordingly.
+\paragraph{Ever growing State} There was no way to remove a field on the state,
+the state is appending/overwriting -only, which was a sideeffect of the
+\textit{solution} to state collisions.
 
 \subsubsection{State Collision} \label{sec:collision}
 
 A state collision occurs when two or more modules updates the same field, during
-the same update-cycle. This issue also occurs when folding two states.
-
-Was \textit{solved} with this:
-
-\begin{center}
-  \lstinputlisting
-  [ language=Haskell
-  , caption={State Collision Typing}
-  , label=lst:stColType
-  ]{./code/state-collision-types.hs}
-\end{center}
-
-Takes list of states from all modules, checks for collisions. It returns a
-list of
-\lstinline[language=Haskell]{Either [(String, State)] ([(String, State)], String)}.
-If it is a collision, then it's a
-\lstinline[language=Haskell]{Right ([(String, State)], String)}, which is a
-tuple where the first element is a list of tuples, being the module and their
-state, and the last element being the field that the collision occurred on.
-The other value: \lstinline[language=Haskell]{Left [(String, State)]}, are the
-module state that has no collision.
-
-\paragraph{Collision} A collision between two states occurs if they share the same
-field.
-
-There are several different ways to correct a collision between two
-states:
+the same update-cycle. This issue also occurs when folding two states. After any
+update-cycle, we were left with a list of states, which needed to be coalesced
+into a singular one. There are several different ways to correct a collision
+between two states:
 
 \begin{enumerate}
   \item If the states are of same type:
@@ -534,24 +449,14 @@ states:
 \end{enumerate}
 
 Since the states are ordered by the name of the module they come from, we
-have a consistent ordering of left-hand side and right-hand side. If the same
-modules give a collision on the same input, (given that all modules are pure), the
+have a consistent ordering of left-hand side and right-hand side. Due to the
+fact that module invocation is synchronous, and ordered. If the same modules
+give a collision on the same input, (given that all modules are pure), the
 resulting state will be the same every time. The problem is that applying some
 function on the values could be an unwanted way to resolve collisions. The
 standard way will be to log the collision, and then drop both states. Even
-if two states have A and B amount of fields, and just one collision, we will
-drop A + B amount of fields. Therefore, a module developer should avoid
-collisions.
-
-\begin{center}
-  \lstinputlisting
-  [ language=Haskell
-  , caption={State Collision}
-  , label=Listing
-  ]{./code/state-collision.hs}
-\end{center}
-
-\todo{Mention how updating two fields on the same object also counts as a collision}
+if two states have $A$ and $B$ amount of fields, and just one collision, we will
+drop $A + B$ amount of fields.
 
 This problem of resolving state collision only occurs because each module
 returns a subtree of the state. We then have to analyze the new coalesced tree
@@ -592,7 +497,6 @@ modules written in different programming languages, but for this to work in an
 optimal way, both the \textit{frontend} and \textit{backend} should be loosely
 coupled. This is an equivalent architecture to microservices.
 \todo{Add diagrams and examples}
-\todo{Mention runtimes}
 
 \subsection{Vanilla TypeScript}
 
@@ -604,7 +508,6 @@ of the functionality for rendering, which modules could change. This would
 increase the difference between the \gls{jsms} and \gls{rsms}, as the backend
 was not privy to this API, but this was not seen as an issue, as this API would
 turn module non-pure.
-\todo{Mention pureness earlier}
 
 \subsubsection{Removing abstractions}
 
@@ -629,10 +532,10 @@ state and \gls{ui} as the same issue; its some form of tree-manipulation.
 
 \begin{center}
   \lstinputlisting
-    [ language=Haskell
-    , caption={Core}
+    [ language=Rust
+    , caption={Core trait (Rust)}
     , label=lst:coreAdt
-    ]{./code/module-example-core.hs}
+    ]{./core/src-tauri/core-std-lib/src/core.rs}
 \end{center}
 
 In listing \ref{lst:moduleEvent}, one can see the structure of an
@@ -702,12 +605,27 @@ of what to do with the core.
    [ language=Rust
    , caption={Instruction (Rust)}
    , label=lst:inst
-   ]{./core/src-tauri/core-std-lib/src/instruction.rs}
+   ]{./core/src-tauri/core-std-lib/src/instruction/inst.rs}
 \end{center}
 
-The listing \ref{lst:inst}, shows of how the \textbf{Instruction}-set makes the
-modification of the core, a kind of group, as given the definition
-\ref{def:group}, we can construct one:
+The listing \ref{lst:inst}, it is clear how the \textbf{Instruction}-set makes the
+modification of the core, a kind of group, as given by the definition
+\ref{def:group}. Intuitively, for any \textbf{Instruction}, there exists
+an \textit{inverse} one, such that the definition \ref{def:inv} is upheld. If we
+add some value to the state, we can find an remove instruction that removes
+that field from the state, as shown in listing \ref{lst:inst}, in the
+\textbf{combine} method.
+
+\begin{remark}
+  The \textbf{combine} method does not recursively check the \textbf{Then}
+  instruction for \textbf{Instruction}s that lead to a \textbf{NoOp}, but in the
+  core \gls{ide}, there is an optimization step that does this.
+\end{remark}
+
+To formalize this, that the \textbf{Instruction}-set is an group, we can look at
+a subset, since \textbf{Instruction} is parameterized by some type \textbf{T},
+we will look at it when \textbf{T} is \textbf{Value}, noted by the subscript
+\textbf{val}.
 
 \begin{theorem}[Instruction Group]
   Let $\Sigma$ be the set of all strings, $Val$ be the set of all
@@ -749,9 +667,8 @@ $combine$, we can map the variants along with the specific fields being added
 instruction set. If we are modifying a value on field $foobar$, but in the same
 instruction set, remove it, then the modifying instruction is an $NoOp$.
 
-\todo{Add trivial module example, or something}
-
-Using this as a module developer is quite abstract, so to facilitate development
+Like writing direct binary to develop a program, writing \textbf{instruction}s to
+change the core is quite abstract for most developers so to facilitate development
 of modules, a helper class was created, which \textit{translates} modifications
 to instructions. As shown in listing \ref{lst:ui-builder} and
 \ref{lst:state-builder}, a module developer simply invokes different methods on
@@ -785,20 +702,18 @@ the core, without having to understand the syntax of the
    ]{./code/module-example.hs}
 \end{center}
 
-As one can see in listing \ref{lst:moduleType}, a module only exposes its name,
-and an \lstinline[language=haskell]{init} function, which takes the
-\lstinline[language=haskell]{Core}, which is a representation of
-the core application shown in listing \ref{lst:coreAdt}.
-
 \subsection{Backend Agnostic Frontend}
-\todo{This is not true anymore}
 
-As mentioned in the previous section, the tech stack splits the application into
-two, loosely coupled parts. The \textit{frontend} and \textit{backend}. This
-architecture does facilitate the concept of an agnostic frontend. That is, if,
-as is the case per the previous plan, all logic pertaining to the core is in the
-\textit{frontend}, cannot the backend be anything, as long as it fulfills the
-following criteria.
+Since we are using the framework Tauri to implement the \gls{ide}, the \gls{ide}
+is split to two, loosely coupled parts. The \textit{frontend} and
+\textit{backend}. The frontend acts as a thin wrapper around the core \gls{api},
+enabling different \textit{runtimes} to handle module management, while the
+frontend waits for events, and renders the \gls{gui}. This structure allows for
+future maintainers of the \gls{ide} to be able to \textit{trivially} switch
+runtime, if they wanted to use some other language to implement the runtime
+system in, like PureScript, Gleam or Haskell, all of which can target
+JavaScript, then they could.
+\todo{Expand maybe?}
 
 \subsection{Making the Core evaluate modifications asynchronously}
 
@@ -815,12 +730,6 @@ instead of the core collecting all modifications, each module is invoked and
 core modification, sends the modification to the core channel, which works on
 a first come, first server basis. Here the core can evaluate the changes, also
 on a separate thread.
-\todo{Mention in v2 how file system stuff made stuff sluggish}
-
-\begin{itemize}
-  \item File system modification
-  \item Module loading
-\end{itemize}
 
 \section{Testing} \label{sec:testing}
 
@@ -907,6 +816,13 @@ Here are some examples of modules implemented using the proposed architecture.
 
 \subsection{Magnolia Dependency Graph Visualizer}
 
+In Magnolia, as in many other languages, one cannot have a cyclic dependency.
+This means that the dependency graph of a Magnolia project should be a
+\gls{dag}. And since Magnolia has such a focus on reuse, the dependency graphs
+in a Magnolia project could be quite large. Which means the cycles could be
+quite long, which would make resolving the cyclic dependency issue complicated.
+One way to help a developer, would be to give them a tool to visualize the
+dependency graph, so that they could see what modules are connected.
 \todo{Implement and showcase this module}
 
 \subsection{IDE Module Family}

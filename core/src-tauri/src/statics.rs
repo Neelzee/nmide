@@ -1,6 +1,6 @@
 use crate::core::ModuleEventRegister;
 use core_module_lib::Module;
-use core_std_lib::{core::CoreModification, html::Html, state::State};
+use core_std_lib::{core_modification::CoreModification, html::Html, state::State};
 use once_cell::sync::{Lazy, OnceCell};
 use std::{collections::HashMap, path::PathBuf};
 use tauri::AppHandle;
