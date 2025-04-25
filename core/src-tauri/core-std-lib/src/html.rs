@@ -3,7 +3,7 @@
 //! An Html type is an representation of an HTML-Element.
 
 use crate::attrs::Attr;
-use crate::instruction::Instruction;
+use crate::instruction::inst::Instruction;
 use core_macros::define_html;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;

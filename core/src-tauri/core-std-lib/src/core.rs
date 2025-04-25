@@ -1,5 +1,5 @@
 use crate::attrs::Attr;
-use crate::instruction::Instruction;
+use crate::instruction::inst::Instruction;
 use crate::state::Value;
 use crate::{
     event::Event,

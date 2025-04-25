@@ -1,4 +1,4 @@
-use crate::instruction::Instruction;
+use crate::instruction::inst::Instruction;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use ts_rs::TS;
