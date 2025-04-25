@@ -390,10 +390,6 @@ $B$, ensuring that $C$ always triggers before $B$.
 
 \subsection{Module v2 Cons}
 
-\todo{Mention in v2 how file system stuff made stuff sluggish}
-
-\todo{Sum up all the issues with this architecture}
-
 \begin{enumerate}
   \item React sucks
   \item Modules cannot invoke modules
@@ -407,12 +403,16 @@ module cannot invoke another module without being impure. The only way to
 invoke/trigger another module, is to throw a \textit{Msg}, which would trigger
 an update -> view -> cycle. So a module cannot \textit{listen} for a single
 message, all modules are triggered by the same \textit{Msg}, and handled
-accordingly, synchronously. Meaning if a given Msg triggers a computational
-heavy method, the \gls{ide} will \textit{hang}, and act \textit{sluggish} until
-the computation has finished.
+accordingly, synchronously.
 
-\paragraph{Ever growing State} There was no way to remove a field on the state,
-the state is appending/overwriting -only, which was a sideeffect of the
+\paragraph{Synchronous Module Invocation} If a Msg triggers a computational
+heavy method, the \gls{ide} will \textit{hang}, and act \textit{sluggish} until
+the computation has finished. This would also affect \textit{all} modules,
+since they are invoked in order, regardless of if they actually change the
+state or view.
+
+\paragraph{Ever-growing State} There was no way to remove a field on the state,
+the state is appending/overwriting -only, which was a side effect of the
 \textit{solution} to state collisions.
 
 \subsubsection{State Collision} \label{sec:collision}
@@ -528,68 +528,23 @@ what the \gls{dom} should be, it can be treated as a Virtual-\gls{dom}, similar
 as to how React does it. This also means that there could be a collision on
 \gls{ui}-change, as well as on a state-change. Instead of solving the equivalent
 problems twice, it was decided to try to treat the issues with collisions in
-state and \gls{ui} as the same issue; its some form of tree-manipulation.
+state and \gls{ui} as the same issue; its some form of tree-manipulation. We
+could then reduce the amount of needed methods on the module instance, to two.
+One for initializing the state, and one for handling events. In \ref{lst:cm},
+we have a \textbf{CoreModification} type, which has two fields, one for the
+state, and one for the \gls{ui}.
 
 \begin{center}
   \lstinputlisting
     [ language=Rust
-    , caption={Core trait (Rust)}
-    , label=lst:coreAdt
-    ]{./core/src-tauri/core-std-lib/src/core.rs}
+    , caption={Core Modifications (Rust)}
+    , label=lst:cm
+    , firstline=12
+    ]{./core/src-tauri/core-std-lib/src/core_modification/mod.rs}
 \end{center}
-
-In listing \ref{lst:moduleEvent}, one can see the structure of an
-\lstinline[language=Haskell]{Event}. This allows for modules to
-pattern match on specific \lstinline[language=Haskell]{Event}s, and as in the
-previous version, only react to specific \lstinline[language=Haskell]{Event}s.
-What is different, is as shown in the \ref{lst:moduleCounter} listing, is that
-each module registers an \lstinline[language=Haskell]{EventHandler} which is
-\textit{only} invoked when the specific \lstinline[language=Haskell]{Event} it
-is registered with, is called. This ensures a more direct form of
-module-to-module communication, as a module can directly \textit{invoke} another
-module. This changes the structure of the module architecture to go from one
-wherein the core is a terminal object, to a more \textit{complicated} one, in
-which module families can form.
-
-\begin{center}
-  \lstinputlisting
-    [ language=Haskell
-    , caption={Module Event Type}
-    , label=lst:moduleEvent
-    ]{./code/module-example-event.hs}
-\end{center}
-
-\begin{center}
-  \lstinputlisting
-    [ language=Haskell
-    , caption={Module Counter Example}
-    , label=lst:moduleCounter
-    ]{./code/module-example-counter.hs}
-\end{center}
-
-\begin{center}
-  \lstinputlisting
-    [ language=Haskell
-    , caption={Module Counter Example Event Handler}
-    , label=lst:moduleEventHandler
-    ]{./code/module-example-counter-handler.hs}
-\end{center}
-
-The module example shown in listing \ref{lst:moduleCounter} and
-\ref{lst:moduleEventHandler}, is again, a simple counter example, where the
-module registers a \lstinline[language=Haskell]{CoreModification}, changing the
-UI-hierarchy, by adding a button which throws an
-\lstinline[language=Haskell]{Event} that is handled by the
-\lstinline[language=Haskell]{EventHandler} shown in
-\ref{lst:moduleEventHandler}, which again, modifies the core by changing the
-counter field with the value from the \lstinline[language=Haskell]{Event}.
 
 \subsection{Tree Manipulation}
 
-\todo{
-  Mention Magnolia here, and how the satisfaction/unit test thing can "prove"
-  this
-}
 This restructure changes the way the view is rendered. Instead of the view being
 re-rendered for each state-update, the view, or \gls{ui}-hierarchy, is only
 \todo{Mention earlier how React was used/considered due to the "smart" re-rendering}
@@ -694,14 +649,6 @@ This allows for an ergonomic way for module developer to create modifications on
 the core, without having to understand the syntax of the
 \textbf{Instruction}-set.
 
-\begin{center}
-  \lstinputlisting
-   [ language=Haskell
-   , caption={Module Type}
-   , label=lst:moduleType
-   ]{./code/module-example.hs}
-\end{center}
-
 \subsection{Backend Agnostic Frontend}
 
 Since we are using the framework Tauri to implement the \gls{ide}, the \gls{ide}
@@ -713,7 +660,6 @@ future maintainers of the \gls{ide} to be able to \textit{trivially} switch
 runtime, if they wanted to use some other language to implement the runtime
 system in, like PureScript, Gleam or Haskell, all of which can target
 JavaScript, then they could.
-\todo{Expand maybe?}
 
 \subsection{Making the Core evaluate modifications asynchronously}
 
@@ -809,6 +755,37 @@ The final step in the testing pipeline, is to test the entire application
 together. This is known as \gls{e2e}, but this is expensive.
 
 \section{Modules}
+
+\paragraph{Event Type} In listing \ref{lst:moduleEvent}, one can see the
+structure of an event type. This allows for modules to pattern match on specific
+events, and unlike, as in the previous version, modules can \textit{subscribe}
+to specific events to react to. This changes the structure of the module
+architecture to go from one wherein the core is a terminal object, to a more
+\textit{complicated} one, in which module families can form.
+
+\begin{center}
+  \lstinputlisting
+    [ language=Rust
+    , caption={Module Event (Rust)}
+    , label=lst:moduleEvent
+    , firstline=8
+    , lastline=12
+    ]{./core/src-tauri/core-std-lib/src/event.rs}
+\end{center}
+
+This forms our \textit{request} and \textit{response} type, making the
+equivalence with a \gls{rest} \gls{api} obvious. The clients and consumers
+of the \gls{api}, are the modules which can be seen in listing \ref{lst:mod}.
+
+\begin{center}
+  \lstinputlisting
+    [ language=Rust
+    , caption={Module trait (Rust)}
+    , label=lst:mod
+    , firstline=12
+    , lastline=16
+    ]{./core/src-tauri/core-module-lib/src/lib.rs}
+\end{center}
 
 \todo{Introduction}
 
