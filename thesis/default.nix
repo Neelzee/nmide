@@ -37,6 +37,7 @@ pkgs.stdenvNoCC.mkDerivation rec {
     export SOURCE_DATE_EPOCH="$(date +%s)"
     mkdir -p .cache/texmf-var
     ln -s ${projectRoot}/core core
+    ln -s ${projectRoot}/modules modules
     export TEXINPUTS=".:${rustListing}/tex/latex//:"
     env TEXMFHOME=.cache TEXMFVAR=.cache/texmf-var \
       latexmk -interaction=nonstopmode \
