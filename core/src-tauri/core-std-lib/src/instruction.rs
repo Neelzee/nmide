@@ -15,11 +15,15 @@ pub enum Instruction<T> {
     Then(Box<Instruction<T>>, Box<Instruction<T>>),
 }
 
-impl<T> Instruction<T> {
-    pub fn combine(self, other: Instruction<T>) -> Instruction<T> {
+impl<T: PartialEq> Instruction<T> {
+    pub fn combine(self, other: Self) -> Self {
         match (&self, &other) {
             (Self::NoOp, _) => other,
             (_, Self::NoOp) => self,
+            (Self::Add(a1, s1, t1), Self::Rem(a2, s2, t2))
+                if a1 == a2 && s1 == s2 && t1 == t2 => Self::NoOp,
+            (Self::Rem(a1, s1, t1), Self::Add(a2, s2, t2))
+                if a1 == a2 && s1 == s2 && t1 == t2 => Self::NoOp,
             _ => Self::Then(Box::new(self), Box::new(other)),
         }
     }
