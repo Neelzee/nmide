@@ -4,20 +4,15 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     flake-utils.url = "github:numtide/flake-utils";
   };
-  outputs =
-    {
-      self,
-      nixpkgs,
-      flake-utils,
-    }:
-    with flake-utils.lib;
-    eachSystem allSystems (
-      system:
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachSystem flake-utils.lib.allSystems (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        thesis = import ./thesis/default.nix { pkgs = pkgs; };
-        buildInputs = with pkgs; [
-          # TAURI START
+        thesisPkg = import ./thesis/default.nix { inherit pkgs; };
+        thesis = thesisPkg.thesis;
+        envVars = thesisPkg.envVars or {};
+        texBuildInputs = thesisPkg.buildInputs or [];
+        tauriBuildInputs = with pkgs; [
           gcc
           pkg-config
           rustup
@@ -39,15 +34,30 @@
           webkitgtk_4_1
           openssl
           xdotool
-          # TAURI END
         ];
-      in
-      {
+
+        buildInputs = texBuildInputs ++ tauriBuildInputs;
+
+      in {
         packages = {
-          inherit thesis;
+          thesis = thesis;
         };
-        inherit buildInputs;
+
         defaultPackage = thesis;
-      }
-    );
+
+        devShells.default = pkgs.mkShell {
+          inherit buildInputs;
+          TEXINPUTS = envVars.TEXINPUTS or "";
+
+          shellHook = ''
+            export LANG=en_US.UTF-8
+            export LC_ALL=en_US.UTF-8
+            export LANGUAGE=en_US
+            export SOURCE_DATE_EPOCH="$(date +%s)"
+            export TEXMFHOME=${envVars.TEXMFHOME}
+            export TEXMFVAR=${envVars.TEXMFVAR}
+            mkdir -p ${envVars.TEXMFVAR}
+          '';
+        };
+      });
 }
