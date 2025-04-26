@@ -55,8 +55,7 @@ impl core_module_lib::Module for Module {
                         attrs: vec![Attr::Id("graph-btn-div".to_string())],
                         text: None,
                     },
-                    None,
-                    None,
+                    Option::<String>::None,
                 ),
             );
         core.get_sender()

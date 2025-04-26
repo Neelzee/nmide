@@ -44,8 +44,7 @@ impl core_module_lib::Module for Module {
                         .add_attr(Attr::Id("PID".to_string())),
                 )
                 .add_attr(Attr::Id("DivId".to_string())),
-            None,
-            None,
+            Option::<String>::None,
         );
         core.add_handler(
             Some("counter".to_string()),
@@ -78,8 +77,7 @@ impl core_module_lib::Module for Module {
                 );
                 let ui = if let Some(v) = core.state().await.get("counter") {
                     UIInstructionBuilder::default().set_text(
-                        Some("PID".to_string()),
-                        None,
+                        Some("PID"),
                         format!(
                             "Count: {}",
                             if v.is_int() {

@@ -47,8 +47,7 @@ impl Module for FrameworkModule {
                             )
                             .adopt(Html::Ol().add_attr(Attr::Id("errors".to_string()))),
                     ),
-                None,
-                None,
+                Some(""),
             ),
         );
         core.get_sender()
