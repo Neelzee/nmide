@@ -3,7 +3,7 @@ import {
   Event,
   Html, HtmlKind,
   Instruction,
-  ValueNull, ValueObj
+  ValueObj
 } from "@nmide/js-utils";
 import { emit } from "@tauri-apps/api/event";
 
@@ -32,23 +32,12 @@ const evalHtml = (op: Instruction<Html>) => {
   }
   if ("add" in op) {
     const id = op.add[0];
-    const cls = op.add[1];
-    const ui = op.add[2];
+    const ui = op.add[1];
     const html = parseHtml(getHtml(ui));
-    if (id !== null) {
+    if (id !== null && id !== "") {
       const element = getElementById(window.__nmideConfig__.root, id);
       if (element !== undefined) {
         element.appendChild(html);
-      }
-      return;
-    }
-    if (cls != null) {
-      const elements = window.__nmideConfig__.root.getElementsByClassName(cls);
-      for (let i = 0; i < elements.length; i++) {
-        const element = elements[i];
-        if (element instanceof HTMLElement) {
-          element.appendChild(html);
-        }
       }
       return;
     }
@@ -71,22 +60,11 @@ const evalAttr = (op: Instruction<Attr>) => {
   }
   if ("add" in op) {
     const id = op.add[0];
-    const cls = op.add[1];
-    const attr = op.add[2];
-    if (id !== null) {
+    const attr = op.add[1];
+    if (id !== null && id !== "") {
       const element = getElementById(window.__nmideConfig__.root, id);
       if (element !== undefined) {
         addAttr(element, attr);
-      }
-      return;
-    }
-    if (cls != null) {
-      const elements = window.__nmideConfig__.root.getElementsByClassName(cls);
-      for (let i = 0; i < elements.length; i++) {
-        const element = elements[i];
-        if (element instanceof HTMLElement) {
-          addAttr(element, attr);
-        }
       }
       return;
     }
@@ -130,24 +108,11 @@ const evalText = (op: Instruction<string>) => {
   }
   if ("add" in op) {
     const id = op.add[0];
-    const cls = op.add[1];
-    const text = op.add[2];
-    if (id !== null) {
+    const text = op.add[1];
+    if (id !== null && text !== "") {
       const element = getElementById(window.__nmideConfig__.root, id);
       if (element !== undefined) {
         element.innerText = text;
-      }
-      return;
-    }
-    if (cls != null) {
-      const elements = window.__nmideConfig__.root.getElementsByClassName(cls);
-      for (let i = 0; i < elements.length; i++) {
-        const element = elements[i];
-        if (element !== null) {
-          if (element instanceof HTMLElement) {
-            element.innerText = text;
-          }
-        }
       }
       return;
     }
