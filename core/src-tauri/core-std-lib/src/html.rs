@@ -10,7 +10,7 @@ use ts_rs::TS;
 
 define_html!(
     attr_type = Attr,
-    #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, TS)]
+    #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, TS, PartialOrd, Eq, Hash)]
     #[serde(rename_all = "camelCase")]
     #[ts(export)]
     Div,
@@ -138,16 +138,16 @@ impl UIInstructionBuilder {
         (self.node.clone(), self.text.clone(), self.attr.clone())
     }
 
-    pub fn set_text(self, id: String, text: String) -> Self {
+    pub fn set_text<S: ToString>(self, id: Option<S>, text: String) -> Self {
         Self {
-            text: self.text.combine(Instruction::Add(id, text)),
+            text: self.text.combine(Instruction::Add(id.map(|s| s.to_string()).unwrap_or_default(), text)),
             ..self
         }
     }
 
-    pub fn add_node(self, ui: Html, id: String) -> Self {
+    pub fn add_node<S: ToString>(self, ui: Html, id: Option<S>) -> Self {
         Self {
-            node: self.node.combine(Instruction::Add(id, ui)),
+            node: self.node.combine(Instruction::Add(id.map(|s| s.to_string()).unwrap_or_default(), ui)),
             ..self
         }
     }

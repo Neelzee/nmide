@@ -1,20 +1,87 @@
 use crate::instruction::inst::Instruction;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::collections::HashMap;
+use std::fmt::Formatter;
+use hashable::HashableHashMap;
+use ordered_float::{NotNan};
+use serde::de::{MapAccess, Visitor};
+use serde::ser::SerializeMap;
 use ts_rs::TS;
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, TS, Hash, Eq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub enum Value {
     #[default]
     Null,
     Int(i32),
-    Float(f32),
+    #[ts(as = "f32")]
+    Float(NotNan<f32>),
     Bool(bool),
     Str(String),
     List(Vec<Value>),
-    Obj(HashMap<String, Value>),
+    #[ts(type = "{ [key in string]?: Value }")]
+    Obj(HHMap),
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Hash, Eq)]
+pub struct HHMap(HashableHashMap<String, Value>);
+
+impl Serialize for HHMap {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer
+    {
+        let mut map = serializer.serialize_map(Some(self.0.len()))?;
+        for (k, v) in self.0.clone().into_iter() {
+            map.serialize_entry(&k, &v)?;
+        }
+        map.end()
+    }
+}
+
+struct HHMapVisitor;
+
+impl<'de> Visitor<'de> for HHMapVisitor {
+    type Value = HHMap;
+
+    fn expecting(&self, formatter: &mut Formatter) -> std::fmt::Result {
+        formatter.write_str("A standard object")
+    }
+
+    fn visit_map<M>(self, mut access: M) -> Result<Self::Value, M::Error>
+    where
+        M: MapAccess<'de>,
+    {
+        let mut map = HHMap(HashableHashMap::new());
+
+        while let Some((key, value)) = access.next_entry()? {
+            map.0.insert(key, value);
+        }
+
+        Ok(map)
+    }
+}
+
+impl<'de> Deserialize<'de> for HHMap {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>
+    {
+        deserializer.deserialize_map(HHMapVisitor)
+    }
+}
+
+impl HHMap {
+    pub fn to_hm(self) -> HashMap<String, Value> {
+        HashMap::from_iter(self.0.into_iter().map(|(k, v)| (k.clone(), v.clone())))
+    }
+}
+
+impl From<HashMap<String, Value>> for HHMap {
+    fn from(value: HashMap<String, Value>) -> Self {
+        Self(HashableHashMap::from_iter(value.into_iter()))
+    }
 }
 
 impl Value {
@@ -53,7 +120,7 @@ impl Value {
 
     pub fn obj(&self) -> Option<HashMap<String, Value>> {
         match self {
-            Self::Obj(x) => Some(x.clone()),
+            Self::Obj(x) => Some(x.clone().to_hm()),
             _ => None,
         }
     }
@@ -62,7 +129,7 @@ impl Value {
         match &self {
             Self::Obj(mp) => {
                 let mut mp = mp.clone();
-                mp.insert(field.to_string(), value);
+                mp.0.insert(field.to_string(), value);
                 Self::Obj(mp)
             }
             _ => self,
@@ -72,22 +139,24 @@ impl Value {
 
 impl PartialOrd for Value {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match (self, other) {
-            (Value::Int(l), Value::Int(r)) => Some(l.cmp(r)),
-            (Value::Int(l), Value::Float(r)) => (*l as f32).partial_cmp(r),
-            (Value::Float(l), Value::Int(r)) => l.partial_cmp(&(*r as f32)),
-            (Value::Float(l), Value::Float(r)) => l.partial_cmp(r),
-            (Value::Bool(l), Value::Bool(r)) => l.partial_cmp(r),
-            (Value::Str(l), Value::Str(r)) => Some(l.cmp(r)),
-            (Value::List(l), Value::List(r)) => l.partial_cmp(r),
-            (Value::Obj(l), Value::Obj(r)) => {
-                if l == r {
-                    return Some(std::cmp::Ordering::Equal);
-                }
+        unsafe {
+            match (self, other) {
+                (Value::Int(l), Value::Int(r)) => Some(l.cmp(r)),
+                (Value::Int(l), Value::Float(r)) => (*l as f32).partial_cmp(r),
+                (Value::Float(l), Value::Int(r)) => l.partial_cmp(&(NotNan::new_unchecked(*r as f32))),
+                (Value::Float(l), Value::Float(r)) => l.partial_cmp(r),
+                (Value::Bool(l), Value::Bool(r)) => l.partial_cmp(r),
+                (Value::Str(l), Value::Str(r)) => Some(l.cmp(r)),
+                (Value::List(l), Value::List(r)) => l.partial_cmp(r),
+                (Value::Obj(l), Value::Obj(r)) => {
+                    if l == r {
+                        return Some(std::cmp::Ordering::Equal);
+                    }
 
-                None
+                    None
+                }
+                _ => None,
             }
-            _ => None,
         }
     }
 }
@@ -131,13 +200,13 @@ impl State {
         let init = {
             let mut mp = HashMap::new();
             mp.insert(vec.pop().unwrap().to_string(), value);
-            Value::Obj(mp)
+            Value::Obj(mp.into())
         };
 
         let obj = vec.into_iter().fold(init, |acc, c| {
             let mut mp = HashMap::new();
             mp.insert(c.to_string(), acc);
-            Value::Obj(mp)
+            Value::Obj(mp.into())
         });
 
         map.insert(last.to_string(), obj);

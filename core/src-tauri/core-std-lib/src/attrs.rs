@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 // TODO: Correct documentation
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize, Deserialize, TS)]
+#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize, Deserialize, TS, Hash, Eq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub enum Attr {

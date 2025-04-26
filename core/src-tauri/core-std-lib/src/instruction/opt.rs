@@ -1,7 +1,8 @@
 use std::collections::HashMap;
+use std::hash::Hash;
 use crate::instruction::inst::Instruction;
 
-impl<T: PartialEq + Clone> Instruction<T> {
+impl<T: PartialEq + Clone + Eq + Hash> Instruction<T> {
     pub fn is_noop(&self) -> bool {
         matches!(self, Self::NoOp)
     }
@@ -11,8 +12,8 @@ impl<T: PartialEq + Clone> Instruction<T> {
             Instruction::NoOp => Vec::new(),
             Instruction::Add(..) | Instruction::Rem(..) => vec![self],
             Instruction::Then(f, s) => {
-                let mut xs = f.flatten();
-                xs.append(&mut s.flatten());
+                let mut xs = f.clone().flatten();
+                xs.append(&mut s.clone().flatten());
                 xs
             }
         }
@@ -23,12 +24,12 @@ impl<T: PartialEq + Clone> Instruction<T> {
     pub fn optimize(vs: Vec<Instruction<T>>) -> Instruction<T> {
         let mut sequence = Self::opt(&vs).flatten();
 
-        let mut fv_map: HashMap<(&str, &T), i32> = HashMap::new();
+        let mut fv_map: HashMap<(String, T), i32> = HashMap::new();
 
-        for instr in &sequence {
+        for instr in sequence.clone() {
             match instr {
                 Instruction::Add(f, v) => {
-                    let key = (f.as_str(), v);
+                    let key = (f, v);
                     match fv_map.get(&key) {
                         Some(v) => {
                             fv_map.insert(key, *v + 1);
@@ -39,7 +40,7 @@ impl<T: PartialEq + Clone> Instruction<T> {
                     }
                 }
                 Instruction::Rem(f, v) => {
-                    let key = (f.as_str(), v);
+                    let key = (f, v);
                     match fv_map.get(&key) {
                         Some(v) => {
                             fv_map.insert(key, *v - 1);
@@ -58,7 +59,7 @@ impl<T: PartialEq + Clone> Instruction<T> {
             match instr {
                 Instruction::NoOp => acc,
                 Instruction::Add(f, v) => {
-                    let key = (f.as_str(), v.clone());
+                    let key = (f.clone(), v.clone());
                     let i = *fv_map.get(&key).expect("Should be initialized in the previous pass");
                     if i > 0 {
                         fv_map.insert(key, 0);
@@ -68,7 +69,7 @@ impl<T: PartialEq + Clone> Instruction<T> {
                     }
                 }
                 Instruction::Rem(f, v) => {
-                    let key = (f.as_str(), v.clone());
+                    let key = (f.clone(), v.clone());
                     let i = *fv_map.get(&key).expect("Should be initialized in the previous pass");
                     if i < 0 {
                         fv_map.insert(key, 0);
