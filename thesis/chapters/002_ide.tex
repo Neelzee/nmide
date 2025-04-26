@@ -23,11 +23,10 @@ can break a \textit{plugin}, is due to how they interact with their \gls{ide}.
 In \gls{intellij} a \textit{plugin} is created by implementing a Java interface
 for the functionality one wants.
 
-\begin{exmp}
-  If one wanted \gls{intellij} to recognize that a file with the extension "mg",
-  and give it a certain icon, one would have to implement the \textbf{Language}
-  interface and override the \textbf{getIcon} method to return the wanted icon.
-\end{exmp}
+If one wanted \gls{intellij} to recognize that a file with the extension "rs",
+is a Rust source file, and give it a certain icon, one would have to implement
+the \textbf{Language} interface and override the \textbf{getIcon} method to
+return the wanted icon.
 
 So a change in the \gls{ide} architecture could break a \textit{plugin} for the
 newer version of the \gls{ide}, as with Bagge's Magnolia \gls{ide}
@@ -36,7 +35,7 @@ important, as they are the ones who add the functionality to the \gls{ide}.
 Therefore, the core \gls{api} has to be more stable, and it is by virtue of not
 having much functionality.
 
-\subsection{Module Developer}
+\section{Module Developer}
 
 Being a zero core application; all functionality comes from modules, the module
 developer experience is the most important. To achieve this, documentation is
@@ -45,7 +44,13 @@ it should be answered by the documentation. In \gls{eclipse}, this is in the
 form of \textit{Javadoc}s, which specify, with examples how the \gls{eclipse}
 runtime handles \textit{plugins}. \footnote{\url{https://help.eclipse.org/latest/rtopic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/runtime/Plugin.html}}
 
-\subsubsection{Language Agnostic Modules}
+The documentation for \textit{plugin} developers, in both \gls{intellij} and
+\gls{eclipse} has to be large necessarily because of how \textit{plugins}
+interact with the \gls{ide}; it is a large \gls{api}. In a zero core \gls{ide}
+it is smaller, simply due to the fact that the core \gls{ide} offers fewer
+features, as features necessarily come from a module.
+
+\subsection{Language Agnostic Modules}
 
 The largest limiting factor in module oriented applications, is the
 \textit{language barrier} Most applications limit what language one can extend
@@ -84,7 +89,7 @@ JavaScript, the notion of an empty value, numbers, strings, lists and
 manipulation on these types can be extracted and rewritten in another preferred
 language.
 
-\subsubsection{Existing Third Party Libraries}
+\subsection{Existing Third Party Libraries}
 
 Since the core can support different languages, one can use the libraries
 written for these languages to make an \gls{ide}. This could be achieved by
@@ -99,7 +104,17 @@ However, being zero core, this application could be anything, from an audio
 editing program, to a game emulator. Simply using the \textit{JS-DOS} library,
 would allow the application to run video games like Doom.
 
-\subsection{IDE Users}
+\subsection{Module Development Experience}
+
+When a module developer has the added developer module family, they can invoke
+the \gls{ide} in the terminal to create boilerplate modules for JavaScript,
+TypeScript or Rust. \todo{Implement this}
+After they have implemented a module, they can test it out, again by invoking
+the \gls{ide}. When they are satisfied with their implementation, they can add
+it to the compile time configuration for the \gls{ide}, and compile it. They can
+now use the module in the \gls{ide}.
+
+\section{IDE Users}
 
 As mentioned in chapter \ref{cha:background}, modern \gls{ide}s come with an
 integrated module architecture. Which is used to extend/change the \gls{ide},
@@ -111,7 +126,7 @@ expected functionality is there out of the box, while more thematic modules
 could be supplied as runtime modules.
 
 
-\subsubsection{Developer}
+\subsection{Developer}
 
 Most users just want an \gls{ide}, and do not spend, nor want to spend, much
 time configuring their \gls{ide}. This can be achieved by adding the necessary
@@ -125,7 +140,7 @@ fully fledged \gls{ide}. And then this \gls{ide} can be distributed to the
 students, who can still extend the \gls{ide} with runtime modules at their own
 digression.
 
-\subsection{Maintainer}
+\section{Maintainer}
 
 To make the maintainer of the core application most comfortable, good
 documentation is needed. The same documentation a module developer wants, so

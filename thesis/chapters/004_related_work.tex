@@ -48,17 +48,18 @@ be solved by using \textit{flushable promises} \cite{flush}.
 
 
 \section{Automated Testing}
+
 Due to the extensive modularity of the application, all modules can be tested
 individually, by \textit{mocking} the expected state and events. This means that
 breaking changes in one module can be detected before \gls{e2e} testing, which
-is expensive. \todo{Add source} But this can only verify the general logic of a
-module and module family, not the UI. To achieve such automation, one could rely
-on an automated testing framework, like the one in \cite{autoUi}. Or if one is
-working with a \textit{simple} JavaScript runtime, one could use third party
-software like \textit{Playwright} for creating tests, as it can auto generate
-the \gls{dsl}, while the developer uses the module or entire \gls{ide} if it is
-an \gls{e2e} test. This would help a module developer to discover behavior that
-a user might not expect \cite{leastGui}.
+is expensive. But this can only verify the general logic of a module and module
+family, not the UI. To achieve such automation, one could rely on an automated
+testing framework, like the one in \cite{autoUi}. Or if one is working with a
+\textit{simple} JavaScript runtime, one could use third party software like
+\textit{Playwright} for creating tests, as it can auto generate the \gls{dsl},
+while the developer uses the module or entire \gls{ide} if it is an \gls{e2e}
+test. This would help a module developer to discover behavior that a user might
+not expect \cite{leastGui}.
 
 
 \section{Abstract Algebra}

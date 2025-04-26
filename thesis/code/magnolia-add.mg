@@ -1,3 +1,3 @@
-implementation natImpl = {
+implementation implNaturalNumbers = {
   !!!
 }

@@ -46,16 +46,21 @@ language.
 
 \subsection{Application Binary Interface (ABI)}
 
-An \gls{abi} is an interface between two programs. This could be a
-dynamic library used by a C program, where both binaries agree on how the data
-is stored. The reason they need to agree on how data is ordered in the memory,
-is that accessing into unowned memory could lead to \textit{undefined} behavior.
+An \gls{abi} is an low-level interface, a kind of \gls{api},
+between two programs. Such as C program and its dynamic library dependencies.
+The \gls{abi} defines how data is laid out in memory, how functions are
+invoked, and other machine level details. Both the C program and the dynamic
+libraries must agree on the \gls{abi}, otherwise misinterpreted data or invalid
+function calls could lead to \gls{ub}.
 
-\paragraph{Undefined behavior} In programming, undefined behavior is behavior
-that is not defined by the specification of the language being used.
-\todo{Is this a correct explanation?}
-
-\todo{Connect these two sections better}
+\paragraph{Undefined behavior} In programming \gls{ub} occurs when a program
+violates the language specification in a manner that is not defined by the
+specification. This can be the results of \gls{abi} mismatch, like if the
+layout of a struct in memory differs between the parties, in a manner which
+leads to breaking of type safety, or direct violations of the language rules,
+like null pointer dereference. \gls{ub} is dangerous because the compiler might
+optimize the binary unpredictably or the program may behave arbitrary. It is
+also a vector of attack for hackers.
 
 \paragraph{Why not C?} C has good parts, like the C-\gls{abi}, which most
 languages have bindings too. Using C would mean allowing those languages to
@@ -65,7 +70,6 @@ security issues. (This is just because so much of our infrastructure is written
 in C, but y'know.) These security issues are mostly caused by memory management.
 Would be cool if the C compiler could notify a developer if they were developing
 something that could cause an issue in the future. Enter, Rust.
-\todo{Rewrite this paragraph}
 
 \subsection{Rust}
 
@@ -120,8 +124,6 @@ compatibility with future models, made in other languages, by use of the Rust
 
 \subsubsection{Rust Application Binary Interface}
 
-\todo{rewrite}
-
 Rusts \gls{abi} is not stable! Because it is not supported by their semantic
 versioning. This means even a bug fix in the compiler, could break the
 \gls{abi}. So if an application, written in Rust, is compiled in version 1.8.0,
@@ -132,7 +134,7 @@ undefined behavior was avoided, was using the \textit{abi\_stable}-crate, which
 enables \textit{safe} loading of external libraries, meaning modules. This is
 only an issue for runtime modules, which means they need to be handled
 differently than compile time modules.
-\todo{Explain this more concretely}
+%\todo{Explain this more concretely}
 
 If the types in the core application change, either by expansion or renaming or
 such, the crate would crash the application during startup, because the existing
@@ -180,7 +182,6 @@ development time for modules, which means features that are standard in
 
 This framework gives a lot of security which is needed in an
 application which runs third party code.
-\todo{Expand}
 \todo{Look into isolation pattern from Tauri}
 
 \subsubsection{Module Validation}
@@ -253,7 +254,6 @@ in turn, would add a lot of complexity, which the maintainers would have to deal
 \section{Module V.2} \label{sec:mod2}
 
 After 7–8 months of working on this, everything was scrapped for this new plan:
-\todo{rewrite this intro}
 
 \begin{enumerate}
   \item Everything is a module
@@ -321,8 +321,6 @@ the \gls{ui} for the user, which can be seen in figure \ref{fig:moduleInitView}.
   \caption{Module view initialization stage}
   \label{fig:moduleInitView}
 \end{figure}
-
-\todo{Explain the module architecture in IDE terms, so with IDE examples}
 
 Since the \gls{ide} is written in both TypeScript and Rust, a method of encoding
 type information when crossing between the TypeScript and Rust environment was
@@ -547,7 +545,6 @@ state, and one for the \gls{ui}.
 
 This restructure changes the way the view is rendered. Instead of the view being
 re-rendered for each state-update, the view, or \gls{ui}-hierarchy, is only
-\todo{Mention earlier how React was used/considered due to the "smart" re-rendering}
 modified by modules. This modification is similar to the earlier state
 modification, so a unified algorithm to solve this can be used. If there is an
 easy way to translate a \gls{ui} modification to a state modification, and back
@@ -560,6 +557,8 @@ of what to do with the core.
    [ language=Rust
    , caption={Instruction (Rust)}
    , label=lst:inst
+   , firstline=6
+   , lastline=16
    ]{./core/src-tauri/core-std-lib/src/instruction/inst.rs}
 \end{center}
 
@@ -620,7 +619,8 @@ This, unfortunately, cannot be encoded in Rusts type system, but when implementi
 $combine$, we can map the variants along with the specific fields being added
 ($Add$), modified ($Mod$), or removed ($Rem$), to get a more optimized
 instruction set. If we are modifying a value on field $foobar$, but in the same
-instruction set, remove it, then the modifying instruction is an $NoOp$.
+instruction set, remove it, then the modifying instruction is an $NoOp$. This
+optimization can be found in appendix \ref{app:a}.
 
 Like writing direct binary to develop a program, writing \textbf{instruction}s to
 change the core is quite abstract for most developers so to facilitate development
@@ -632,7 +632,10 @@ the builder, eventually building a \textbf{CoreModification}, to be sent.
 \begin{center}
   \lstinputlisting
    [ language=Rust
-   , caption={UI Builder (Rust)}
+   , caption={
+     UI Builder (Rust) showcasing how to add an empty \gls{html} div element to
+     the root \gls{html} element.
+   }
    , label=lst:ui-builder
    ]{./code/module-ui-builder.rs}
 \end{center}
@@ -640,7 +643,11 @@ the builder, eventually building a \textbf{CoreModification}, to be sent.
 \begin{center}
   \lstinputlisting
    [ language=Rust
-   , caption={State Builder (Rust)}
+   , caption={
+     State Builder (Rust) showcasing how to add a \textit{count} field to the
+     state, also showcasing how Rust can infer that the i32 type $0$ is
+     a \textbf{Value::Int} type.
+   }
    , label=lst:state-builder
    ]{./code/module-state-builder.rs}
 \end{center}
@@ -679,8 +686,6 @@ on a separate thread.
 
 \section{Testing} \label{sec:testing}
 
-\todo{Showcase example of testing the ide}
-
 A zero-core application is equivalent to a microservice architecture, in that
 testing is important to ensure changes in one module does not inadvertently
 affect another.
@@ -698,7 +703,7 @@ done, and tested many times, due to the light-weightiness of a module.
 
 \subsubsection{UI Testing}
 
-\todo{Mention of ui testing is part of unit testing}
+Universal design! Expected UI behavior!
 
 \subsection{Module Family Testing}
 
@@ -787,7 +792,25 @@ of the \gls{api}, are the modules which can be seen in listing \ref{lst:mod}.
     ]{./core/src-tauri/core-module-lib/src/lib.rs}
 \end{center}
 
-\todo{Introduction}
+A module can interact with the core, by getting the state, \gls{ui},
+\textit{throwing} an event, registration themselves to \textit{handle} an
+event, or to \textit{send} a \textbf{CoreModification}. In listing
+\ref{lst:core}, we can see this core trait.
+
+\begin{center}
+  \lstinputlisting
+    [ language=Rust
+    , caption={Core trait (Rust)}
+    , label=lst:core
+    , firstline=6
+    , lastline=18
+    ]{./core/src-tauri/core-std-lib/src/core.rs}
+\end{center}
+
+Since a module updates the core by \textit{choosing} to send a
+\textbf{CoreModification}, through a \gls{mpsc}-channel, a module can run an
+expensive computation on another thread, while \textit{ending} their
+invocation, ensuring a smooth \gls{ide} experience.
 
 Here are some examples of modules implemented using the proposed architecture.
 
@@ -800,23 +823,23 @@ in a Magnolia project could be quite large. Which means the cycles could be
 quite long, which would make resolving the cyclic dependency issue complicated.
 One way to help a developer, would be to give them a tool to visualize the
 dependency graph, so that they could see what modules are connected.
-\todo{Implement and showcase this module}
+%\todo{Implement and showcase this module}
 
 \subsection{IDE Module Family}
 
-\todo{Showcase the modules created to have a rudimentary IDE}
-\todo{Mention QOF modules for future module developers}
-\todo{Mention Project Management}
+%\todo{Showcase the modules created to have a rudimentary IDE}
+%\todo{Mention QOF modules for future module developers}
+%\todo{Mention Project Management}
 
 \subsection{Caching}
-\todo{Properly implement this}
+%\todo{Properly implement this}
 In Magnolia, caching of \gls{lsp} queries is important. And caching of the
 compiled code.
 
 \subsection{Editor Module Family}
 
-\todo{Implement a rudimentary editor}
+%\todo{Implement a rudimentary editor}
 
 \subsection{Magnolia Language Server}
 
-\todo{Implement a rudimentary Magnolia LS}
+%\todo{Implement a rudimentary Magnolia LS}

@@ -1,3 +1,3 @@
-implementation natImplInvalid = {
+implementation implNaturalNumbersInvalid = {
     wrong!!
 }

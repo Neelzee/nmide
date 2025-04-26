@@ -16,10 +16,11 @@ all of these variations have in common, is that they specify a method for two
 different procedures to communicate with each other.  In a \gls{rest} \gls{api}
 this could be a microservice architecture, where several servers send and
 receive requests and responses, or in a programming project, it could be the
-\textbf{List} interface in Java, which informs implementers of that interface,
+\textbf{List} interface in Java, which informs consumers of that interface,
 which methods are needed to qualify as a \textbf{List}. In Magnolia a concept
 concepts declare types, functions and properties which those functions need to
-uphold. A simple example of this would be a concept for addition with natural numbers.
+uphold. A simple example of this would be a concept for addition with natural
+numbers.
 
 \begin{center}
   \lstinputlisting
@@ -123,7 +124,7 @@ concept and implementation together, by ensuring our axiom are upheld.
 \end{center}
 
 When implementing a concept in Magnolia, one could do so incorrectly. In other
-programming languages, one might still have \textit{encoded} some meaning in an
+programming languages, one might still have \textit{imparted} some meaning in an
 interface, like that in the interface \textbf{Action} in listing
 \ref{lst:jeditor}, is an associative operation. To detect this, one would have
 to create a unit test for each implementation of the interface, while in
@@ -133,7 +134,7 @@ turn is \textit{transpiled} to a format understandable by an \gls{smt} solver.
 \subsubsection{Satisfiability Modulo Theories solvers}
 
 An \gls{smt} solver is a program that takes our implementation, and say whether
-our implementations satisfies our concept. In \cite{beateVerification}, Skogvik 
+our implementations satisfies our concept. In \cite{beateVerification}, Skogvik
 lays out different \gls{smt} solvers and compare them against each other, with
 the Magnolia library as input. One of Skogviks conclusions are that while
 verification of some program is good to have, some features needed for a new
@@ -207,8 +208,8 @@ we cover all the edge cases, or if we are testing the correct thing.
 
 \subsection{Logging example in Java, Rust, and Magnolia}
 
-In the Java listing (\ref{lst:jlogging}) and Rust listing (\ref:rlogging) we
-have implementations which might not uphold our constraints. We can add unit
+In the Java listing (\ref{lst:jlogging}) and Rust listing (\ref{lst:rlogging})
+we have implementations which might not uphold our constraints. We can add unit
 tests, that ensure the implementations satisfy the definition \ref{def:logComp},
 but this safeguard only exists in our project, and once our \gls{api} can be
 implemented by third-party developers, we have no guarantee they will follow our
@@ -247,7 +248,10 @@ concepts are sound; that they are satisfiable.
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
-    , caption={Magnolia logging satisfaction}
+    , caption={
+        Magnolia logging satisfaction, the implementation is left out for
+        brevity
+      }
     , label=lst:mlogSat]{./code/logging-sat.mg}
 \end{center}
 
@@ -305,9 +309,9 @@ simply specifies that we only work with one set.
 \end{definition}
 
 \paragraph{Closure} Addition with the integers, ($\mathbb{Z}$), is a kind of
-  closure, as per the definition \ref{def:closed}, since no matter what integer
-  you put into the equation, you will still get a positive integer. And since
-  this is the only requirement a magma has, this example is also a magma.
+closure, as per the definition \ref{def:closed}, since no matter what integer
+you put into the equation, you will still get a positive integer. And since
+this is the only requirement a magma has, this example is also a magma.
 
 \begin{definition}[Magma] \label{def:magma}
   A magma is a set $M$, with a binary operation $\oplus$, which is
@@ -332,9 +336,11 @@ This associativity gives us a semigroup, as shown in the definition
   uphold the definitions \ref{def:closed} and \ref{def:assoc}.
 \end{definition}
 
-\paragraph{Semigroup} Multiplication with the positive integers, ($\mathbb{N}$), is
-  associative, since no matter where we put parentheses; what order we
-  evaluate this equation: $2 * 3 * 4$, we will get the same answer.
+\begin{exmp}
+  Multiplication with the positive integers, ($\mathbb{N}$), is associative,
+  since no matter where we put parentheses; what order we evaluate this
+  equation: $2 * 3 * 4$, we will get the same answer.
+\end{exmp}
 
 By simply requiring the identity law (\ref{def:ident}), we get a
 monoid (\ref{def:monoid}), and adding the inverse law
@@ -351,10 +357,12 @@ monoid (\ref{def:monoid}), and adding the inverse law
   uphold the definitions \ref{def:closed}, \ref{def:assoc}, and \ref{def:ident}.
 \end{definition}
 
-\paragraph{Monoid} To make a monoid, we can choose the binary operation to be
-  $\times$, and our set to be the natural numbers, ($\mathbb{N}$). We know addition
-  is closed, and associative, so choosing $U = 1$, we get a monoid. Any number
-  from our set $\mathbb{N}$ multiplied with $1$, gives us the number we choose.
+\begin{exmp}
+  To make a monoid, we can choose the binary operation to be $\times$, and our
+  set to be the natural numbers, ($\mathbb{N}$). We know addition is closed, and
+  associative, so choosing $U = 1$, we get a monoid. Any number from our set
+  $\mathbb{N}$ multiplied with $1$, gives us the number we choose.
+\end{exmp}
 
 \begin{definition}[Inverse Law] \label{def:inv}
   For any binary operation $\oplus$, on a set $M$,
@@ -545,40 +553,38 @@ In the listings \ref{lst:logging} and \ref{lst:editor}, we have renamed the type
 and function into something that makes more sense in the specific use case.
 While it is useful for us developing the concept, to know that our logging
 concept is a semigroup, when using an implementation, this is less relevant.
-
-\subsection{Software Longevity}
-
-Most examples of \textit{popular} software, are open source, like \gls{vim}.
-\gls{vim} is a text editor which has been in use since 1991. There are several
-factors behind this success, but the ones being highlighted here, are due to its
-extensibility and due to it being open-sourced. Being open sourced, allows for a
-rotating cast of maintainers, ensuring the core application has the features its
-users wants. The users of \gls{vim} can be split into two categories,
-\textit{standard users}, and \textit{module developers}. \gls{vim} has an
-extensive module ecosystem, which can extend \gls{vim}s functionality from a
-text editor, to a fully fledged \gls{ide}.
-\todo{Currently, a weak argument for modularity, rewrite it}
-\todo{Mention Eclipse and IntelliJ here as well?}
-
-\subsection{Modularity in software}
-
-\todo{Is configuration a form of modularization?}
+If a consumer of the logging \gls{api} read that logs where used everywhere in
+the project with \textbf{binop(log\_a, log\_b)}, it would be confusing, but when
+using context specific names, as renaming allows us to do, we could rename
+\textbf{binop} to \textbf{combine}, which makes the code easier to read.
 
 \section{Integrated Development Environment} \label{sec:ide}
-\todo{Turn each paragraph into a subsection?}
+
+Before \gls{ide}s where the standard development tool, all a developer had, was
+a terminal, an editor, and a compiler/interpreter. An editor to change the
+source code, a compiler/interpreter to compile/interpret, and a terminal to
+invoke them. But not all projects can be handled this way. In larger projects
+other programs like
+Make\footnote{\url{https://www.gnu.org/software/make/}} for C/C++, or
+Gradle\footnote{\url{https://gradle.org/}} for Java/Kotlin, where needed to
+build, test and package the project. So instead of manually adding each new C
+file to the compiler argument list, or manually compiling and zipping Java class
+files, another program was used. But for C/C++ or Java/Kotlin, external
+libraries are used, which meant that among different developers, the environment
+could vary. This meant that onboarding new developers took time, to ensure they
+had all the necessary dependencies to develop the project. Which could be as
+simple as downloading some library or program, to ensuring specific environment
+variables existed during compile time. Eventually all of these different
+dependencies, programs, environment variables and such where all integrated into
+a single application.
 
 An \gls{ide}, aids a developer, as all the needed tools for development are
-\todo{Mention the tools, and how devs had it before.}
 integrated into one application. There are two different kinds of \gls{ide}s,
 generic and specialized.
 
 A specialized \gls{ide} is one targeted towards a specific language, like
 Eclipse, (reference?), or IntelliJ (reference?), which target Java/JVM. It
 contains specialized features like the following:
-\todo{
-  Rewrite this because Eclipse, while generic, has plugin support which, allows
-  it to support different languages, as does IntelliJ.
-}
 
 \subsection{Syntax Highlighting}
 
@@ -591,16 +597,18 @@ latex command, if we wrote \textit{\\begn} instead of \textit{\\begin}, we can
 notice the discrepancy, as we expect it to, in this case, be purple. We are
 using visualization to make developers notice issues.
 
-\begin{figure} \label{pic:stx}
+\begin{figure}
   \centering
   \includegraphics[width=0.5\textwidth]{syntax-highlighting.png}
   \caption{Syntax Highlighting (\LaTeX\ in \gls{nvim})}
+  \label{pic:stx}
 \end{figure}
 
-\begin{figure} \label{pic:noStx}
+\begin{figure}
   \centering
   \includegraphics[width=0.5\textwidth]{no-syntax-highlighting.png}
   \caption{No Syntax Highlighting (\LaTeX\ in \gls{nvim})}
+  \label{pic:noStx}
 \end{figure}
 
 \subsection{Code Autocompletion}
@@ -614,29 +622,49 @@ are named, is the method to split a string by some delimiter, \textit{split\_by}
 or \textit{split\_on}? As long as the developer writes \textit{split}, the
 correct method name will be suggested.
 
-\begin{figure} \label{pic:completion}
+\begin{figure}
   \centering
   \includegraphics[width=0.5\textwidth]{context-completion.png}
   \caption{\gls{vscode} suggesting appropriate methods (Rust)}
+  \label{pic:completion}
 \end{figure}
 
 \subsection{Go-To-Definitions}
+
 Being able to quickly navigate to methods and read their implementation is a
 useful tool for a developer, as less time has to be spent navigating the project
 structure, to figure out where some method was implemented, and more time can be
 spent actually developing.
 
-\subsection{Pretty Printing/Formatting}
-Following the languages style guide.
-\todo{Expand, add examples like with Rust}
+\subsection{Formatting and Linting}
+
+When developing, an important part is code review, another developer ensuring
+that the suggested improvement is up to some standard, specified by the
+language and/or development team. Things like naming conventions, code style,
+unused variables, dangling doc-strings, bad variable names and commented out
+code, have no effect on the resulting program. Unused variables and comments
+are optimized away by the compiler, while variable names are mangled (unless
+they are constants). But for developers reading the source code, these issues
+can hide bugs because there is a lot of \textit{noise}. Luckily, \gls{ide}s can
+detect these common issues, by the help of a \textit{linter}, which can, on the
+invocation of the user, fix these issues. Linters are opinionated, since
+programming language specifications specify conventions on how the source code
+should look. In Rust for example, the compiler has a built-in formatter and
+linter, which, during compilation, warns the user of these mistakes, and can
+re-arrange the source code by formatting it to fit the standard.
 
 \subsection{Boilerplate Code Generation}
+
 For unit tests, getters and setters, (where relevant), and similar.
 
-\begin{figure} \label{pic:generate}
+\begin{figure}
   \centering
-  \includegraphics{generate.png}
-  \caption{Window for generating boilerplate code for a unit test (Kotlin in \gls{intellij})}
+  \includegraphics[width=0.5\textwidth]{generate.png}
+  \caption{
+    Window for generating boilerplate code for a unit test (Kotlin in
+    \gls{intellij})
+  }
+  \label{pic:generate}
 \end{figure}
 
 These are features also within a generic \gls{ide}, but most are available
@@ -647,19 +675,45 @@ the following features are not exclusive to generic \gls{ide}s.
 \subsection{File Explorer}
 
 Most project nowadays is larger than one file, so being able to visualize the
-project in a tree-like-structure, and navigate that, is useful. This feature
-usually comes with the ability to manipulate the project structure, by adding
-files, folders, moving files around, and deleting them.
+project in a tree-like-structure, and navigate that, is useful. Similarly to
+syntax highlighting, it adds icons to showcase what is a file or folder, but
+also what file extension is used. In the picture \ref{pic:fileEx}, one can see
+how all the Rust files, the files ending with \textit{rs}, have a crab, (called
+\textit{Ferris}), visually showing the developer that this file is a Rust source
+file. This makes it easier for a developer working on a polyglot project. This
+feature also comes with the ability to manipulate the project structure, by
+adding files, folders, moving files around, and deleting them, but most
+importantly, being able to open the file. By clicking on a file, it opens up in
+an editor, to be edited.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.25\textwidth]{file-explorer.png}
+  \caption{File explorer in \gls{vscode} showing the Nmide source code}
+  \label{pic:fileEx}
+\end{figure}
 
 \subsection{Version Control System Integration}
 
 \gls{vcs} is an integral part of development. Being able to sync ones work
-between different machines and developers is essential.
+between different machines and developers is essential. It allows for
+cooperation between different programmers
 
-\subsection{Integrated Terminal}
+In the picture
+\ref{pic:vcsViz}, we can see an example of this.
 
-An \gls{ide} is an all-encompassing tool for development related work, which
-includes a terminal.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{vcs-viz.png}
+  \caption{
+    File explorer in \gls{nvim} showing that the \textit{result} folder is
+    not \gls{vcs}-controlled (grey), and that the thesis folder have uncommitted
+    changes, (purple), the files who have changes are marked (yellow), and there
+    is one file which has a committed, but a non-pushed change, (green checked
+    checkbox).
+  }
+  \label{pic:vcsViz}
+\end{figure}
 
 \subsection{Module Market \& Installation}
 
@@ -669,7 +723,19 @@ module marketplace. This is a term for the place where a user can find modules,
 and with the click of a button, install them. Depending on what feature this
 module adds, the installation process could be as simple as adding it during the
 runtime, or if it's a more complex or integrated feature to the \gls{ide},
-requires a restart of the \gls{ide}.
+requires a restart of the \gls{ide}. In the picture \ref{pic:market}, we can see
+this in action.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{module-market.png}
+  \caption{
+    Module market window in \gls{intellij} showing popular modules that the user can
+    install by clicking on the \textit{install} button. Also seen in the window is
+    that the user can disable already installed modules, or uninstall them.
+  }
+  \label{pic:market}
+\end{figure}
 
 \section{Module Architecture}
 
@@ -693,13 +759,19 @@ advantages and disadvantage in both approaches.
 As an example, a standard user of any application will expect the application to
 come bundled with all the needed functionality. This is best achieved with the
 \textit{compile-time-extension} method, since the application can be installed
-with the expected modules.
-\todo{Maybe mention it could be faster due to compiler optimalization?}
+with the expected modules during compile time, ensuring the resulting binary
+contains all the wanted features. This also comes with the benefit of the
+compiler being able to optimize the module-core interactions, since the module
+is directly integrated into the source code of the core application.
 
 \subsection{Runtime Module}
 
 Runtime modules are usually also interpreted, but they can still be a
-library, same as in a compile time module.
+library, same as in a compile time module. The benefit with a runtime module,
+is that a user can easily test out different modules, as compiling the entire
+application before being able to test a module is a hassle. But it comes with
+some drawbacks, like having to do extra verifications on top of the module,
+ensuring invoking the module won't crash the entire \gls{ide}.
 
 \subsection{Modular Architecture in IDEs}
 
@@ -722,7 +794,7 @@ A good variety of a module ecosystem can help ensure the longevity of an
 \gls{ide}. In the table \ref{tbl:mod}, we can see that \gls{ide}s have an
 extensive module ecosystem. \footnotemark
 
-\footnotetext{Data found by looking at the marketplace\footnotemark for the modules, in order:\url{https://marketplace.eclipse.org/content/welcome-eclipse-marketplace}, \url{https://plugins.jetbrains.com/}, \url{https://marketplace.visualstudio.com/search?target=VSCode\&category=All\%20categories\&sortBy=Installs}}
+\footnotetext{Data found by looking at the marketplace for the modules, in order:\url{https://marketplace.eclipse.org/content/welcome-eclipse-marketplace}, \url{https://plugins.jetbrains.com/}, \url{https://marketplace.visualstudio.com/search?target=VSCode\&category=All\%20categories\&sortBy=Installs}}
 
 \gls{vscode} is the popular \gls{ide} \cite{topIde}, and this could be due to
 the amount of modules it has to offer. The amount of modules attributed to
@@ -850,6 +922,44 @@ from, and defined in \textit{types.ts}. This is what happens:
     documentation and implementation of the type
 \end{enumerate}
 
+\section{Zero Core IDE}
+
+\todo{Add intro}
+
+There is also a provider, some module providing data, and some consumer, some
+module using the data. If either the consumer or the provider is maintained by a
+third party, then there is some informal \textit{contract} between them. The
+consumer expects the outputs of a provider to be in some certain format, which
+in the case for \gls{rest} \gls{api}s usually is \gls{json}, but with
+specification formats like OpenApi \cite{openApi}, one can also specify the
+structure of the \gls{json} response, with what fields and values it can have.
+One can also specify what values are valid in a request. But even if one does
+use such a format, changes in scope can require the provider to change the
+\gls{api}, which could affect the consumer, because the consumer assumed
+something about their informal contract, that all numbers provided are
+integers, for example. And if suddenly the provider changes, and returns
+floating point numbers, the consumer could crash trying to parse a string as
+an integer.
+
+The same concept applies to a zero core \gls{ide}. Modules have an implicit, and
+informal contract between them. So the same measures, used in microservice
+architecture, to mitigate these issues, can be used in this zero core \gls{ide}.
+Unit testing of code is essential in software development, especially when
+developing against third party systems. Instead, invoking these third party
+systems at test time, mocking is used. This mocking is part of how a consumer
+assumes a provider should act. Mocking of modules is trivial, as all one needs
+to mock is the state, the \gls{ui}, or that some event happens. At a larger
+scale we test the module family, to see if its change has affected the other
+modules. This can be done with contract testing, as discussed by Gross and Mayer
+\cite{GROSS200322}. They propose a module architecture, where each module expose
+some testing interface. However, in the architecture propose by us, all modules
+composing the \gls{ide} can be loaded in a test environment, where all
+interactions are recorded, and used to generate a dependency graph, showing what
+modules depend on whom. This can show that certain modules are more tightly
+connected than assumed, meaning they are in the same module family, it can also
+show what module families communicate with other module families, showing module
+communities.
+
 \section{Existing Magnolia IDE}
 
 The current \gls{ide} for Magnolia \cite{baggeIde}, is a many-years-old version
@@ -889,15 +999,11 @@ multiple definitions, and resolving this can be complex.
 
 \subsection{Renaming}
 
-As shown earlier, in Magnolia, one can make some concept, and reuse this concept
-in another one. An example of this can be shown in listings \ref{lst:foo}, and
-\ref{lst:bar}, where we have the concept \textit{Foo} being used in \ref{lst:bar}.
-
 String concatenation is a monoid, so is list concatenation.
-\todo{Add proof? Isomorphism?}
+\todo{Add proof? Can I get some category theory stuff?}
 
 Even though they are related, it is more useful to have specific names for each
-concept. In \ref{lst:strConc} and \ref{list:listConc} we are importing the
+concept. In \ref{lst:strConc} and \ref{lst:lstConc} we are importing the
 monoid, (from listing \ref{lst:monoid}), and renaming the \textbf{unit} and
 \textbf{binop} operation to something that are specific to the concepts,
 \textbf{emptyString}, $+$ and \textbf{emptyList}, $++$ respectively.
@@ -941,41 +1047,3 @@ which means it needs to be easy for a user of the \gls{ide} to change the
 \gls{smt} solver they are using to validate their program with.
 
 Mention \gls{asr}s?
-
-\section{Zero Core IDE}
-
-\todo{Add intro}
-
-There is also a provider, some module providing data, and some consumer, some
-module using the data. If either the consumer or the provider is maintained by a
-third party, then there is some informal \textit{contract} between them. The
-consumer expects the outputs of a provider to be in some certain format, which
-in the case for \gls{rest} \gls{api}s usually is \gls{json}, but with
-specification formats like OpenApi \cite{openApi}, one can also specify the
-structure of the \gls{json} response, with what fields and values it can have.
-One can also specify what values are valid in a request. But even if one does
-use such a format, changes in scope can require the provider to change the
-\gls{api}, which could affect the consumer, because the consumer assumed
-something about their informal contract, that all numbers provided are
-integers, for example. And if suddenly the provider changes, and returns
-floating point numbers, the consumer could crash trying to parse a string as
-an integer.
-
-The same concept applies to a zero core \gls{ide}. Modules have an implicit, and
-informal contract between them. So the same measures, used in microservice
-architecture, to mitigate these issues, can be used in this zero core \gls{ide}.
-Unit testing of code is essential in software development, especially when
-developing against third party systems. Instead, invoking these third party
-systems at test time, mocking is used. This mocking is part of how a consumer
-assumes a provider should act. Mocking of modules is trivial, as all one needs
-to mock is the state, the \gls{ui}, or that some event happens. At a larger
-scale we test the module family, to see if its change has affected the other
-modules. This can be done with contract testing, as discussed by Gross and Mayer
-\cite{GROSS200322}. They propose a module architecture, where each module expose
-some testing interface. However, in the architecture propose by us, all modules
-composing the \gls{ide} can be loaded in a test environment, where all
-interactions are recorded, and used to generate a dependency graph, showing what
-modules depend on whom. This can show that certain modules are more tightly
-connected than assumed, meaning they are in the same module family, it can also
-show what module families communicate with other module families, showing module
-communities.
