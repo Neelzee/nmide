@@ -168,14 +168,13 @@ impl StateInstructionBuilder {
     pub fn add<S: ToString>(self, field: S, value: Value) -> Self {
         Self(
             self.0
-                .combine(Instruction::Add(Some(field.to_string()), None, value)),
+                .combine(Instruction::Add(field.to_string(), value)),
         )
     }
 
-    pub fn remove(self, field: String) -> Self {
+    pub fn remove<S: ToString>(self, field: S) -> Self {
         Self(self.0.combine(Instruction::Rem(
-            Some(field.to_string()),
-            None,
+            field.to_string(),
             Value::default(),
         )))
     }
@@ -193,8 +192,8 @@ impl StateInstructionBuilder {
 
     fn eval(instruction: Instruction<Value>, state: State) -> State {
         match instruction {
-            Instruction::Add(Some(field), _, value) => state.add(field, value),
-            Instruction::Rem(Some(field), _, _) => state.rem(field),
+            Instruction::Add(field, value) => state.add(field, value),
+            Instruction::Rem(field, _) => state.rem(field),
             Instruction::Then(f, s) => Self::eval(*s, Self::eval(*f, state)),
             _ => state,
         }
