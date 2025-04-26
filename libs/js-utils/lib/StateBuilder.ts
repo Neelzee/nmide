@@ -14,11 +14,11 @@ export class StateBuilder {
 
   add(field: string, value: Value | ValuePrimitive): StateBuilder {
     if (isValue(value)) {
-      this.state = combine(this.state, { add: [field, null, value] });
+      this.state = combine(this.state, { add: [field, value] });
     } else {
       this.state = combine(
         this.state,
-        { add: [field, null, O.getOrElse((): Value => "null")(tValueMaybe(value)) ] }
+        { add: [field, O.getOrElse((): Value => "null")(tValueMaybe(value)) ] }
       );
     }
     return this;
