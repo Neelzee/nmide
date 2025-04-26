@@ -57,7 +57,7 @@ impl ModuleEventRegister {
             modules.insert(evt, vec);
         }
         if let Some(md) = module {
-            let mut modules = self.event.write().await;
+            let mut modules = self.module.write().await;
             let mut vec = modules.get(&md).cloned().unwrap_or(Vec::new());
             vec.push(handler.clone());
             modules.insert(md, vec);
