@@ -17,7 +17,7 @@ result
 **.lol
 **.lot
 **.lof
-**.pdf
+*.pdf
 **.run.xml
 _minted-report
 core
