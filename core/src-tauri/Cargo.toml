@@ -34,7 +34,7 @@ actix-cors = { optional = true, version = "0.7.1" }
 actix-files = { optional = true, version = "0.6.6" }
 actix-web = { optional = true, version = "4.10.2" }
 core-module-lib = { path = "./core-module-lib" }
-core-std-lib = { path = "./core-std-lib" }
+core-std-lib = { path = "core-std-lib" }
 serde = { features = ["derive"], version = "1.0.219" }
 tauri = { features = [
   "protocol-asset",
@@ -60,6 +60,11 @@ ide = [
 server = ["dep:actix-web", "dep:actix-files", "dep:actix-cors"]
 
 # ============================================================================ #
+
+
+[dependencies.ide_cache]
+features = []
+path = "/home/nmf/nmide/modules/ide_cache"
 
 
 [dependencies.ide_framework]

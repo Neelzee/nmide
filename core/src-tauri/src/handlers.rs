@@ -5,6 +5,7 @@ use crate::{
 use core_std_lib::{core::Core, core_modification::CoreModification, event::Event};
 use futures;
 use log::info;
+use tauri::Emitter;
 
 pub async fn init(cm: CoreModification) {
     let modules = COMPILE_TIME_MODULES.read().await;
@@ -16,6 +17,13 @@ pub async fn init(cm: CoreModification) {
         .await
         .expect("Nmide core receiver should not be closed");
     futures::future::join_all(module_futures).await;
+    NMIDE
+        .get()
+        .expect("AppHandle should be initialized at this point")
+        .read()
+        .await
+        .emit("nmide://event", Event::new("post-init", "nmide", None))
+        .expect("Emit should succeed")
 }
 
 pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
