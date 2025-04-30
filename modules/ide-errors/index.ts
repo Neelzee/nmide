@@ -4,43 +4,39 @@ import {
   Event,
   emptyCm,
   Value,
-  Html,
   UiBuilder,
-  installModule
+  installModule, HtmlBuilder
 } from "@nmide/js-utils";
 
 
 installModule(
   {
     name: "ide-errors",
-    init: async (core: Core): CoreModification => {
-      await core.registerHandler("ide-errors", "fsa-error", null);
+    init: async (core: Core): Promise<CoreModification> => {
+      await core.registerHandler("ide-errors", "fsa-errors");
       return emptyCm();
     },
-    handler: async (event: Event, core: Core): CoreModification => {
+    handler: async (event: Event, _: Core): Promise<CoreModification> => {
       const { args } = event;
+      if (args === null) return emptyCm();
       const kp: [string, Value][] = Object.keys(args).map(k => [k, args[k]]);
-      const elm: Html = {
-        li: {
-          kids: kp.map(([f, v]) => {
-            return {
-              span: {
-                kids: [
-                  { label: { kids: [], attrs: [], text: f } },
-                  { p: { kids: [], attrs: [], text: JSON.stringify(v) } },
-                ],
-                attrs: [],
-                text: null,
-              }
-            };
-          }),
-          attrs: [],
-          text: "",
-        }
-      };
       return new UiBuilder()
-        .add(elm, "errors", null)
-        .build();
+        .add(
+          new HtmlBuilder()
+            .kind("li")
+            .kids(
+              ...kp.map(
+                ([f, v]) => new HtmlBuilder()
+                  .kind("span")
+                  .kids(
+                    new HtmlBuilder().kind("label").text(f),
+                    new HtmlBuilder().kind("p").text(JSON.stringify(v))
+                  )
+              )
+            )
+          ,
+          "errors"
+        ).build();
     },
   }
 );
