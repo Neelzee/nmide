@@ -6,7 +6,10 @@ use core_std_lib::{
 use log::info;
 use std::collections::HashMap;
 use tauri::Emitter;
+use tauri_plugin_dialog::DialogExt;
+use tauri_plugin_fs::FilePath;
 use tokio::sync::{mpsc::Sender, RwLock};
+use core_std_lib::state::Value;
 
 #[derive(Default)]
 pub struct ModuleEventRegister {
@@ -65,6 +68,14 @@ impl ModuleEventRegister {
     }
 }
 
+fn nmide_event(event: &str, arg: Option<Value>) -> Event {
+    Event::new(
+        format!("nmide://{event}"),
+        "nmide".to_string(),
+        arg,
+    )
+}
+
 pub struct NmideCore;
 
 #[async_trait]
@@ -87,8 +98,24 @@ impl Core for NmideCore {
             .expect("AppHandle should be initialized")
             .read()
             .await;
-        app.emit("nmide://event", event)
-            .expect("AppHandle emit should always succeed");
+        match event.event_name() {
+            "nmide://file?" => {
+                app.dialog().file().pick_file(move |file_path| {
+                    app.emit(
+                        "nmide://event",
+                        nmide_event(
+                            "file",
+                            file_path.map(|fp| Value::Str(fp.to_string()))
+                        )
+                    )
+                        .expect("AppHandle emit should always succeed");
+                });
+            }
+            _ => {
+                app.emit("nmide://event", event)
+                    .expect("AppHandle emit should always succeed");
+            }
+        }
     }
 
     async fn add_handler(

@@ -34,11 +34,13 @@ pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
             let evt = event.clone();
             let mods = COMPILE_TIME_MODULES.read().await;
             let mut modules = Vec::new();
-            for mod_name in MODULE_EVENT_REGISTER
+            let triggered_modules = MODULE_EVENT_REGISTER
                 .read()
                 .await
                 .get_module_names(&evt)
-                .await
+                .await;
+            info!("[backend] Triggered modules: {:?}", triggered_modules);
+            for mod_name in triggered_modules
             {
                 if let Some(m) = mods.get(&mod_name) {
                     modules.push(m.handler(evt.clone(), Box::new(NmideCore)));

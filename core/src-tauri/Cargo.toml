@@ -40,7 +40,7 @@ tauri = { features = [
   "protocol-asset",
   "config-toml",
 ], optional = true, version = "2.4.1" }
-tauri-plugin-dialog = { optional = true, version = "2.2.1" }
+tauri-plugin-dialog = { optional = true, version = "2" }
 tauri-plugin-fs = { optional = true, version = "2.2.1" }
 tauri-plugin-log = { optional = true, version = "2.3.1" }
 tauri-plugin-shell = { optional = true, version = "2.2.1" }
