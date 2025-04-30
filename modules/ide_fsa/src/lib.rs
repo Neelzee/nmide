@@ -14,27 +14,35 @@ use std::{
     path::{Path, PathBuf},
 };
 
-fn err_combine(l: Value, r: Value) -> Value {
-    match l {
-        Value::List(mut lst) => {
-            lst.push(r);
-            Value::List(lst)
-        }
-        _ => Value::List(vec![r]),
-    }
-}
-
-pub fn update(event: &Event, model: &State) -> Result<StateInstructionBuilder, Event> {
+pub async fn update(
+    event: &Event,
+    model: &State,
+    core: &Box<dyn Core>,
+) -> Result<StateInstructionBuilder, Event> {
     match (
         event.event_name(),
         event.args().cloned().unwrap_or_default(),
     ) {
-        ("fsa-read", Value::Str(file)) => match read_file(&file, model) {
-            Ok(data) => {
-                Ok(State::build().add(format!("fsa-read-{}", file.to_string()), Value::Str(data)))
+        ("fsa-read", obj) => {
+            let file = if event.args().is_some_and(|s| s.is_str()) {
+                event.args().unwrap().str().unwrap()
+            } else {
+                obj.obj().unwrap().get("eventArgs").unwrap().str().unwrap()
+            };
+            match read_file(&file, model) {
+                Ok(data) => {
+                    let evt = Event::new(
+                        format!("fsa-read-{}", event.module_name()),
+                        module_name().to_string(),
+                        Some(Value::Str(data.clone())),
+                    );
+                    println!("EVENT: {:?}", &evt);
+                    core.throw_event(evt).await;
+                    Ok(State::build())
+                }
+                Err(err) => Err(error(err, event)),
             }
-            Err(err) => Err(error(err, event)),
-        },
+        }
         ("fsa-write", Value::Obj(obj)) => match write_file(&obj.to_hm(), model) {
             Ok(file) => Ok(State::build().add(format!("fsa-write-{}", file), Value::Bool(true))),
             Err(err) => Err(error(err, event)),
@@ -187,26 +195,23 @@ impl core_module_lib::Module for Module {
         core.add_handler(
             Some("fsa-write".to_string()),
             None,
-            "trivial_module".to_string(),
+            module_name().to_string(),
         )
         .await;
         core.add_handler(
             Some("fsa-read".to_string()),
             None,
-            "trivial_module".to_string(),
+            module_name().to_string(),
         )
         .await;
-        core.add_handler(
-            Some("fsa-dir".to_string()),
-            None,
-            "trivial_module".to_string(),
-        )
-        .await;
+        core.add_handler(Some("fsa-dir".to_string()), None, module_name().to_string())
+            .await;
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
+        eprintln!("EVENT: {:?}", event);
         let state = core.state().await;
-        match update(&event, &state) {
+        match update(&event, &state, &core).await {
             Ok(st) => core
                 .get_sender()
                 .await
