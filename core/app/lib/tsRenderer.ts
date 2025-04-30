@@ -69,6 +69,17 @@ const evalAttr = (op: Instruction<Attr>) => {
       return;
     }
   }
+  if ("rem" in op) {
+    const id = op.rem[0];
+    const attr = op.rem[1];
+    if (id !== null && id !== "") {
+      const element = getElementById(window.__nmideConfig__.root, id);
+      if (element !== undefined) {
+        remAttr(element, attr);
+      }
+      return;
+    }
+  }
   if ("then" in op) {
     const fst = op.then[0];
     const snd = op.then[1];
@@ -127,11 +138,39 @@ const evalText = (op: Instruction<string>) => {
   window.__nmideConfig__.log.debug("No parse for instruction: ", op);
 }
 
+const remAttr = (element: HTMLElement, attr: Attr) => {
+  if ("click" in attr) {
+    return;
+  }
+  if ("onInput" in attr) {
+    return;
+  }
+  if ("emitInput" in attr) {
+    return;
+  }
+
+  const attrs = Object.entries(attr);
+  const [a, val] = attrs[0];
+  const att = a === "clss" ? "class" : a;
+  if (val === "") {
+    element.removeAttribute(att);
+  } else {
+    for (const attr of element.attributes) {
+      if (attr.name === att) {
+        const oldValue = attr.value;
+        attr.value = oldValue.split(" ").filter(v => {
+          return v !== val;
+        }).join(" ");
+      }
+    }
+  }
+}
+
 const addAttr = (element: HTMLElement, attr: Attr) => {
   if ("click" in attr) {
     element.addEventListener(
       "click",
-      function (this, ev: MouseEvent) {
+      function(this, ev: MouseEvent) {
         clickParse(attr.click, this, ev)();
       }
     );
@@ -143,12 +182,18 @@ const addAttr = (element: HTMLElement, attr: Attr) => {
   if ("emitInput" in attr) {
     return;
   }
-  const attrs = Object.values(attr);
-  element.setAttribute(attrs[0], attrs[1]);
+  if ("clss" in attr) {
+    const value = element.getAttribute("class");
+    element.setAttribute("class", `${value === null ? "" : value} ${attr.clss}`);
+    return;
+  }
+  const attrs = Object.entries(attr)[0];
+  const value = element.getAttribute(attrs[0]);
+  element.setAttribute(attrs[0], `${value === null ? "" : value} ${attrs[1]}`);
 };
 
 const clickParse = (event: Event, ts: HTMLElement, _: MouseEvent) => {
-  let args: ValueObj = { obj: { } };
+  let args: ValueObj = { obj: {} };
   if (ts instanceof HTMLInputElement || ts.tagName === "TEXTAREA") {
     // @ts-expect-error selectionStart exists on ts
     if (ts.selectionStart !== null) {
@@ -174,7 +219,7 @@ const clickParse = (event: Event, ts: HTMLElement, _: MouseEvent) => {
       };
     }
   }
-  args = { obj: { ...args.obj,  id: { str: ts.id }, } };
+  args = { obj: { ...args.obj, id: { str: ts.id }, } };
   if (event.args !== null) {
     args = { obj: { ...args.obj, eventArgs: event.args } };
   }
@@ -195,7 +240,7 @@ type THtml = {
 
 // TODO: Add docs
 const createElement = ({ kind, attrs, kids, text }: THtml) => {
-  const className = attrs.find((el) => "class" in el)?.class;
+  const className = attrs.find((el) => "clss" in el)?.clss;
   const id = attrs.find((el) => "id" in el)?.id;
   const onClick = attrs.find((el) => "click" in el)?.click;
   //const onInput = attrs.find(el => "onInput" in el)?.onInput;
@@ -213,7 +258,7 @@ const createElement = ({ kind, attrs, kids, text }: THtml) => {
   if (onClick !== undefined)
     element.addEventListener(
       "click",
-      function (this, ev: MouseEvent) {
+      function(this, ev: MouseEvent) {
         clickParse(onClick, this, ev)();
       }
     );
