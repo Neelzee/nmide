@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use core_std_lib::{
     attrs::Attr,
-    core::{Core},
+    core::Core,
     core_modification::CoreModification,
     event::Event,
     html::{Html, UIInstructionBuilder},
@@ -39,30 +39,8 @@ impl core_module_lib::Module for Module {
             MODULE_NAME.to_string(),
         )
         .await;
-        let mods =
-            CoreModification::default().set_ui(
-                UIInstructionBuilder::default().add_node(
-                    Html::Div {
-                        kids: vec![Html::Button().set_text("Graph").add_attr(Attr::Click(
-                            Event::new(
-                                "get_magnolia_graph".to_string(),
-                                MODULE_NAME.to_string(),
-                                Some(Value::Str(
-                                    "/home/nmf/magnolia-basic-library/src".to_string(),
-                                )),
-                            ),
-                        ))],
-                        attrs: vec![Attr::Id("graph-btn-div".to_string())],
-                        text: None,
-                    },
-                    Option::<String>::None,
-                ),
-            );
-        core.get_sender()
-            .await
-            .send(mods)
-            .await
-            .expect("Channel should be opened");
+        core.add_handler(Some("post-init".to_string()), None, MODULE_NAME.to_string())
+            .await;
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
@@ -99,6 +77,30 @@ impl core_module_lib::Module for Module {
                             .expect("Channel should be opened");
                     }
                 }
+            }
+            ("post-init", _) => {
+                let mods =
+                    CoreModification::default().set_ui(UIInstructionBuilder::default().add_node(
+                        Html::Div {
+                            kids: vec![Html::Button().set_text("Graph").add_attr(Attr::Click(
+                                Event::new(
+                                    "get_magnolia_graph".to_string(),
+                                    MODULE_NAME.to_string(),
+                                    Some(Value::Str(
+                                        "/home/nmf/magnolia-basic-library/src".to_string(),
+                                    )),
+                                ),
+                            ))],
+                            attrs: vec![Attr::Id("graph-btn-div".to_string())],
+                            text: None,
+                        },
+                        Some("navbar"),
+                    ));
+                core.get_sender()
+                    .await
+                    .send(mods)
+                    .await
+                    .expect("Channel should be opened");
             }
             _ => (),
         }
@@ -161,7 +163,7 @@ impl MagnoliaModule {
             ),
         );
 
-        Value::Obj(mp)
+        mp.into()
     }
 }
 
