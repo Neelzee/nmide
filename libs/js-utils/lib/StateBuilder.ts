@@ -6,11 +6,7 @@ import { isValue, tValueMaybe, ValuePrimitive } from "./Types";
 import * as O from "fp-ts/Option";
 
 export class StateBuilder {
-  private state: Instruction<Value>;
-
-  constructor() {
-    this.state = "noOp";
-  }
+  private state: Instruction<Value> = "noOp";
 
   add(field: string, value: Value | ValuePrimitive): StateBuilder {
     if (isValue(value)) {

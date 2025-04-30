@@ -16,12 +16,12 @@ export class UiBuilder {
     this.attr = "noOp";
   }
 
-  add(node: Html | HtmlBuilder, id?: string | null): UiBuilder {
+  add(node: Html | HtmlBuilder, id?: string): UiBuilder {
     this.node = combine(
       this.node,
       {
         add: [
-          id === undefined ? null : id,
+          id === undefined ? "" : id,
           node instanceof HtmlBuilder ? node.build() : node
         ]
       }
