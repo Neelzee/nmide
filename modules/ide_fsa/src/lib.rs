@@ -35,7 +35,7 @@ pub fn update(event: &Event, model: &State) -> Result<StateInstructionBuilder, E
             }
             Err(err) => Err(error(err, event)),
         },
-        ("fsa-write", Value::Obj(obj)) => match write_file(&obj, model) {
+        ("fsa-write", Value::Obj(obj)) => match write_file(&obj.to_hm(), model) {
             Ok(file) => Ok(State::build().add(format!("fsa-write-{}", file), Value::Bool(true))),
             Err(err) => Err(error(err, event)),
         },
@@ -53,7 +53,7 @@ pub fn update(event: &Event, model: &State) -> Result<StateInstructionBuilder, E
 fn event_error<S: ToString>(value: S) -> Event {
     let mut map = HashMap::new();
     map.insert("error".to_string(), Value::Str(value.to_string()));
-    Event::new("fsa-error", module_name(), Some(Value::Obj(map)))
+    Event::new("fsa-error", module_name(), Some(map.into()))
 }
 
 fn read_file(key: &str, model: &State) -> Result<String, Event> {
@@ -160,7 +160,7 @@ fn error(error_event: Event, original_event: &Event) -> Event {
         "value".to_string(),
         original_event.args().cloned().unwrap_or_default(),
     );
-    Event::new("fsa-error", module_name(), Some(Value::Obj(map)))
+    Event::new("fsa-error", module_name(), Some(map.into()))
 }
 
 pub struct ModuleBuilder;
