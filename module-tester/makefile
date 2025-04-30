@@ -1,15 +1,12 @@
-modules : input
-    bun run build.ts | jq -c ".[]" | while read -r module; do \
-        name=$(echo "$module" | jq -r ".name") \
-        kind=$(echo "$module" | jq -r ".kind") \
-        path=$(echo "$module" | jq -r ".path") \
-        if [[ "$kind" == "ts" ]; then \
+modules : clean
+	cargo run \
+		--manifest-path=../core/cm-installer/Cargo.toml -- \
+		--out=./rsm-bundler/target \
+		--conf=./Modules.toml \
+		--cargo=./rsm-bundler/Cargo.toml \
+		--dist=./build/ \
 
-
-
-
-
-
-input :
-    rm -f input.ts && touch input.ts && \
-        echo "const window = { __nmideConfig__: { modules: new Map() } };"
+clean :
+	rm -rf ./rsm-bundler/target/debug/build/core-* && \
+	rm -rf ./build/ && \
+	mkdir -p ./build/
