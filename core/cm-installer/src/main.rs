@@ -129,6 +129,11 @@ fn main() {
     let scripts = js_installer::install(dist.clone(), modules.clone());
     let styles = css_installer::install(dist, modules);
 
+    if index.is_empty() {
+        println!("No index file to install");
+        return;
+    }
+
     let mut file = OpenOptions::new()
         .read(true)
         .write(true)
@@ -166,9 +171,7 @@ fn get_modules(conf: String, modules: String) -> Vec<Module> {
     if opt_modules.is_none() {
         panic!("Can't find [modules] section in {module_toml_path:?}");
     }
-    let default_module_path = Path::new(&modules)
-        .canonicalize()
-        .unwrap_or_else(|_| panic!("Can't canonicalize config: {module_toml_path:?}"));
+    let default_module_path = Path::new(&modules);
     for (module, spec) in opt_modules.unwrap() {
         let kind = spec
             .get("kind")

@@ -13,7 +13,13 @@ pub(crate) fn install(dist: String, mods: Vec<Module>) -> Vec<String> {
 
         let mut path = m.path.clone();
 
+        println!("Installing module: {:?}", &path);
+
         if let Some(pm) = m.package_manager {
+            let mut install_cmd = Command::new(pm.clone());
+            install_cmd.current_dir(&path);
+            install_cmd.arg("i");
+            run_cmd(install_cmd);
             let mut build_cmd = Command::new(pm);
             build_cmd.current_dir(&path);
             build_cmd.arg("run");
