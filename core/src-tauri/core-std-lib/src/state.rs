@@ -1,11 +1,11 @@
 use crate::instruction::inst::Instruction;
+use hashable::HashableHashMap;
+use ordered_float::NotNan;
+use serde::de::{MapAccess, Visitor};
+use serde::ser::SerializeMap;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::collections::HashMap;
 use std::fmt::Formatter;
-use hashable::HashableHashMap;
-use ordered_float::{NotNan};
-use serde::de::{MapAccess, Visitor};
-use serde::ser::SerializeMap;
 use ts_rs::TS;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, TS, Hash, Eq)]
@@ -30,7 +30,7 @@ pub struct HHMap(HashableHashMap<String, Value>);
 impl Serialize for HHMap {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
-        S: Serializer
+        S: Serializer,
     {
         let mut map = serializer.serialize_map(Some(self.0.len()))?;
         for (k, v) in self.0.clone().into_iter() {
@@ -66,7 +66,7 @@ impl<'de> Visitor<'de> for HHMapVisitor {
 impl<'de> Deserialize<'de> for HHMap {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
-        D: Deserializer<'de>
+        D: Deserializer<'de>,
     {
         deserializer.deserialize_map(HHMapVisitor)
     }
@@ -85,6 +85,17 @@ impl From<HashMap<String, Value>> for HHMap {
 }
 
 impl Value {
+    pub fn bool(&self) -> Option<bool> {
+        match self {
+            Self::Bool(b) => Some(*b),
+            _ => None,
+        }
+    }
+
+    pub fn new_obj() -> Self {
+        Self::Obj(HHMap::default())
+    }
+
     pub fn null(self) -> Option<()> {
         match self {
             Self::Null => Some(()),
@@ -137,13 +148,21 @@ impl Value {
     }
 }
 
+impl From<HashMap<String, Value>> for Value {
+    fn from(value: HashMap<String, Value>) -> Self {
+        Self::Obj(value.into())
+    }
+}
+
 impl PartialOrd for Value {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         unsafe {
             match (self, other) {
                 (Value::Int(l), Value::Int(r)) => Some(l.cmp(r)),
                 (Value::Int(l), Value::Float(r)) => (*l as f32).partial_cmp(r),
-                (Value::Float(l), Value::Int(r)) => l.partial_cmp(&(NotNan::new_unchecked(*r as f32))),
+                (Value::Float(l), Value::Int(r)) => {
+                    l.partial_cmp(&(NotNan::new_unchecked(*r as f32)))
+                }
                 (Value::Float(l), Value::Float(r)) => l.partial_cmp(r),
                 (Value::Bool(l), Value::Bool(r)) => l.partial_cmp(r),
                 (Value::Str(l), Value::Str(r)) => Some(l.cmp(r)),
@@ -235,17 +254,14 @@ impl StateInstructionBuilder {
     }
 
     pub fn add<S: ToString>(self, field: S, value: Value) -> Self {
-        Self(
-            self.0
-                .combine(Instruction::Add(field.to_string(), value)),
-        )
+        Self(self.0.combine(Instruction::Add(field.to_string(), value)))
     }
 
     pub fn remove<S: ToString>(self, field: S) -> Self {
-        Self(self.0.combine(Instruction::Rem(
-            field.to_string(),
-            Value::default(),
-        )))
+        Self(
+            self.0
+                .combine(Instruction::Rem(field.to_string(), Value::default())),
+        )
     }
 
     pub fn set(self, field: String, value: Value) -> Self {

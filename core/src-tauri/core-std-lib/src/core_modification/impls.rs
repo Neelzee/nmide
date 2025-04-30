@@ -15,6 +15,13 @@ impl Default for CoreModification {
 }
 
 impl CoreModification {
+    pub fn ui(ui: UIInstructionBuilder) -> Self {
+        CoreModification {
+            state: Instruction::NoOp,
+            ui: ui.instruction(),
+        }
+    }
+
     pub fn append(a: Self, b: Self) -> Self {
         a.combine(b)
     }

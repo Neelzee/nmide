@@ -59,6 +59,16 @@ define_html!(
 );
 
 impl Html {
+    pub fn get_by_id(ui: Html, id: String) -> Option<Self> {
+        if ui.cmp_id(&id) {
+            Some(ui)
+        } else {
+            ui.kids()
+                .into_iter()
+                .find_map(|h| Self::get_by_id(h, id.clone()))
+        }
+    }
+
     pub fn add_attr(self, attr: Attr) -> Self {
         let mut attrs = self.attrs();
         attrs.push(attr);
@@ -75,8 +85,19 @@ impl Html {
         self.set_attrs(attrs)
     }
 
-    pub fn rem_attr(self, attr: &str) -> Self {
-        let attrs: Vec<Attr> = self.attrs().into_iter().filter(|a| !a.is(attr)).collect();
+    pub fn rem_attr(self, attr: Attr) -> Self {
+        let attrs = if attr.is_empty() {
+            self.attrs()
+                .into_iter()
+                .filter(|a| !a.is(attr.as_string_rep()))
+                .collect()
+        } else {
+            self.attrs()
+                .into_iter()
+                .map(|a| if a == attr { a.remove(attr.value()) } else { a })
+                .collect()
+        };
+
         self.set_attrs(attrs)
     }
 
@@ -140,16 +161,34 @@ impl UIInstructionBuilder {
 
     pub fn set_text<S: ToString>(self, id: Option<S>, text: String) -> Self {
         Self {
-            text: self.text.combine(Instruction::Add(id.map(|s| s.to_string()).unwrap_or_default(), text)),
+            text: self.text.combine(Instruction::Add(
+                id.map(|s| s.to_string()).unwrap_or_default(),
+                text,
+            )),
             ..self
         }
     }
 
     pub fn add_node<S: ToString>(self, ui: Html, id: Option<S>) -> Self {
         Self {
-            node: self.node.combine(Instruction::Add(id.map(|s| s.to_string()).unwrap_or_default(), ui)),
+            node: self.node.combine(Instruction::Add(
+                id.map(|s| s.to_string()).unwrap_or_default(),
+                ui,
+            )),
             ..self
         }
+    }
+
+    pub fn add_nodes<S: ToString>(self, uis: Vec<Html>, id: Option<S>) -> Self {
+        let mut new = self;
+        let id = id.map(|s| s.to_string()).unwrap_or_default();
+        for ui in uis {
+            new = Self {
+                node: new.node.combine(Instruction::Add(id.clone(), ui)),
+                ..new
+            }
+        }
+        new
     }
 
     pub fn rem_node(self, id: String) -> Self {
@@ -201,9 +240,9 @@ impl UIInstructionBuilder {
         match inst {
             Instruction::NoOp => node,
             // ADD
-            Instruction::Add(id, text) => node.modify(
-                |n| n.set_text(text.clone()), |n| n.cmp_id(&id)
-            ),
+            Instruction::Add(id, text) => {
+                node.modify(|n| n.set_text(text.clone()), |n| n.cmp_id(&id))
+            }
             // REM
             Instruction::Rem(id, _) => {
                 let p = |n: &Html| n.cmp_id(&id);
@@ -217,11 +256,13 @@ impl UIInstructionBuilder {
         match inst {
             Instruction::NoOp => node,
             // ADD
-            Instruction::Add(id, attr) => node.modify(|n| n.add_attr(attr.clone()), |n| n.cmp_id(&id)),
+            Instruction::Add(id, attr) => {
+                node.modify(|n| n.add_attr(attr.clone()), |n| n.cmp_id(&id))
+            }
             // REM
             Instruction::Rem(id, attr) => {
                 let p = |n: &Html| n.cmp_id(&id);
-                node.modify(|n| n.rem_attr(attr.as_string_rep()), p)
+                node.modify(|n| n.rem_attr(attr.clone()), p)
             }
             Instruction::Then(f, s) => Self::attr_instruction(Self::attr_instruction(node, *f), *s),
         }

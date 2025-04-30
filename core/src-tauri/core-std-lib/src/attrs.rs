@@ -14,6 +14,7 @@ pub enum Attr {
     /// ```html
     /// <div class="foobar"/>
     /// ```
+    #[serde(rename = "clss")]
     Class(String),
     Style(String),
     /// only valid for `input`
@@ -97,17 +98,56 @@ impl Attr {
     }
 
     pub fn is(&self, s: &str) -> bool {
-        match (self, s.to_lowercase().as_str()) {
-            (Attr::Id(_), "id") => true,
-            (Attr::Class(_), "class") => true,
-            (Attr::Style(_), "style") => true,
-            (Attr::Type(_), "type") => true,
-            (Attr::Checked(_), "checked") => true,
-            (Attr::Click(_), "onClick") => true,
-            (Attr::OnInput(_), "onInput") => true,
-            (Attr::EmitInput(_), "emitInput") => true,
-            (Attr::Src(_), "src") => true,
-            _ => false,
+        matches!(
+            (self, s.to_lowercase().as_str()),
+            (Attr::Id(_), "id")
+                | (Attr::Class(_), "class")
+                | (Attr::Style(_), "style")
+                | (Attr::Type(_), "type")
+                | (Attr::Checked(_), "checked")
+                | (Attr::Click(_), "onClick")
+                | (Attr::OnInput(_), "onInput")
+                | (Attr::EmitInput(_), "emitInput")
+                | (Attr::Src(_), "src")
+        )
+    }
+
+    pub fn has(&self, s: &str) -> bool {
+        match self {
+            Attr::Id(o) | Attr::Class(o) => o.split_ascii_whitespace().any(|a| a == s),
+            _ => unimplemented!(),
+        }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        match self {
+            Attr::Id(o) | Attr::Class(o) => o.is_empty(),
+            _ => unimplemented!(),
+        }
+    }
+
+    pub fn value(&self) -> &str {
+        match self {
+            Attr::Id(o) | Attr::Class(o) => o,
+            _ => unimplemented!(),
+        }
+    }
+
+    pub fn remove(self, s: &str) -> Self {
+        match self {
+            Attr::Id(o) => Self::Id(
+                o.split_ascii_whitespace()
+                    .into_iter()
+                    .filter(|a| a != &s)
+                    .collect(),
+            ),
+            Attr::Class(o) => Self::Class(
+                o.split_ascii_whitespace()
+                    .into_iter()
+                    .filter(|a| a != &s)
+                    .collect(),
+            ),
+            _ => unimplemented!(),
         }
     }
 }
