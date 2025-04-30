@@ -5,5 +5,6 @@ esbuild.build({
   bundle: true,
   outfile: "build/index.js",
   minify: true,
+  external: ["fp-ts/*", "io-ts"]
 }).catch(console.error);
 
