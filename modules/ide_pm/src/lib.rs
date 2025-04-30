@@ -22,11 +22,6 @@ fn button(text: &str) -> Html {
     let id = format!("ide-pm-{}", text.replace(" ", "-"));
     Html::Button()
         .set_text(text)
-        .add_attr(Attr::Click(Event::new(
-            id.clone().to_lowercase(),
-            MODULE_NAME.to_string(),
-            None,
-        )))
         .add_attr(Attr::Id(id.to_lowercase()))
 }
 
@@ -50,7 +45,11 @@ fn navbar() -> Vec<Html> {
             .add_attr(Attr::Id("ide-pm-drop-file-content".to_string()))
             .add_attr(Attr::Class("dropdown-content".to_string()))
             .adopt(button("New File"))
-            .adopt(button("Open File")),
+            .adopt(button("Open File").add_attr(Attr::Click(Event::new(
+                "ide-pm-file".to_string(),
+                MODULE_NAME.to_string(),
+                None,
+            )))),
         Html::Button().set_text("Edit"),
         Html::Button().set_text("Selection"),
         Html::Button().set_text("View"),
@@ -76,6 +75,24 @@ impl Module for ProjectManagerModule {
             MODULE_NAME.to_string(),
         )
         .await;
+        core.add_handler(
+            Some("ide-pm-file".to_string()),
+            None,
+            MODULE_NAME.to_string(),
+        )
+        .await;
+        core.add_handler(
+            Some("nmide://file".to_string()),
+            None,
+            MODULE_NAME.to_string(),
+        )
+        .await;
+        core.add_handler(
+            Some("fsa-read-ide_pm".to_string()),
+            None,
+            MODULE_NAME.to_string(),
+        )
+        .await;
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
@@ -92,8 +109,14 @@ impl Module for ProjectManagerModule {
                 let state = core.state().await;
                 let id = match event.args().unwrap() {
                     Value::Str(s) => s.to_string(),
-                    Value::Obj(obj) => obj.clone().to_hm().get("eventArgs").cloned().and_then(|v| v.str()).unwrap(),
-                    _ => panic!("Unhallowed argument")
+                    Value::Obj(obj) => obj
+                        .clone()
+                        .to_hm()
+                        .get("eventArgs")
+                        .cloned()
+                        .and_then(|v| v.str())
+                        .unwrap(),
+                    _ => panic!("Unhallowed argument"),
                 };
                 let id = format!("{id}-content");
                 let toggle = !state.get(&id).and_then(|v| v.bool()).is_some_and(|v| v);
@@ -112,6 +135,17 @@ impl Module for ProjectManagerModule {
                     )
                     .await
                     .expect("Channel should be open");
+            }
+            "ide-pm-file" => {
+                core.throw_event(Event::new("nmide://file?", MODULE_NAME, None))
+                    .await;
+            }
+            "nmide://file" => {
+                core.throw_event(Event::new("fsa-read", MODULE_NAME, event.args().cloned()))
+                    .await;
+            }
+            "fsa-read-ide_pm" => {
+                println!("DATA: {:?}", event.args());
             }
             _ => (),
         }
