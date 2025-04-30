@@ -5,9 +5,6 @@ esbuild.build({
   bundle: true,
   outfile: "build/index.js",
   minify: true,
-  external: [],
-  loader: {
-    ".ttf": "file"
-  }
+  external: ["fp-ts/*", "io-ts"],
 }).catch(() => process.exit(1));
 
