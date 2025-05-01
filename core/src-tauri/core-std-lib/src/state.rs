@@ -8,7 +8,9 @@ use std::collections::HashMap;
 use std::fmt::Formatter;
 use ts_rs::TS;
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, TS, Hash, Eq)]
+#[derive(
+    Default, Debug, Clone, PartialEq, PartialOrd, Ord, Serialize, Deserialize, TS, Hash, Eq,
+)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub enum Value {
@@ -26,6 +28,20 @@ pub enum Value {
 
 #[derive(Default, Debug, Clone, PartialEq, Hash, Eq)]
 pub struct HHMap(HashableHashMap<String, Value>);
+
+impl PartialOrd for HHMap {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for HHMap {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        let mps = self.clone().to_hm();
+        let mpo = other.clone().to_hm();
+        mps.iter().cmp(mpo.iter())
+    }
+}
 
 impl Serialize for HHMap {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
@@ -154,7 +170,7 @@ impl From<HashMap<String, Value>> for Value {
     }
 }
 
-impl PartialOrd for Value {
+/*impl PartialOrd for Value {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         unsafe {
             match (self, other) {
@@ -179,6 +195,7 @@ impl PartialOrd for Value {
         }
     }
 }
+*/
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, TS)]
 #[ts(export)]

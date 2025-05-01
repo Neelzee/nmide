@@ -2,7 +2,7 @@ use crate::state::Value;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize, Deserialize, TS, Hash, Eq)]
+#[derive(Debug, Clone, PartialEq, PartialOrd, Ord, Serialize, Deserialize, TS, Hash, Eq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct Event {

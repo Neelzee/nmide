@@ -153,19 +153,14 @@ impl Attr {
 
     pub fn has_event(&self) -> bool {
         match self {
-            Attr::Click(_) |
-            Attr::OnInput(_) |
-            Attr::EmitInput(_) => true,
+            Attr::Click(_) | Attr::OnInput(_) | Attr::EmitInput(_) => true,
             _ => false,
         }
     }
 
-
     pub fn get_event(&self) -> Option<Event> {
         match self {
-            Attr::Click(e) |
-            Attr::OnInput(e) |
-            Attr::EmitInput(e) => Some(e.clone()),
+            Attr::Click(e) | Attr::OnInput(e) | Attr::EmitInput(e) => Some(e.clone()),
             _ => None,
         }
     }
