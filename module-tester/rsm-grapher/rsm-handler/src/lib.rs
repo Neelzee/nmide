@@ -3,7 +3,7 @@ use core_module_lib::Module;
 use core_std_lib::event::Event;
 use futures::FutureExt;
 use rsm_invoker::{CONSUMER, Core, Dependency, MODULE, SUITE, THROWN_EVENTS};
-use std::time::Duration;
+use std::{collections::HashSet, time::Duration};
 use tokio::{
     sync::{mpsc, oneshot},
     time::sleep,
@@ -13,8 +13,9 @@ pub async fn handle(
     module: Box<dyn Module>,
     initial_events: Vec<Event>,
     dur: Duration,
-) -> Result<Dependency> {
+) -> Result<std::result::Result<Dependency, (Dependency, HashSet<Event>)>> {
     let mut suite = SUITE.write().await;
+    let mut seen_events: HashSet<Event> = HashSet::from_iter(initial_events.clone().into_iter());
     suite.initialize(module).await;
     let (sender, mut recv) = mpsc::channel::<bool>(100);
     tokio::spawn(async move {
@@ -65,10 +66,37 @@ pub async fn handle(
     });
 
     match r.await {
-        Ok(deps) => deps
-            .into_iter()
-            .reduce(|a, b| fold_deps(a, b))
-            .ok_or(anyhow!("No dependencies found")),
+        Ok(deps) => {
+            match deps
+                .into_iter()
+                .reduce(|a, b| fold_deps(a, b))
+                .ok_or(anyhow!("No dependencies found"))
+            {
+                Ok(dep) => {
+                    let evts = dep.consuming.clone().into_iter().map(|(e, m)| {
+                        Event::new(e.unwrap_or_default(), m.unwrap_or_default(), None)
+                    });
+
+                    let mut new_event = false;
+
+                    for e in evts {
+                        if seen_events.insert(e) {
+                            new_event = true;
+                        }
+                    }
+
+                    if new_event {
+                        Ok(std::result::Result::Err((
+                            dep,
+                            seen_events.into_iter().collect(),
+                        )))
+                    } else {
+                        Ok(std::result::Result::Ok(dep))
+                    }
+                }
+                Err(err) => Err(err),
+            }
+        }
         Err(err) => Err(anyhow!(err)),
     }
 }

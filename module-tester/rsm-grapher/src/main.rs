@@ -34,17 +34,17 @@
 //! To find more dependencies, a Module is triggered with the Events it
 //! subscribed to, and analysed for new registrations or triggers. If the list
 //! all subscribed Events have been exhausted, and no new registration or
-//! trigger has occured, that Module is considered `Exhausted`, and won't be
+//! trigger has occurred, that Module is considered `Exhausted`, and won't be
 //! analyzed any more.
 //!
 //! ## Deadlocks
 //!
-//! Since Modules are asyncronous, and can possible spawn own threads, there is
+//! Since Modules are asynchronous, and can possible spawn own threads, there is
 //! a possibility for deadlocks to occur. There is no way to avoid this, without
 //! restricting Module developers, which is not wanted. Therefore it is up to
 //! the user of rsm-grapher to avoid this, by supplying a timeout value,
 //! ensuring that if, after some time N, the analysation of a Module is still
-//! occuring, the analysation is killed.
+//! occurring, the analysation is killed.
 //!
 //! ## State dependency
 //!
@@ -55,6 +55,7 @@
 use core_module_lib::Module;
 use core_std_lib::event::Event;
 use rsm_handler::fold_deps;
+use rsm_invoker::Dependency;
 use std::{collections::HashMap, time::Duration};
 
 #[allow(unused_imports)]
@@ -78,7 +79,7 @@ async fn main() {
             Ok(deps) => {
                 map.insert(m, deps);
             }
-            Err(err) => eprintln!("Error during analsying: {err:?}"),
+            Err(err) => eprintln!("Error during analysing: {err:?}"),
         }
     }
 
@@ -100,12 +101,38 @@ async fn main() {
             })
             .collect();
         println!("Analysing event handling of `{m}`");
-        match rsm_handler::handle(module, initial_events, Duration::from_secs(5)).await {
-            Ok(new_dep) => {
-                let dep = fold_deps(dep, new_dep);
-                println!("{dep:?}");
-            }
-            Err(err) => eprintln!("Error during analsying: {err:?}"),
+        match handling(module, m, initial_events, dep).await {
+            Ok(Ok(dep)) => println!("{dep:?}"),
+            Ok(_) => unreachable!(),
+            Err(err) => eprintln!("{}", err),
         }
+    }
+}
+
+async fn handling(
+    module: Box<dyn Module>,
+    name: String,
+    initial_events: Vec<Event>,
+    dep: Dependency,
+) -> Result<std::result::Result<Dependency, Vec<Event>>, String> {
+    match rsm_handler::handle(module, initial_events, Duration::from_secs(5)).await {
+        Ok(Ok(new_dep)) => {
+            let dep = fold_deps(dep, new_dep);
+            Ok(Ok(dep))
+        }
+        Ok(Err((dep, new_events))) => {
+            println!("Found new events for {name}");
+            let mut modules: HashMap<String, Box<dyn Module>> = HashMap::new();
+            module_reg::register_modules(&mut modules);
+            let (_, module) = modules.into_iter().find(|m| m.0 == name).unwrap();
+            Box::pin(handling(
+                module,
+                name,
+                new_events.into_iter().collect(),
+                dep,
+            ))
+            .await
+        }
+        Err(err) => Err(format!("{err:?}")),
     }
 }

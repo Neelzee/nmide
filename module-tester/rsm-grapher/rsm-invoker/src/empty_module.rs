@@ -2,6 +2,7 @@ use core_module_lib::Module;
 use core_std_lib::core::Core;
 use core_std_lib::event::Event;
 
+#[derive(Clone)]
 pub(crate) struct EmptyModule;
 
 #[async_trait::async_trait]
