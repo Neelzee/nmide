@@ -1,12 +1,12 @@
 modules : clean
 	cargo run \
 		--manifest-path=../core/cm-installer/Cargo.toml -- \
-		--out=./rsm-bundler/target \
+		--out=./rsm-grapher/target \
 		--conf=./Modules.toml \
-		--cargo=./rsm-bundler/Cargo.toml \
+		--cargo=./rsm-grapher/Cargo.toml \
 		--dist=./build/ \
 
 clean :
-	rm -rf ./rsm-bundler/target/debug/build/core-* && \
+	rm -rf ./rsm-grapher/target/debug/build/core-* && \
 	rm -rf ./build/ && \
 	mkdir -p ./build/
