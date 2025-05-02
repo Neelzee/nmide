@@ -1,19 +1,18 @@
 use std::path::Path;
 
 use abi_stable::{
-    StableAbi,
-    library::{LibraryError, RootModule},
-    package_version_strings,
-    sabi_types::VersionStrings,
+    library::{LibraryError, RootModule}, package_version_strings, sabi_types::VersionStrings, std_types::RBox, StableAbi
 };
+
+use crate::{core::rs_core::RCore, event::rs_event::REvent};
 
 #[repr(C)]
 #[derive(StableAbi)]
 #[sabi(kind(Prefix(prefix_ref = ModuleRef)))]
 #[sabi(missing_field(panic))]
 pub struct RustModule {
-    pub init: extern "C" fn(core: u8) -> (),
-    pub handler: extern "C" fn(core: u8) -> (),
+    pub init: extern "C" fn(core: RBox<dyn RCore>) -> (),
+    pub handler: extern "C" fn(event: REvent, core: u8) -> (),
 }
 
 impl RootModule for ModuleRef {

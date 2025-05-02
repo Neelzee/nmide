@@ -3,7 +3,7 @@ use abi_stable::{
     std_types::{ROption, RString},
 };
 
-use crate::state::rmap::RValue;
+use crate::state::rs_state::RValue;
 
 #[repr(C)]
 #[derive(StableAbi, Clone)]

@@ -32,3 +32,5 @@ pub mod event;
 pub mod module;
 
 pub mod core;
+
+pub mod instr;

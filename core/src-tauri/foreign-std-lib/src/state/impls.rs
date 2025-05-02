@@ -3,7 +3,7 @@
 //! These are standard, like `PartialEq` and `fmt`.
 
 use super::{
-    rmap::{RKeyPair, RMap, RValKind, RValue, RValueUnion},
+    rs_state::{RKeyPair, RState, RValKind, RValue, RValueUnion},
     tmap::{TMap, TValue},
 };
 use abi_stable::std_types::{RString, RVec};
@@ -179,14 +179,14 @@ impl<S: ToString, T: Into<RValue>> From<(S, T)> for RKeyPair {
     }
 }
 
-impl Default for RMap {
+impl Default for RState {
     fn default() -> Self {
         Self::new()
     }
 }
 
 #[cfg(feature = "ts")]
-impl From<TMap> for RMap {
+impl From<TMap> for RState {
     fn from(value: TMap) -> Self {
         Self {
             pairs: value.0.into_iter().map(|t| t.into()).collect(),

@@ -6,11 +6,11 @@
 
 /// Rust-Map
 #[cfg(feature = "rs")]
-pub mod rmap;
+pub mod rs_state;
 #[cfg(feature = "ts")]
 /// TypeScript Map
 pub mod tmap {
-    use super::rmap::{RKeyPair, RMap, RValue};
+    use super::rs_state::{RKeyPair, RState, RValue};
     use serde::{Deserialize, Serialize};
     use ts_rs::TS;
 
@@ -29,11 +29,11 @@ pub mod tmap {
     impl From<RValue> for TValue {
         fn from(value: RValue) -> Self {
             match value.kind {
-                super::rmap::RValKind::Int => TValue::Int(value.int().unwrap()),
-                super::rmap::RValKind::Float => TValue::Float(value.float().unwrap()),
-                super::rmap::RValKind::Bool => TValue::Bool(value.bool().unwrap()),
-                super::rmap::RValKind::Str => TValue::Str(value.str().unwrap().clone().to_string()),
-                super::rmap::RValKind::List => TValue::List(
+                super::rs_state::RValKind::Int => TValue::Int(value.int().unwrap()),
+                super::rs_state::RValKind::Float => TValue::Float(value.float().unwrap()),
+                super::rs_state::RValKind::Bool => TValue::Bool(value.bool().unwrap()),
+                super::rs_state::RValKind::Str => TValue::Str(value.str().unwrap().clone().to_string()),
+                super::rs_state::RValKind::List => TValue::List(
                     value
                         .lst()
                         .unwrap()
@@ -41,7 +41,7 @@ pub mod tmap {
                         .map(|v| v.clone().into())
                         .collect(),
                 ),
-                super::rmap::RValKind::Obj => TValue::Obj(
+                super::rs_state::RValKind::Obj => TValue::Obj(
                     value
                         .obj()
                         .unwrap()
@@ -75,8 +75,8 @@ pub mod tmap {
         }
     }
 
-    impl From<RMap> for TMap {
-        fn from(value: RMap) -> Self {
+    impl From<RState> for TMap {
+        fn from(value: RState) -> Self {
             Self(value.pairs.iter().map(|v| v.clone().into()).collect())
         }
     }

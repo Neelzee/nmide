@@ -271,13 +271,13 @@ pub enum RValKind {
 
 #[repr(C)]
 #[derive(StableAbi, Clone, PartialEq, Eq, Debug)]
-pub struct RMap {
+pub struct RState {
     pub(crate) pairs: RVec<RKeyPair>,
 }
 
-impl RMap {
-    pub fn new() -> RMap {
-        RMap { pairs: RVec::new() }
+impl RState {
+    pub fn new() -> RState {
+        RState { pairs: RVec::new() }
     }
 
     /// Returns if the given key is in the map.
@@ -491,7 +491,7 @@ fn building_rmap_test<K>(#[case] keyvals: Vec<(K, RValue)>)
 where
     K: ToString,
 {
-    let mut map = RMap::new();
+    let mut map = RState::new();
     for (k, v) in keyvals.iter() {
         map = map.insert(k, v.clone());
         assert!(map.lookup(k).is_some());

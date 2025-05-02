@@ -1,2 +1,2 @@
 #[cfg(feature = "rs")]
-pub mod rs_core;
+pub mod rs_core_modification;
