@@ -7,8 +7,12 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.93"
 core-std-lib = { path = "../core-std-lib" }
-foreign-std-lib = { path = "../foreign-std-lib", features = ["rs", "ts", "c"] }
+foreign-std-lib = { path = "../foreign-std-lib", features = ["rs", "ts", "c"], optional = true }
 log = "0.4.22"
 abi_stable = "0.11.3"
 serialize-to-javascript = "0.1.1"
 async-trait = "0.1.88"
+
+[features]
+default = ["rs"]
+rs = ["dep:foreign-std-lib"]
