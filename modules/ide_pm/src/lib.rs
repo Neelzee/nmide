@@ -49,6 +49,11 @@ fn navbar() -> Vec<Html> {
                 "ide-pm-file".to_string(),
                 MODULE_NAME.to_string(),
                 None,
+            ))))
+            .adopt(button("Open Folder").add_attr(Attr::Click(Event::new(
+                "ide-pm-folder".to_string(),
+                MODULE_NAME.to_string(),
+                None,
             )))),
         Html::Button().set_text("Edit"),
         Html::Button().set_text("Selection"),
@@ -82,6 +87,12 @@ impl Module for ProjectManagerModule {
         )
         .await;
         core.add_handler(
+            Some("ide-pm-folder".to_string()),
+            None,
+            MODULE_NAME.to_string(),
+        )
+        .await;
+        core.add_handler(
             Some("nmide://file".to_string()),
             None,
             MODULE_NAME.to_string(),
@@ -89,6 +100,18 @@ impl Module for ProjectManagerModule {
         .await;
         core.add_handler(
             Some("fsa-read-ide_pm".to_string()),
+            None,
+            MODULE_NAME.to_string(),
+        )
+        .await;
+        core.add_handler(
+            Some("nmide://folder".to_string()),
+            None,
+            MODULE_NAME.to_string(),
+        )
+        .await;
+        core.add_handler(
+            Some("fsa-folder-ide_pm".to_string()),
             None,
             MODULE_NAME.to_string(),
         )
@@ -144,8 +167,23 @@ impl Module for ProjectManagerModule {
                 core.throw_event(Event::new("fsa-read", MODULE_NAME, event.args().cloned()))
                     .await;
             }
+            "ide-pm-folder" => {
+                tokio::spawn({
+                    async move {
+                        core.throw_event(Event::new("nmide://folder?", MODULE_NAME, None))
+                            .await;
+                    }
+                });
+            }
+            "nmide://folder" => {
+                core.throw_event(Event::new("fsa-dir", MODULE_NAME, event.args().cloned()))
+                    .await;
+            }
             "fsa-read-ide_pm" => {
                 println!("DATA: {:?}", event.args());
+            }
+            "fsa-dir-ide_pm" => {
+                println!("DIR-DATA: {:?}", event.args());
             }
             _ => (),
         }
