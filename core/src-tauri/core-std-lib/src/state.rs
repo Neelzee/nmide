@@ -108,6 +108,13 @@ impl Value {
         }
     }
 
+    pub fn list(&self) -> Option<Vec<Value>> {
+        match self {
+            Self::List(l) => Some(l.clone()),
+            _ => None
+        }
+    }
+
     pub fn new_obj() -> Self {
         Self::Obj(HHMap::default())
     }
