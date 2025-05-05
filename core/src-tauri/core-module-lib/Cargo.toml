@@ -14,5 +14,5 @@ serialize-to-javascript = "0.1.1"
 async-trait = "0.1.88"
 
 [features]
-default = ["rs"]
+default = []
 rs = ["dep:foreign-std-lib"]
