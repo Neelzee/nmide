@@ -111,6 +111,18 @@ impl Core for NmideCore {
                         .expect("AppHandle emit should always succeed");
                 });
             }
+            "nmide://folder?" => {
+                app.dialog().file().pick_folder(move |file_path| {
+                    app.emit(
+                        "nmide://event",
+                        nmide_event(
+                            "folder",
+                            file_path.map(|fp| Value::Str(fp.to_string()))
+                        )
+                    )
+                        .expect("AppHandle emit should always succeed");
+                });
+            }
             _ => {
                 app.emit("nmide://event", event)
                     .expect("AppHandle emit should always succeed");
