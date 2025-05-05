@@ -5,7 +5,7 @@ use std::io::{Read, Write};
 use toml::Value;
 use crate::{Kind, Module};
 
-const MODULE_SEPARATOR: &'static str =
+pub(crate) const MODULE_SEPARATOR: &'static str =
     "# ============================================================================ #";
 pub(crate) fn install(modules: Vec<Module>, cargo: String, out: String) {
     let mut module_imports = Vec::new();

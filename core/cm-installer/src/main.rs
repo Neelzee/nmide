@@ -1,3 +1,4 @@
+use clean_up::clean_up;
 use regex::Regex;
 use std::collections::HashMap;
 use std::fs;
@@ -11,6 +12,7 @@ use toml::Value;
 mod css_installer;
 mod js_installer;
 mod rs_installer;
+mod clean_up;
 
 const MODULE_SEP: &str = "<!--MODULES-->";
 
@@ -99,7 +101,12 @@ fn main() {
     let mut out = String::new();
     let mut dist = String::new();
     let mut index = String::new();
+    let mut clean = false;
     args.for_each(|arg| {
+        if arg.contains("--clean") {
+            clean = true;
+            return;
+        }
         if arg.contains("--out=") {
             out = arg.replace("--out=", "");
             return;
@@ -124,6 +131,10 @@ fn main() {
             dist = arg.replace("--dist=", "");
         }
     });
+    if clean {
+        clean_up(index, cargo);
+        return;
+    }
     let modules = get_modules(conf, modules);
     rs_installer::install(modules.clone(), cargo, out);
     let scripts = js_installer::install(dist.clone(), modules.clone());
@@ -192,7 +203,7 @@ fn get_modules(conf: String, modules: String) -> Vec<Module> {
                     p.canonicalize()
                         .unwrap_or_else(|_| panic!("Can't canonicalize path: {p:?}"))
                 })
-                .unwrap_or(default_module_path.clone().join(format!(
+                .unwrap_or(default_module_path.join(format!(
                     "{}.{}",
                     module,
                     kind.as_ext()
