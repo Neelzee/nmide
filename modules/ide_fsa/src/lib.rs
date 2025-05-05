@@ -47,12 +47,50 @@ pub async fn update(
             Ok(file) => Ok(State::build().add(format!("fsa-write-{}", file), Value::Bool(true))),
             Err(err) => Err(error(err, event)),
         },
-        ("fsa-dir", Value::Str(file)) => match walk_dir(&file, model) {
-            Ok(data) => Ok(State::build().add(
-                &format!("fsa-dir-{}", file.to_string()),
-                Value::List(data.into_iter().map(|d| Value::Str(d)).collect()),
-            )),
-            Err(err) => Err(error(err, event)),
+        ("fsa-dir", obj) if obj.is_obj() => {
+            let file = obj.obj().unwrap().get("eventArgs").and_then(|v| v.str()).unwrap_or_default();
+            match walk_dir(&file) {
+                Ok(data) => {
+                    if Path::new(&file).is_dir() {
+                        core.throw_event(
+                            Event::new(
+                                format!("fsa-dir-{}", event.module_name()),
+                                module_name().to_string(),
+                                Some(Value::new_obj()
+                                    .obj_add("folder", Value::Str(file.clone()))
+                                    .obj_add(
+                                    "contents",
+                                    Value::List(
+                                        data.clone().into_iter().map(|(b, s)| {
+                                            let obj = Value::new_obj().obj_add("path", Value::Str(s));
+                                            if b {
+                                                Value::new_obj().obj_add("folder", obj.obj_add("contents", Value::List(Vec::new())))
+                                            } else {
+                                                Value::new_obj().obj_add("fiel", obj)
+                                            }
+                                        }).collect()
+                                    )
+                                ))
+                            )
+                        ).await;
+                    } else {
+                        core.throw_event(
+                            Event::new(
+                                format!("fsa-dir-{}", event.module_name()),
+                                module_name().to_string(),
+                                Some(Value::new_obj()
+                                    .obj_add("file", Value::Str(file.clone()))
+                                    )
+                            )
+                        ).await;
+                    }
+                    Ok(State::build().add(
+                        &format!("fsa-dir-{}", file.to_string()),
+                        Value::List(data.into_iter().map(|(_, d)| Value::Str(d)).collect()),
+                    ))
+                },
+                Err(err) => Err(error(err, event)),
+            }
         },
         _ => Err(error(event_error("invalid event format"), event)),
     }
@@ -117,22 +155,15 @@ fn write_file(obj: &HashMap<String, Value>, model: &State) -> Result<String, Eve
     }
 }
 
-fn walk_dir(key: &str, model: &State) -> Result<Vec<String>, Event> {
-    match model.get(key) {
-        Some(val) => {
-            let path: PathBuf = val
-                .clone()
-                .str()
-                .ok_or(event_error("Could not match GUID to file"))?
-                .to_string()
-                .into();
-            Ok(walk(&path, true)?
-                .into_iter()
-                .map(|f| f.to_string_lossy().to_string())
-                .collect())
-        }
-        None => Err(event_error(format!("Could not find: {key} in model"))),
-    }
+fn walk_dir(file: &str) -> Result<Vec<(bool, String)>, Event> {
+    let path: PathBuf = file
+        .to_string()
+        .into();
+    Ok(walk(&path, true)?
+        .into_iter()
+        .map(|f| (f.is_dir(), f.to_string_lossy().to_string()))
+        .collect())
+
 }
 
 fn walk(pth: &Path, ignore_hidden: bool) -> Result<Vec<PathBuf>, Event> {
@@ -209,7 +240,6 @@ impl core_module_lib::Module for Module {
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
-        eprintln!("EVENT: {:?}", event);
         let state = core.state().await;
         match update(&event, &state, &core).await {
             Ok(st) => core
