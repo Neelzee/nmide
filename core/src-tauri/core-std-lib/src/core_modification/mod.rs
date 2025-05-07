@@ -5,7 +5,7 @@ use crate::state::Value;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-pub(crate) mod impls;
+pub mod impls;
 
 #[derive(Debug, Serialize, Deserialize, TS)]
 #[ts(export)]
