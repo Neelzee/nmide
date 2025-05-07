@@ -1,13 +1,18 @@
-use abi_stable::library::{LibraryError, LibraryPath, RootModule};
 use async_trait::async_trait;
-use core_std_lib::{core::Core, core_modification::CoreModification, event::Event};
-use std::path::Path;
+use core_std_lib::{core::Core, event::Event};
 
 #[cfg(feature = "rs")]
 pub mod rs_module;
 
 pub trait ModuleBuilder {
     fn build(self) -> impl Module;
+}
+
+#[async_trait]
+pub trait ModuleWrapper: Send + Sync {
+    fn module_name(&self) -> String;
+    async fn init(&self);
+    async fn handler(&self, event: Event);
 }
 
 #[async_trait]

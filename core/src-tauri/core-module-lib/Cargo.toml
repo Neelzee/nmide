@@ -9,10 +9,11 @@ anyhow = "1.0.93"
 core-std-lib = { path = "../core-std-lib" }
 foreign-std-lib = { path = "../foreign-std-lib", features = ["rs", "ts", "c"], optional = true }
 log = "0.4.22"
-abi_stable = "0.11.3"
+abi_stable = { version = "0.11.3", optional = true }
 serialize-to-javascript = "0.1.1"
 async-trait = "0.1.88"
+async-ffi = { version = "0.5.0", features = ["abi_stable"], optional = true }
 
 [features]
-default = []
-rs = ["dep:foreign-std-lib"]
+default = ["rs"]
+rs = ["dep:foreign-std-lib", "dep:async-ffi", "dep:abi_stable"]
