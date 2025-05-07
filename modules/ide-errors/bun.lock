@@ -3,9 +3,6 @@
   "workspaces": {
     "": {
       "name": "ide-errors",
-      "dependencies": {
-        "fp-ts": "^2.16.9",
-      },
       "devDependencies": {
         "@nmide/js-utils": "file:../../libs/js-utils",
         "esbuild": "^0.24.0",
