@@ -6,12 +6,15 @@ modules : clean
 		--modules=./modules \
 		--cargo=./src-tauri/Cargo.toml \
 		--dist=./dist/external \
-		--index=./index.html
+		--index=./index.html \
+		--module-dist="/home/nmf/.local/share/no.nilsmf.uib/modules/"
 
 clean :
 	rm -rf ./src-tauri/target/debug/build/core-* && \
 	rm -rf ./dist/external && \
+	rm -rf /home/nmf/.local/share/no.nilsmf.uib/modules/ && \
 	mkdir -p ./dist/external && \
+	mkdir -p /home/nmf/.local/share/no.nilsmf.uib/modules/ && \
 	cargo run \
 		--manifest-path=./cm-installer/Cargo.toml -- \
 		--out=./src-tauri/target \
