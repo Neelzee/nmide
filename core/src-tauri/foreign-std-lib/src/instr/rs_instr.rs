@@ -5,8 +5,9 @@ use abi_stable::{
 use core_std_lib::instruction::inst::Instruction;
 
 #[repr(C)]
-#[derive(StableAbi, Clone)]
+#[derive(StableAbi, Clone, Default)]
 pub enum RInstr<T> {
+    #[default]
     NoOp,
     Add(RString, T),
     Rem(RString, T),
@@ -14,6 +15,14 @@ pub enum RInstr<T> {
 }
 
 impl<T: Clone> RInstr<T> {
+    pub fn combine(self, other: Self) -> Self {
+        match (&self, &other) {
+            (RInstr::NoOp, _) => other,
+            (_, RInstr::NoOp) => other,
+            _ => Self::Then(RBox::new(self), RBox::new(other)),
+        }
+    }
+
     pub fn to_instr(&self) -> Instruction<T> {
         match self {
             RInstr::NoOp => Instruction::NoOp,

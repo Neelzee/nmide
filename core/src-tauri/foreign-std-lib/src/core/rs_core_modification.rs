@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use abi_stable::{StableAbi, std_types::RString};
 use core_std_lib::core_modification::CoreModification;
 
@@ -6,7 +8,7 @@ use crate::{
 };
 
 #[repr(C)]
-#[derive(StableAbi, Clone)]
+#[derive(StableAbi, Clone, Default)]
 pub struct RCoreModification {
     state: RInstr<RValue>,
     ui_html: RInstr<RHtml>,
@@ -15,6 +17,16 @@ pub struct RCoreModification {
 }
 
 impl RCoreModification {
+    pub fn add_field<S: ToString>(self, field: S, value: RValue) -> Self {
+        Self {
+            state: self.state.combine(RInstr::Add(
+                RString::from_str(&field.to_string()).unwrap_or_default(),
+                value,
+            )),
+            ..self
+        }
+    }
+
     pub fn to_mod(self) -> CoreModification {
         CoreModification::from_instr(
             self.state.map(|v| v.to_value()).to_instr(),
