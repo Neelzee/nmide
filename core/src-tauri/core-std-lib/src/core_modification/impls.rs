@@ -1,4 +1,6 @@
+use crate::attrs::Attr;
 use crate::instruction::inst::Instruction;
+use crate::state::Value;
 use crate::{
     core_modification::CoreModification,
     html::{Html, UIInstructionBuilder},
@@ -15,6 +17,13 @@ impl Default for CoreModification {
 }
 
 impl CoreModification {
+    pub fn from_instr(
+        state: Instruction<Value>,
+        ui: (Instruction<Html>, Instruction<String>, Instruction<Attr>),
+    ) -> Self {
+        Self { state, ui }
+    }
+
     pub fn ui(ui: UIInstructionBuilder) -> Self {
         CoreModification {
             state: Instruction::NoOp,
