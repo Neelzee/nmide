@@ -4,7 +4,8 @@
 
 use crate::event::rs_event::REvent;
 use abi_stable::{StableAbi, std_types::RString};
-use std::mem::ManuallyDrop;
+use core_std_lib::attrs::Attr;
+use std::{mem::ManuallyDrop, str::FromStr};
 
 // TODO: Add doc-string
 #[repr(C)]
@@ -160,4 +161,43 @@ pub union RAttrUnion {
     _str: ManuallyDrop<RString>,
     _bool: bool,
     _msg: ManuallyDrop<REvent>,
+}
+
+impl From<Attr> for RAttr {
+    fn from(value: Attr) -> Self {
+        match value {
+            Attr::Id(s) => Self::new_id(RString::from_str(&s).unwrap_or_default()),
+            Attr::Class(s) => Self::new_class(RString::from_str(&s).unwrap_or_default()),
+            Attr::Style(_) => todo!(),
+            Attr::Type(_) => todo!(),
+            Attr::Checked(_) => todo!(),
+            Attr::Click(event) => Self::new_click(event.into()),
+            Attr::OnInput(event) => todo!(),
+            Attr::EmitInput(event) => todo!(),
+            Attr::Src(_) => todo!(),
+        }
+    }
+}
+
+impl RAttr {
+    pub fn to_attr(self) -> Attr {
+        match self.kind {
+            RAttrKind::Id => Attr::Id(self.str().unwrap().as_str().to_string()),
+            RAttrKind::Class => Attr::Class(self.str().unwrap().as_str().to_string()),
+            RAttrKind::Style => todo!(),
+            RAttrKind::Type => todo!(),
+            RAttrKind::Checked => todo!(),
+            RAttrKind::OnClick => {
+                let mut evt = self.msg().unwrap();
+                let event = evt.to_event();
+                unsafe {
+                    ManuallyDrop::drop(&mut evt);
+                }
+                Attr::Click(event)
+            }
+            RAttrKind::OnInput => todo!(),
+            RAttrKind::EmitInput => todo!(),
+            RAttrKind::Src => todo!(),
+        }
+    }
 }

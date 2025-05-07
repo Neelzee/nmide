@@ -2,11 +2,9 @@
 //!
 //! These are standard, like `PartialEq` and `fmt`.
 
-use super::{
-    rs_state::{RKeyPair, RState, RValKind, RValue, RValueUnion},
-    tmap::{TMap, TValue},
-};
+use super::rs_state::{RKeyPair, RState, RValKind, RValue, RValueUnion};
 use abi_stable::std_types::{RString, RVec};
+use core_std_lib::state::{State, Value};
 use std::mem::ManuallyDrop;
 impl std::fmt::Debug for RValue {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -135,34 +133,34 @@ impl<S: ToString, T: Into<RValue>> From<Vec<(S, T)>> for RValue {
     }
 }
 
-#[cfg(feature = "ts")]
-impl From<TValue> for RValue {
-    fn from(value: TValue) -> Self {
+impl From<Value> for RValue {
+    fn from(value: Value) -> Self {
         match value {
-            TValue::Int(i) => Self {
+            Value::Int(i) => Self {
                 kind: RValKind::Int,
                 val: RValueUnion::int(i),
             },
-            TValue::Float(f) => Self {
+            Value::Float(f) => Self {
                 kind: RValKind::Float,
-                val: RValueUnion::float(f),
+                val: RValueUnion::float(f.into_inner()),
             },
-            TValue::Bool(b) => Self {
+            Value::Bool(b) => Self {
                 kind: RValKind::Bool,
                 val: RValueUnion::bool(b),
             },
-            TValue::Str(s) => Self {
+            Value::Str(s) => Self {
                 kind: RValKind::Str,
                 val: RValueUnion::str(s),
             },
-            TValue::List(l) => Self {
+            Value::List(l) => Self {
                 kind: RValKind::List,
                 val: RValueUnion::list(l),
             },
-            TValue::Obj(o) => Self {
+            Value::Obj(o) => Self {
                 kind: RValKind::Obj,
-                val: RValueUnion::obj(o),
+                val: RValueUnion::obj(o.to_hm().into_iter().collect()),
             },
+            Value::Null => todo!(),
         }
     }
 }
@@ -185,11 +183,10 @@ impl Default for RState {
     }
 }
 
-#[cfg(feature = "ts")]
-impl From<TMap> for RState {
-    fn from(value: TMap) -> Self {
+impl From<State> for RState {
+    fn from(value: State) -> Self {
         Self {
-            pairs: value.0.into_iter().map(|t| t.into()).collect(),
+            pairs: value.inner().into_iter().map(|v| v.into()).collect(),
         }
     }
 }

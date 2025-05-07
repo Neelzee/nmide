@@ -4,10 +4,13 @@
 
 use abi_stable::{
     StableAbi,
+    reexports::SelfOps,
     std_types::{ROption, RString, RVec},
 };
+use core_std_lib::state::{HHMap, Value};
+use ordered_float::NotNan;
 use rstest::rstest;
-use std::{convert::Into, mem::ManuallyDrop};
+use std::{collections::HashMap, convert::Into, mem::ManuallyDrop};
 
 #[repr(C)]
 #[derive(StableAbi)]
@@ -96,6 +99,33 @@ impl RValue {
             Some(unsafe { &self.val._obj })
         } else {
             None
+        }
+    }
+
+    pub fn to_value(self) -> Value {
+        match &self.kind {
+            RValKind::Int => Value::Int(self.int().unwrap()),
+            RValKind::Float => Value::Float(NotNan::new(self.float().unwrap()).unwrap_or_default()),
+            RValKind::Bool => Value::Bool(self.bool().unwrap()),
+            RValKind::Str => {
+                // TODO: Is this dropped?
+                let mn = self.str().unwrap();
+                let s = mn.as_str().to_string();
+                Value::Str(s)
+            }
+            RValKind::List => Value::List(
+                self.lst()
+                    .unwrap()
+                    .iter()
+                    .map(|v| v.clone().to_value())
+                    .collect(),
+            ),
+            RValKind::Obj => {
+                let xs = self.obj().unwrap();
+                let ys: HashMap<String, Value> =
+                    xs.clone().iter().map(|y| y.clone().to_tuple()).collect();
+                Value::Obj(ys.into())
+            }
         }
     }
 }
@@ -219,6 +249,10 @@ impl RKeyPair {
 
     pub fn val(&self) -> &RValue {
         &self.val
+    }
+
+    pub fn to_tuple(self) -> (String, Value) {
+        (self.key.as_str().to_string(), self.val().clone().to_value())
     }
 }
 

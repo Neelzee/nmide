@@ -13,9 +13,10 @@ stabby = { version = "36.1.1", optional = true }
 ts-rs = { version = "10.1.0", optional = true }
 core-std-lib = { path = "../core-std-lib/" }
 async-trait = "0.1.88"
+ordered-float = { version = "5.0.0", features = ["serde"], optional = true }
 
 [features]
 default = ["ts", "rs"]
 c = ["dep:stabby"]
 ts = ["dep:ts-rs"]
-rs = ["dep:abi_stable"]
+rs = ["dep:abi_stable", "dep:ordered-float"]
