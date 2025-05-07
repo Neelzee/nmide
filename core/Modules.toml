@@ -8,4 +8,5 @@ ide_cache = { path = "../modules/ide_cache/" }
 ide_pm_style = { path = "../modules/ide_pm_style/", kind = "css" }
 ide_errors = { path = "../modules/ide-errors/", package-manager = "bun", kind = "ts" }
 ide-editor = { path = "../modules/ide-editor/", package-manager = "bun", kind = "ts" }
+rs-counter-plugin-example = { path = "../modules/rs-counter-plugin-example/", kind = "so" }
 dependency-viewer = { path = "../modules/dependency-viewer", package-manager = "bun", kind = "mjs" }
