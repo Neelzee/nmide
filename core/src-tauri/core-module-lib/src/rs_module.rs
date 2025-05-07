@@ -10,7 +10,7 @@ use foreign_std_lib::{
     core::rs_core_modification::RCoreModification, event::rs_event::REvent, html::rs_html::RHtml,
     state::rs_state::RState,
 };
-use std::{future::IntoFuture, path::Path};
+use std::{fmt::Debug, future::IntoFuture, path::Path};
 
 #[sabi_trait]
 pub trait RCore: Send + Sync {
@@ -85,5 +85,13 @@ impl RsModule {
         async move { self.module.handler()(event, f()).await }
             .into_future()
             .await;
+    }
+}
+
+impl Debug for RsModule {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("RsModule")
+            .field("module_path", &self.module_path)
+            .finish()
     }
 }
