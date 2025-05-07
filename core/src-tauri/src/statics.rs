@@ -1,5 +1,5 @@
 use crate::core::ModuleEventRegister;
-use core_module_lib::Module;
+use core_module_lib::{rs_module::RsModule, Module};
 use core_std_lib::{core_modification::CoreModification, html::Html, state::State};
 use once_cell::sync::{Lazy, OnceCell};
 use std::{collections::HashMap, path::PathBuf};
@@ -7,7 +7,8 @@ use tauri::AppHandle;
 use tokio::sync::{mpsc::Sender, RwLock};
 
 // TODO: Add runtime module support
-pub static RUNTIME_MODULES: tokio::sync::OnceCell<Vec<()>> = tokio::sync::OnceCell::const_new();
+pub static RUNTIME_MODULES: tokio::sync::OnceCell<RwLock<HashMap<String, RsModule>>> =
+    tokio::sync::OnceCell::const_new();
 pub static RUNTIME_MODULE_DIR: tokio::sync::OnceCell<PathBuf> = tokio::sync::OnceCell::const_new();
 pub static APP_DATA_DIR: OnceCell<RwLock<PathBuf>> = OnceCell::new();
 

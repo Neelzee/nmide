@@ -3,6 +3,7 @@
 
 use crate::statics::APP_DATA_DIR;
 use crate::statics::{RUNTIME_MODULES, RUNTIME_MODULE_DIR};
+use core_module_lib::rs_module::RsModule;
 use std::fs;
 use std::path::PathBuf;
 use tokio::sync::RwLock;
@@ -33,7 +34,8 @@ pub fn setup(paths: (PathBuf, PathBuf)) {
             });
     }
 
-    RUNTIME_MODULES.set(nmide_plugin_dir
+    RUNTIME_MODULES.set(RwLock::new(
+        nmide_plugin_dir
             .read_dir()
             .unwrap_or_else(|err| {
                 panic!("Reading the plugin directory: `{nmide_plugin_dir:?}` should succeed, failed with error: {err:?}")
@@ -55,12 +57,14 @@ pub fn setup(paths: (PathBuf, PathBuf)) {
                 }
                 _ => None,
             })
-            .map(|_pth| {
+            .map(|pth| {
                 // TODO: This should print to stderr, and not panic, but is useful for
                 // development
-                /*Nmlugin::new(pth.as_path()).unwrap_or_else(|err| {
+                RsModule::new(pth.as_path()).unwrap_or_else(|err| {
                     panic!("Couldnt create plugin on path: {pth:?}, due too {err:?}")
-                })*/
+                })
             })
-            .collect()).expect("Reading from the plugin directory should not fail");
+            .map(|m| (m.name(), m))
+            .collect()
+    )).expect("Reading from the plugin directory should not fail");
 }

@@ -1,5 +1,6 @@
 use crate::statics::{MODULE_EVENT_REGISTER, NMIDE, NMIDE_SENDER, NMIDE_STATE, NMIDE_UI};
 use async_trait::async_trait;
+use core_std_lib::state::Value;
 use core_std_lib::{
     core::Core, core_modification::CoreModification, event::Event, html::Html, state::State,
 };
@@ -9,7 +10,9 @@ use tauri::Emitter;
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_fs::FilePath;
 use tokio::sync::{mpsc::Sender, RwLock};
-use core_std_lib::state::Value;
+
+#[cfg(feature = "runtime_modules")]
+pub mod runtime_core;
 
 #[derive(Default)]
 pub struct ModuleEventRegister {
@@ -69,11 +72,7 @@ impl ModuleEventRegister {
 }
 
 fn nmide_event(event: &str, arg: Option<Value>) -> Event {
-    Event::new(
-        format!("nmide://{event}"),
-        "nmide".to_string(),
-        arg,
-    )
+    Event::new(format!("nmide://{event}"), "nmide".to_string(), arg)
 }
 
 pub struct NmideCore;
@@ -103,24 +102,18 @@ impl Core for NmideCore {
                 app.dialog().file().pick_file(move |file_path| {
                     app.emit(
                         "nmide://event",
-                        nmide_event(
-                            "file",
-                            file_path.map(|fp| Value::Str(fp.to_string()))
-                        )
+                        nmide_event("file", file_path.map(|fp| Value::Str(fp.to_string()))),
                     )
-                        .expect("AppHandle emit should always succeed");
+                    .expect("AppHandle emit should always succeed");
                 });
             }
             "nmide://folder?" => {
                 app.dialog().file().pick_folder(move |file_path| {
                     app.emit(
                         "nmide://event",
-                        nmide_event(
-                            "folder",
-                            file_path.map(|fp| Value::Str(fp.to_string()))
-                        )
+                        nmide_event("folder", file_path.map(|fp| Value::Str(fp.to_string()))),
                     )
-                        .expect("AppHandle emit should always succeed");
+                    .expect("AppHandle emit should always succeed");
                 });
             }
             _ => {
