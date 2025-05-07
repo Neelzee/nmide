@@ -9,10 +9,11 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use toml::Value;
 
+mod clean_up;
 mod css_installer;
 mod js_installer;
 mod rs_installer;
-mod clean_up;
+mod rs_rt_installer;
 
 const MODULE_SEP: &str = "<!--MODULES-->";
 
@@ -20,6 +21,7 @@ const MODULE_SEP: &str = "<!--MODULES-->";
 pub(crate) enum Kind {
     #[default]
     Rust,
+    RustRt,
     JavaScript,
     MJavaScript,
     TypeScript,
@@ -30,6 +32,8 @@ impl Kind {
     pub fn as_ext(&self) -> String {
         match self {
             Self::Rust => "rs".to_string(),
+            // TODO: Ensure this works across OS
+            Self::RustRt => "so".to_string(),
             Self::JavaScript => "js".to_string(),
             Self::TypeScript => "ts".to_string(),
             Self::MJavaScript => "mjs".to_string(),
@@ -52,7 +56,9 @@ impl From<String> for Kind {
             "js" => Self::JavaScript,
             "mjs" => Self::MJavaScript,
             "css" => Self::Css,
-            _ => Self::Rust,
+            "rs" => Self::Rust,
+            "so" => Self::RustRt,
+            _ => panic!("Unknown extension: {value}"),
         }
     }
 }
@@ -102,9 +108,14 @@ fn main() {
     let mut dist = String::new();
     let mut index = String::new();
     let mut clean = false;
+    let mut module_folder = String::new();
     args.for_each(|arg| {
         if arg.contains("--clean") {
             clean = true;
+            return;
+        }
+        if arg.contains("--module-dist=") {
+            module_folder = arg.replace("--module-dist=", "");
             return;
         }
         if arg.contains("--out=") {
@@ -137,6 +148,7 @@ fn main() {
     }
     let modules = get_modules(conf, modules);
     rs_installer::install(modules.clone(), cargo, out);
+    rs_rt_installer::install(modules.clone(), module_folder);
     let scripts = js_installer::install(dist.clone(), modules.clone());
     let styles = css_installer::install(dist, modules);
 
@@ -203,11 +215,7 @@ fn get_modules(conf: String, modules: String) -> Vec<Module> {
                     p.canonicalize()
                         .unwrap_or_else(|_| panic!("Can't canonicalize path: {p:?}"))
                 })
-                .unwrap_or(default_module_path.join(format!(
-                    "{}.{}",
-                    module,
-                    kind.as_ext()
-                ))),
+                .unwrap_or(default_module_path.join(format!("{}.{}", module, kind.as_ext()))),
             kind,
             package_manager: spec
                 .get("package-manager")
