@@ -1,17 +1,15 @@
 use async_trait::async_trait;
 use core_std_lib::{
-    attrs::Attr,
     core::Core,
     core_modification::CoreModification,
     event::Event,
-    html::{Html, UIInstructionBuilder},
     state::{StateInstructionBuilder, Value},
 };
 use regex::Regex;
 use std::collections::HashMap;
 use std::fs;
 use std::fs::File;
-use std::io::{BufRead, BufReader, Read};
+use std::io::Read;
 use std::path::Path;
 
 pub struct ModuleBuilder;
@@ -39,20 +37,30 @@ impl core_module_lib::Module for Module {
             MODULE_NAME.to_string(),
         )
         .await;
-        core.add_handler(Some("post-init".to_string()), None, MODULE_NAME.to_string())
-            .await;
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
-        let sender = core.get_sender().await;
-        match (event.event_name(), event.args()) {
-            ("get_magnolia_graph", Some(val))
-                if val.is_str() || val.obj().is_some_and(|o| o.contains_key("eventArgs")) =>
-            {
-                let path = if val.is_str() {
-                    val.str().unwrap()
+        match event.event_name() {
+            "get_magnolia_graph" => {
+                let path = if event.args().is_some_and(|v| v.is_str()) {
+                    event.args().unwrap().str().unwrap()
+                } else if event.args().is_none()
+                    || event
+                        .args()
+                        .unwrap()
+                        .obj()
+                        .is_some_and(|o| !o.contains_key("eventArgs"))
+                {
+                    "/home/nmf/magnolia-basic-library/src".to_string()
                 } else {
-                    let p = val.obj().unwrap().get("eventArgs").unwrap().str();
+                    let p = event
+                        .args()
+                        .unwrap()
+                        .obj()
+                        .unwrap()
+                        .get("eventArgs")
+                        .unwrap()
+                        .str();
                     if p.is_none() {
                         return;
                     }
@@ -78,30 +86,6 @@ impl core_module_lib::Module for Module {
                     }
                 }
             }
-            ("post-init", _) => {
-                let mods =
-                    CoreModification::default().set_ui(UIInstructionBuilder::default().add_node(
-                        Html::Div {
-                            kids: vec![Html::Button().set_text("Graph").add_attr(Attr::Click(
-                                Event::new(
-                                    "get_magnolia_graph".to_string(),
-                                    MODULE_NAME.to_string(),
-                                    Some(Value::Str(
-                                        "/home/nmf/magnolia-basic-library/src".to_string(),
-                                    )),
-                                ),
-                            ))],
-                            attrs: vec![Attr::Id("graph-btn-div".to_string())],
-                            text: None,
-                        },
-                        Some("navbar"),
-                    ));
-                core.get_sender()
-                    .await
-                    .send(mods)
-                    .await
-                    .expect("Channel should be opened");
-            }
             _ => (),
         }
     }
@@ -109,6 +93,7 @@ impl core_module_lib::Module for Module {
 
 #[derive(Debug)]
 pub(crate) struct MagnoliaModule {
+    #[allow(dead_code, reason = "Handy to have the path for debugging purposes")]
     pub path: String,
     pub name: String,
     pub dependencies: Vec<String>,
