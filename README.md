@@ -8,19 +8,19 @@ group at the University of Bergen is developing an experimental research
 programming language. Being an experimental language, and having all of it's
 tooling, like the compiler is still under development, poses a unique challenge
 for developing an IDE for it, so flexibility is key. To achieve this, this IDE
-is _zero core_. The only functionality it has, is to load and manage plugins.
+is _zero core_. The only functionality it has, is to load and manage modules.
 
-Everything, from the file explorer, to editor, are features one or more plugins
+Everything, from the file explorer, to editor, are features one or more modules
 has to create.
 
 Rust was chosen, because it is low-level, so the idea was it would allow for an
 easier way to create bindings to other languages like C, to eventually allow for
-a language agnostic plugin architecture. This has yet to be implemented.
+a language agnostic module architecture. This has yet to be implemented.
 
-Currently, the IDE only supports Plugins made in JavaScript or Rust. It does
+Currently, the IDE only supports Modules made in JavaScript or Rust. It does
 achieves this by using the [Tauri](https://tauri.app/) framework. Wherein one of
 the features is being able to implement the frontend using JavaScript. This
-makes it very easy to implement a system for JavaScript Plugins.
+makes it very easy to implement a system for JavaScript Modules.
 
 
 ## Installation
@@ -30,82 +30,134 @@ makes it very easy to implement a system for JavaScript Plugins.
 - [Rust](https://www.rust-lang.org/)
 - [Tauri](https://tauri.app/start/prerequisites/)
 - [NodeJS](https://nodejs.org/en)
+- [Bun](https://bun.sh/)
+- [Make](https://www.gnu.org/software/make/)
 
-After installing all the prerequisites run these two commands:
+After installing all the prerequisites:
+
+1. Install the js-library: in `libs/js-utils`
+  ```shell
+  bun i
+  ```
+
+2. Install the node dependencies in `core`:
+  ```shell
+  bun i
+  ```
+
+3. Add the wanted modules in the `core/Modules.toml` file
+
+4. Install the modules
+  ```shell
+  make modules
+  ```
+
+5. Build the project:
+```shell
+bun run tauri build
+```
+
+You'll find the executable in a folder pertaining to your OS in:
+`core/src-tauri/target/release/bundle/`
+
+## Development
+
+If you want to develop, debug or test different modules, you can do step `1` to
+`4`, and just run the development build by using the following command:
 
 ```shell
-cd libs/js-utils && npm i
-```
-```shell
-cd core/ && npm i && npm run tauri build -- -- features ide
+bun run tauri dev
 ```
 
-## CI
+This will run a development instance of the application.
 
-> [!WARNING]
-> Due to recent migration from GitLab to GitHub, workflow/pipelines are not up to date.
+## Module Development
 
+A module is either compile time or runtime module. Either way, it
+follows the same architecture. A module exposes an `init` and `handler` method.
 
-## Plugin Development
-
-A plugin is either a library or a JavaScript file. Either way, it
-follows the same architecture, inspired by the
-[Elm Architecture](https://guide.elm-lang.org/architecture/). Using `init`,
-`update`, and `update` functions, the plugins will mutate the state (`model`) of
-the IDE.
-
-Plugins are considered to be pure, so should not have their own internal state,
+Modules are considered to be pure, so should not have their own internal state,
 any guarantees the IDE gives, hinges on this.
 
 
-### Plugin Examples
+### Module Examples
 
 #### JavaScript
 
-Minimal JavaScript Plugin
+Minimal JavaScript Module
 ```JavaScript
-window.plugins.set(
-  "PluginName",
-  {
-    init: () => [],
-    view: _ => {
-      return { kind: "Frag", kids: [], attrs: [], text: null },
-    },
-    update: (_, __) => []
-  }
-);
+import { emptyCm, installModule } from "@nmide/js-utils";
+installModule({
+  init: async (_) => [],
+  handler: async (_, __) => emptyCm(),
+});
 ```
 
-For a more thorough example, see [core/plugins](https://github.com/Neelzee/nmide/tree/main/plugins).
+For a more thorough example, see [core/modules](https://github.com/Neelzee/nmide/tree/main/modules).
 
 
 #### Rust
 
-Minimal Rust Plugin
+Minimal Compile time Rust Module
 ```rust
-#[export_root_module]
-pub fn get_library() -> NmideStandardLibrary_Ref {
-    NmideStdLib { init, view, update }.leak_into_prefix()
+use async_trait::async_trait;
+use core_std_lib::{attrs::Attr, core::Core, event::Event};
+
+pub struct ModuleBuilder;
+
+impl core_module_lib::ModuleBuilder for ModuleBuilder {
+    fn build(self) -> impl core_module_lib::Module {
+        Module
+    }
 }
 
-#[sabi_extern_fn]
-pub fn init() -> RMap {
-    RMap::new()
-}
+pub struct Module;
 
-#[sabi_extern_fn]
-pub fn view(model: RMap) -> RHtml {
-  RHtml::Frag(Vec::new(), Vec::new())
-}
+#[async_trait]
+impl core_module_lib::Module for Module {
+    fn name(&self) -> &str {
+        "trivial module"
+    }
 
-#[sabi_extern_fn]
-pub fn update(msg: RMsg, model: RMap) -> RMap {
-    RMap::new()
+    async fn init(&self, _: Box<dyn Core>) {}
+
+    async fn handler(&self, _: Event, _: Box<dyn Core>) {}
 }
 ```
 
-The Rust example contains an extra function, and some annotations, but this is
+The compile-time-module in Rust, needs to provide a method of creating the
+module instance, hence the `ModuleBuilder`, this needs to be a `pub`-lic struct,
+and needs to implement the `ModuleBuilder` trait. This is to make _installation_
+of compile-time-modules easier, as we can simply create a script which
+actually adds the module during build-time.
+
+Minimal Runtime Rust Module
+```rust
+use abi_stable::{export_root_module, prefix_type::PrefixTypeTrait, sabi_extern_fn};
+use async_ffi::{FfiFuture, FutureExt};
+use core_module_lib::rs_module::{ModuleRef, RCore_CTO, RustModule};
+use foreign_std_lib::{
+    core::rs_core_modification::RCoreModification, event::rs_event::REvent, state::rs_state::RValue,
+};
+
+#[export_root_module]
+pub fn get_library() -> ModuleRef {
+    RustModule { init, handler }.leak_into_prefix()
+}
+
+#[sabi_extern_fn]
+pub fn init(_: RCore_CTO) -> FfiFuture<()> {
+  async move {}.into_ffi()
+}
+
+#[sabi_extern_fn]
+pub fn handler(_: REvent, _: RCore_CTO) -> FfiFuture<()> {
+    async move {}.into_ffi()
+}
+```
+
+The Rust runtime example contains an extra function, and some annotations, but this is
 to avoid undefined behavior that can be caused by Rust ABI.
 
-For a more thorough example, see [core/plugins](https://github.com/Neelzee/nmide/tree/main/plugins).
+For a more thorough example, see [core/modules](https://github.com/Neelzee/nmide/tree/main/plugins).
 
