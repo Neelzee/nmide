@@ -8,7 +8,6 @@ use log::info;
 use std::collections::HashMap;
 use tauri::Emitter;
 use tauri_plugin_dialog::DialogExt;
-use tauri_plugin_fs::FilePath;
 use tokio::sync::{mpsc::Sender, RwLock};
 
 #[cfg(feature = "runtime_modules")]

@@ -82,7 +82,6 @@ pub async fn run() {
                 let ui = NmideCore.ui().await;
 
                 let (new_state, ui_builder) = modification.build_state(state);
-
                 let mut st = NMIDE_STATE.write().await;
                 *st = new_state;
                 drop(st);
