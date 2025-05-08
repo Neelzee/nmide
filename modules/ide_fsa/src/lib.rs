@@ -1,206 +1,15 @@
+use std::path::PathBuf;
+
+use anyhow::{anyhow, Result};
 use async_trait::async_trait;
-use core_std_lib::{
-    attrs::Attr,
-    core::Core,
-    core_modification::CoreModification,
-    event::Event,
-    html::{Html, UIInstructionBuilder},
-    state::{State, StateInstructionBuilder, Value},
-};
-use std::{
-    collections::HashMap,
-    fs::File,
-    io::{Read, Write},
-    path::{Path, PathBuf},
+use core_std_lib::{core::Core, event::Event, state::Value};
+use fsa::{walk_dir, Fo};
+use tokio::{
+    fs::{File, OpenOptions},
+    io::{AsyncReadExt, AsyncWriteExt},
 };
 
-pub async fn update(
-    event: &Event,
-    model: &State,
-    core: &Box<dyn Core>,
-) -> Result<StateInstructionBuilder, Event> {
-    match (
-        event.event_name(),
-        event.args().cloned().unwrap_or_default(),
-    ) {
-        ("fsa-read", obj) => {
-            let file = if event.args().is_some_and(|s| s.is_str()) {
-                event.args().unwrap().str().unwrap()
-            } else {
-                obj.obj().unwrap().get("eventArgs").unwrap().str().unwrap()
-            };
-            match read_file(&file, model) {
-                Ok(data) => {
-                    let evt = Event::new(
-                        format!("fsa-read-{}", event.module_name()),
-                        module_name().to_string(),
-                        Some(Value::Str(data.clone())),
-                    );
-                    println!("EVENT: {:?}", &evt);
-                    core.throw_event(evt).await;
-                    Ok(State::build())
-                }
-                Err(err) => Err(error(err, event)),
-            }
-        }
-        ("fsa-write", Value::Obj(obj)) => match write_file(&obj.to_hm(), model) {
-            Ok(file) => Ok(State::build().add(format!("fsa-write-{}", file), Value::Bool(true))),
-            Err(err) => Err(error(err, event)),
-        },
-        ("fsa-dir", obj) if obj.is_obj() => {
-            let file = obj.obj().unwrap().get("eventArgs").and_then(|v| v.str()).unwrap_or_default();
-            match walk_dir(&file) {
-                Ok(data) => {
-                    if Path::new(&file).is_dir() {
-                        core.throw_event(
-                            Event::new(
-                                format!("fsa-dir-{}", event.module_name()),
-                                module_name().to_string(),
-                                Some(Value::new_obj()
-                                    .obj_add("folder", Value::Str(file.clone()))
-                                    .obj_add(
-                                    "contents",
-                                    Value::List(
-                                        data.clone().into_iter().map(|(b, s)| {
-                                            let obj = Value::new_obj().obj_add("path", Value::Str(s));
-                                            if b {
-                                                Value::new_obj().obj_add("folder", obj.obj_add("contents", Value::List(Vec::new())))
-                                            } else {
-                                                Value::new_obj().obj_add("fiel", obj)
-                                            }
-                                        }).collect()
-                                    )
-                                ))
-                            )
-                        ).await;
-                    } else {
-                        core.throw_event(
-                            Event::new(
-                                format!("fsa-dir-{}", event.module_name()),
-                                module_name().to_string(),
-                                Some(Value::new_obj()
-                                    .obj_add("file", Value::Str(file.clone()))
-                                    )
-                            )
-                        ).await;
-                    }
-                    Ok(State::build().add(
-                        &format!("fsa-dir-{}", file.to_string()),
-                        Value::List(data.into_iter().map(|(_, d)| Value::Str(d)).collect()),
-                    ))
-                },
-                Err(err) => Err(error(err, event)),
-            }
-        },
-        _ => Err(error(event_error("invalid event format"), event)),
-    }
-}
-
-fn event_error<S: ToString>(value: S) -> Event {
-    let mut map = HashMap::new();
-    map.insert("error".to_string(), Value::Str(value.to_string()));
-    Event::new("fsa-error", module_name(), Some(map.into()))
-}
-
-fn read_file(key: &str, model: &State) -> Result<String, Event> {
-    match model.get(key) {
-        Some(val) => {
-            let path: PathBuf = val
-                .clone()
-                .str()
-                .ok_or(event_error("Could not match GUID to file"))?
-                .to_string()
-                .into();
-            let mut file = File::open(path).map_err(|err| event_error(format!("{err:?}")))?;
-            let mut buf = String::new();
-            file.read_to_string(&mut buf)
-                .map_err(|err| event_error(format!("{err:?}")))?;
-            Ok(buf)
-        }
-        None => Err(event_error(format!("Could not find: {key} in model"))),
-    }
-}
-
-fn write_file(obj: &HashMap<String, Value>, model: &State) -> Result<String, Event> {
-    let key = obj
-        .get("fsa-file")
-        .cloned()
-        .ok_or(event_error("Could not find `fsa-file` in msg-obj"))?
-        .str()
-        .ok_or(event_error("Expected `fsa-file` in event-obj to be string"))?;
-
-    let buf = obj
-        .get("fsa-content")
-        .cloned()
-        .ok_or(event_error("Could not find `fsa-content` in msg-obj"))?
-        .str()
-        .ok_or(event_error(
-            "Expected `fsa-content` in msg-obj to be string",
-        ))?;
-
-    match model.get(&key) {
-        Some(val) => {
-            let path: PathBuf = val
-                .clone()
-                .str()
-                .ok_or(event_error("Could not match GUID to file"))?
-                .to_string()
-                .into();
-            let mut file = File::open(path).map_err(|err| event_error(format!("{err:?}")))?;
-            file.write_all(buf.as_bytes())
-                .map_err(|err| event_error(format!("{err:?}")))?;
-            Ok(key.to_string())
-        }
-        None => Err(event_error(format!("Could not find: {key} in model"))),
-    }
-}
-
-fn walk_dir(file: &str) -> Result<Vec<(bool, String)>, Event> {
-    let path: PathBuf = file
-        .to_string()
-        .into();
-    Ok(walk(&path, true)?
-        .into_iter()
-        .map(|f| (f.is_dir(), f.to_string_lossy().to_string()))
-        .collect())
-
-}
-
-fn walk(pth: &Path, ignore_hidden: bool) -> Result<Vec<PathBuf>, Event> {
-    if ignore_hidden && pth.starts_with(".") {
-        return Ok(Vec::new());
-    }
-    if pth.is_dir() {
-        Ok(pth
-            .read_dir()
-            .map_err(|err| event_error(format!("{:?}", err)))?
-            .flat_map(|f| {
-                f.map(|d| walk(&d.path(), ignore_hidden).unwrap_or_default())
-                    .unwrap_or_default()
-            })
-            .collect())
-    } else {
-        Ok(vec![pth.to_path_buf()])
-    }
-}
-
-fn error(error_event: Event, original_event: &Event) -> Event {
-    let mut map = error_event
-        .args()
-        .cloned()
-        .unwrap_or_default()
-        .obj()
-        .unwrap_or_default();
-    map.insert(
-        "event".to_string(),
-        Value::Str(original_event.event_name().to_string()),
-    );
-    map.insert(
-        "value".to_string(),
-        original_event.args().cloned().unwrap_or_default(),
-    );
-    Event::new("fsa-error", module_name(), Some(map.into()))
-}
+mod fsa;
 
 pub struct ModuleBuilder;
 
@@ -240,15 +49,155 @@ impl core_module_lib::Module for Module {
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
-        let state = core.state().await;
-        match update(&event, &state, &core).await {
-            Ok(st) => core
-                .get_sender()
-                .await
-                .send(CoreModification::default().set_state(st))
-                .await
-                .expect("Channel should be opened"),
-            Err(err_event) => core.throw_event(err_event).await,
+        panic!();
+        let result = match event.event_name() {
+            "fsa-write" => fsa_write(&event, &core).await,
+            "fsa-read" => fsa_read(&event, &core).await,
+            "fsa-dir" => fsa_dir(&event, &core).await,
+            _ => Ok(()),
+        };
+
+        if result.is_ok() {
+            return;
         }
+
+        let obj = Value::new_obj()
+            .obj_add("error_event", Value::Str(event.event_name().to_string()))
+            .obj_add("error_module", Value::Str(event.module_name().to_string()))
+            .obj_add("error_args", event.args().cloned().unwrap_or_default())
+            .obj_add("error_msg", Value::Str(format!("{:?}", result.unwrap())));
+
+        core.throw_event(Event::new("fsa-error", module_name(), Some(obj)))
+            .await;
+    }
+}
+
+async fn fsa_write(event: &Event, core: &Box<dyn Core>) -> Result<()> {
+    let arg = event
+        .args()
+        .ok_or(anyhow!("Expected argument, got nothing"))?
+        .obj()
+        .ok_or(anyhow!(
+            "Expected argument to be of type Object, but got: {:?}",
+            event.args()
+        ))?;
+
+    let file_path: PathBuf = arg
+        .get("file_path")
+        .ok_or(anyhow!("Expected object to contain `file_path`: {:?}", arg))?
+        .str()
+        .ok_or_else(|| {
+            anyhow!(
+                "Expected `file_path` to be of type string: {:?}",
+                arg.get("file_path")
+            )
+        })?
+        .into();
+
+    let content = arg
+        .get("content")
+        .ok_or(anyhow!("Expected object to contain `content`: {:?}", arg))?
+        .str()
+        .ok_or_else(|| {
+            anyhow!(
+                "Expected `content` to be of type string: {:?}",
+                arg.get("content")
+            )
+        })?;
+
+    let mut file = OpenOptions::new().write(true).open(file_path).await?;
+
+    file.write_all(content.as_bytes()).await?;
+
+    core.throw_event(Event::new(
+        format!("fsa_write_{}", event.module_name()),
+        module_name().to_string(),
+        None,
+    ))
+    .await;
+
+    Ok(())
+}
+
+async fn fsa_read(event: &Event, core: &Box<dyn Core>) -> Result<()> {
+    let arg = event
+        .args()
+        .ok_or(anyhow!("Expected argument, got nothing"))?
+        .obj()
+        .ok_or(anyhow!(
+            "Expected argument to be of type Object, but got: {:?}",
+            event.args()
+        ))?;
+
+    let file_path: PathBuf = arg
+        .get("file_path")
+        .ok_or(anyhow!("Expected object to contain `file_path`: {:?}", arg))?
+        .str()
+        .ok_or_else(|| {
+            anyhow!(
+                "Expected `file_path` to be of type string: {:?}",
+                arg.get("file_path")
+            )
+        })?
+        .into();
+
+    let mut file = File::open(file_path).await?;
+    let mut buff = String::new();
+    file.read_to_string(&mut buff).await?;
+
+    core.throw_event(Event::new(
+        format!("fsa_read_{}", event.module_name()),
+        module_name().to_string(),
+        Some(Value::Str(buff)),
+    ))
+    .await;
+
+    Ok(())
+}
+
+async fn fsa_dir(event: &Event, core: &Box<dyn Core>) -> Result<()> {
+    let arg = event
+        .args()
+        .ok_or(anyhow!("Expected argument, got nothing"))?
+        .obj()
+        .ok_or(anyhow!(
+            "Expected argument to be of type Object, but got: {:?}",
+            event.args()
+        ))?;
+
+    let file_path: PathBuf = arg
+        .get("file_path")
+        .ok_or(anyhow!("Expected object to contain `file_path`: {:?}", arg))?
+        .str()
+        .ok_or_else(|| {
+            anyhow!(
+                "Expected `file_path` to be of type string: {:?}",
+                arg.get("file_path")
+            )
+        })?
+        .into();
+
+    core.throw_event(Event::new(
+        format!("fsa_dir_{}", event.module_name()),
+        module_name().to_string(),
+        Some(objectify(walk_dir(file_path, Default::default())?.unwrap())),
+    ))
+    .await;
+
+    Ok(())
+}
+
+fn objectify(fo: Fo) -> Value {
+    match fo {
+        Fo::File(f) => {
+            Value::new_obj().obj_add("file", Value::new_obj().obj_add("path", Value::Str(f)))
+        }
+        Fo::Folder(f, fos) => Value::new_obj().obj_add(
+            "folder",
+            Value::new_obj().obj_add("path", Value::Str(f)).obj_add(
+                "contents",
+                Value::List(fos.into_iter().map(|o| objectify(o)).collect()),
+            ),
+        ),
     }
 }
