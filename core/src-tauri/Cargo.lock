@@ -940,6 +940,7 @@ dependencies = [
  "core-macros",
  "hashable",
  "ordered-float 5.0.0",
+ "rstest",
  "serde",
  "tokio",
  "ts-rs",

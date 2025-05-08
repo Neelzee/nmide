@@ -6,7 +6,7 @@ use crate::{
 use core_std_lib::{
     core::Core, core_modification::CoreModification, event::Event, html::Html, state::Value,
 };
-use log::info;
+use log::{debug, info};
 use std::collections::HashMap;
 use tauri::{Emitter, Manager, RunEvent};
 use tokio::sync::{mpsc, RwLock};
@@ -22,7 +22,6 @@ async fn init(mods: Vec<CoreModification>) {
     crate::handlers::init(cm).await;
 }
 
-// TODO: Implement
 #[tauri::command]
 async fn handler(event: Event, mods: Vec<CoreModification>) {
     info!("[backend] handler {:?}", event);
@@ -46,16 +45,11 @@ pub struct NmideAppData {
 }
 
 /// Runs the Tauri application
-///
-/// # Panics
-///
-/// Will panic if:
-/// - If `../plugins` does not exist
-/// - [APPDATA](https://tauri.app/reference/config/) and/or $APPDATA/plugins does not exist
 pub async fn run() {
     setup::setup_compile_time_modules()
         .await
         .expect("Compile time module setup should always succeed");
+
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
@@ -77,6 +71,8 @@ pub async fn run() {
         NMIDE_SENDER.set(sender).expect("NMIDE_SENDER not set yet");
         async move {
             while let Some(modification) = recv.recv().await {
+                debug!("[backend] pre-optimized modification: {:?}", modification);
+                let modification = modification.optimize();
                 info!("[backend] modification: {:?}", modification);
                 let state = NmideCore.state().await;
                 let ui = NmideCore.ui().await;
@@ -92,9 +88,7 @@ pub async fn run() {
                     .await;
                 let inst = ui_builder.instruction();
                 let mut current_ui = NMIDE_UI.write().await;
-                // TODO: Optimize the instruction set before building
                 *current_ui = ui_builder.build(ui);
-                // TODO: Do a NoOp check before needlessly re-rendering
                 app.emit("nmide://render", inst)
                     .expect("AppHandle emit should always succeed");
             }
