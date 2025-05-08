@@ -8,6 +8,8 @@ use std::collections::HashMap;
 use std::fmt::Formatter;
 use ts_rs::TS;
 
+pub mod impls;
+
 #[derive(
     Default, Debug, Clone, PartialEq, PartialOrd, Ord, Serialize, Deserialize, TS, Hash, Eq,
 )]
@@ -111,7 +113,7 @@ impl Value {
     pub fn list(&self) -> Option<Vec<Value>> {
         match self {
             Self::List(l) => Some(l.clone()),
-            _ => None
+            _ => None,
         }
     }
 
@@ -177,33 +179,6 @@ impl From<HashMap<String, Value>> for Value {
     }
 }
 
-/*impl PartialOrd for Value {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        unsafe {
-            match (self, other) {
-                (Value::Int(l), Value::Int(r)) => Some(l.cmp(r)),
-                (Value::Int(l), Value::Float(r)) => (*l as f32).partial_cmp(r),
-                (Value::Float(l), Value::Int(r)) => {
-                    l.partial_cmp(&(NotNan::new_unchecked(*r as f32)))
-                }
-                (Value::Float(l), Value::Float(r)) => l.partial_cmp(r),
-                (Value::Bool(l), Value::Bool(r)) => l.partial_cmp(r),
-                (Value::Str(l), Value::Str(r)) => Some(l.cmp(r)),
-                (Value::List(l), Value::List(r)) => l.partial_cmp(r),
-                (Value::Obj(l), Value::Obj(r)) => {
-                    if l == r {
-                        return Some(std::cmp::Ordering::Equal);
-                    }
-
-                    None
-                }
-                _ => None,
-            }
-        }
-    }
-}
-*/
-
 #[derive(Debug, Default, Clone, Deserialize, Serialize, TS)]
 #[ts(export)]
 pub struct State(HashMap<String, Value>);
@@ -225,36 +200,8 @@ impl State {
         let mut map = self.0;
         let field = field.to_string();
 
-        if !field.contains(".") {
-            map.insert(field, value);
-            return Self(map);
-        }
-
-        let mut fields = field.split(".");
-
-        if fields.clone().count() == 1 {
-            panic!("Field cannot start or end with `.`!, {field}")
-        }
-
-        let last = fields.next().unwrap();
-
-        let mut vec = fields.collect::<Vec<&str>>();
-
-        let init = {
-            let mut mp = HashMap::new();
-            mp.insert(vec.pop().unwrap().to_string(), value);
-            Value::Obj(mp.into())
-        };
-
-        let obj = vec.into_iter().fold(init, |acc, c| {
-            let mut mp = HashMap::new();
-            mp.insert(c.to_string(), acc);
-            Value::Obj(mp.into())
-        });
-
-        map.insert(last.to_string(), obj);
-
-        Self(map)
+        map.insert(field, value);
+        return Self(map);
     }
 
     pub(crate) fn rem<S: ToString>(self, field: S) -> Self {
