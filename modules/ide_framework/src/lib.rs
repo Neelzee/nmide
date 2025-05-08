@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use core_module_lib::{self, Module};
 use core_std_lib::attrs::Attr;
-use core_std_lib::core::{Core};
+use core_std_lib::core::Core;
 use core_std_lib::core_modification::CoreModification;
 use core_std_lib::event::Event;
 use core_std_lib::html::{Html, UIInstructionBuilder};
@@ -46,8 +46,9 @@ impl Module for FrameworkModule {
                                     ),
                             )
                             .adopt(Html::Ol().add_attr(Attr::Id("errors".to_string()))),
-                    ),
-                Some(""),
+                    )
+                    .adopt(Html::Div().add_attr(Attr::Id("content".to_string()))),
+                Option::<String>::None,
             ),
         );
         core.get_sender()
