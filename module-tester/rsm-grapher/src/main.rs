@@ -56,7 +56,7 @@ use core_module_lib::Module;
 use core_std_lib::event::Event;
 use rsm_handler::fold_deps;
 use rsm_invoker::Dependency;
-use std::{collections::HashMap, time::Duration};
+use std::{collections::HashMap, fs::File, io::Write, time::Duration};
 
 #[allow(unused_imports)]
 pub mod module_reg {
@@ -86,6 +86,8 @@ async fn main() {
     let mut modules: HashMap<String, Box<dyn Module>> = HashMap::new();
     module_reg::register_modules(&mut modules);
 
+    let mut final_deps = Vec::new();
+
     for (m, module) in modules {
         let dep = map.get(&m).unwrap().clone();
         let initial_events = dep
@@ -101,12 +103,24 @@ async fn main() {
             })
             .collect();
         println!("Analysing event handling of `{m}`");
-        match handling(module, m, initial_events, dep).await {
-            Ok(Ok(dep)) => println!("{dep:?}"),
+        match handling(module, m.clone(), initial_events, dep).await {
+            Ok(Ok(dep)) => {
+                println!("{dep:?}");
+                final_deps.push(dep.to_named(m));
+            }
             Ok(_) => unreachable!(),
             Err(err) => eprintln!("{}", err),
         }
     }
+
+    let s = serde_json::to_string_pretty(&final_deps).expect("Serialization should succeed");
+
+    let mut file = File::create("../build/result.json").expect("File creation should succeed");
+
+    file.write_all(s.as_bytes())
+        .expect("File writing should succeed");
+
+    println!("Finished");
 }
 
 async fn handling(

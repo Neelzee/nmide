@@ -104,6 +104,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-ffi"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f4de21c0feef7e5a556e51af767c953f0501f7f300ba785cc99c47bdc8081a50"
+dependencies = [
+ "abi_stable",
+]
+
+[[package]]
 name = "async-trait"
 version = "0.1.88"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -173,6 +182,7 @@ version = "1.0.1"
 dependencies = [
  "abi_stable",
  "anyhow",
+ "async-ffi",
  "async-trait",
  "core-std-lib",
  "foreign-std-lib",
@@ -234,9 +244,11 @@ name = "foreign-std-lib"
 version = "0.1.0"
 dependencies = [
  "abi_stable",
+ "async-trait",
  "core-macros",
  "core-std-lib",
  "once_cell",
+ "ordered-float 5.0.0",
  "rstest",
  "serde",
  "stabby",
@@ -428,6 +440,7 @@ dependencies = [
  "core-module-lib",
  "core-std-lib",
  "serde_json",
+ "tokio",
 ]
 
 [[package]]
@@ -742,6 +755,7 @@ dependencies = [
  "once_cell",
  "rsm-handler",
  "rsm-invoker",
+ "serde_json",
  "tokio",
  "trivial_module",
 ]
@@ -770,7 +784,9 @@ dependencies = [
  "core-std-lib",
  "futures",
  "once_cell",
+ "serde",
  "tokio",
+ "ts-rs",
 ]
 
 [[package]]

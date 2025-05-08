@@ -1,5 +1,8 @@
 use core_module_lib::Module;
+use core_std_lib::attrs::Attr;
 use core_std_lib::core::Core as _;
+use core_std_lib::event::Event;
+use core_std_lib::instruction::inst::Instruction;
 use core_std_lib::{core_modification::CoreModification, html::Html, state::State};
 use once_cell::sync;
 use tokio::join;
@@ -25,6 +28,8 @@ impl Suite {
                     let state = Core.state().await;
                     let ui = Core.ui().await;
 
+                    let mut evts: Vec<_> = analyze_instr(mods.clone());
+
                     let (new_state, new_ui) = mods.build(state, ui);
 
                     let mut st = STATE.write().await;
@@ -32,11 +37,6 @@ impl Suite {
                     *st = new_state;
                     *current_ui = new_ui;
                     let mut prov = THROWN_EVENTS.write().await;
-                    let mut evts: Vec<_> = current_ui
-                        .get_attrs()
-                        .into_iter()
-                        .filter_map(|a| a.get_event())
-                        .collect();
                     prov.append(&mut evts);
                 }
             }
@@ -71,4 +71,42 @@ impl Suite {
     pub fn new() -> Self {
         Self
     }
+}
+
+fn analyze_instr(mods: CoreModification) -> Vec<Event> {
+    let attrs = mods.get_attr_instr();
+    fn attr_instr(instr: Instruction<Attr>) -> Vec<Event> {
+        match instr {
+            Instruction::Add(_, Attr::Click(evt)) => vec![evt],
+            Instruction::Then(fst, snd) => {
+                let mut xs = attr_instr(*fst);
+                let mut ys = attr_instr(*snd);
+                xs.append(&mut ys);
+                xs
+            }
+            _ => Vec::new(),
+        }
+    }
+
+    let mut vec = attr_instr(attrs);
+
+    let html = mods.get_html_instr();
+    fn html_instr(instr: Instruction<Html>) -> Vec<Event> {
+        match instr {
+            Instruction::Add(_, h) => h
+                .get_attrs()
+                .into_iter()
+                .filter_map(|a| a.get_event())
+                .collect(),
+            Instruction::Then(fst, snd) => {
+                let mut xs = html_instr(*fst);
+                let mut ys = html_instr(*snd);
+                xs.append(&mut ys);
+                xs
+            }
+            _ => Vec::new(),
+        }
+    }
+    vec.append(&mut html_instr(html));
+    vec
 }

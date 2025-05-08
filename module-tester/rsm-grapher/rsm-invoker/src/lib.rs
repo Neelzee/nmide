@@ -4,17 +4,58 @@ use core_std_lib::{core_modification::CoreModification, event::Event, html::Html
 use empty_module::EmptyModule;
 use futures::FutureExt;
 use once_cell::sync::Lazy;
+use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, thread::sleep, time::Duration};
 use suite::Suite;
 use tokio::sync::{self, RwLock, mpsc::Sender, oneshot};
+use ts_rs::TS;
 
 mod empty_module;
 mod suite;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Dependency {
     pub providing: Vec<Event>,
     pub consuming: Vec<(Option<String>, Option<String>)>,
+    pub success: bool,
+}
+
+impl Dependency {
+    pub fn to_named(self, name: String) -> NamedDependency {
+        NamedDependency {
+            name,
+            providing: self.providing,
+            consuming: self
+                .consuming
+                .into_iter()
+                .map(|t| Consumer::from_tup(t))
+                .collect(),
+            success: self.success,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, TS)]
+pub struct Consumer {
+    event_name: Option<String>,
+    module_name: Option<String>,
+}
+
+impl Consumer {
+    pub fn from_tup((event_name, module_name): (Option<String>, Option<String>)) -> Self {
+        Self {
+            event_name,
+            module_name,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, TS)]
+#[ts(export)]
+pub struct NamedDependency {
+    pub name: String,
+    pub providing: Vec<Event>,
+    pub consuming: Vec<Consumer>,
     pub success: bool,
 }
 
