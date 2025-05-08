@@ -1,3 +1,29 @@
+//! Installs compile-time-modules
+//!
+//! Also responsible for cleanup.
+//!
+//! ## Installation
+//!
+//! Installation of modules vary, depending on the module kind. If it is an
+//! JavaScript module, and a `package-manager` has been specified, the
+//! cm-installer will run `package-manager i`, (npm/bun), installing all the
+//! necessary dependencies, and then it will run `package-manager run build`,
+//! running the build script for the module. It will then copy the resulting
+//! file, expecting it to be `build/index.js`, to `dist/external`, and added
+//! to the index.html file, as a script tag.
+//!
+//! If the module is a Rust compile-time-module, it will be directly added to
+//! the Cargo.toml file as a dependency. The build-script for Nmide will ensure
+//! it is properly installed, (i.e. that the module is actually "built" and
+//! invoked).
+//!
+//! If the module is a Rust library, meaning a runtime-module, it will be built
+//! and copied over to the `$APPDATA/modules` folder, where it will be picked up
+//! by Nmide, during startup, and managed.
+//!
+//! If the module is a CSS module, it will be copied to `dist/external` and to
+//! the index.html file.
+
 use clean_up::clean_up;
 use regex::Regex;
 use std::collections::HashMap;

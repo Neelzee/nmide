@@ -1,4 +1,4 @@
-use std::{process::Command, thread::sleep, time::Duration};
+use std::process::Command;
 
 use crate::{Kind, Module, run_cmd};
 

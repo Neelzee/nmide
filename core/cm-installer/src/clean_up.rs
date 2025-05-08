@@ -1,7 +1,7 @@
 use std::fs;
 use std::fs::File;
-use std::io::Read;
 use std::fs::OpenOptions;
+use std::io::Read;
 
 use crate::rs_installer::MODULE_SEPARATOR;
 
@@ -25,18 +25,18 @@ pub(crate) fn clean_up(index: String, cargo_path: String) {
         }
         if !ignore {
             new_contents.push_str(format!("{line}\n").as_ref());
-        } 
+        }
     }
-    fs::write(index, new_contents)
-        .expect("Should be able to write to file");
+    fs::write(index, new_contents).expect("Should be able to write to file");
 
     println!("Cleaning: {cargo_path}");
     let mut file = File::open(&cargo_path).expect("Cargo.toml file not found");
     let mut buf = String::new();
-    file.read_to_string(&mut buf).expect("Cargo.toml file read error");
+    file.read_to_string(&mut buf)
+        .expect("Cargo.toml file read error");
 
     if !buf.contains(MODULE_SEPARATOR) {
-        buf.push_str(format!("\n{}" ,MODULE_SEPARATOR).as_str());
+        buf.push_str(format!("\n{}", MODULE_SEPARATOR).as_str());
     }
 
     let mut final_buffer = String::new();

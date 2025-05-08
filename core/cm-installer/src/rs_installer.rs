@@ -1,9 +1,9 @@
+use crate::{Kind, Module};
 use std::fs;
 use std::fs::File;
-use std::path::Path;
 use std::io::{Read, Write};
+use std::path::Path;
 use toml::Value;
-use crate::{Kind, Module};
 
 pub(crate) const MODULE_SEPARATOR: &'static str =
     "# ============================================================================ #";
@@ -15,7 +15,6 @@ pub(crate) fn install(modules: Vec<Module>, cargo: String, out: String) {
     let mut tbl = toml::Table::new();
     let mut mods = Vec::new();
     for m in modules {
-
         if !m.enabled || m.kind != Kind::Rust {
             continue;
         }
@@ -32,7 +31,7 @@ pub(crate) fn install(modules: Vec<Module>, cargo: String, out: String) {
     }
     tbl.insert(
         "dependencies".to_string(),
-        Value::try_from(mods).expect("Should be valid serialization")
+        Value::try_from(mods).expect("Should be valid serialization"),
     );
 
     let c = toml::to_string_pretty(&tbl)
@@ -41,10 +40,11 @@ pub(crate) fn install(modules: Vec<Module>, cargo: String, out: String) {
 
     let mut file = File::open(&cargo_path).expect("Cargo.toml file not found");
     let mut buf = String::new();
-    file.read_to_string(&mut buf).expect("Cargo.toml file read error");
+    file.read_to_string(&mut buf)
+        .expect("Cargo.toml file read error");
 
     if !buf.contains(MODULE_SEPARATOR) {
-        buf.push_str(format!("\n{}" ,MODULE_SEPARATOR).as_str());
+        buf.push_str(format!("\n{}", MODULE_SEPARATOR).as_str());
     }
 
     let mut final_buffer = String::new();
@@ -69,7 +69,7 @@ pub(crate) fn install(modules: Vec<Module>, cargo: String, out: String) {
         reg_file,
         "pub fn register_modules(modules: &mut HashMap<String, Box<dyn Module>>) {{"
     )
-        .unwrap();
+    .unwrap();
     for registration in &module_reg {
         writeln!(reg_file, "    {}", registration).unwrap();
     }
