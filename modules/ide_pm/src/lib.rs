@@ -18,51 +18,38 @@ struct ProjectManagerModule;
 
 const MODULE_NAME: &'static str = "ide_pm";
 
-fn button(text: &str) -> Html {
-    let id = format!("ide-pm-{}", text.replace(" ", "-"));
-    Html::Button()
-        .set_text(text)
-        .add_attr(Attr::Id(id.to_lowercase()))
-}
-
-fn drop_down_btn(text: &str) -> Html {
-    let id = format!("ide-pm-drop-{}", text.replace(" ", "-"));
-    Html::Button()
-        .set_text(text)
-        .add_attr(Attr::Click(Event::new(
-            "ide-pm-dropdown".to_string(),
-            MODULE_NAME.to_string(),
-            Some(Value::Str(id.clone().to_lowercase())),
-        )))
-        .add_attr(Attr::Id(id.to_lowercase()))
-        .add_attr(Attr::Class("dropbtn".to_string()))
-}
-
-fn navbar() -> Vec<Html> {
-    vec![
-        drop_down_btn("File"),
-        Html::Div()
-            .add_attr(Attr::Id("ide-pm-drop-file-content".to_string()))
-            .add_attr(Attr::Class("dropdown-content".to_string()))
-            .adopt(button("New File"))
-            .adopt(button("Open File").add_attr(Attr::Click(Event::new(
-                "ide-pm-file".to_string(),
-                MODULE_NAME.to_string(),
-                None,
-            ))))
-            .adopt(button("Open Folder").add_attr(Attr::Click(Event::new(
-                "ide-pm-folder".to_string(),
-                MODULE_NAME.to_string(),
-                None,
-            )))),
-        Html::Button().set_text("Edit"),
-        Html::Button().set_text("Selection"),
-        Html::Button().set_text("View"),
-        Html::Button().set_text("Go"),
-        Html::Button().set_text("Run"),
-        Html::Button().set_text("Terminal"),
-        Html::Button().set_text("Help"),
-    ]
+fn navbar(xs: Vec<(&str, Vec<(&str, Event)>)>) -> Vec<Html> {
+    xs.into_iter()
+        .map(|(x, ys)| {
+            let id = format!("ide-pm-drop-{}", x.replace(" ", "-"));
+            (
+                Html::Button()
+                    .set_text(x)
+                    .add_attr(Attr::Click(Event::new(
+                        "ide-pm-dropdown".to_string(),
+                        MODULE_NAME.to_string(),
+                        Some(Value::Str(id.clone().to_lowercase())),
+                    )))
+                    .add_attr(Attr::Id(id.to_lowercase()))
+                    .add_attr(Attr::Class("dropbtn".to_string())),
+                Html::Div()
+                    .add_attr(Attr::Id(format!("{id}-content").to_lowercase()))
+                    .add_attr(Attr::Class("dropdown-content".to_string()))
+                    .replace_kids(
+                        ys.into_iter()
+                            .map(|(y, evt)| {
+                                let yid = format!("ide-pm-{}", y.replace(" ", "-"));
+                                Html::Button()
+                                    .set_text(y)
+                                    .add_attr(Attr::Id(yid.to_lowercase()))
+                                    .add_attr(Attr::Click(evt))
+                            })
+                            .collect(),
+                    ),
+            )
+        })
+        .flat_map(|(b, c)| vec![b, c])
+        .collect()
 }
 
 #[async_trait::async_trait]
@@ -99,7 +86,7 @@ impl Module for ProjectManagerModule {
         )
         .await;
         core.add_handler(
-            Some("fsa-read-ide_pm".to_string()),
+            Some("fsa_read_ide_pm".to_string()),
             None,
             MODULE_NAME.to_string(),
         )
@@ -111,7 +98,7 @@ impl Module for ProjectManagerModule {
         )
         .await;
         core.add_handler(
-            Some("fsa-folder-ide_pm".to_string()),
+            Some("fsa_dir_ide_pm".to_string()),
             None,
             MODULE_NAME.to_string(),
         )
@@ -122,7 +109,27 @@ impl Module for ProjectManagerModule {
         let sender = core.get_sender().await;
         match event.event_name() {
             "post-init" => {
-                let mods = UIInstructionBuilder::default().add_nodes(navbar(), Some("navbar"));
+                let mods = UIInstructionBuilder::default().add_nodes(
+                    navbar(vec![
+                        (
+                            "File",
+                            vec![
+                                ("Open File", Event::new("ide-pm-file", MODULE_NAME, None)),
+                                (
+                                    "Open Folder",
+                                    Event::new("ide-pm-folder", MODULE_NAME, None),
+                                ),
+                            ],
+                        ),
+                        ("Edit", vec![]),
+                        ("Selection", vec![]),
+                        (
+                            "View",
+                            vec![("Graph", Event::new("get_magnolia_graph", MODULE_NAME, None))],
+                        ),
+                    ]),
+                    Some("navbar"),
+                );
                 sender
                     .send(CoreModification::ui(mods))
                     .await
