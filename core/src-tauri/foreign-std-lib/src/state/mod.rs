@@ -32,7 +32,9 @@ pub mod tmap {
                 super::rs_state::RValKind::Int => TValue::Int(value.int().unwrap()),
                 super::rs_state::RValKind::Float => TValue::Float(value.float().unwrap()),
                 super::rs_state::RValKind::Bool => TValue::Bool(value.bool().unwrap()),
-                super::rs_state::RValKind::Str => TValue::Str(value.str().unwrap().clone().to_string()),
+                super::rs_state::RValKind::Str => {
+                    TValue::Str(value.str().unwrap().clone().to_string())
+                }
                 super::rs_state::RValKind::List => TValue::List(
                     value
                         .lst()
