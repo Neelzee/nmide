@@ -69,6 +69,7 @@ impl Html {
         }
     }
 
+    /// Returns all attributes in the html tree
     pub fn get_attrs(&self) -> Vec<Attr> {
         let mut xs = self.attrs();
         let mut ys: Vec<Attr> = self

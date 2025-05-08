@@ -7,7 +7,7 @@ use ts_rs::TS;
 
 pub mod impls;
 
-#[derive(Debug, Serialize, Deserialize, TS)]
+#[derive(Debug, Serialize, Deserialize, TS, Clone)]
 #[ts(export)]
 pub struct CoreModification {
     state: Instruction<Value>,

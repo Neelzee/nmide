@@ -71,4 +71,12 @@ impl CoreModification {
             UIInstructionBuilder::new(self.ui),
         )
     }
+
+    pub fn get_attr_instr(&self) -> Instruction<Attr> {
+        self.ui.2.clone()
+    }
+
+    pub fn get_html_instr(&self) -> Instruction<Html> {
+        self.ui.0.clone()
+    }
 }
