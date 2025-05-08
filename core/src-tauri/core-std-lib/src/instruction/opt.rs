@@ -1,13 +1,14 @@
 use crate::instruction::inst::Instruction;
 use std::collections::HashMap;
+use std::fmt::Debug;
 use std::hash::Hash;
 
-impl<T: PartialEq + Clone + Eq + Hash> Instruction<T> {
+impl<T: PartialEq + Clone + Eq + Hash + Debug> Instruction<T> {
     pub fn is_noop(&self) -> bool {
         matches!(self, Self::NoOp)
     }
 
-    fn flatten(self) -> Vec<Instruction<T>> {
+    pub fn flatten(self) -> Vec<Instruction<T>> {
         match &self {
             Instruction::NoOp => Vec::new(),
             Instruction::Add(..) | Instruction::Rem(..) => vec![self],
@@ -22,7 +23,7 @@ impl<T: PartialEq + Clone + Eq + Hash> Instruction<T> {
     /// Creates an optimal instruction set by flattening the instructions, and removing all
     /// operations that are "NoOp"s
     pub fn optimize(vs: Vec<Instruction<T>>) -> Instruction<T> {
-        let mut sequence = Self::opt(&vs).flatten();
+        let sequence = Self::opt(&vs).flatten();
 
         let mut fv_map: HashMap<(String, T), i32> = HashMap::new();
 
@@ -80,7 +81,7 @@ impl<T: PartialEq + Clone + Eq + Hash> Instruction<T> {
                         fv_map.insert(key, 0);
                         acc.combine(Instruction::Rem(f, v))
                     } else {
-                        Instruction::NoOp
+                        acc
                     }
                 }
                 Instruction::Then(..) => unreachable!(
@@ -89,7 +90,7 @@ impl<T: PartialEq + Clone + Eq + Hash> Instruction<T> {
             })
     }
 
-    // Removes all "NoOp"s from an instruction set
+    /// Removes all "NoOp"s from an instruction set
     fn opt(xs: &[Instruction<T>]) -> Instruction<T> {
         match xs {
             [] => Self::NoOp,
