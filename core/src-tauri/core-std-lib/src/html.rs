@@ -71,7 +71,11 @@ impl Html {
 
     pub fn get_attrs(&self) -> Vec<Attr> {
         let mut xs = self.attrs();
-        let mut ys: Vec<Attr> = self.kids().into_iter().flat_map(|y| y.get_attrs()).collect();
+        let mut ys: Vec<Attr> = self
+            .kids()
+            .into_iter()
+            .flat_map(|y| y.get_attrs())
+            .collect();
         xs.append(&mut ys);
         xs
     }

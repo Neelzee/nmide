@@ -1,6 +1,6 @@
+use crate::instruction::inst::Instruction;
 use std::collections::HashMap;
 use std::hash::Hash;
-use crate::instruction::inst::Instruction;
 
 impl<T: PartialEq + Clone + Eq + Hash> Instruction<T> {
     pub fn is_noop(&self) -> bool {
@@ -55,12 +55,15 @@ impl<T: PartialEq + Clone + Eq + Hash> Instruction<T> {
             }
         }
 
-        sequence.into_iter().fold(Instruction::NoOp, |acc, instr| {
-            match instr {
+        sequence
+            .into_iter()
+            .fold(Instruction::NoOp, |acc, instr| match instr {
                 Instruction::NoOp => acc,
                 Instruction::Add(f, v) => {
                     let key = (f.clone(), v.clone());
-                    let i = *fv_map.get(&key).expect("Should be initialized in the previous pass");
+                    let i = *fv_map
+                        .get(&key)
+                        .expect("Should be initialized in the previous pass");
                     if i > 0 {
                         fv_map.insert(key, 0);
                         acc.combine(Instruction::Add(f, v))
@@ -70,7 +73,9 @@ impl<T: PartialEq + Clone + Eq + Hash> Instruction<T> {
                 }
                 Instruction::Rem(f, v) => {
                     let key = (f.clone(), v.clone());
-                    let i = *fv_map.get(&key).expect("Should be initialized in the previous pass");
+                    let i = *fv_map
+                        .get(&key)
+                        .expect("Should be initialized in the previous pass");
                     if i < 0 {
                         fv_map.insert(key, 0);
                         acc.combine(Instruction::Rem(f, v))
@@ -78,10 +83,10 @@ impl<T: PartialEq + Clone + Eq + Hash> Instruction<T> {
                         Instruction::NoOp
                     }
                 }
-                Instruction::Then(..) =>
-                    unreachable!("`Then` instruction should never occur in a flattened instruction set")
-            }
-        })
+                Instruction::Then(..) => unreachable!(
+                    "`Then` instruction should never occur in a flattened instruction set"
+                ),
+            })
     }
 
     // Removes all "NoOp"s from an instruction set

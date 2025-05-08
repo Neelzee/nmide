@@ -20,12 +20,8 @@ impl<T: PartialEq> Instruction<T> {
         match (&self, &other) {
             (Self::NoOp, _) => other,
             (_, Self::NoOp) => self,
-            (Self::Add(a1, s1), Self::Rem(a2, s2)) if a1 == a2 && s1 == s2 => {
-                Self::NoOp
-            }
-            (Self::Rem(a1, s1), Self::Add(a2, s2)) if a1 == a2 && s1 == s2 => {
-                Self::NoOp
-            }
+            (Self::Add(a1, s1), Self::Rem(a2, s2)) if a1 == a2 && s1 == s2 => Self::NoOp,
+            (Self::Rem(a1, s1), Self::Add(a2, s2)) if a1 == a2 && s1 == s2 => Self::NoOp,
             _ => Self::Then(Box::new(self), Box::new(other)),
         }
     }
