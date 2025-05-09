@@ -17,6 +17,13 @@ impl Default for CoreModification {
 }
 
 impl CoreModification {
+    pub fn len(&self) -> usize {
+        self.state.clone().flatten().len()
+            + self.ui.0.clone().flatten().len()
+            + self.ui.1.clone().flatten().len()
+            + self.ui.2.clone().flatten().len()
+    }
+
     pub fn from_instr(
         state: Instruction<Value>,
         ui: (Instruction<Html>, Instruction<String>, Instruction<Attr>),

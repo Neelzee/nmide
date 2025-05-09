@@ -16,3 +16,6 @@ rstest = "0.25.0"
 serde = { version = "1.0.219", features = ["derive"] }
 tokio = { version = "1.44.2", features = ["full"] }
 ts-rs = { version = "10.1.0", features = ["ordered-float-impl", "ordered-float"] }
+
+[features]
+core = []
