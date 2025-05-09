@@ -3,6 +3,7 @@ import {
   Event,
   Html, HtmlKind,
   Instruction,
+  objAdd,
   ValueObj
 } from "@nmide/js-utils";
 import { emit } from "@tauri-apps/api/event";
@@ -211,21 +212,17 @@ const clickParse = (event: Event, ts: HTMLElement, _: MouseEvent) => {
           cn++;
         }
       }
-      args = {
-        obj: {
-          lineNumber: { int: ln },
-          columnNumber: { int: cn },
-        }
-      };
+      args = objAdd(args, "lineNumber", { int: ln });
+      args = objAdd(args, "columnNumber", { int: cn });
     }
   }
-  args = { obj: { ...args.obj, id: { str: ts.id }, } };
+  args = objAdd(args, "id", { str: ts.id });
   if (typeof event === "object") {
     if ("event" in event) {
       if (event.event.args !== null) {
-        args = { obj: { ...args.obj, eventArgs: event.event.args } };
+        args = objAdd(args, "eventArgs", event.event.args);
       }
-      event.event.args = args;
+      event = { event: { event: event.event.event, args } };
     }
   }
 
