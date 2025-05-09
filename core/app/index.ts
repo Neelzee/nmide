@@ -1,19 +1,22 @@
-import { invoke } from "@tauri-apps/api/core";
+//import client, { listen } from "@nmide/js-client";
+import { invoke as client } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { Module, Event, Html } from "@nmide/js-utils";
-import { Instruction } from "@nmide/js-utils";
+import { Module } from "@nmide/js-utils";
 import { ideInstallModules } from "./lib/ideInstallModules.ts";
-import { AppConfig, defaultConfig } from "./App.ts"
+import { AppConfig, defaultConfig } from "@nmide/js-core-std-lib";
 import {
     NMIDE_INITIALIZED,
     NMIDE_MODULES_INSTALLED_EVENT
 } from "./nmideConstants.ts";
 import { run } from "./main.ts";
 import { tsInit, tsHandler } from "./tsRuntime.ts";
+import { tsRenderer } from "./lib/tsRenderer.ts";
+import { handlerRegistration } from "./lib/handlerRegistration.ts";
+import { eventThrower } from "./lib/eventThrower.ts";
 
 run({
     initialize: (config: Partial<AppConfig> = {}) => {
-        const conf = { ...defaultConfig, ...config };
+        const conf = { ...defaultConfig(tsRenderer, handlerRegistration, eventThrower), ...config };
         // @ts-expect-error This is okay
         window.__nmideConfig__ = {}
         // @ts-expect-error This is okay
@@ -58,13 +61,12 @@ run({
         });
     },
     run: () => {
-        listen<[Instruction<Html>, Instruction<string>, Instruction<Attr>]>("nmide://render", ({ payload: ui }) => {
+        listen("nmide://render", ({ payload: ui }) => {
             window.__nmideConfig__.render(ui)
                 .catch(err => window.__nmideConfig__.log.error("Error on render: ", err));
         }).catch((err) => window.__nmideConfig__.log.error("nmide://render", err));
 
-        listen<Event>("nmide://event", ({ payload: event }) => {
-            const evt = JSON.parse(JSON.stringify(event));
+        listen("nmide://event", ({ payload: event }) => {
             (async () => {
                 const promises = [];
                 for (let i = 0; i < window.__nmideConfig__.runtimes.handlers.length; i++) {
@@ -74,8 +76,7 @@ run({
                 return await Promise.all(promises);
             })().then(cm => {
                 const mods = cm.flat();
-                console.log("event: ", evt);
-                invoke<void>("handler", { event: evt, mods })
+                client("handler", { event, mods })
                     .catch((err) => console.error("Handler: ", err))
             }
             );
@@ -95,9 +96,9 @@ run({
             const mods = await Promise.all(promises);
             return mods.flat()
         })
-            .then(cm =>
-                invoke<void>("init", { mods: cm })
-                    .catch((err) => console.error("Init: , with args: ", err, { mods: cm }))
+            .then(mods =>
+                client("init", { mods })
+                    .catch((err) => console.error("Init: , with args: ", err, { mods }))
             );
     }
 },

@@ -1,3 +1,4 @@
+import { NmideConfig } from "@nmide/js-core-std-lib";
 import {
   Attr,
   Event,
@@ -21,7 +22,7 @@ const getElementById = (element: HTMLElement, id: string): HTMLElement | undefin
   }
 }
 
-export const tsRenderer = async (ui: [Instruction<Html>, Instruction<string>, Instruction<Attr>]) => {
+export const tsRenderer: NmideConfig["render"] = async (ui) => {
   evalHtml(ui[0]);
   evalText(ui[1]);
   evalAttr(ui[2]);
