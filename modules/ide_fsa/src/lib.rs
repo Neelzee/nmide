@@ -32,24 +32,15 @@ impl core_module_lib::Module for Module {
     }
 
     async fn init(&self, core: Box<dyn Core>) {
-        core.add_handler(
-            Some("fsa-write".to_string()),
-            None,
-            module_name().to_string(),
-        )
-        .await;
-        core.add_handler(
-            Some("fsa-read".to_string()),
-            None,
-            module_name().to_string(),
-        )
-        .await;
-        core.add_handler(Some("fsa-dir".to_string()), None, module_name().to_string())
+        core.add_handler("fsa-write".to_string(), module_name().to_string())
+            .await;
+        core.add_handler("fsa-read".to_string(), module_name().to_string())
+            .await;
+        core.add_handler("fsa-dir".to_string(), module_name().to_string())
             .await;
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
-        panic!();
         let result = match event.event_name() {
             "fsa-write" => fsa_write(&event, &core).await,
             "fsa-read" => fsa_read(&event, &core).await,
@@ -63,12 +54,10 @@ impl core_module_lib::Module for Module {
 
         let obj = Value::new_obj()
             .obj_add("error_event", Value::Str(event.event_name().to_string()))
-            .obj_add("error_module", Value::Str(event.module_name().to_string()))
             .obj_add("error_args", event.args().cloned().unwrap_or_default())
             .obj_add("error_msg", Value::Str(format!("{:?}", result.unwrap())));
 
-        core.throw_event(Event::new("fsa-error", module_name(), Some(obj)))
-            .await;
+        core.throw_event(Event::new("fsa-error", Some(obj))).await;
     }
 }
 
@@ -109,12 +98,8 @@ async fn fsa_write(event: &Event, core: &Box<dyn Core>) -> Result<()> {
 
     file.write_all(content.as_bytes()).await?;
 
-    core.throw_event(Event::new(
-        format!("fsa_write_{}", event.module_name()),
-        module_name().to_string(),
-        None,
-    ))
-    .await;
+    core.throw_event(Event::new(format!("fsa_write_{}", todo!()), None))
+        .await;
 
     Ok(())
 }
@@ -146,8 +131,7 @@ async fn fsa_read(event: &Event, core: &Box<dyn Core>) -> Result<()> {
     file.read_to_string(&mut buff).await?;
 
     core.throw_event(Event::new(
-        format!("fsa_read_{}", event.module_name()),
-        module_name().to_string(),
+        format!("fsa_read_{}", todo!()),
         Some(Value::Str(buff)),
     ))
     .await;
@@ -178,8 +162,7 @@ async fn fsa_dir(event: &Event, core: &Box<dyn Core>) -> Result<()> {
         .into();
 
     core.throw_event(Event::new(
-        format!("fsa_dir_{}", event.module_name()),
-        module_name().to_string(),
+        format!("fsa_dir_{}", todo!()),
         Some(objectify(walk_dir(file_path, Default::default())?.unwrap())),
     ))
     .await;

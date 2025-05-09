@@ -28,12 +28,8 @@ impl Module for ProjectManagerModule {
     }
 
     async fn init(&self, core: Box<dyn Core>) {
-        core.add_handler(
-            Some("nmide://exit".to_string()),
-            Some("nmide".to_string()),
-            MODULE_NAME.to_string(),
-        )
-        .await;
+        core.add_handler(Event::PreExit.to_string(), MODULE_NAME.to_string())
+            .await;
         let mods = CoreModification::default()
             .set_state(StateInstructionBuilder::default().add(STATE_FIELD, Value::new_obj()));
         core.get_sender()
@@ -44,8 +40,8 @@ impl Module for ProjectManagerModule {
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
-        match event.event_name() {
-            "nmide://exit" => {
+        match event {
+            Event::PreExit => {
                 let obj = core
                     .state()
                     .await

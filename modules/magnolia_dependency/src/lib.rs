@@ -31,12 +31,8 @@ impl core_module_lib::Module for Module {
     }
 
     async fn init(&self, core: Box<dyn Core>) {
-        core.add_handler(
-            Some("get_magnolia_graph".to_string()),
-            None,
-            MODULE_NAME.to_string(),
-        )
-        .await;
+        core.add_handler("get_magnolia_graph".to_string(), MODULE_NAME.to_string())
+            .await;
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
@@ -69,12 +65,11 @@ impl core_module_lib::Module for Module {
                 let field = format!("graph:{path}");
                 match core.state().await.get(&field) {
                     Some(g) => {
-                        core.throw_event(Event::new("graph", MODULE_NAME, Some(g.clone())))
-                            .await;
+                        core.throw_event(Event::new("graph", Some(g.clone()))).await;
                     }
                     None => {
                         let graph = get_graph(&path);
-                        core.throw_event(Event::new("graph", MODULE_NAME, Some(graph.clone())))
+                        core.throw_event(Event::new("graph", Some(graph.clone())))
                             .await;
                         let mods = CoreModification::default()
                             .set_state(StateInstructionBuilder::default().add(field, graph));

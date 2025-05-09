@@ -19,12 +19,8 @@ impl core_module_lib::Module for Module {
     }
 
     async fn init(&self, core: Box<dyn Core>) {
-        core.add_handler(
-            Some("open-project".to_string()),
-            None,
-            MODULE_NAME.to_string(),
-        )
-        .await;
+        core.add_handler("open-project".to_string(), MODULE_NAME.to_string())
+            .await;
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
@@ -88,7 +84,6 @@ fn render(f: Fo) -> Html {
 fn error(s: &str) -> Event {
     Event::new(
         format!("{MODULE_NAME}_ERROR"),
-        MODULE_NAME.to_string(),
         Some(Value::Str(s.to_string())),
     )
 }

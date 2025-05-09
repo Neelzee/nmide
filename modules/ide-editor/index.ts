@@ -35,7 +35,7 @@ installModule(
                     { click: { event: "editor-click", module: moduleName, args: null } },
                   )
               ),
-              "root"
+            "content"
           )
           .build();
       }

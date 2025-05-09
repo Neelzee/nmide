@@ -27,7 +27,6 @@ fn navbar(xs: Vec<(&str, Vec<(&str, Event)>)>) -> Vec<Html> {
                     .set_text(x)
                     .add_attr(Attr::Click(Event::new(
                         "ide-pm-dropdown".to_string(),
-                        MODULE_NAME.to_string(),
                         Some(Value::Str(id.clone().to_lowercase())),
                     )))
                     .add_attr(Attr::Id(id.to_lowercase()))
@@ -59,73 +58,42 @@ impl Module for ProjectManagerModule {
     }
 
     async fn init(&self, core: Box<dyn Core>) {
-        core.add_handler(Some("post-init".to_string()), None, MODULE_NAME.to_string())
+        core.add_handler(Event::PostInit.to_string(), MODULE_NAME.to_string())
             .await;
-        core.add_handler(
-            Some("ide-pm-dropdown".to_string()),
-            None,
-            MODULE_NAME.to_string(),
-        )
-        .await;
-        core.add_handler(
-            Some("ide-pm-file".to_string()),
-            None,
-            MODULE_NAME.to_string(),
-        )
-        .await;
-        core.add_handler(
-            Some("ide-pm-folder".to_string()),
-            None,
-            MODULE_NAME.to_string(),
-        )
-        .await;
-        core.add_handler(
-            Some("nmide://file".to_string()),
-            None,
-            MODULE_NAME.to_string(),
-        )
-        .await;
-        core.add_handler(
-            Some("fsa_read_ide_pm".to_string()),
-            None,
-            MODULE_NAME.to_string(),
-        )
-        .await;
-        core.add_handler(
-            Some("nmide://folder".to_string()),
-            None,
-            MODULE_NAME.to_string(),
-        )
-        .await;
-        core.add_handler(
-            Some("fsa_dir_ide_pm".to_string()),
-            None,
-            MODULE_NAME.to_string(),
-        )
-        .await;
+        core.add_handler("ide-pm-dropdown".to_string(), MODULE_NAME.to_string())
+            .await;
+        core.add_handler("ide-pm-file".to_string(), MODULE_NAME.to_string())
+            .await;
+        core.add_handler("ide-pm-folder".to_string(), MODULE_NAME.to_string())
+            .await;
+        core.add_handler("nmide://file".to_string(), MODULE_NAME.to_string())
+            .await;
+        core.add_handler("fsa_read_ide_pm".to_string(), MODULE_NAME.to_string())
+            .await;
+        core.add_handler("nmide://folder".to_string(), MODULE_NAME.to_string())
+            .await;
+        core.add_handler("fsa_dir_ide_pm".to_string(), MODULE_NAME.to_string())
+            .await;
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
         let sender = core.get_sender().await;
         match event.event_name() {
-            "post-init" => {
+            "nmide://post-init" => {
                 let mods = UIInstructionBuilder::default().add_nodes(
                     navbar(vec![
                         (
                             "File",
                             vec![
-                                ("Open File", Event::new("ide-pm-file", MODULE_NAME, None)),
-                                (
-                                    "Open Folder",
-                                    Event::new("ide-pm-folder", MODULE_NAME, None),
-                                ),
+                                ("Open File", Event::new("ide-pm-file", None)),
+                                ("Open Folder", Event::new("ide-pm-folder", None)),
                             ],
                         ),
                         ("Edit", vec![]),
                         ("Selection", vec![]),
                         (
                             "View",
-                            vec![("Graph", Event::new("get_magnolia_graph", MODULE_NAME, None))],
+                            vec![("Graph", Event::new("get_magnolia_graph", None))],
                         ),
                     ]),
                     Some("navbar"),
@@ -167,23 +135,21 @@ impl Module for ProjectManagerModule {
                     .expect("Channel should be open");
             }
             "ide-pm-file" => {
-                core.throw_event(Event::new("nmide://file?", MODULE_NAME, None))
-                    .await;
+                core.throw_event(Event::new("nmide://file?", None)).await;
             }
             "nmide://file" => {
-                core.throw_event(Event::new("fsa-read", MODULE_NAME, event.args().cloned()))
+                core.throw_event(Event::new("fsa-read", event.args().cloned()))
                     .await;
             }
             "ide-pm-folder" => {
                 tokio::spawn({
                     async move {
-                        core.throw_event(Event::new("nmide://folder?", MODULE_NAME, None))
-                            .await;
+                        core.throw_event(Event::new("nmide://folder?", None)).await;
                     }
                 });
             }
             "nmide://folder" => {
-                core.throw_event(Event::new("fsa-dir", MODULE_NAME, event.args().cloned()))
+                core.throw_event(Event::new("fsa-dir", event.args().cloned()))
                     .await;
             }
             "fsa-read-ide_pm" => {

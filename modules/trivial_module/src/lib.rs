@@ -26,18 +26,10 @@ impl core_module_lib::Module for Module {
 
     async fn init(&self, core: Box<dyn Core>) {
         let state = StateInstructionBuilder::default().add("counter".to_string(), Value::Int(0));
-        core.add_handler(
-            Some("counter".to_string()),
-            None,
-            "trivial_module".to_string(),
-        )
-        .await;
-        core.add_handler(
-            Some("post-init".to_string()),
-            None,
-            "trivial_module".to_string(),
-        )
-        .await;
+        core.add_handler("counter".to_string(), "trivial_module".to_string())
+            .await;
+        core.add_handler(Event::PostInit.to_string(), "trivial_module".to_string())
+            .await;
         let mods = CoreModification::default().set_state(state);
         core.get_sender()
             .await
@@ -49,7 +41,7 @@ impl core_module_lib::Module for Module {
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
         let sender = core.get_sender().await;
         match (event.event_name(), event.args()) {
-            ("post-init", _) => {
+            ("nmide://post-init", _) => {
                 let ui = UIInstructionBuilder::default().add_node(
                     Html::Div()
                         .adopt(
@@ -57,7 +49,6 @@ impl core_module_lib::Module for Module {
                                 .set_text("Click")
                                 .add_attr(Attr::Click(Event::new(
                                     "counter".to_string(),
-                                    "trivial_module".to_string(),
                                     Some(Value::Int(1)),
                                 )))
                                 .add_attr(Attr::Id("ButtonID".to_string())),
