@@ -1,13 +1,12 @@
-//! RMap
+//! RState
 
 // TODO: Add doc-string
 
 use abi_stable::{
     StableAbi,
-    reexports::SelfOps,
     std_types::{ROption, RString, RVec},
 };
-use core_std_lib::state::{HHMap, Value};
+use core_std_lib::state::Value;
 use ordered_float::NotNan;
 use rstest::rstest;
 use std::{collections::HashMap, convert::Into, mem::ManuallyDrop};
@@ -225,7 +224,7 @@ impl RKeyPair {
     /// Returns true if the given string is equal to the key.
     ///
     /// ```rust
-    /// use foreign_std_lib::state::rmap::RKeyPair;
+    /// use foreign_std_lib::state::rs_state::RKeyPair;
     /// let key = String::from("foo");
     /// let other_key = "bar";
     /// assert!(
@@ -318,10 +317,10 @@ impl RState {
     /// Only checks the first-level.
     ///
     /// ```rust
-    /// use foreign_std_lib::state::rmap::RMap;
+    /// use foreign_std_lib::state::rs_state::RState;
     /// let key = String::from("foo");
-    /// assert!(RMap::new().insert(&key, 0).contains_key(&key));
-    /// assert!(!RMap::new().contains_key(&key));
+    /// assert!(RState::new().insert(&key, 0).contains_key(&key));
+    /// assert!(!RState::new().contains_key(&key));
     /// ```
     pub fn contains_key<S>(&self, key: &S) -> bool
     where
@@ -337,16 +336,16 @@ impl RState {
     /// (Map::merge, MAPS, Map::new)
     ///
     /// ```rust
-    /// use foreign_std_lib::state::rmap::RMap;
+    /// use foreign_std_lib::state::rs_state::RState;
     /// let key = String::from("foo");
-    /// assert_eq!(RMap::new().merge(RMap::new()), RMap::new());
+    /// assert_eq!(RState::new().merge(RState::new()), RState::new());
     /// assert_eq!(
-    ///     RMap::new().merge(RMap::new().insert(&key, 0)),
-    ///     RMap::new().insert(&key, 0)
+    ///     RState::new().merge(RState::new().insert(&key, 0)),
+    ///     RState::new().insert(&key, 0)
     /// );
     /// assert_eq!(
-    ///     RMap::new().insert(&key, 0).merge(RMap::new()),
-    ///     RMap::new().insert(&key, 0)
+    ///     RState::new().insert(&key, 0).merge(RState::new()),
+    ///     RState::new().insert(&key, 0)
     /// );
     /// ```
     pub fn merge(self, other: Self) -> Self {
@@ -375,12 +374,12 @@ impl RState {
     /// If it already exists in the map, updates the value instead.
     ///
     /// ```rust
-    /// use foreign_std_lib::state::rmap::RMap;
+    /// use foreign_std_lib::state::rs_state::RState;
     /// let key = String::from("foo");
     /// let other_key = String::from("foobar");
-    /// let mut a = RMap::new();
+    /// let mut a = RState::new();
     /// a.insert_mut(&key, 1);
-    /// let mut b = RMap::new();
+    /// let mut b = RState::new();
     /// b.insert_mut(&key, 1);
     /// assert_eq!(a, b);
     /// assert!(a.lookup(&key).is_some());
@@ -406,12 +405,12 @@ impl RState {
     /// If it already exists in the map, updates the value instead.
     ///
     /// ```rust
-    /// use foreign_std_lib::state::rmap::RMap;
+    /// use foreign_std_lib::state::rs_state::RState;
     /// let key = String::from("foo");
     /// let other_key = String::from("foobar");
-    /// assert_eq!(RMap::new().insert(&key, 1), RMap::new().insert(&key, 1));
-    /// assert!(RMap::new().insert(&key, 1).lookup(&key).is_some());
-    /// assert!(RMap::new().insert(&key, 1).lookup(&other_key).is_none());
+    /// assert_eq!(RState::new().insert(&key, 1), RState::new().insert(&key, 1));
+    /// assert!(RState::new().insert(&key, 1).lookup(&key).is_some());
+    /// assert!(RState::new().insert(&key, 1).lookup(&other_key).is_none());
     /// ```
     pub fn insert<S, T>(self, key: &S, val: T) -> Self
     where
@@ -443,11 +442,11 @@ impl RState {
     /// it doesn't exist, returns none.
     ///
     /// ```rust
-    /// use foreign_std_lib::state::rmap::RMap;
+    /// use foreign_std_lib::state::rs_state::RState;
     /// let key = String::from("foo");
     /// let other_key = String::from("foobar");
-    /// assert!(RMap::new().insert(&key, 1).lookup(&key).is_some());
-    /// assert!(RMap::new().insert(&key, 1).lookup(&other_key).is_none());
+    /// assert!(RState::new().insert(&key, 1).lookup(&key).is_some());
+    /// assert!(RState::new().insert(&key, 1).lookup(&other_key).is_none());
     /// ```
     pub fn lookup<S>(&self, key: &S) -> ROption<&RValue>
     where
@@ -464,12 +463,12 @@ impl RState {
     /// Removes the given value, by the given key, returning it if it exists.
     ///
     /// ```rust
-    /// use foreign_std_lib::state::rmap::RMap;
+    /// use foreign_std_lib::state::rs_state::RState;
     /// let key = String::from("foo");
-    /// let mut map = RMap::new().insert(&key, 1);
+    /// let mut map = RState::new().insert(&key, 1);
     /// assert!(map.lookup(&key).is_some());
     /// assert!(map.remove_mut(&key).is_some());
-    /// assert!(RMap::new().remove_mut(&key).is_none());
+    /// assert!(RState::new().remove_mut(&key).is_none());
     /// ```
     pub fn remove_mut<S>(&mut self, key: &S) -> ROption<RValue>
     where
@@ -486,12 +485,12 @@ impl RState {
     /// Removes the given value, by the given key.
     ///
     /// ```rust
-    /// use foreign_std_lib::state::rmap::RMap;
+    /// use foreign_std_lib::state::rs_state::RState;
     /// let key = String::from("foo");
-    /// let mut map = RMap::new().insert(&key, 1);
+    /// let mut map = RState::new().insert(&key, 1);
     /// assert!(map.lookup(&key).is_some());
     /// assert!(map.remove(&key).lookup(&key).is_none());
-    /// assert!(RMap::new().remove(&key).lookup(&key).is_none());
+    /// assert!(RState::new().remove(&key).lookup(&key).is_none());
     /// ```
     pub fn remove<S>(self, key: &S) -> Self
     where
@@ -521,7 +520,7 @@ fn rvalue_test_vec() -> Vec<(&'static str, RValue)> {
 #[case(vec![("foo", "bar".into())])]
 #[case(vec![("foo", 1.into())])]
 #[case(rvalue_test_vec())]
-fn building_rmap_test<K>(#[case] keyvals: Vec<(K, RValue)>)
+fn building_rs_state_test<K>(#[case] keyvals: Vec<(K, RValue)>)
 where
     K: ToString,
 {

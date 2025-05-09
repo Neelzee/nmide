@@ -11,7 +11,6 @@ use core_std_lib::event::Event;
 #[derive(StableAbi, Clone)]
 pub struct REvent {
     event_name: RString,
-    module_name: RString,
     args: ROption<RValue>,
 }
 
@@ -19,7 +18,6 @@ impl From<Event> for REvent {
     fn from(value: Event) -> Self {
         Self {
             event_name: RString::from_str(value.event_name()).unwrap_or_default(),
-            module_name: RString::from_str(value.module_name()).unwrap_or_default(),
             args: if let Some(a) = value.args() {
                 ROption::RSome(a.clone().into())
             } else {
@@ -33,7 +31,6 @@ impl REvent {
     pub fn to_event(&self) -> Event {
         Event::new(
             self.event_name.as_str(),
-            self.module_name.as_str(),
             if let ROption::RSome(arg) = self.args.clone() {
                 Some(arg.to_value())
             } else {
