@@ -145,9 +145,9 @@ impl Value {
         matches!(self, Self::Int(_))
     }
 
-    pub fn int(self) -> Option<i32> {
+    pub fn int(&self) -> Option<i32> {
         match self {
-            Self::Int(i) => Some(i),
+            Self::Int(i) => Some(*i),
             _ => None,
         }
     }
@@ -226,7 +226,15 @@ impl State {
         let mut fields = field.split(".").collect::<Vec<_>>();
 
         if fields.len() == 1 {
-            map.insert(field, value);
+            let new_val = match map.get(&field) {
+                Some(Value::List(xs)) => {
+                    let mut ys = xs.clone();
+                    ys.push(value);
+                    Value::List(ys)
+                }
+                _ => value,
+            };
+            map.insert(field, new_val);
             return Self(map);
         }
 
@@ -274,8 +282,9 @@ impl StateInstructionBuilder {
         )
     }
 
-    pub fn set(self, field: String, value: Value) -> Self {
-        self.remove(field.clone()).add(field, value)
+    pub fn set<S: ToString>(self, field: S, value: Value) -> Self {
+        self.remove(field.to_string().clone())
+            .add(field.to_string(), value)
     }
 
     // HACK: `Panic`king is done instead of having a type-level error handling, to make it
