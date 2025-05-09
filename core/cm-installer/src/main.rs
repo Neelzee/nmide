@@ -169,7 +169,7 @@ fn main() {
         }
     });
     if clean {
-        clean_up(index, cargo);
+        clean_up(index, cargo, out);
         return;
     }
     let modules = get_modules(conf, modules);
