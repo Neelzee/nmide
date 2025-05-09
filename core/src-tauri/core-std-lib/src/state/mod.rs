@@ -25,7 +25,7 @@ pub enum Value {
     Bool(bool),
     Str(String),
     List(Vec<Value>),
-    #[ts(type = "{ [key in string]?: Value }")]
+    #[ts(type = "Record<string, Value | undefined>")]
     Obj(HHMap),
     Html(Html),
 }
