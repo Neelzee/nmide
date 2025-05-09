@@ -10,7 +10,7 @@ use ts_rs::TS;
 
 define_html!(
     attr_type = Attr,
-    #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, TS, PartialOrd, Eq, Hash)]
+    #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, TS, PartialOrd, Eq, Hash, Ord)]
     #[serde(rename_all = "camelCase")]
     #[ts(export)]
     Div,
@@ -57,6 +57,12 @@ define_html!(
     Main,
     TextArea
 );
+
+impl Default for Html {
+    fn default() -> Self {
+        Html::Div()
+    }
+}
 
 impl Html {
     pub fn get_by_id(ui: Html, id: String) -> Option<Self> {

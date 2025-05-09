@@ -1,3 +1,4 @@
+use crate::html::Html;
 use crate::instruction::inst::Instruction;
 use hashable::HashableHashMap;
 use ordered_float::NotNan;
@@ -26,6 +27,7 @@ pub enum Value {
     List(Vec<Value>),
     #[ts(type = "{ [key in string]?: Value }")]
     Obj(HHMap),
+    Html(Html),
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Hash, Eq)]
@@ -110,6 +112,17 @@ impl Value {
         }
     }
 
+    pub fn html(&self) -> Option<Html> {
+        match self {
+            Self::Html(h) => Some(h.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn is_html(&self) -> bool {
+        matches!(self, Self::Html(..))
+    }
+
     pub fn list(&self) -> Option<Vec<Value>> {
         match self {
             Self::List(l) => Some(l.clone()),
@@ -179,7 +192,7 @@ impl From<HashMap<String, Value>> for Value {
     }
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, TS)]
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, TS)]
 #[ts(export)]
 pub struct State(HashMap<String, Value>);
 
@@ -196,11 +209,37 @@ impl State {
         self.0
     }
 
-    pub(crate) fn add<S: ToString>(self, field: S, value: Value) -> Self {
+    /// Adds value to field.
+    ///
+    /// Similar to JSON, `dot` means a new, nested object.
+    ///
+    /// ```rust
+    /// use core_std_lib::state::{Value, State};
+    /// let mut state = State::default();
+    /// state = state.add("foo", Value::new_obj().obj_add("bar", Value::Int(0)));
+    /// assert_eq!(state, State::default().add("foo.bar", Value::Int(0)));
+    /// ```
+    pub fn add<S: ToString>(self, field: S, value: Value) -> Self {
         let mut map = self.0;
         let field = field.to_string();
 
-        map.insert(field, value);
+        let mut fields = field.split(".").collect::<Vec<_>>();
+
+        if fields.len() == 1 {
+            map.insert(field, value);
+            return Self(map);
+        }
+
+        let last = fields.pop().unwrap();
+        let first = fields.remove(0);
+
+        let mut obj = Value::new_obj().obj_add(last, value);
+
+        while let Some(f) = fields.pop() {
+            obj = Value::new_obj().obj_add(f, obj);
+        }
+
+        map.insert(first.to_string(), obj);
         return Self(map);
     }
 
