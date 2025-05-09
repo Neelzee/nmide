@@ -53,7 +53,9 @@ const parseData = ({ modules: data }: TomlData): Module[] =>
 
 
 export const install = () => {
-  parseData(tomlData).forEach(m => {
-    require(m.path);
-  });
+  const lines = parseData(tomlData).map(({ path }) => {
+    return `import "../${path.split("/").filter(Boolean).join("/")}";`;
+  }).join("\n");
+
+  fs.writeFileSync("./build/modules.ts", lines);
 };
