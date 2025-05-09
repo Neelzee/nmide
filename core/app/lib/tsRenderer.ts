@@ -170,7 +170,7 @@ const addAttr = (element: HTMLElement, attr: Attr) => {
   if ("click" in attr) {
     element.addEventListener(
       "click",
-      function(this, ev: MouseEvent) {
+      function (this, ev: MouseEvent) {
         clickParse(attr.click, this, ev)();
       }
     );
@@ -220,12 +220,17 @@ const clickParse = (event: Event, ts: HTMLElement, _: MouseEvent) => {
     }
   }
   args = { obj: { ...args.obj, id: { str: ts.id }, } };
-  if (event.args !== null) {
-    args = { obj: { ...args.obj, eventArgs: event.args } };
+  if (typeof event === "object") {
+    if ("event" in event) {
+      if (event.event.args !== null) {
+        args = { obj: { ...args.obj, eventArgs: event.event.args } };
+      }
+      event.event.args = args;
+    }
   }
 
   return () => {
-    emit("nmide://event", { ...event, args }).catch((err) =>
+    emit("nmide://event", event).catch((err) =>
       console.error("Error from onClickParse invoke:", err),
     );
   };
@@ -258,7 +263,7 @@ const createElement = ({ kind, attrs, kids, text }: THtml) => {
   if (onClick !== undefined)
     element.addEventListener(
       "click",
-      function(this, ev: MouseEvent) {
+      function (this, ev: MouseEvent) {
         clickParse(onClick, this, ev)();
       }
     );

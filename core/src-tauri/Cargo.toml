@@ -65,27 +65,4 @@ runtime_modules = ["dep:abi_stable", "dep:async-ffi", "dep:foreign-std-lib"]
 
 # ============================================================================ #
 
-
-[dependencies.ide_cache]
-features = []
-path = "/home/nmf/nmide/modules/ide_cache"
-
-
-[dependencies.ide_framework]
-features = []
-path = "/home/nmf/nmide/modules/ide_framework"
-
-
-[dependencies.ide_pm]
-features = []
-path = "/home/nmf/nmide/modules/ide_pm"
-
-
-[dependencies.magnolia_dependency]
-features = []
-path = "/home/nmf/nmide/modules/magnolia_dependency"
-
-
-[dependencies.trivial_module]
-features = []
-path = "/home/nmf/nmide/modules/trivial_module"
+dependencies = []

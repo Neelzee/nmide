@@ -858,11 +858,7 @@ dependencies = [
  "core-std-lib",
  "foreign-std-lib",
  "futures",
- "ide_cache",
- "ide_framework",
- "ide_pm",
  "log",
- "magnolia_dependency",
  "once_cell",
  "serde",
  "tauri",
@@ -872,7 +868,6 @@ dependencies = [
  "tauri-plugin-log",
  "tauri-plugin-shell",
  "tokio",
- "trivial_module",
 ]
 
 [[package]]
@@ -2235,36 +2230,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ide_cache"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "core-module-lib",
- "core-std-lib",
- "serde_json",
-]
-
-[[package]]
-name = "ide_framework"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "core-module-lib",
- "core-std-lib",
-]
-
-[[package]]
-name = "ide_pm"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "core-module-lib",
- "core-std-lib",
- "serde_json",
- "tokio",
-]
-
-[[package]]
 name = "ident_case"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2591,16 +2556,6 @@ name = "mac"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c41e0c4fef86961ac6d6f8a82609f55f31b05e4fce149ac5710e439df7619ba4"
-
-[[package]]
-name = "magnolia_dependency"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "core-module-lib",
- "core-std-lib",
- "regex",
-]
 
 [[package]]
 name = "markup5ever"
@@ -5051,15 +5006,6 @@ dependencies = [
  "serde",
  "thiserror 2.0.12",
  "windows-sys 0.59.0",
-]
-
-[[package]]
-name = "trivial_module"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "core-module-lib",
- "core-std-lib",
 ]
 
 [[package]]
