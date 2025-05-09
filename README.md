@@ -22,6 +22,12 @@ achieves this by using the [Tauri](https://tauri.app/) framework. Wherein one of
 the features is being able to implement the frontend using JavaScript. This
 makes it very easy to implement a system for JavaScript Modules.
 
+## Subversion
+
+This repository is also maintained in a subversion repository, ~~hence the
+`.svn` folder~~, _pushing_ to subversion does not occur as often as to GitHub,
+so the repository can be accessed [here](https://github.com/Neelzee/nmide).
+
 
 ## Installation
 
