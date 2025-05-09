@@ -6,14 +6,12 @@
   "scripts": {
     "test": "vitest"
   },
-  "author": "Nils.Fitjar",
+  "author": "Nils Michael Fitjar",
   "license": "Beerware",
   "devDependencies": {
-    "typescript": "^5.8.3",
-    "vitest": "^2.1.9"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
-    "fp-ts": "^2.16.9",
-    "io-ts": "^2.2.22"
+    "fp-ts": "^2.16.9"
   }
 }

@@ -2,6 +2,7 @@ import { pipe } from "fp-ts/lib/function";
 import { Value } from "./Value";
 import * as O from "fp-ts/Option";
 import * as A from "fp-ts/Array";
+import type { Html } from "./Html";
 
 export type ValuePrimitive = number
   | null
@@ -23,6 +24,8 @@ export type ValueList = { list: Value[] };
 export const isTList = (x: object): x is ValueList => "list" in x;
 export type ValueObj = { obj: { [key in string]?: Value } };
 export const isTObj = (x: object): x is ValueObj => "obj" in x;
+
+export type ValueSimple = Exclude<Exclude<Exclude<Value, ValueObj>, { html: Html }>, ValueList>;
 
 export const isValue = (x: unknown): x is Value => typeof x !== "object"
   ? false

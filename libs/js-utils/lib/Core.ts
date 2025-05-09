@@ -1,16 +1,7 @@
 // TODO: Add docs
 
-import { Eq, fromEquals } from "fp-ts/Eq";
-import { Eq as SEq } from "fp-ts/string";
 import { Html } from "./Html";
 import { Event } from "./Event";
-
-export const EventEq: Eq<Event> = fromEquals(
-  (
-    { event: xe, module: xm },
-    { event: ye, module: ym }
-  ) => SEq.equals(xe, ye) && SEq.equals(xm, ym)
-);
 
 export type Core = {
   readonly ui: () => Promise<Html>;

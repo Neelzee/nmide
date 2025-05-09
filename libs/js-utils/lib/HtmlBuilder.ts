@@ -1,8 +1,5 @@
 import { Html } from "./Html";
 import { Attr } from "./Attr";
-import { Instruction } from "./Instruction";
-import { CoreModification } from "./CoreModification";
-import { combine } from "./InstructionHelper";
 
 export type HtmlKind = Html extends { [K: string]: any } ? keyof Html : never;
 export class HtmlBuilder {
