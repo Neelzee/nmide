@@ -19,8 +19,7 @@ pub trait RCore: Send + Sync {
     async extern "C" fn throw_event(&self, event: REvent) -> FfiFuture<()>;
     async extern "C" fn add_handler(
         &self,
-        event_name: ROption<RString>,
-        module_name: ROption<RString>,
+        event_name: RString,
         handler_name: RString,
     ) -> FfiFuture<()>;
     async extern "C" fn send_modification(&self, modification: RCoreModification) -> FfiFuture<()>;
