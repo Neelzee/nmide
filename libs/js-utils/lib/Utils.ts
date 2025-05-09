@@ -111,3 +111,10 @@ export const isT = <T extends Value>(x: Value): x is T => {
   if (isTList(x)) return true;
   return isTObj(x);
 };
+
+
+export const objAdd = (o: ValueObj, field: string, val: Value): ValueObj => {
+  const obj = o;
+  obj.obj[field] = val;
+  return obj;
+};
