@@ -161,6 +161,7 @@ impl From<Value> for RValue {
                 val: RValueUnion::obj(o.to_hm().into_iter().collect()),
             },
             Value::Null => todo!(),
+            Value::Html(html) => todo!(),
         }
     }
 }
