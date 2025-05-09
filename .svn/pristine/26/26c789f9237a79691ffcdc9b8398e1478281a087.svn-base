@@ -1,0 +1,15 @@
+{
+  "name": "module-tester",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "toml": "^3.0.0"
+  }
+}

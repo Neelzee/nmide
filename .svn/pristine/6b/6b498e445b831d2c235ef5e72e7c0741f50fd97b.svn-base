@@ -1,0 +1,115 @@
+\chapter{Optimizing instructions sets} \label{app:a}
+
+To optimize an instruction set, these are the steps taken:
+
+\begin{enumerate}
+  \item Flatten the Instruction
+  \item Register how many times a field is modified
+    \begin{enumerate}
+      \item Turn unnecessary Instructions into NoOps
+    \end{enumerate}
+  \item Filter out NoOps
+  \item Unflatten the Instructions
+\end{enumerate}
+
+\begin{center}
+  \lstinputlisting
+   [ language=Rust
+   , caption={Instruction (Rust)}
+   , label=lst:aInst
+   , firstline=4
+   , lastline=16
+   ]{./core/src-tauri/core-std-lib/src/instruction/inst.rs}
+\end{center}
+
+\textbf{Instruction} is a recursive data type, parameterized by \textbf{T}. In
+Rust we can have generic data types, as shown in \ref{lst:aInst}, by the type
+parameter, $T$, but we have to restrict the type $T$ to a type that implements
+the trait \textbf{PartialEq}, which means we can use equality on it. We need
+this restrictions, because the attribute macro \textbf{Instruction} has. These
+macros generate the needed code to implement the different traits:
+
+\begin{itemize}
+  \item Debug: Enables the implementer to be printed to \textit{stdout}
+  \item Default: Implements a default variant of the implementer type, in this
+    case, NoOp
+  \item Clone: Implements a simple \textbf{clone} method, to create an owned
+    instance of a borrowed value
+  \item Deserialize \& Serialize: Implements the needed methods for encoding
+    and decoding a variant to a \gls{json} representation
+  \item TS: Enables automatic TypeScript type generation of the variant
+\end{itemize}
+
+We first start the optimalization step, by removing all NoOps, and then
+flattening the instructions, by using the \textbf{opt} and \textbf{flatten}
+methods, shown in listings \ref{lst:opt} and \ref{lst:flatten} respectively.
+
+\begin{center}
+  \lstinputlisting
+   [ language=Rust
+   , caption={
+     Opt method (Rust): Uses a match statement and a guard to match on a
+     \textit{slice}, (reference to a Vec). The guard lets us add a predicate to
+     our branch, in this case, if y \textit{matches} an NoOp. If it is an empty
+     slice, it's a NoOp, otherwise, it will be an Instruction with all NoOps
+     recursively removed.
+   }
+   , label=lst:opt
+   , firstline=87
+   , lastline=93
+   ]{./core/src-tauri/core-std-lib/src/instruction/opt.rs}
+\end{center}
+
+\begin{center}
+  \lstinputlisting
+   [ language=Rust
+   , caption={
+     Flatten method (Rust): Not the lack of return statements, this is because
+     the last expression in a function in Rust, is returned, if it doesn't end
+     with a semicolon.
+   }
+   , label=lst:flatten
+   , firstline=9
+   , lastline=19
+   ]{./core/src-tauri/core-std-lib/src/instruction/opt.rs}
+\end{center}
+
+In listing \ref{lst:count}, we then iterate over each instruction in the
+sequence, and mapping each field and value to a counter. If it's an Add
+instruction, the counter is incremented, if it's a Rem instruction, the counter
+is decremented. We don't have a way to inform the compiler that we have removed
+all NoOp and Then instructions, and we need complete match-statements, so we add
+a catch-all with an \textit{unreachable} macro, which will \textit{panic} with
+the supplied message. This is commonly used to represent a state that is
+unreachable, but something the compiler can't prove.
+
+\begin{center}
+  \lstinputlisting
+   [ language=Rust
+   , caption={Modification counting (Rust)}
+   , label=lst:count
+   , firstline=28
+   , lastline=55
+   ]{./core/src-tauri/core-std-lib/src/instruction/opt.rs}
+\end{center}
+
+Finally, in the listing \ref{lst:fold}, we \textit{unflatten} the sequence of
+instructions, and check the count for each Add and Rem Instruction. If it is
+above $0$, then that means we have added that field-value pair more times than
+removing it, but we can still only add it once, so we set the count to $0$, and
+return a Then instruction, since we have the accumulated instructions along with
+the current Add instruction. If the count is less than $0$, then it means we are
+removing it more times than adding it, similarly, we can only remove it once, so
+we set the count to $0$, and combine the accumulated instruction, with the Rem
+instruction. Because of our \textbf{combine} implementation, we can be sure that
+the initial NoOp element is removed as soon as possible.
+
+\begin{center}
+  \lstinputlisting
+   [ language=Rust
+   , caption={Instruction folding (Rust)}
+   , label=lst:fold
+   , firstline=57
+   , lastline=83
+   ]{./core/src-tauri/core-std-lib/src/instruction/opt.rs}
+\end{center}

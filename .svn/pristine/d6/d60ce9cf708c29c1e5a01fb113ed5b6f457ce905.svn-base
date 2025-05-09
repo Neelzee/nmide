@@ -1,0 +1,23 @@
+**.aux
+**.log
+**.snm
+**.toc
+**.nav
+**.out
+**.fls
+**.fdb_latexmk
+**.dvi
+**.eps
+# Used to get syntax highlighting in code snippets
+**.pyg
+result
+**.bbl
+**.bcf
+**.blg
+**.lol
+**.lot
+**.lof
+**.run.xml
+_minted-report
+core
+modules

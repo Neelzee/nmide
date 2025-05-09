@@ -1,0 +1,19 @@
+[package]
+name = "ide_fsa"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "ide_fsa"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+anyhow = "1.0.97"
+core-std-lib = { path = "../../core/src-tauri/core-std-lib" }
+core-module-lib = { path = "../../core/src-tauri/core-module-lib" }
+once_cell = "1.21.3"
+regex = { version = "1.11.1", features = ["std"] }
+serde = { version = "1.0.216", features = ["derive"] }
+serde_json = "1.0.133"
+async-trait = "0.1.88"
+tokio = { version = "1.44.2", features = ["full"] }

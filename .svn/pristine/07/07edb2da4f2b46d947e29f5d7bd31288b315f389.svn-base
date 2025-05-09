@@ -1,0 +1,19 @@
+\chapter{Future Work}
+
+Would've, could've, should've.
+
+\section{Modular Language Server}
+
+A Language Server is technically modular, but maybe design one from the bottom
+to be modular. Is the specification modular?
+
+\section{Modular Editor}
+
+Need a modular client, or some specification that is modular enough so that the
+lack of modularity in a client does not matter.
+
+\begin{enumerate}
+  \item Develop a module family for editing source code
+  \item \dots
+  \item Profit!
+\end{enumerate}

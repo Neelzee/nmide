@@ -1,0 +1,1 @@
+export const get_modules = () => Array.from(window.modules.values())

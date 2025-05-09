@@ -1,0 +1,11 @@
+[modules]
+trivial_module = { path = "../modules/trivial_module/" }
+magnolia_dependency = { path = "../modules/magnolia_dependency/" }
+ide_fsa = { path = "../modules/ide_fsa/" }
+ide_framework = { path = "../modules/ide_framework/" }
+ide_pm = { path = "../modules/ide_pm/" }
+ide_cache = { path = "../modules/ide_cache/" }
+ide_pm_style = { path = "../modules/ide_pm_style/", kind = "css", enabled = true }
+ide_errors = { path = "../modules/ide-errors/", package-manager = "bun", kind = "ts", enabled = true }
+ide-editor = { path = "../modules/ide-editor/", package-manager = "bun", kind = "ts", enabled = true }
+dependency-viewer = { path = "../modules/dependency-viewer", package-manager = "bun", kind = "mjs", enabled = true }

@@ -1,0 +1,14 @@
+[package]
+name = "rsm-handler"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+core-std-lib = { path = "../../../core/src-tauri/core-std-lib/" }
+core-module-lib = { path = "../../../core/src-tauri/core-module-lib/" }
+rsm-invoker = { path = "../rsm-invoker" }
+async-trait = "0.1.88"
+tokio = { version = "1.44.2", features = ["full"] }
+once_cell = "1.21.3"
+futures = "0.3.31"
+anyhow = "1.0.98"
