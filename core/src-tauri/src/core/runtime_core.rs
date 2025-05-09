@@ -1,4 +1,4 @@
-use abi_stable::std_types::{ROption, RString};
+use abi_stable::std_types::RString;
 use async_ffi::{FfiFuture, FutureExt};
 use core_module_lib::rs_module::RCore;
 use core_std_lib::core::Core;
@@ -34,16 +34,10 @@ impl RCore for RuntimeCore {
         NmideCore.throw_event(event.to_event()).into_ffi()
     }
 
-    extern "C" fn add_handler(
-        &self,
-        event_name: ROption<RString>,
-        module_name: ROption<RString>,
-        handler_name: RString,
-    ) -> FfiFuture<()> {
+    extern "C" fn add_handler(&self, event_name: RString, handler_name: RString) -> FfiFuture<()> {
         NmideCore
             .add_handler(
-                event_name.into_option().map(|v| v.as_str().to_string()),
-                module_name.into_option().map(|v| v.as_str().to_string()),
+                event_name.as_str().to_string(),
                 handler_name.as_str().to_string(),
             )
             .into_ffi()

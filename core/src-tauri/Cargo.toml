@@ -35,7 +35,7 @@ actix-files = { optional = true, version = "0.6.6" }
 actix-web = { optional = true, version = "4.10.2" }
 core-module-lib = { path = "./core-module-lib" }
 foreign-std-lib = { path = "./foreign-std-lib", optional = true }
-core-std-lib = { path = "core-std-lib" }
+core-std-lib = { path = "core-std-lib", features = ["core"] }
 serde = { features = ["derive"], version = "1.0.219" }
 tauri = { features = [
   "protocol-asset",
@@ -64,3 +64,28 @@ server = ["dep:actix-web", "dep:actix-files", "dep:actix-cors"]
 runtime_modules = ["dep:abi_stable", "dep:async-ffi", "dep:foreign-std-lib"]
 
 # ============================================================================ #
+
+
+[dependencies.ide_cache]
+features = []
+path = "/home/nmf/nmide/modules/ide_cache"
+
+
+[dependencies.ide_framework]
+features = []
+path = "/home/nmf/nmide/modules/ide_framework"
+
+
+[dependencies.ide_pm]
+features = []
+path = "/home/nmf/nmide/modules/ide_pm"
+
+
+[dependencies.magnolia_dependency]
+features = []
+path = "/home/nmf/nmide/modules/magnolia_dependency"
+
+
+[dependencies.trivial_module]
+features = []
+path = "/home/nmf/nmide/modules/trivial_module"

@@ -36,13 +36,12 @@ pub async fn init(cm: CoreModification) {
         .expect("AppHandle should be initialized at this point")
         .read()
         .await
-        .emit("nmide://event", Event::new("post-init", "nmide", None))
+        .emit("nmide://event", Event::post_init())
         .expect("Emit should succeed")
 }
 
 pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
-    let event_name = event.event_name().to_string();
-    let module = event.module_name().to_string();
+    let evt = event.clone();
     tokio::spawn({
         async move {
             let evt = event.clone();
@@ -88,7 +87,7 @@ pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
         .await
         .expect("Channel should be open");
 
-    if event_name == "nmide://exit" && module == "nmide" {
+    if matches!(evt, Event::PreExit) {
         let app = NMIDE
             .get()
             .expect("AppHandle should be initialized")

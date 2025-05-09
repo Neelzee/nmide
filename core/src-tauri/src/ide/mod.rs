@@ -71,9 +71,12 @@ pub async fn run() {
         NMIDE_SENDER.set(sender).expect("NMIDE_SENDER not set yet");
         async move {
             while let Some(modification) = recv.recv().await {
-                debug!("[backend] pre-optimized modification: {:?}", modification);
+                debug!(
+                    "[backend] pre-optimized modification size {:?}",
+                    modification.len()
+                );
                 let modification = modification.optimize();
-                info!("[backend] modification: {:?}", modification);
+                info!("[backend] modification size: {:?}", modification.len());
                 let state = NmideCore.state().await;
                 let ui = NmideCore.ui().await;
 
@@ -106,7 +109,7 @@ pub async fn run() {
             ..
         } => {
             app_handle
-                .emit("nmide://event", Event::new("nmide://exit", "nmide", None))
+                .emit("nmide://event", Event::pre_exit())
                 .expect("Emit should succeed");
             api.prevent_close();
         }

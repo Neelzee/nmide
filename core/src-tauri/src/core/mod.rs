@@ -1,5 +1,7 @@
 use crate::statics::{MODULE_EVENT_REGISTER, NMIDE, NMIDE_SENDER, NMIDE_STATE, NMIDE_UI};
 use async_trait::async_trait;
+use core_std_lib::event::DialogFileKind::{MultiDir, MultiFile, SaveFile, SingleDir, SingleFile};
+use core_std_lib::event::{DialogBtn, DialogEvtKind};
 use core_std_lib::state::Value;
 use core_std_lib::{
     core::Core, core_modification::CoreModification, event::Event, html::Html, state::State,
@@ -7,7 +9,7 @@ use core_std_lib::{
 use log::info;
 use std::collections::HashMap;
 use tauri::Emitter;
-use tauri_plugin_dialog::DialogExt;
+use tauri_plugin_dialog::{DialogExt, MessageDialogButtons, MessageDialogKind};
 use tokio::sync::{mpsc::Sender, RwLock};
 
 #[cfg(feature = "runtime_modules")]
@@ -16,7 +18,6 @@ pub mod runtime_core;
 #[derive(Default)]
 pub struct ModuleEventRegister {
     event: RwLock<HashMap<String, Vec<String>>>,
-    module: RwLock<HashMap<String, Vec<String>>>,
 }
 
 impl ModuleEventRegister {
@@ -32,46 +33,20 @@ impl ModuleEventRegister {
                 .cloned()
                 .unwrap_or(Vec::new()),
         );
-        modules.append(
-            &mut self
-                .module
-                .read()
-                .await
-                .get(event.module_name())
-                .cloned()
-                .unwrap_or(Vec::new()),
-        );
 
         modules
     }
 
-    pub async fn register_module(
-        &mut self,
-        event: Option<String>,
-        module: Option<String>,
-        handler: String,
-    ) {
+    pub async fn register_module(&mut self, event: String, handler: String) {
         info!(
-            "[backend][handler-register] register module: {}, to event {:?}, to module name {:?}",
-            handler, event, module
+            "[backend][handler-register] register module: {}, to event {:?}",
+            handler, event
         );
-        if let Some(evt) = event {
-            let mut modules = self.event.write().await;
-            let mut vec = modules.get(&evt).cloned().unwrap_or(Vec::new());
-            vec.push(handler.clone());
-            modules.insert(evt, vec);
-        }
-        if let Some(md) = module {
-            let mut modules = self.module.write().await;
-            let mut vec = modules.get(&md).cloned().unwrap_or(Vec::new());
-            vec.push(handler.clone());
-            modules.insert(md, vec);
-        }
+        let mut modules = self.event.write().await;
+        let mut vec = modules.get(&event).cloned().unwrap_or(Vec::new());
+        vec.push(handler.clone());
+        modules.insert(event, vec);
     }
-}
-
-fn nmide_event(event: &str, arg: Option<Value>) -> Event {
-    Event::new(format!("nmide://{event}"), "nmide".to_string(), arg)
 }
 
 pub struct NmideCore;
@@ -96,41 +71,126 @@ impl Core for NmideCore {
             .expect("AppHandle should be initialized")
             .read()
             .await;
-        match event.event_name() {
-            "nmide://file?" => {
-                app.dialog().file().pick_file(move |file_path| {
+        match event {
+            e @ Event::Event { .. } => {
+                app.emit("nmide://event", e)
+                    .expect("AppHandle emit should always succeed");
+            }
+            Event::DialogEvent {
+                event,
+                kind,
+                message,
+                btn,
+                title,
+            } => {
+                let mut dia = app.dialog().message(message);
+
+                dia = if let Some(t) = title {
+                    dia.title(t)
+                } else {
+                    dia
+                };
+
+                dia = match kind {
+                    Some(DialogEvtKind::Info) => dia.kind(MessageDialogKind::Info),
+                    Some(DialogEvtKind::Warning) => dia.kind(MessageDialogKind::Warning),
+                    Some(DialogEvtKind::Error) => dia.kind(MessageDialogKind::Error),
+                    _ => dia,
+                };
+
+                dia = match btn {
+                    Some(DialogBtn::Ok) => dia.buttons(MessageDialogButtons::Ok),
+                    Some(DialogBtn::OkCancel) => dia.buttons(MessageDialogButtons::OkCancel),
+                    Some(DialogBtn::OkCancelCustom(x, y)) => {
+                        dia.buttons(MessageDialogButtons::OkCancelCustom(x, y))
+                    }
+                    Some(DialogBtn::OkCustom(x)) => dia.buttons(MessageDialogButtons::OkCustom(x)),
+                    Some(DialogBtn::YesNo) => dia.buttons(MessageDialogButtons::YesNo),
+                    None => todo!(),
+                };
+
+                dia.show(move |result| {
                     app.emit(
                         "nmide://event",
-                        nmide_event("file", file_path.map(|fp| Value::Str(fp.to_string()))),
+                        Event::core_response(event, Some(Value::Bool(result))),
                     )
-                    .expect("AppHandle emit should always succeed");
+                    .expect("Emitting event should succeed");
                 });
             }
-            "nmide://folder?" => {
-                app.dialog().file().pick_folder(move |file_path| {
-                    app.emit(
-                        "nmide://event",
-                        nmide_event("folder", file_path.map(|fp| Value::Str(fp.to_string()))),
-                    )
-                    .expect("AppHandle emit should always succeed");
-                });
+            Event::DialogFile {
+                event,
+                title,
+                file_kind,
+                filter_ext,
+                create_dirs,
+            } => {
+                let mut dia = app.dialog().file();
+                dia = if let Some(t) = title {
+                    dia.set_title(t)
+                } else {
+                    dia
+                };
+
+                dia = dia.set_can_create_directories(create_dirs);
+
+                dia = dia.add_filter(
+                    format!("{event}-filter"),
+                    &filter_ext.iter().map(|s| s.as_str()).collect::<Vec<&str>>(),
+                );
+
+                match file_kind {
+                    SingleFile => dia.pick_file(move |fp| {
+                        let file = fp
+                            .map(|x| x.as_path().map(|y| y.to_path_buf()))
+                            .and_then(|p| p.map(|x| x.to_str().map(|s| s.to_string())))
+                            .and_then(|s| s.map(|x| Value::Str(x)));
+                        app.emit("nmide://event", Event::core_response(event, file))
+                            .expect("Emitting event should succeed");
+                    }),
+                    SingleDir => dia.pick_folder(move |fp| {
+                        let file = fp
+                            .map(|x| x.as_path().map(|y| y.to_path_buf()))
+                            .and_then(|p| p.map(|x| x.to_str().map(|s| s.to_string())))
+                            .and_then(|s| s.map(|x| Value::Str(x)));
+                        app.emit("nmide://event", Event::core_response(event, file))
+                            .expect("Emitting event should succeed");
+                    }),
+                    MultiFile => dia.pick_files(move |fp| {
+                        let files = fp
+                            .and_then(|xs| {
+                                xs.into_iter()
+                                    .map(|x| x.as_path().map(|y| y.to_path_buf()))
+                                    .map(|x| x.and_then(|p| p.to_str().map(|s| s.to_string())))
+                                    .map(|s| s.map(|x| Value::Str(x)))
+                                    .collect()
+                            })
+                            .map(|xs| Value::List(xs));
+                        app.emit("nmide://event", Event::core_response(event, files))
+                            .expect("Emitting event should succeed");
+                    }),
+                    MultiDir => dia.pick_folders(move |fp| {
+                        let files = fp
+                            .and_then(|xs| {
+                                xs.into_iter()
+                                    .map(|x| x.as_path().map(|y| y.to_path_buf()))
+                                    .map(|x| x.and_then(|p| p.to_str().map(|s| s.to_string())))
+                                    .map(|s| s.map(|x| Value::Str(x)))
+                                    .collect()
+                            })
+                            .map(|xs| Value::List(xs));
+                        app.emit("nmide://event", Event::core_response(event, files))
+                            .expect("Emitting event should succeed");
+                    }),
+                    SaveFile => todo!(),
+                };
             }
-            _ => {
-                app.emit("nmide://event", event)
-                    .expect("AppHandle emit should always succeed");
-            }
+            Event::PostInit | Event::PreExit | Event::CoreResponse { .. } => (),
         }
     }
 
-    async fn add_handler(
-        &self,
-        event_name: Option<String>,
-        module_name: Option<String>,
-        handler_name: String,
-    ) {
+    async fn add_handler(&self, event_name: String, handler_name: String) {
         let mut reg = MODULE_EVENT_REGISTER.write().await;
-        reg.register_module(event_name, module_name, handler_name)
-            .await;
+        reg.register_module(event_name, handler_name).await;
     }
 
     async fn get_sender(&self) -> Sender<CoreModification> {
