@@ -105,6 +105,14 @@ impl From<HashMap<String, Value>> for HHMap {
 }
 
 impl Value {
+    pub fn new_str<S: Into<String>>(s: S) -> Self {
+        Self::Str(s.into())
+    }
+
+    pub fn new_float(f: f32) -> Self {
+        Self::Float(NotNan::new(f).unwrap())
+    }
+
     pub fn bool(&self) -> Option<bool> {
         match self {
             Self::Bool(b) => Some(*b),
@@ -197,8 +205,32 @@ impl From<HashMap<String, Value>> for Value {
 pub struct State(HashMap<String, Value>);
 
 impl State {
-    pub fn get<S: ToString>(&self, field: S) -> Option<&Value> {
-        self.0.get(&(field.to_string()))
+    pub fn get<S: ToString>(&self, field: S) -> Option<Value> {
+        let field = field.to_string();
+        let fields = field.split(".").collect::<Vec<_>>();
+
+        if fields.len() == 1 {
+            return self.0.get(&(field.to_string())).cloned();
+        }
+
+        let mut fields = fields.into_iter();
+
+        let mut map = self.0.clone();
+
+        while let Some(field) = fields.next() {
+            match map.clone().get(field) {
+                Some(v) if v.is_obj() => {
+                    map = v.clone().obj().unwrap();
+                }
+                Some(v) if fields.clone().count() == 0 => {
+                    return Some(v.clone());
+                }
+                _ => {
+                    return None;
+                }
+            }
+        }
+        return None;
     }
 
     pub fn build() -> StateInstructionBuilder {
