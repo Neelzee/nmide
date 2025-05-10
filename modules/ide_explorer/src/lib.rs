@@ -39,20 +39,17 @@ impl core_module_lib::Module for Module {
                     return;
                 }
                 let html = render(files.unwrap());
-                core.get_sender()
-                    .await
-                    .send(
-                        CoreModification::default().set_ui(
-                            UIInstructionBuilder::default().add_node(
-                                Html::Div()
-                                    .adopt(html)
-                                    .add_attr(Attr::Class("file-explorer".to_string())),
-                                Some("side-bar"),
-                            ),
+                core.send_modification(
+                    CoreModification::default().set_ui(
+                        UIInstructionBuilder::default().add_node(
+                            Html::Div()
+                                .adopt(html)
+                                .add_attr(Attr::Class("file-explorer".to_string())),
+                            Some("side-bar"),
                         ),
-                    )
-                    .await
-                    .unwrap()
+                    ),
+                )
+                .await
             }
             _ => (),
         }

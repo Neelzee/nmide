@@ -73,11 +73,7 @@ impl core_module_lib::Module for Module {
                             .await;
                         let mods = CoreModification::default()
                             .set_state(StateInstructionBuilder::default().add(field, graph));
-                        core.get_sender()
-                            .await
-                            .send(mods)
-                            .await
-                            .expect("Channel should be opened");
+                        core.send_modification(mods).await;
                     }
                 }
             }

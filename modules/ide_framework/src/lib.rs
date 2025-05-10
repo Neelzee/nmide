@@ -51,11 +51,7 @@ impl Module for FrameworkModule {
                 Option::<String>::None,
             ),
         );
-        core.get_sender()
-            .await
-            .send(mods)
-            .await
-            .expect("Channel should be opened");
+        core.send_modification(mods).await;
     }
 
     async fn handler(&self, _: Event, _: Box<dyn Core>) {}

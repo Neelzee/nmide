@@ -28,18 +28,29 @@ impl core_module_lib::Module for Module {
         let state = StateInstructionBuilder::default().add("counter".to_string(), Value::Int(0));
         core.add_handler("counter".to_string(), "trivial_module".to_string())
             .await;
-        core.add_handler(Event::PostInit.to_string(), "trivial_module".to_string())
-            .await;
         let mods = CoreModification::default().set_state(state);
-        core.get_sender()
-            .await
-            .send(mods)
-            .await
-            .expect("Channel should be opened");
+        core.send_modification(mods).await;
+        let ui = Html::Div()
+            .adopt(
+                Html::Button()
+                    .set_text("Click")
+                    .add_attr(Attr::Click(Event::new(
+                        "counter".to_string(),
+                        Some(Value::Int(1)),
+                    )))
+                    .add_attr(Attr::Id("ButtonID".to_string())),
+            )
+            .adopt(
+                Html::P()
+                    .set_text("Count: 0")
+                    .add_attr(Attr::Id("PID".to_string())),
+            )
+            .add_attr(Attr::Id("DivId".to_string()));
+        core.throw_event(Event::new("add_content", Some(Value::Html(ui))))
+            .await;
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
-        let sender = core.get_sender().await;
         match (event.event_name(), event.args()) {
             ("nmide://post-init", _) => {
                 let ui = UIInstructionBuilder::default().add_node(
@@ -61,10 +72,8 @@ impl core_module_lib::Module for Module {
                         .add_attr(Attr::Id("DivId".to_string())),
                     Some("content"),
                 );
-                sender
-                    .send(CoreModification::default().set_ui(ui))
-                    .await
-                    .expect("Channel should be opened");
+                core.send_modification(CoreModification::default().set_ui(ui))
+                    .await;
             }
             ("counter", Some(v))
                 if v.is_int() || v.obj().is_some_and(|o| o.contains_key("eventArgs")) =>
@@ -84,7 +93,6 @@ impl core_module_lib::Module for Module {
                     .state()
                     .await
                     .get("counter")
-                    .cloned()
                     .unwrap_or(Value::Int(0))
                     .map(|i: i32| i + add)
                     .unwrap();
@@ -93,7 +101,7 @@ impl core_module_lib::Module for Module {
                 let ui = UIInstructionBuilder::default()
                     .set_text(Some("PID"), format!("Count: {}", new_count.int().unwrap()));
                 let mods = CoreModification::default().set_state(state).set_ui(ui);
-                sender.send(mods).await.expect("Channel should be opened");
+                core.send_modification(mods).await;
             }
             _ => (),
         }

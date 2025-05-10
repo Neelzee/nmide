@@ -32,11 +32,7 @@ impl Module for ProjectManagerModule {
             .await;
         let mods = CoreModification::default()
             .set_state(StateInstructionBuilder::default().add(STATE_FIELD, Value::new_obj()));
-        core.get_sender()
-            .await
-            .send(mods)
-            .await
-            .expect("Channel should be opened");
+        core.send_modification(mods).await;
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
@@ -46,7 +42,7 @@ impl Module for ProjectManagerModule {
                     .state()
                     .await
                     .get(STATE_FIELD)
-                    .and_then(|v| v.clone().obj())
+                    .and_then(|v| v.obj())
                     .unwrap_or(HashMap::new());
                 let pth = &obj
                     .get("project_path")

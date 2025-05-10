@@ -1,5 +1,5 @@
 use anyhow::{anyhow, Result};
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 #[derive(Debug)]
 pub struct FOptions {

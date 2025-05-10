@@ -77,7 +77,6 @@ impl Module for ProjectManagerModule {
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
-        let sender = core.get_sender().await;
         match event.event_name() {
             "nmide://post-init" => {
                 let mods = UIInstructionBuilder::default().add_nodes(
@@ -98,10 +97,8 @@ impl Module for ProjectManagerModule {
                     ]),
                     Some("navbar"),
                 );
-                sender
-                    .send(CoreModification::ui(mods))
-                    .await
-                    .expect("Channel should be open");
+                core.send_modification(CoreModification::ui(mods)).await;
+                core.throw_event(Event::new("post-ide-pm", None)).await;
             }
             "ide-pm-dropdown" if event.args().is_some() => {
                 let state = core.state().await;
@@ -125,14 +122,11 @@ impl Module for ProjectManagerModule {
                     UIInstructionBuilder::default()
                         .rem_attr(Attr::Class("show".to_string()), id.clone())
                 };
-                sender
-                    .send(
-                        CoreModification::ui(mods).set_state(
-                            StateInstructionBuilder::default().set(id, Value::Bool(toggle)),
-                        ),
-                    )
-                    .await
-                    .expect("Channel should be open");
+                core.send_modification(
+                    CoreModification::ui(mods)
+                        .set_state(StateInstructionBuilder::default().set(id, Value::Bool(toggle))),
+                )
+                .await;
             }
             "ide-pm-file" => {
                 core.throw_event(Event::new("nmide://file?", None)).await;

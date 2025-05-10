@@ -200,7 +200,6 @@ dependencies = [
  "ordered-float 5.0.0",
  "rstest",
  "serde",
- "tokio",
  "ts-rs",
 ]
 
@@ -245,10 +244,7 @@ name = "foreign-std-lib"
 version = "0.1.0"
 dependencies = [
  "abi_stable",
- "async-trait",
- "core-macros",
  "core-std-lib",
- "once_cell",
  "ordered-float 5.0.0",
  "rstest",
  "serde",
