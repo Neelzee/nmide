@@ -9,5 +9,8 @@
     "typescript": "^5.0.0"
   },
   "author": "Nils Michael Fitjar",
-  "license": "Beerware"
+  "license": "Beerware",
+  "dependencies": {
+    "@tauri-apps/api": "^2.5.0"
+  }
 }

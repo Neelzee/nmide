@@ -52,26 +52,26 @@ declare global {
   }
 }
 
-export const defaultConfig = (
-  render: NmideConfig["render"],
-  handlerRegistration: NmideConfig["handlerRegistration"],
-  eventThrower: NmideConfig["eventThrower"]
-): NmideConfig => {
-  return {
-    log: {
-      error: console.error,
-      debug: console.debug,
-      info: console.log
-    },
-    moduleInstallers: [],
-    root: document.body,
-    runtimes: { handlers: [], initializers: [] },
-    render,
-    handlerRegistration,
-    eventThrower,
-    moduleCount: 0,
-    modules: new Map(),
-    installed: false,
-    handlerRegister: { event: new Map(), module: new Map() }
-  };
+export const defaultConfig: NmideConfig = {
+  log: {
+    error: console.error,
+    debug: console.debug,
+    info: console.log
+  },
+  moduleInstallers: [],
+  root: document.body,
+  runtimes: { handlers: [], initializers: [] },
+  render: _ => {
+    throw Error("Missing renderer")
+  },
+  handlerRegistration: _ => {
+    throw Error("Missing handlerRegistration")
+  },
+  eventThrower: _ => {
+    throw Error("Missing eventThrower")
+  },
+  moduleCount: 0,
+  modules: new Map(),
+  installed: false,
+  handlerRegister: { event: new Map(), module: new Map() }
 };
