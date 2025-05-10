@@ -22,12 +22,7 @@ pub async fn init(cm: CoreModification) {
         .collect::<Vec<_>>();
     let modules = COMPILE_TIME_MODULES.read().await;
     let module_futures = modules.values().map(|m| m.init(Box::new(NmideCore)));
-    NmideCore
-        .get_sender()
-        .await
-        .send(cm)
-        .await
-        .expect("Nmide core receiver should not be closed");
+    NmideCore.send_modification(cm).await;
     futures::future::join_all(module_futures).await;
     futures::future::join_all(rt_module_futures).await;
 
@@ -45,7 +40,7 @@ pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
     tokio::spawn({
         async move {
             let evt = event.clone();
-            let revt = REvent::from(evt.clone());
+            let mut revt = None;
             let mods = COMPILE_TIME_MODULES.read().await;
             let rt_mods = RUNTIME_MODULES
                 .get()
@@ -66,7 +61,10 @@ pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
                 }
 
                 if let Some(m) = rt_mods.get(&mod_name) {
-                    rt_modules.push(m.handler(revt.clone(), || {
+                    if revt.is_none() {
+                        revt = Some(REvent::from(evt.clone()));
+                    }
+                    rt_modules.push(m.handler(revt.clone().unwrap(), || {
                         RCore_CTO::from_const(&RuntimeCore, TD_CanDowncast)
                     }));
                 }
@@ -80,12 +78,7 @@ pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
         .into_iter()
         .fold(CoreModification::default(), |acc, cm| acc.combine(cm));
 
-    NmideCore
-        .get_sender()
-        .await
-        .send(cm)
-        .await
-        .expect("Channel should be open");
+    NmideCore.send_modification(cm).await;
 
     if matches!(evt, Event::PreExit) {
         let app = NMIDE

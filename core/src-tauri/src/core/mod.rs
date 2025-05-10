@@ -193,10 +193,12 @@ impl Core for NmideCore {
         reg.register_module(event_name, handler_name).await;
     }
 
-    async fn get_sender(&self) -> Sender<CoreModification> {
+    async fn send_modification(&self, modification: CoreModification) {
         NMIDE_SENDER
             .get()
             .expect("Sender should be initialized")
-            .clone()
+            .send(modification)
+            .await
+            .expect("Channel should be opened");
     }
 }

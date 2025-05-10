@@ -77,12 +77,14 @@ pub async fn run() {
                 );
                 let modification = modification.optimize();
                 info!("[backend] modification size: {:?}", modification.len());
+                debug!("[backend] modification: {:?}", modification);
                 let state = NmideCore.state().await;
                 let ui = NmideCore.ui().await;
 
                 let (new_state, ui_builder) = modification.build_state(state);
                 let mut st = NMIDE_STATE.write().await;
                 *st = new_state;
+                debug!("[backend] State: {:?}", st);
                 drop(st);
                 let app = NMIDE
                     .get()
