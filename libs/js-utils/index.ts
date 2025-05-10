@@ -1,4 +1,5 @@
 import { CoreModification } from "./lib/CoreModification";
+import { State } from "./lib/State";
 
 export * from "./lib/HtmlBuilder";
 export * from "./lib/UiBuilder";
@@ -22,4 +23,8 @@ export const emptyCm = (): CoreModification => {
     state: "noOp",
     ui: ["noOp", "noOp", "noOp"]
   };
+}
+
+export const emptyState = (): State => {
+  return {};
 }

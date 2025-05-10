@@ -2,13 +2,14 @@
 
 import { Html } from "./Html";
 import { Event } from "./Event";
+import { State } from "./State";
 
 export type Core = {
   readonly ui: () => Promise<Html>;
   /**
    * State of the application
    */
-  readonly state: () => Promise<object>;
+  readonly state: () => Promise<State>;
   /**
    * List of events
    */
