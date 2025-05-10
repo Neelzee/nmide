@@ -7,7 +7,7 @@ use core_std_lib::{
     core::Core, core_modification::CoreModification, event::Event, html::Html, state::Value,
 };
 use log::{debug, info};
-use std::collections::HashMap;
+use std::{collections::HashMap, path::PathBuf};
 use tauri::{Emitter, Manager, RunEvent};
 use tokio::sync::{mpsc, RwLock};
 
@@ -15,7 +15,7 @@ mod setup;
 
 #[tauri::command]
 async fn init(mods: Vec<CoreModification>) {
-    info!("[backend] init");
+    info!(place = "backend", mods:serde; "init {:?}", mods);
     let cm = mods
         .into_iter()
         .fold(CoreModification::default(), CoreModification::append);
@@ -24,7 +24,7 @@ async fn init(mods: Vec<CoreModification>) {
 
 #[tauri::command]
 async fn handler(event: Event, mods: Vec<CoreModification>) {
-    info!("[backend] handler {:?}", event);
+    info!(place = "backend", event:serde, mods:serde; "handler, {:?} {:?}", event, mods);
     crate::handlers::handler(event, mods).await
 }
 
@@ -40,10 +40,6 @@ async fn ui() -> Html {
     ui.clone()
 }
 
-pub struct NmideAppData {
-    pub is_exiting: bool,
-}
-
 /// Runs the Tauri application
 pub async fn run() {
     setup::setup_compile_time_modules()
@@ -51,7 +47,16 @@ pub async fn run() {
         .expect("Compile time module setup should always succeed");
 
     let app = tauri::Builder::default()
-        .plugin(tauri_plugin_log::Builder::new().build())
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .target(tauri_plugin_log::Target::new(
+                    tauri_plugin_log::TargetKind::Folder {
+                        file_name: Some("out".to_string()),
+                        path: PathBuf::from("../logs"),
+                    },
+                ))
+                .build(),
+        )
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
@@ -70,30 +75,37 @@ pub async fn run() {
         let (sender, mut recv) = mpsc::channel::<CoreModification>(100);
         NMIDE_SENDER.set(sender).expect("NMIDE_SENDER not set yet");
         async move {
-            while let Some(modification) = recv.recv().await {
-                debug!(
-                    "[backend] pre-optimized modification size {:?}",
-                    modification.len()
-                );
-                let modification = modification.optimize();
-                info!("[backend] modification size: {:?}", modification.len());
-                debug!("[backend] modification: {:?}", modification);
+            while let Some(pre_modification) = recv.recv().await {
+                let modification = pre_modification.clone().optimize();
                 let state = NmideCore.state().await;
                 let ui = NmideCore.ui().await;
 
-                let (new_state, ui_builder) = modification.build_state(state);
+                let (new_state, ui_builder) = modification.clone().build_state(state);
                 let mut st = NMIDE_STATE.write().await;
                 *st = new_state;
-                debug!("[backend] State: {:?}", st);
-                drop(st);
                 let app = NMIDE
                     .get()
                     .expect("AppHandle should be initialized")
                     .read()
                     .await;
+                let state = st.clone();
                 let inst = ui_builder.instruction();
                 let mut current_ui = NMIDE_UI.write().await;
                 *current_ui = ui_builder.build(ui);
+                let ui = current_ui.clone();
+                debug!(
+                    place = "backend",
+                    state:serde,
+                    ui:serde,
+                    pre_modification:serde,
+                    pre_len = pre_modification.len(),
+                    post_len = modification.len(),
+                    modification:serde;
+                    "recieved modification {:?} {:?} {:?}",
+                    state,
+                    ui,
+                    modification
+                );
                 app.emit("nmide://render", inst)
                     .expect("AppHandle emit should always succeed");
             }

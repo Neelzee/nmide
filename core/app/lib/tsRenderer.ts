@@ -40,6 +40,8 @@ const evalHtml = (op: Instruction<Html>) => {
       const element = getElementById(window.__nmideConfig__.root, id);
       if (element !== undefined) {
         element.appendChild(html);
+      } else {
+        window.__nmideConfig__.log.error(`Could not find HTMLElement with id: "${id}"`);
       }
       return;
     }
@@ -67,6 +69,8 @@ const evalAttr = (op: Instruction<Attr>) => {
       const element = getElementById(window.__nmideConfig__.root, id);
       if (element !== undefined) {
         addAttr(element, attr);
+      } else {
+        window.__nmideConfig__.log.error(`Could not find HTMLElement with id: "${id}"`);
       }
       return;
     }
@@ -78,6 +82,8 @@ const evalAttr = (op: Instruction<Attr>) => {
       const element = getElementById(window.__nmideConfig__.root, id);
       if (element !== undefined) {
         remAttr(element, attr);
+      } else {
+        window.__nmideConfig__.log.error(`Could not find HTMLElement with id: "${id}"`);
       }
       return;
     }
@@ -103,6 +109,8 @@ const evalText = (op: Instruction<string>) => {
       const element = getElementById(window.__nmideConfig__.root, id);
       if (element !== undefined) {
         element.innerText = "";
+      } else {
+        window.__nmideConfig__.log.error(`Could not find HTMLElement with id: "${id}"`);
       }
       return;
     }
@@ -126,6 +134,8 @@ const evalText = (op: Instruction<string>) => {
       const element = getElementById(window.__nmideConfig__.root, id);
       if (element !== undefined) {
         element.innerText = text;
+      } else {
+        window.__nmideConfig__.log.error(`Could not find HTMLElement with id: "${id}"`);
       }
       return;
     }
@@ -229,7 +239,7 @@ const clickParse = (event: Event, ts: HTMLElement, _: MouseEvent) => {
 
   return () => {
     emit("nmide://event", event).catch((err) =>
-      console.error("Error from onClickParse invoke:", err),
+      window.__nmideConfig__.log.error("Error from onClickParse invoke:", err),
     );
   };
 };

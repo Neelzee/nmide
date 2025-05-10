@@ -54,7 +54,7 @@ pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
                 .await
                 .get_module_names(&evt)
                 .await;
-            info!("[backend] Triggered modules: {:?}", triggered_modules);
+            info!(place = "backend", event:serde, triggered_modules:serde; "Handler, {:?} {:?}", event, triggered_modules);
             for mod_name in triggered_modules {
                 if let Some(m) = mods.get(&mod_name) {
                     modules.push(m.handler(evt.clone(), Box::new(NmideCore)));
@@ -86,7 +86,7 @@ pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
             .expect("AppHandle should be initialized")
             .read()
             .await;
-        info!("[backend][handler] Exiting");
+        info!(place = "backend"; "Exiting");
         app.exit(0);
     }
 }

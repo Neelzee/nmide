@@ -7,14 +7,13 @@ import {
     NMIDE_MODULES_INSTALLED_EVENT
 } from "./nmideConstants.ts";
 import { run } from "./main.ts";
-import { tsInit, tsHandler } from "./tsRuntime.ts";
-import { tsRenderer } from "./lib/tsRenderer.ts";
-import { handlerRegistration } from "./lib/handlerRegistration.ts";
-import { eventThrower } from "./lib/eventThrower.ts";
+import runtime from "@nmide/js-core-std-lib";
+import { info, debug, error } from "@tauri-apps/plugin-log";
+import { tsRenderer as render } from "./lib/tsRenderer.ts";
 
 run({
     initialize: (config: Partial<AppConfig> = {}) => {
-        const conf = { ...defaultConfig(tsRenderer, handlerRegistration, eventThrower), ...config };
+        const conf = { ...defaultConfig, ...config, log: { info, debug, error }, render };
         // @ts-expect-error This is okay
         window.__nmideConfig__ = {}
         // @ts-expect-error This is okay
@@ -75,7 +74,7 @@ run({
             })().then(cm => {
                 const mods = cm.flat();
                 client("handler", { event, mods })
-                    .catch((err) => console.error("Handler: ", err))
+                    .catch((err) => window.__nmideConfig__.log.error("Handler: ", err))
             }
             );
         }).catch((err) => window.__nmideConfig__.log.error("nmide://event", err));
@@ -96,7 +95,6 @@ run({
         })
             .then(mods =>
                 client("init", { mods })
-                    .then(() => console.log("INIT"))
                     .catch((err) => console.error("Init: , with args: ", err, { mods }))
             );
     }
@@ -104,8 +102,8 @@ run({
     {
         runtimes:
         {
-            handlers: [tsHandler],
-            initializers: [tsInit]
+            handlers: [runtime.handler],
+            initializers: [runtime.init]
         },
     }
 );

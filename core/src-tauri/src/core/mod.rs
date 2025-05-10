@@ -39,7 +39,8 @@ impl ModuleEventRegister {
 
     pub async fn register_module(&mut self, event: String, handler: String) {
         info!(
-            "[backend][handler-register] register module: {}, to event {:?}",
+            place = "backend";
+            "register module: {}, to event {:?}",
             handler, event
         );
         let mut modules = self.event.write().await;

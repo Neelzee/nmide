@@ -28,7 +28,8 @@ pub(super) async fn setup_compile_time_modules() -> Result<()> {
     module_reg::register_modules(&mut modules);
 
     info!(
-        "[backend] modules: {:?}",
+        place = "backend";
+        "modules: {:?}",
         modules.values().map(|m| (*m).name()).collect::<Vec<&str>>()
     );
 
