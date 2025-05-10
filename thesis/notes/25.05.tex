@@ -34,3 +34,13 @@ work. I am also unsure how to do the LS stuff, properly, I think I'll do a
 half-arsed one, where I am invoking some Haskell wrapper around the compiler,
 to get the stuff I want. I can then do some hand-waving, and say that stuff
 works, even if it doesn't.
+
+
+\section{25.05.10}
+
+Got my favourite kind of bug, one that randomly happens. I think this is just
+skill issue, where I don't know how to do this kind of module architecture. I
+do forsee some issues about events being thrown before anyone can handle them,
+so maybe I should look into some channel system, as I do with CoreModifications
+but maybe optional, so modules can choose if they want all previous Events or
+not.
