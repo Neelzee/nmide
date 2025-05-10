@@ -2,7 +2,6 @@ import {
     Core,
     Event,
     CoreModification,
-    emptyCm,
 } from "@nmide/js-utils";
 import { invoke } from "@tauri-apps/api/core";
 import { handlerRegistration } from "./lib/handlerRegistration.ts";

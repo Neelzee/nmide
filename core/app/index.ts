@@ -1,6 +1,4 @@
-//import client, { listen } from "@nmide/js-client";
-import { invoke as client } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
+import client, { listen } from "@nmide/js-client";
 import { Module } from "@nmide/js-utils";
 import { ideInstallModules } from "./lib/ideInstallModules.ts";
 import { AppConfig, defaultConfig } from "@nmide/js-core-std-lib";
@@ -98,6 +96,7 @@ run({
         })
             .then(mods =>
                 client("init", { mods })
+                    .then(() => console.log("INIT"))
                     .catch((err) => console.error("Init: , with args: ", err, { mods }))
             );
     }

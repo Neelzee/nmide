@@ -4,7 +4,7 @@ import { emit } from "@tauri-apps/api/event";
 export const eventThrower = async (event: Event) => {
   emit(
     "nmide://event",
-    { event: event.event, module: event.module, args: event.args }
+    { event }
   ).catch(
     err =>
       window.__nmideConfig__.log.error(
