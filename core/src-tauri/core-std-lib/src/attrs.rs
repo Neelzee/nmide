@@ -80,6 +80,18 @@ pub enum Attr {
     /// <img src="foobar"/>
     /// ```
     Src(String),
+    /// Adds a custom attribute to an Html node.
+    /// The following code:
+    /// ```rust
+    /// use core_std_lib::attrs::Attr;
+    /// Attr::Custom("foo".to_string(), "bar".to_string());
+    /// ```
+    /// Is translated to this:
+    /// ```html
+    /// <div foo="bar">
+    /// <div/>
+    /// ```
+    Custom(String, String),
 }
 
 impl Attr {
@@ -94,6 +106,7 @@ impl Attr {
             Attr::OnInput(_) => "onInput",
             Attr::EmitInput(_) => "emitInput",
             Attr::Src(_) => "src",
+            Attr::Custom(s, _) => s,
         }
     }
 
