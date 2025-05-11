@@ -1,17 +1,124 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+#visualization {
+  width: 100%;
+  height: 100%;
+  background-color: #f9f9f9;
+}
+
 .link {
-    stroke: #999;
-    stroke-opacity: 0.6;
-    stroke-width: 1.5px;
-    fill: none;
+  fill: none;
+  stroke: #999;
+  stroke-width: 1.5px;
+}
+
+.link.cycle {
+  stroke: #ff4444;
+  stroke-width: 2.5px;
 }
 
 .node circle {
-    fill: steelblue;
-    stroke: #fff;
-    stroke-width: 1.5px;
+  fill: #69b3a2;
+  stroke: #fff;
+  stroke-width: 2px;
 }
 
 .node text {
-    font-size: 10px;
-    font-family: sans-serif;
+  font-family: sans-serif;
+  font-size: 12px;
+}
+
+.controls {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.legend {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 5px;
+  margin-right: 8px;
+}
+
+.package-filter {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.package-filter h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.package-checkbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.package-checkbox input {
+  margin-right: 5px;
+}
+
+.package-checkbox label {
+  display: flex;
+  align-items: center;
+}
+
+.package-color {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  margin-right: 5px;
+  border-radius: 2px;
+}
+
+.filter-buttons {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.filter-buttons button {
+  padding: 3px 8px;
+}
+
+.node.filtered,
+.link.filtered {
+  opacity: 0.15;
+  transition: opacity 0.3s;
 }
