@@ -175,6 +175,7 @@ impl From<Attr> for RAttr {
             Attr::OnInput(event) => todo!(),
             Attr::EmitInput(event) => todo!(),
             Attr::Src(_) => todo!(),
+            Attr::Custom(_, _) => todo!(),
         }
     }
 }
