@@ -14,5 +14,5 @@ export type Core = {
    * List of events
    */
   readonly eventThrower: (evt: Event) => Promise<void>;
-  readonly registerHandler: (name: string, event?: string, module?: string) => Promise<void>;
+  readonly registerHandler: (name: string, event: string) => Promise<void>;
 };

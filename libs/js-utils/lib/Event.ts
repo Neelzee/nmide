@@ -4,4 +4,26 @@ import type { DialogEvtKind } from "./DialogEvtKind";
 import type { DialogFileKind } from "./DialogFileKind";
 import type { Value } from "./Value";
 
-export type Event = { "event": { event: string, args: Value | null, } } | { "dialogEvent": { event: string, kind: DialogEvtKind | null, message: string, btn: DialogBtn | null, title: string | null, } } | { "dialogFile": { event: string, title: string | null, file_kind: DialogFileKind, filter_ext: Array<string>, create_dirs: boolean, } } | "postInit" | "preExit" | { "coreResponse": { event: string, args: Value | null, } };
+export type Event =
+  | { "event": { event: string; args: Value | null } }
+  | {
+    "dialogEvent": {
+      event: string;
+      kind: DialogEvtKind | null;
+      message: string;
+      btn: DialogBtn | null;
+      title: string | null;
+    };
+  }
+  | {
+    "dialogFile": {
+      event: string;
+      title: string | null;
+      file_kind: DialogFileKind;
+      filter_ext: Array<string>;
+      create_dirs: boolean;
+    };
+  }
+  | "postInit"
+  | "preExit"
+  | { "coreResponse": { event: string; args: Value | null } };

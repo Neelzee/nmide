@@ -21,7 +21,7 @@ export const isTStr = (x: object): x is ValueStr => "str" in x;
 export type ValueBool = { bool: boolean };
 export const isTBool = (x: object): x is ValueBool => "bool" in x;
 export type ValueList = { list: Value[] };
-export const isTList = (x: object): x is ValueList => "list" in x;
+export const isTList = (x: unknown): x is ValueList => typeof x === "object" && x !== null && "list" in x;
 export type ValueObj = { obj: { [key in string]?: Value } };
 export const isTObj = (x: object): x is ValueObj => "obj" in x;
 

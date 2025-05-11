@@ -4,4 +4,7 @@ import type { Html } from "./Html";
 import type { Instruction } from "./Instruction";
 import type { Value } from "./Value";
 
-export type CoreModification = { state: Instruction<Value>, ui: [Instruction<Html>, Instruction<string>, Instruction<Attr>], };
+export type CoreModification = {
+  state: Instruction<Value>;
+  ui: [Instruction<Html>, Instruction<string>, Instruction<Attr>];
+};
