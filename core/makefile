@@ -8,6 +8,12 @@ modules : clean
 		--dist=./dist/external \
 		--index=./index.html \
 		--module-dist="/home/nmf/.local/share/no.nilsmf.uib/modules/"
+	
+install :
+	cd ../libs/js-utils && pwd && bun i && \
+	cd ../js-client && pwd && bun i && \
+	cd ../js-core-std-lib && pwd && bun i && \
+	cd ../../core && pwd && bun i
 
 clean :
 	rm -rf ./src-tauri/target/debug/build/core-* && \
