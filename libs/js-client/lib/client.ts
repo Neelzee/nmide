@@ -3,8 +3,8 @@ import { type CoreModification, type Event } from "@nmide/js-utils";
 import * as E from "fp-ts/Either";
 import * as t from "io-ts";
 import { pipe } from "fp-ts/lib/function";
-import { DState } from "./decoder/value_decoder";
-import { DHtml } from "./decoder/html_decoder";
+import { DState, DHtml } from "@nmide/js-decoder-lib";
+import { formatValidationErrors } from "io-ts-reporters";
 
 export type ClientArgs = {
   init: {
@@ -26,15 +26,22 @@ export type ClientArgs = {
   }
 }
 
-export const ClientDecoder = {
+export const ClientDecodedType = {
   init: t.void,
   handler: t.void,
   state: DState,
   ui: DHtml,
 }
 
+export const ClientDecoder = {
+  init: (e: unknown) => E.mapLeft(formatValidationErrors)(t.void.decode(e)),
+  handler: (e: unknown) => E.mapLeft(formatValidationErrors)(t.void.decode(e)),
+  state: (e: unknown) => E.mapLeft(formatValidationErrors)(DState.decode(e)),
+  ui: (e: unknown) => E.mapLeft(formatValidationErrors)(DHtml.decode(e)),
+}
+
 type ClientDecodedType<K extends keyof ClientArgs & keyof typeof ClientDecoder>
-  = t.TypeOf<(typeof ClientDecoder)[K]>;
+  = t.TypeOf<(typeof ClientDecodedType)[K]>;
 
 export const Client = <
   K extends keyof ClientArgs & keyof typeof ClientDecoder,
@@ -52,8 +59,8 @@ export const Client = <
         E.left,
         unknown_data => pipe(
           unknown_data,
-          ClientDecoder[cmd].decode,
-          E.match<t.Errors, ClientDecodedType<K>, E.Either<Error, ClientDecodedType<K>>>(
+          ClientDecoder[cmd],
+          E.match<string[], ClientDecodedType<K>, E.Either<Error, ClientDecodedType<K>>>(
             errs => E.left(
               new Error(
                 `Error from validating backend: ${JSON.stringify(errs)}`

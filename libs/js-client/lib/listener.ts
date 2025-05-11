@@ -3,41 +3,46 @@ import { type Event, type Html, type Instruction, type Attr } from "@nmide/js-ut
 import * as E from "fp-ts/Either";
 import * as t from "io-ts";
 import { pipe } from "fp-ts/lib/function";
-import { DRenderEvent } from "./decoder/html_decoder";
-import { DEvent } from "./decoder/event_decoder";
+import { formatValidationErrors } from "io-ts-reporters";
+import { DEvent, DRenderEvent } from "@nmide/js-decoder-lib";
 
 export type ListenArgs = {
-    "nmide://render": [Instruction<Html>, Instruction<string>, Instruction<Attr>],
-    "nmide://event": Event,
+  "nmide://render": [Instruction<Html>, Instruction<string>, Instruction<Attr>],
+  "nmide://event": Event,
 }
 
 export const ListenDecoder = {
-    "nmide://render": DRenderEvent,
-    "nmide://event": DEvent
+  "nmide://render": (e: unknown) => E.mapLeft(formatValidationErrors)(DRenderEvent.decode(e)),
+  "nmide://event": (e: unknown) => E.mapLeft(formatValidationErrors)(DEvent.decode(e))
+}
+
+export const ListenDecoderType = {
+  "nmide://render": DRenderEvent,
+  "nmide://event": DEvent
 }
 
 type ListenDecodedType<K extends keyof ListenArgs & keyof typeof ListenDecoder>
-    = t.TypeOf<(typeof ListenDecoder)[K]>;
+  = t.TypeOf<(typeof ListenDecoderType)[K]>;
 
 export const Listen = <
-    K extends keyof ListenArgs & keyof typeof ListenDecoder,
-    A extends ListenArgs[K]
+  K extends keyof ListenArgs & keyof typeof ListenDecoder,
+  A extends ListenArgs[K]
 >(
-    cmd: K,
-    handler: EventCallback<A>,
+  cmd: K,
+  handler: EventCallback<A>,
 ): Promise<E.Either<Error, UnlistenFn>> =>
-    listen<A>(cmd, event => pipe(
-        event.payload,
-        ListenDecoder[cmd].decode,
-        E.match<t.Errors, ListenDecodedType<K>, E.Either<Error, void>>(
-            errs => E.left(
-                new Error(
-                    `Error from validating event: ${JSON.stringify(errs)}`
-                    + `, supplied event: ${JSON.stringify(event)}`
-                )
-            ),
-            _ => E.right(handler(event)),
-        ),
+  listen<A>(cmd, event => pipe(
+    event.payload,
+    ListenDecoder[cmd],
+    E.match<string[], ListenDecodedType<K>, E.Either<Error, void>>(
+      errs => E.left(
+        new Error(
+          `Error from validating event: ${JSON.stringify(errs)}`
+          + `, supplied event: ${JSON.stringify(event)}`
+        )
+      ),
+      _ => E.right(handler(event)),
     ),
-    ).then(E.right)
-        .catch(err => E.left(new Error(err)));
+  ),
+  ).then(E.right)
+    .catch(err => E.left(new Error(err)));
