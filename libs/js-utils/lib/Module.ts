@@ -1,6 +1,9 @@
-import { Core } from "./Core";
-import { Event } from "./Event";
-import { CoreModification } from "./CoreModification";
+import type { Core } from "./Core";
+import type { CoreModification } from "./CoreModification";
+import { formatValidationErrors } from "io-ts-reporters";
+import { DModule } from "@nmide/js-decoder-lib";
+import * as E from "fp-ts/Either";
+import moduleWrapper from "@nmide/js-module-lib/lib/module_handler";
 
 export interface Module {
   name: string;
@@ -13,12 +16,20 @@ export interface Module {
  */
 export interface ModuleUnknown {
   name: string;
-  init: (core: Core) => Promise<unknown>;
-  handler: (event: Event, core: Core) => Promise<unknown>;
+  init: Function;
+  handler: Function;
 }
 
-export const installModule = (module: Module): void => {
+export const installModule = (module: unknown): void => {
+  const mod = E.mapLeft(formatValidationErrors)(DModule.decode(module));
+  if (E.isLeft(mod)) {
+    window.__nmideConfig__
+      .log
+      .error(`Error on module installation: ${JSON.stringify(mod.left)}, input module: ${JSON.stringify(module)}`);
+    return;
+  }
+  const m = moduleWrapper(mod.right);
   document.addEventListener("nmide://ModulesInstalled", () => {
-    window.__nmideConfig__.modules.set(module.name, module);
+    window.__nmideConfig__.modules.set(m.name, m);
   });
 }
