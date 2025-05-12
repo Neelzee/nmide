@@ -9,6 +9,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@nmide/js-utils": "link:@nmide/js-utils",
     "fp-ts": "^2.16.10",
     "io-ts": "^2.2.22",
     "io-ts-reporters": "^2.0.1"

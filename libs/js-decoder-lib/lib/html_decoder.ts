@@ -1,22 +1,9 @@
-import type { Html, Attr, Instruction, Value } from "@nmide/js-utils";
+import type { Html, Value, Event } from "@nmide/js-utils";
 import * as t from "io-ts";
-import { DValueBool, DValueFloat, DValueHtml, DValueInt, DValueNull, DValueStr } from "./value_decoder";
-import { DEvent } from "./event_decoder";
+import { DValueBool, DValueFloat, DValueInt, DValueNull, DValueStr } from "./value_decoder";
+import { DDialogBtn, DDialogEvtKind, DDialogFileKind } from "./event_decoder";
 
 export const OptionalString = t.union([t.string, t.null]);
-
-export const DAttr = t.union([
-  t.type({ "id": t.string }),
-  t.type({ "clss": t.string }),
-  t.type({ "style": t.string }),
-  t.type({ "click": DEvent }),
-  t.type({ "onInput": DEvent }),
-  t.type({ "emitInput": DEvent }),
-  t.type({ "src": t.string }),
-  t.type({ "type": t.string }),
-  t.type({ "checked": t.boolean }),
-  t.type({ custom: t.tuple([t.string, t.string]) })
-]);
 
 export const DHtml: t.Type<Html> = t.recursion("DHtml", () => {
 
@@ -30,9 +17,32 @@ export const DHtml: t.Type<Html> = t.recursion("DHtml", () => {
       DValueStr,
       t.type({ list: t.array(DValue) }),
       t.type({ obj: t.record(t.string, t.union([DValue, t.undefined])) }),
-      DValueHtml,
+      t.type({ html: DHtml }),
     ]);
   });
+
+  const DEvent: t.Type<Event> = t.union([
+    t.type({ event: t.type({ event: t.string, args: t.union([DValue, t.null]) }) }),
+    t.type({ coreResponse: t.type({ event: t.string, args: t.union([DValue, t.null]) }) }),
+    t.type({ dialogFile: t.type({ event: t.string, title: OptionalString, file_kind: DDialogFileKind, filter_ext: t.array(t.string), create_dirs: t.boolean, }) }),
+    t.type({ dialogEvent: t.type({ event: t.string, kind: t.union([DDialogEvtKind, t.null]), message: t.string, btn: t.union([DDialogBtn, t.null]), title: OptionalString, }) }),
+    t.literal("nmide://pre-exit"),
+    t.literal("nmide://post-init"),
+  ]);
+
+
+  const DAttr = t.union([
+    t.type({ "id": t.string }),
+    t.type({ "clss": t.string }),
+    t.type({ "style": t.string }),
+    t.type({ "click": DEvent }),
+    t.type({ "onInput": DEvent }),
+    t.type({ "emitInput": DEvent }),
+    t.type({ "src": t.string }),
+    t.type({ "type": t.string }),
+    t.type({ "checked": t.boolean }),
+    t.type({ custom: t.tuple([t.string, t.string]) })
+  ]);
 
   const DHtmlBody = t.type({ kids: t.array(DHtml), attrs: t.array(DAttr), text: OptionalString, })
 
