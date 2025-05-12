@@ -11,6 +11,8 @@
   "author": "Nils Michael Fitjar",
   "license": "Beerware",
   "dependencies": {
+    "@nmide/js-client": "link:@nmide/js-client",
+    "@nmide/js-utils": "link:@nmide/js-utils",
     "@tauri-apps/api": "^2.5.0",
     "fp-ts": "^2.16.10"
   }
