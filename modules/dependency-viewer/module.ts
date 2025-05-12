@@ -9,8 +9,14 @@ import {
   isPostInit,
   isPrimAnd,
   isTList,
+  isTObj,
+  isTStr,
   primDec,
-  UiBuilder
+  tList,
+  tObjLookup,
+  tObjLookupOr,
+  UiBuilder,
+  ValueList
 } from "@nmide/js-utils";
 import { initializeGraph } from "./dag";
 
@@ -152,15 +158,18 @@ const Module = {
     if (!isTList(args)) return emptyCm();
 
     const data = args.list
-      .filter(v => v !== "null")
-      .filter(v => "obj" in v)
-      .map(({ obj }) => {
+      .filter(v => isTObj(v))
+      .map((obj) => {
         const id = obj["name"]?.["str"];
         return {
           id,
           name: id,
           source: id,
-          targets: obj["dependencies"]?.["list"]?.map(o => o?.["str"]),
+          targets: tObjLookupOr<ValueList>("dependencies")
+            (tList([]))
+            (obj).list
+            .filter(v => isTStr(v))
+            .map(s => s.str),
         };
       });
 
@@ -177,7 +186,11 @@ const Module = {
       });
     })
       .flat()
-      .filter(({ source, target }) => nodes.find(n => n.id === source) !== undefined && nodes.find(n => n.id === target) !== undefined);
+      .filter(
+        ({ source, target }) =>
+          nodes.find(n => n.id === source) !== undefined
+          && nodes.find(n => n.id === target) !== undefined
+      );
 
 
     let graphContext = initializeGraph(nodes, links);
