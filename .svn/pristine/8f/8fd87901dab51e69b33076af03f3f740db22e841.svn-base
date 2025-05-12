@@ -1,0 +1,11 @@
+node_modules/
+docs/
+.next/
+output/
+.spago
+index.js
+.psci_modules
+entry.js
+build/
+*.log
+logs/*

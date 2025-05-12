@@ -1,0 +1,14 @@
+\RequirePackage{xcolor}
+\RequirePackage{listings}
+
+\definecolor{darkpurple}{RGB}{153.0,50.0,204.0}
+
+\lstset{
+  language=C++,
+  backgroundcolor=\color{white},
+  extendedchars=true,
+  tabsize=2,
+  keywordstyle = \color{green},
+  commentstyle = \color{Gray},
+  stringstyle= \color{yellow}
+  }

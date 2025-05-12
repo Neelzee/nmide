@@ -1,0 +1,16 @@
+[modules]
+trivial_module = { path = "../modules/trivial_module/", enabled = true }
+magnolia_dependency = { path = "../modules/magnolia_dependency/", enabled = true }
+ide_fsa = { path = "../modules/ide_fsa/", enabled = true }
+ide_framework = { path = "../modules/ide_framework/" }
+ide_framework_style = { path = "../modules/ide_framework/", kind = "css" }
+ide_pm = { path = "../modules/ide_pm/" }
+ide_tabs = { path = "../modules/ide_tabs/", enabled = false }
+ide_tabs_style = { path = "../modules/ide_tabs/", kind  = "css", enabled = false }
+ide_cache = { path = "../modules/ide_cache/" }
+ide_pm_style = { path = "../modules/ide_pm_style/", kind = "css" }
+ide_errors = { path = "../modules/ide-errors/", package-manager = "bun", kind = "ts", enabled = true }
+ide-editor = { path = "../modules/ide-editor/", package-manager = "bun", kind = "ts", enabled = true }
+rs-counter-plugin-example = { path = "../modules/rs-counter-plugin-example/", kind = "so", enabled = true }
+dependency-viewer = { path = "../modules/dependency-viewer", package-manager = "bun", kind = "mjs", enabled = true }
+dependency-viewer-style = { path = "../modules/dependency-viewer", kind = "css", enabled = true }

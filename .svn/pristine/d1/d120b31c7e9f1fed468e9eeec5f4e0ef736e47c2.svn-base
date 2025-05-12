@@ -1,0 +1,62 @@
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+
+\documentclass[12pt,oneside,final,a4paper]{report}
+\usepackage{generators/imports}
+\usepackage{tikz}
+\addbibresource{generators/refs.bib}
+\include{generators/glossary}
+\begin{document}
+\include{generators/frontpage}
+\include{generators/abstract}
+\include{generators/tableOfContentsAndListings}
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\setlength{\parskip}{0.5cm plus4mm minus3mm}
+
+\include{chapters/000_introduction}
+
+\include{chapters/001_background}
+
+\include{chapters/002_ide}
+
+\include{chapters/003_implementation}
+
+\include{chapters/004_related_work}
+
+\include{chapters/005_conclusion}
+
+\include{chapters/006_future_work}
+
+%%=========================================
+
+% Alternative 1 of printing glossaries & acronyms
+%\renewcommand{\glossarypreamble}{\footnotesize}
+%\printglossary[style=super, type=\glsdefaulttype] \let\cleardoublepage\clearpage
+%\printglossary[style=super, type=\acronymtype]
+
+
+%Alternative 2
+%Simplified way of printing glossaries, slower than alt 1, but has better compatibility
+\printnoidxglossaries
+
+% Include more appendices as required.
+%%=========================================
+\clearpage
+\DeclareRobustCommand{\VAN}[3]{#3}
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\printbibliography
+
+\appendix
+\titleformat{\chapter}[display]
+  {\normalfont\large\bfseries}% <- font for label "Appendix A", default \huge
+  {\chaptertitlename\ \thechapter}
+  {20pt}
+  {\large}% <- font for title, default \Huge
+
+\include{generators/appendix-a}
+\include{generators/appendix-b}
+\end{document}

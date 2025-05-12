@@ -1,0 +1,19 @@
+{
+  "name": "@nmide/js-client",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@nmide/js-decoder-lib": "link:@nmide/js-decoder-lib",
+    "@nmide/js-utils": "link:@nmide/js-utils",
+    "@tauri-apps/api": "^2.5.0",
+    "fp-ts": "^2.16.10",
+    "io-ts": "^2.2.22",
+    "io-ts-reporters": "^2.0.1"
+  }
+}
