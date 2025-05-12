@@ -4,6 +4,7 @@ import { formatValidationErrors } from "io-ts-reporters";
 import { DModule } from "@nmide/js-decoder-lib";
 import * as E from "fp-ts/Either";
 import moduleWrapper from "@nmide/js-module-lib/lib/module_handler";
+import { type Event } from "./Event";
 
 export interface Module {
   name: string;

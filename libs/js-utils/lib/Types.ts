@@ -17,13 +17,13 @@ export const isTInt = (x: object): x is ValueInt => "int" in x;
 export type ValueFloat = { float: number };
 export const isTFloat = (x: object): x is ValueFloat => "float" in x;
 export type ValueStr = { str: string };
-export const isTStr = (x: object): x is ValueStr => "str" in x;
+export const isTStr = (x: unknown): x is ValueStr => typeof x === "object" && x !== null && "str" in x;
 export type ValueBool = { bool: boolean };
 export const isTBool = (x: object): x is ValueBool => "bool" in x;
 export type ValueList = { list: Value[] };
 export const isTList = (x: unknown): x is ValueList => typeof x === "object" && x !== null && "list" in x;
 export type ValueObj = { obj: { [key in string]?: Value } };
-export const isTObj = (x: object): x is ValueObj => "obj" in x;
+export const isTObj = (x: unknown): x is ValueObj => typeof x === "object" && x !== null && "obj" in x;
 
 export type ValueSimple = Exclude<Exclude<Exclude<Value, ValueObj>, { html: Html }>, ValueList>;
 

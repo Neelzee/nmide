@@ -2,9 +2,9 @@ import { type Event } from "./Event";
 
 export type PrimitiveEvent = Extract<Event, { event: any }>;
 
-export type PostInit = Extract<Event, "postInit">;
+export type PostInit = Extract<Event, "nmide://post-init">;
 
-export type PreExit = Extract<Event, "preExit">;
+export type PreExit = Extract<Event, "nmide://pre-exit">;
 
 export const isPrimitiveEvent = (event: Event): event is PrimitiveEvent =>
   typeof event === "object" && "event" in event;

@@ -4,7 +4,10 @@
     "": {
       "name": "@nmide/js-utils",
       "dependencies": {
+        "@nmide/js-decoder-lib": "link:@nmide/js-decoder-lib",
+        "@nmide/js-module-lib": "link:@nmide/js-module-lib",
         "fp-ts": "^2.16.9",
+        "io-ts-reporters": "^2.0.1",
       },
       "devDependencies": {
         "typescript": "^5.8.3",
@@ -12,7 +15,17 @@
     },
   },
   "packages": {
+    "@nmide/js-decoder-lib": ["@nmide/js-decoder-lib@link:@nmide/js-decoder-lib", {}],
+
+    "@nmide/js-module-lib": ["@nmide/js-module-lib@link:@nmide/js-module-lib", {}],
+
+    "@scarf/scarf": ["@scarf/scarf@1.4.0", "", {}, "sha512-xxeapPiUXdZAE3che6f3xogoJPeZgig6omHEy1rIY5WVsB3H2BHNnZH+gHG6x91SCWyQCzWGsuL2Hh3ClO5/qQ=="],
+
     "fp-ts": ["fp-ts@2.16.9", "", {}, "sha512-+I2+FnVB+tVaxcYyQkHUq7ZdKScaBlX53A41mxQtpIccsfyv8PzdzP7fzp2AY832T4aoK6UZ5WRX/ebGd8uZuQ=="],
+
+    "io-ts": ["io-ts@2.2.22", "", { "peerDependencies": { "fp-ts": "^2.5.0" } }, "sha512-FHCCztTkHoV9mdBsHpocLpdTAfh956ZQcIkWQxxS0U5HT53vtrcuYdQneEJKH6xILaLNzXVl2Cvwtoy8XNN0AA=="],
+
+    "io-ts-reporters": ["io-ts-reporters@2.0.1", "", { "dependencies": { "@scarf/scarf": "^1.1.1" }, "peerDependencies": { "fp-ts": "^2.10.5", "io-ts": "^2.2.16" } }, "sha512-RVpLstYBsmTGgCW9wJ5KVyN/eRnRUDp87Flt4D1O3aJ7oAnd8csq8aXuu7ZeNK8qEDKmjUl9oUuzfwikaNAMKQ=="],
 
     "typescript": ["typescript@5.8.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ=="],
   }

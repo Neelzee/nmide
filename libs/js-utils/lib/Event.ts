@@ -24,6 +24,6 @@ export type Event =
       create_dirs: boolean;
     };
   }
-  | "postInit"
-  | "preExit"
+  | "nmide://post-init"
+  | "nmide://pre-exit"
   | { "coreResponse": { event: string; args: Value | null } };
