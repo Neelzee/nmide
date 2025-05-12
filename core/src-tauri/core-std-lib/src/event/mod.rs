@@ -30,9 +30,9 @@ pub enum Event {
         filter_ext: Vec<String>,
         create_dirs: bool,
     },
-    #[ts(type = "nmide://post-init")]
+    #[serde(rename = "nmide://post-init")]
     PostInit,
-    #[ts(type = "nmide://pre-exit")]
+    #[serde(rename = "nmide://pre-exit")]
     PreExit,
     CoreResponse {
         event: String,
