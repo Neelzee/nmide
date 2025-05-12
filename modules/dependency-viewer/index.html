@@ -26,14 +26,24 @@
   .container {
     flex: 1;
   }
+
+  .module-controls {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
 </style>
 
 <body>
-  <div>
-    <button id="init" , onclick="init()">Init</button>
-    <button id="handler" , onclick="handler()">Handler</button>
-  </div>
   <div class="container" id="content">
+    <div class="module-controls">
+      <button id="init" , onclick="init()">Init</button>
+      <button id="handler" , onclick="handler()">Handler</button>
+    </div>
     <div class="controls">
       <button id="zoomIn">+</button>
       <button id="zoomOut">-</button>
@@ -41,13 +51,13 @@
       <button id="findCycles">Find Cycles</button>
       <div>
         <label>Force Strength:</label>
-        <input type="range" id="chargeSlider" min="-200" max="-10" value="-30" step="5">
+        <input type="range" id="chargeSlider" min="-400" max="-5" value="-30" step="5">
         <span id="chargeValue">-30</span>
       </div>
       <div>
         <label>Link Distance:</label>
-        <input type="range" id="linkDistanceSlider" min="50" max="300" value="100" step="10">
-        <span id="linkDistanceValue">100</span>
+        <input type="range" id="linkDistanceSlider" min="25" max="1200" value="600" step="10">
+        <span id="linkDistanceValue">600</span>
       </div>
       <div>
         <label>Node Size Scale:</label>
