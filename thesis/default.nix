@@ -18,7 +18,7 @@ let
   file = "thesis";
   projectRoot = ./..;
   envVars = {
-    TEXINPUTS = ".:${rustListing}/tex/latex//:${projectRoot}/core:";
+    TEXINPUTS = ".:${rustListing}/tex/latex//:${projectRoot}/core:${projectRoot}/modules:";
     TEXMFHOME = ".cache";
     TEXMFVAR = ".cache/texmf-var";
   };
