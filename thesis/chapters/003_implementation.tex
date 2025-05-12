@@ -124,7 +124,7 @@ compatibility with future models, made in other languages, by use of the Rust
 
 \subsubsection{Rust Application Binary Interface}
 
-Rusts \gls{abi} is not stable! Because it is not supported by their semantic
+Rust's \gls{abi} is not stable! Because it is not supported by their semantic
 versioning. This means even a bug fix in the compiler, could break the
 \gls{abi}. So if an application, written in Rust, is compiled in version 1.8.0,
 if this application relies on a Rust library that is compiled in version 1.8.0,
@@ -186,11 +186,12 @@ application which runs third party code.
 
 \subsubsection{Module Validation}
 
-Running third-party-code can dangerous. If this code is not validate or doesn't
-come from a trusted source, it could be an attack vector. Luckily, Tauri does
-some of this work for us, but even if we have validated that a module is wanted,
-there is still the remaining use that has been the reason for 100\% of all
-CVE's, human error.
+Running third-party-code can dangerous. If this code is not validated or does
+not come from a trusted source, it could be an attack vector. Luckily, Tauri does
+some of this work for us, allowing us to analyze all module to core
+communication, but even if we have validated that a module is wanted, there is
+still the remaining use that has been the reason for 100\% of all CVE's, human
+error.
 
 The Rust compiler can ensure that the Rust modules are valid during compile
 time, for runtime this is a bit trickier. But for JavaScript modules, which the
@@ -203,7 +204,7 @@ written in Rust, the \gls{rsms} doesn't have to do any validation or
 translation when communicating with compile time modules. With runtime modules
 this also ended up being trivial, but will be discussed more in depth later.
 
-In the \gls{jsms}, managing of modules can lead to is exceptions being thrown.
+In the \gls{jsms}, managing of modules can lead to exceptions being thrown.
 Since third party code is being run, nothing can be trusted. All module
 invocations and outputs needs to be sanitized before it can be used in the core
 application. This is achieved by wrapping all invocations in a
@@ -235,10 +236,11 @@ day one of development. The general plan was this:
 Since any JavaScript frontend framework could be used, React was chosen, one of
 the reason for this choice was due to its popularity, which again, would speed
 up the development time of the application, but also due to the way React
-renders. Between two different re-renders of the application, React can check
-the difference between the \gls{vdom}, which is React's representation of the
-\gls{dom}. It then only changes what is needed in the \gls{dom}, instead of
-re-creating the entire \gls{dom}, which makes the render time quick.
+renders the \gls{html}. Between two different re-renders of the application,
+React can check the difference between the \gls{vdom}, which is React's
+representation of the \gls{dom}. It then only changes what is needed in the
+\gls{dom}, instead of re-creating the entire \gls{dom}, which makes the render
+time quick.
 
 This was the more straight forward way to work, because as we could model it of
 existing \gls{ide}s, like \textit{Visual Studio Code} or \textit{Eclipse}.
@@ -252,8 +254,6 @@ which would lead to the next maintainer having to fix the core application. This
 in turn, would add a lot of complexity, which the maintainers would have to deal with.
 
 \section{Module V.2} \label{sec:mod2}
-
-After 7–8 months of working on this, everything was scrapped for this new plan:
 
 \begin{enumerate}
   \item Everything is a module
@@ -388,14 +388,6 @@ $B$, ensuring that $C$ always triggers before $B$.
 
 \subsection{Module v2 Cons}
 
-\begin{enumerate}
-  \item React sucks
-  \item Modules cannot invoke modules
-  \item Slow
-  \item Not asynchronous
-  \item Ever growing state
-\end{enumerate}
-
 \paragraph{Not modular} This setup is also not really modular, as a single
 module cannot invoke another module without being impure. The only way to
 invoke/trigger another module, is to throw a \textit{Msg}, which would trigger
@@ -449,7 +441,7 @@ between two states:
 Since the states are ordered by the name of the module they come from, we
 have a consistent ordering of left-hand side and right-hand side. Due to the
 fact that module invocation is synchronous, and ordered. If the same modules
-give a collision on the same input, (given that all modules are pure), the
+gives a collision on the same input, (given that all modules are pure), the
 resulting state will be the same every time. The problem is that applying some
 function on the values could be an unwanted way to resolve collisions. The
 standard way will be to log the collision, and then drop both states. Even
@@ -562,7 +554,7 @@ of what to do with the core.
    ]{./core/src-tauri/core-std-lib/src/instruction/inst.rs}
 \end{center}
 
-The listing \ref{lst:inst}, it is clear how the \textbf{Instruction}-set makes the
+In the listing \ref{lst:inst}, it is clear how the \textbf{Instruction}-set makes the
 modification of the core, a kind of group, as given by the definition
 \ref{def:group}. Intuitively, for any \textbf{Instruction}, there exists
 an \textit{inverse} one, such that the definition \ref{def:inv} is upheld. If we
@@ -581,7 +573,7 @@ a subset, since \textbf{Instruction} is parameterized by some type \textbf{T},
 we will look at it when \textbf{T} is \textbf{Value}, noted by the subscript
 \textbf{val}.
 
-\begin{theorem}[Instruction Group]
+\begin{theorem}[Instruction Group] \label{thm:intr}
   Let $\Sigma$ be the set of all strings, $Val$ be the set of all
   \textbf{Values}, $Html$ be the set of all \textbf{Html} variants, and
   $Inst_{val}$ be the set of all \textbf{Instruction} defined as:
@@ -615,12 +607,12 @@ we will look at it when \textbf{T} is \textbf{Value}, noted by the subscript
   $$
 \end{theorem}
 
-This, unfortunately, cannot be encoded in Rusts type system, but when implementing
-$combine$, we can map the variants along with the specific fields being added
-($Add$), modified ($Mod$), or removed ($Rem$), to get a more optimized
-instruction set. If we are modifying a value on field $foobar$, but in the same
-instruction set, remove it, then the modifying instruction is an $NoOp$. This
-optimization can be found in appendix \ref{app:a}.
+The theorem \ref{thm:intr}, unfortunately, cannot be encoded in Rusts type
+system, but when implementing $combine$, we can map the variants along with the
+specific fields being added ($Add$), modified ($Mod$), or removed ($Rem$), to get
+a more optimized instruction set. If we are modifying a value on field $foobar$,
+but in the same instruction set, remove it, then the modifying instruction is an
+$NoOp$. This optimization can be found in appendix \ref{app:a}.
 
 Like writing direct binary to develop a program, writing \textbf{instruction}s to
 change the core is quite abstract for most developers so to facilitate development
@@ -686,9 +678,17 @@ on a separate thread.
 
 \section{Testing} \label{sec:testing}
 
-A zero-core application is equivalent to a microservice architecture, in that
+A zero-core \gls{ide} is equivalent to a microservice architecture, in that
 testing is important to ensure changes in one module does not inadvertently
-affect another.
+affect another. This is commonly achived by using \textit{pipelines}, a part
+of the \gls{cicd} process, where we run several \textit{jobs} whenever we make a
+change to our application. If we are bundling different modules together, and
+serving that as an \gls{ide}, we want to ensure that a change to a module does
+not negativly affect the other. This is where \textit{pipline jobs} come in, as
+each \textit{job} test some part of our \gls{ide}. While it is cheaper to
+\textit{spin} up an instance of the \gls{ide} in a pipeline, than an application
+dedicated to serve millions of users, we still want to avoid doing this
+unnecessarily. This is why we split up our testing into different stages.
 
 \subsection{Mocking}
 
@@ -699,11 +699,14 @@ singular module is inexpensive.
 \subsection{Unit Testing}
 
 A module developer should create unit tests for their module. This can easily be
-done, and tested many times, due to the light-weightiness of a module.
+done, and tested many times, due to the light-weightiness of a module. This,
+together with mocking, ensures we can test our modules, as if they where in an
+\gls{ide}. This means we can ensure changes made to a module is non-breaking.
 
 \subsubsection{UI Testing}
 
-Universal design! Expected UI behavior!
+We can also combine this with existing testing libraries, like \textit{Playwright}\footnote{\url{https://playwright.dev/}},
+which can enable us to create tests specifically for UI behavior.
 
 \subsection{Module Family Testing}
 
@@ -752,12 +755,42 @@ event they want to handle. Furthermore, all events thrown are also explicitly
 done through the core instance, meaning a \textit{test-core} could be created,
 which registers which event is thrown from what module, and all dependencies
 between modules can be noted.
-\todo{Implement this}
 
 \subsection{End-To-End-Testing}
 
 The final step in the testing pipeline, is to test the entire application
-together. This is known as \gls{e2e}, but this is expensive.
+together. This is known as \gls{e2e}. \gls{e2e} is expensive, compared to the
+other steps, as we have to load the entire application in the pipeline, and test
+all interactions. This, of course, is the easiet way to cover all edge-cases, but
+since it is the whole application being tested, harder to figure out what caused
+a failure. Our \gls{ide} can be saturated with events in the \gls{e2e} step of a
+pipeline, as all user interactions are translated into events, this ensures a
+module developer can narrow down what modules are at fault, by what modules
+\textit{subscribe} to that event.
+
+\section{Module Developer Tools}
+
+The module developer experience is an important aspect of a zero-core
+architecture. A good way to improve this experience, is by providing good
+tooling.
+
+\subsection{Module Dependency Visualization}
+
+\todo{Still being developed}
+
+\subsection{Module Isolation Testing}
+
+\todo{Still being developed}
+
+This is as simple as creating a minified version of our \gls{ide}, that has
+extra tools for mocking Events.
+
+\subsection{Module Boilerplate Generation}
+
+\todo{Still being developed}
+
+This \gls{cli}-tool enables a developer to quickly get started on developing
+modules, as the tidous work of setting up a project can be automated away.
 
 \section{Modules}
 
@@ -773,9 +806,9 @@ architecture to go from one wherein the core is a terminal object, to a more
     [ language=Rust
     , caption={Module Event (Rust)}
     , label=lst:moduleEvent
-    , firstline=8
-    , lastline=12
-    ]{./core/src-tauri/core-std-lib/src/event.rs}
+    , firstline=14
+    , lastline=41
+    ]{./core/src-tauri/core-std-lib/src/event/mod.rs}
 \end{center}
 
 This forms our \textit{request} and \textit{response} type, making the
@@ -822,24 +855,247 @@ This means that the dependency graph of a Magnolia project should be a
 in a Magnolia project could be quite large. Which means the cycles could be
 quite long, which would make resolving the cyclic dependency issue complicated.
 One way to help a developer, would be to give them a tool to visualize the
-dependency graph, so that they could see what modules are connected.
-%\todo{Implement and showcase this module}
+dependency graph, so that they could see what modules are connected. Using the
+Magnolia library as the input, we can create a visualization of the dependencies
+in Magnolia. Using two modules, one for \textit{parsing} the Magnolia library,
+finding all packages, and their dependencies, and another for for visualizing
+this.
+
+\begin{center}
+  \lstinputlisting
+    [ language=Rust
+    , caption={
+      Magnolia library parser Module \textit{subscribing} to an
+      \textit{get\_magnolia\_graph } Event (Rust)
+    }
+    , label=lst:magnoliaLibParserSub
+    , firstline=33
+    , lastline=36
+    ]{./modules/magnolia\_dependency/src/lib.rs}
+\end{center}
+
+In listing \ref{lst:magnoliaLibParserSub}, the module is invoking the
+\textit{add\_handler} method on an object that implements the \textit{Core} trait,
+(\ref{lst:core}), and passing \textit{get\_magnolia\_graph} and
+\textit{MODULE\_NAME}. This means that Events with the event name
+\textit{get\_magnolia\_graph}, will trigger this module. It's \textit{this}
+module, because we have to pass the name of the module handling the event.
+
+We can therefore invoke this Module by simply triggering the subscribed Event.
+
+Due to Rust's type safety, there is a lot of \textit{noise}, especially because
+we are working with recursive data structures, with optional values. In listing
+\ref{lst:magLibParserSimple}, we can see a simplified version of the module
+handler, but this is not valid Rust code, the full code for the module can be
+found in appendix \ref{apx:b}.
+
+\begin{code}[H]
+  \lstinputlisting
+    [ language=Rust
+    , caption={Simplified magnolia library parser Module (Rust)}
+    , label=lst:magLibParserSimple
+    , numbers=left
+    , numberstyle=\tiny\color{gray}
+    ]{./code/mag\_lib\_simple.rs}
+\end{code}
+
+The above code (\ref{lst:magLibParserSimple}), we are handling Events with the name
+\textit{get\_magnolia\_graph}, (line 3), and getting the path that is supplied in
+the Event argument, (line 4). In line 4 we then create a \textit{key}, which we
+use to check if this graph has been created yet, by checking the state (line 6).
+If this graph does exist, we \textit{respond} by throwing an Event with the
+existing graph (line 7 to 9). If it does not exist, we create it by calling the
+\textit{get\_graph} function, (left out for brevity), which recursively finds
+files in the supplied path, using RegEx to find the packages, and their
+dependencies. We then end by \textit{responding} with the created graph,
+(line 12), and store it in the state, with the key (line 13 to 16). The
+resulting response can be seen in listing \ref{lst:magLibParserRes}
+
+\begin{code}[H]
+  \begin{lstlisting}[language = TypeScript, label=lst:magLibParserRes, caption={Magnolia library parser response (TypeScript)}]
+    {
+      event: {
+        event: "graph",
+        args: {
+          list: [
+            {
+              obj {
+                name: { str: string },
+                dependencies: { list: [{ str: string }] }
+              }
+            }
+          ]
+        }
+      }
+    }
+  \end{lstlisting}
+\end{code}
+
+The module responsible for rendering the graph, uses
+\textit{d3}\footnote{\url{https://d3js.org/}}, a visualization library for
+JavaScript. \textit{d3} expects \textit{nodes} and \textit{links}, specified in
+listing \ref{lst:d3Type}.
+
+\begin{lstlisting}[language = TypeScript, label=lst:d3Type]
+  type Node = { id: string, name: string };
+  type Link = { source: string, target: string };
+\end{lstlisting}
+
+But due to how types are encoded in our Value type, as seen in
+\ref{lst:magLibParserRes}, some translation is necessary. We have to go from the
+type \textit{Value}, to
+\textit{
+  list of objects, with two fields, name and dependencies, of type string and
+  list of string, respectively}
+This translation can be seen in \ref{lst:depVisMod}. Left out, are the steps
+verifying that the event has an argument, (since its optional to pass one), and
+that the argument is of the list variant of \textit{Value}. The full source code
+can be found in appendix \ref{apx:b}. Since the list variant can contain any
+\textit{Value} variant, we filter the list by whether it is an object variant,
+(line 2), we then transform each element in the list, into a intersection of the
+types \textit{d3} expects, (\ref{lst:d3Type}). The questionmark syntax on line
+4, where we declare the \textit{id} variable, means that if any of the
+expressions on the left are undefined, the resulting expression is undefined.
+Since the object variant of \textit{Value} does not necessarily contain the
+\textit{name} field, or is of the kind \textit{str}. On line 9 to 13, we are
+getting all the dependencies from the object, with a helper method,
+\textit{tObjLookUpOr}. This method does a \textit{lookup} on the supplied field
+on an object, and a typecheck. If the object does not exist, or is not of the
+correct type, the passed fallback value is returned instead, in this case, an
+empty list (line 10). Since we know the value is an list, we can safely access
+it, (line 11), and filter by the string variant, and transforming the
+\textit{Value} to a string primitive, (line 11 to 13).
+
+\begin{code}[H]
+  \lstinputlisting
+    [ language=TypeScript
+    , caption={Dependency visualiser module (TypeScript)}
+    , label=lst:depVisMod
+    , numbers=left
+    , numberstyle=\tiny\color{gray}
+    , firstline=160
+    , lastline=174
+    ]{./modules/dependency-viewer/module.ts}
+\end{code}
+
+In the picture \ref{pic:magLib}, we can see the finished rendering of the
+dependency graph of the Magnolia basic library. As mentioned earlier, Magnolia
+has a lot of re-use, and therefore dependencies. That makes this visualization
+quite \textit{noisy}, as there are a lot of crossing between the dependencies.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{magnolia-dependencies.png}
+  \caption{
+    Magnolia basic library dependencies visualized. Each colour represents a
+    package, which contains several modules. The size of the nodes vary
+    depending on the amount of dependents, (indegree), a module has.
+  }
+  \label{pic:magLib}
+\end{figure}
+
+Luckily, with \textit{d3}, we can mitigate some of the noise. In the picture
+\ref{pic:depCont}, we can see the control-panel that our graph module has
+created. With the control panel, we can zoom in and out on the graph,
+(this can also be done with the mouse), reset our view. This is done with the
+help of \textit{d3}, while the final button, find cycles, is implemented by
+simply checking the input data for a cycle, and colouring it red with the help
+of basic JavaScript and \gls{css}. The remaining sliders are specifically for
+the graph ordering itself, where force strength, is with how much force nodes
+exert on each other, and link distance is how far a link between two nodes
+can/\textit{wants} to be. This, along with the node size scale, scaling how big
+a node is depending on how many dependents it has, ensures this visualisation
+tool can be used for other programming libraries, not just Magnolia.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.45\textwidth]{dependency-viewer-controls.png}
+  \caption{
+    Control panel, with buttons and sliders for controlling the graph view
+  }
+  \label{pic:depCont}
+\end{figure}
+
+Furthermore, we can highlight the packages we care about, using the filter
+panel the module created. In picture \ref{pic:depFil}, all the different
+Magnolia packages have been detected, and their corresponding colour has been
+added. We can then enable, or disable them.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.45\textwidth]{dependency-viewer-filter.png}
+  \caption{List of packages in the graph, that can be toggled}
+  \label{pic:depFil}
+\end{figure}
+
+In the picture \ref{pic:depDis}, we can see the graph after we have disabled all
+other packages, except the \textit{Fundamentals} package.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.75\textwidth]{magnolia-dependencies-filtered.png}
+  \caption{
+    Magnolia basic library, with just the \textit{Fundamentals} package
+    highlighted.
+  }
+  \label{pic:depDis}
+\end{figure}
 
 \subsection{IDE Module Family}
 
-%\todo{Showcase the modules created to have a rudimentary IDE}
-%\todo{Mention QOF modules for future module developers}
-%\todo{Mention Project Management}
-
 \subsection{Caching}
-%\todo{Properly implement this}
-In Magnolia, caching of \gls{lsp} queries is important. And caching of the
-compiled code.
+
+There are two difficult problems in computer science\footnote{\url{https://martinfowler.com/bliki/TwoHardThings.html}}.
+Cache invalidation, naming things and off-by-one errors. Compiler for
+programming languages stores compiled code, such that it is not unnecessarily
+re-compiled. Similarly, \gls{ide}s like \gls{intellij} or \gls{vscode} store the
+application state between sessions, what files where opened, where in the files
+one where, etc. In this \gls{ide}, something similar can be done, by using the
+\textit{ide\_cache} module. This module declares a field on the state,
+\textit{ide-cache}, which everytime the \gls{ide} exits, it writes to a file the
+contents of the field, which it reads and adds to the state during the
+\textit{PostInit}-event. That way, if existing modules are doing some state
+change, they can be trivially refactored to use the cache field instead, by
+simply pre-fixing all their paths with \textit{ide-cache}. In the dependency
+visualizer, we can prefix the graph storing, with this, and then the generated
+graph would be stored across sessions, ensuring a speedier visualisation
+process, as we don't have to wait for an, relativley, expensive IO operation.
+
+\subsection{IDE Framework}
+
+An important aspect development, is seperation of concerns. This is also
+relevant for module development. A module that renders a \gls{dag}, should not
+also be responsible for parsing a library and retrievieng the data to be
+rendered. The same principle has been applied when developing prototype modules
+for this \gls{ide}, the following modules are responsible for the \textit{view}
+of the \gls{ide}:
+
+\begin{enumerate}
+  \item \textit{ide\_explorer}: Responsible for the file explorer
+  \item \textit{ide\_framework}: Responsible for general layout
+  \item \textit{ide\_pm}: Responsible for the menu bar
+  \item \textit{ide\_tabs}: Responsible for the tabbing system
+  \item \textit{ide\_errors}: Responsible in displaying module errors
+\end{enumerate}
+
+In the figure \ref{fig:ideLayout}, we have layed out the naming convention we
+use when referring to different \textit{places} in the \gls{ide}.
+
+\todo{Create the figure}
+
+The module \textit{ide\_pm}, being responsible for the menu bar at the top of
+the \gls{ide}, has an \textit{easy} job, as it just simplifies the creation of
+interactive \gls{ui} elements for other modules. With the dependency graph
+visualisation module, we can create a module which sends the initial Event that
+triggers the graph visualisation, and have the button be under the \textit{View}
+dropdown content.
+
+\todo{Show the code for this}
 
 \subsection{Editor Module Family}
 
-%\todo{Implement a rudimentary editor}
+\todo{Implement a rudimentary editor}
 
 \subsection{Magnolia Language Server}
 
-%\todo{Implement a rudimentary Magnolia LS}
+\todo{Implement a rudimentary Magnolia LS}

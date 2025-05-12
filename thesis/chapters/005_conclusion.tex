@@ -2,6 +2,13 @@
 
 The hypothesis \ref{hyp:modular} is right, source? Me.
 
+\section{Modular Development}
+
+In this thesis, we have shown that developing against a zero-core modular
+architecture is trivial. By utilizing seperation of concerns, a module developer
+need to only understand the feature they want to extend, or if it is an entirely
+new feature, find out what has been done before.
+
 \section{Making an IDE is hard}
 
 An \gls{ide} has many features, which are needed to enhance the developer
@@ -20,3 +27,10 @@ at which text is placed when the user writes. If the user clicks someplace in
 the document, the cursor \textit{jumps} to that place. If the user uses the
 arrow-keys to move around, the cursor moves one character to left or right, or
 one line up and down, depending on which arrow-key was pressed.
+
+\section{Cons}
+
+If you are the one developing every module, it get's very complex.
+
+If you have a problem, and try to solve it with concurrency, now problems two
+have you.

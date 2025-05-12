@@ -15,14 +15,14 @@ developers of the \gls{ide}, it might be short-lived. As the \gls{ide} is
 maintained, updated and improved, the features used to solve the niche needs of
 the experimental language might be deprecated.
 
-If, however, the \gls{ide} has integrated support for extending the standard
+However, if the \gls{ide} has integrated support for extending the standard
 functionality of the application, then the ad hoc solution will be more stable.
 Such a system is known by many names. Plug-in architecture, exstension
 \gls{api}, or add-on system, to name a few. The common factor amongst these
 systems, is that some component, be it a plug-in, an exstension, an add-on, or a
 module, can extend the functionality of the application. This is a modular
 approach to extending the lifetime of an application; extending its software
-longevity. In many of these systems, these components, are composable,
+longevity. In many of these systems, said components, are composable,
 allowing for multiple components to work together in a modular fashion to add
 extra features to an application. This way of adding functionality to an
 application is commonly used in \gls{ide}s.
@@ -30,11 +30,11 @@ application is commonly used in \gls{ide}s.
 
 \section{Modular Architecture}
 
-A modular \gls{ide} would assist in this. Even if a new feature from an
-experimental language is introduced, it is unlikely that this feature has no
-relation to existing features, and as such, it is easier to extend the
-application in such a manner to facilitate this new feature, with help of
-existing modules. If, however it is the case that this feature is
+A modular \gls{ide} would assist in these ad hoc solutions. Even if a new
+feature from an experimental language is introduced, it is unlikely that this
+feature has no relation to existing features, and as such, it is easier to
+extend the application in such a manner to facilitate this new feature, with help of
+existing modules. However, if it is the case that this feature is
 paradigm-shifting, then there will still be existing functionality that can be
 used, re-used or extended to facilitate this.
 
@@ -42,16 +42,16 @@ used, re-used or extended to facilitate this.
   When an application is designed to be modular from the start, then features
   not thought of, by the original developers can be integrated into the
   application, and be stable. If an experimental research language introduces
-  some paradigm shifting concept, then this can easily be tested in such a
-  modular \gls{ide}.
+  some paradigm shifting concept, then this can easily be tested in a modular
+  \gls{ide}.
 \end{hyp}
 
-\section{Zero Core Application}
+\section{Zero-core Application}
 
 Taking the modular architecture design to the extreme, the core application has
 no base features, everything is enabled by an external module. We call such a
-highly modular application, a \textit{zero core} application. To qualify for a
-\textit{zero core} application, the default application has no functionality;
+highly modular application, a \textit{zero-core} application. To qualify for a
+\textit{zero-core} application, the default application has no functionality;
 everything is acquired by modules. Such a design facilitates a modular approach,
 enabling a module-developer to only focus on the functionality they want to
 extend, not the entire core.
@@ -59,22 +59,19 @@ extend, not the entire core.
 \section{Thesis Outline}
 
 Traditional \gls{ide}s encompass essential features such as syntax highlighting,
-code navigation, and hover-help, playing a crucial role in the software 
-development process. However, their limitations become apparent when working with
-experimental languages. This paper advocates for modularization and
+code navigation, and hover-help, all of which play a crucial role in the
+software development process. However, their limitations become apparent when
+working with experimental languages. This paper advocates for modularization and
 composability as key design principles, demonstrating their ability to extend
 the operational lifespan of software by allowing for ease-of adoption to new
 paradigms and tools. The discussion revolves around Magnolia, an experimental
 research programming language developed by \gls{bldl} at the University of
-Bergen. Magnolia will act as a case study illustrating the need for a
-specialized \gls{ide}. It is a way to experiment with novel language features.
-And to achieve this in a sufficient manner, a more specialized \gls{ide} is
-required.
+Bergen. Magnolia is a way to experiment with novel language features. It will
+therefore be a case study illustrating the need for a specialized \gls{ide}. To
+achieve this in a sufficient manner, a more specialized \gls{ide} is required.
 
-Designing a zero core architecture will be the focus point of this paper, to
-develop and implement an modular \gls{ide}. The target language will be Magnolia,
-an experimental research language being developed by \gls{bldl} at the University
-of Bergen.
+The focus point of this paper is to design a zero-core architecture, to develop
+and implement a modular \gls{ide}, where the target language will be Magnolia.
 
 In chapter \ref{cha:background}, we will introduce Magonlia, and features this
 language introduces that are difficult to encompass using standard \gls{ide}s.

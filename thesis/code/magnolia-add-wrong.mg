@@ -1,3 +1,2 @@
-implementation implNaturalNumbersInvalid = {
-    wrong!!
-}
+implementation implNaturalNumbersInvalid =
+  = external C++ CxxNaturalNumbers signature(NaturalNumbersWrong);

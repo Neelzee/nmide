@@ -1,2 +1,2 @@
-satisfation implNaturalNumbersIsValid
+satisfaction implNaturalNumbersIsValid
   = implNaturalNumbers models NaturalNumbers;

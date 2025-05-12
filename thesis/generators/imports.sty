@@ -33,8 +33,6 @@ style=numeric-verb,
 \usetikzlibrary{shapes.geometric,positioning,shapes.symbols}
 \renewcommand{\labelenumii}{\theenumii}
 \renewcommand{\theenumii}{\theenumi.\arabic{enumii}.}
-\usepackage{generators/javascript}
-\usepackage{generators/typescript}
 
 \usepackage{hyperref}
 \tolerance=1000
@@ -47,9 +45,14 @@ style=numeric-verb,
 
 \usepackage[dvipsnames]{xcolor}
 \usepackage{listings}
-\usepackage{generators/listings-magnolia}
 \usepackage{generators/listings-golang}
 \usepackage{generators/listings-haskell}
+\usepackage{generators/listings-cpp}
+\usepackage{generators/listings-typescript}
+\usepackage{generators/listings-javascript}
+\usepackage{generators/listings-java}
+\usepackage{generators/listings-magnolia}
+
 
 \newlength\glsdescwidth
   \setlength{\glsdescwidth}{1\hsize}
@@ -87,6 +90,12 @@ style=numeric-verb,
 \usepackage{amsfonts}
 \usepackage{colortbl}
 \usepackage{listings-rust}
+\lstset{
+  language=rust,
+  backgroundcolor=\color{white},
+  extendedchars=true,
+  tabsize=2,
+  }
 
 \usepackage{amsthm}
 \theoremstyle{definition}
