@@ -11,5 +11,7 @@ pub mod impls;
 #[ts(export)]
 pub struct CoreModification {
     state: Instruction<Value>,
-    ui: (Instruction<Html>, Instruction<String>, Instruction<Attr>),
+    ui: UIInstr,
 }
+
+pub type UIInstr = (Instruction<Html>, Instruction<String>, Instruction<Attr>);
