@@ -1,6 +1,6 @@
 modules : clean
 	cargo run \
-		--manifest-path=./cm-installer/Cargo.toml -- \
+		--manifest-path=../tools/cm-installer/Cargo.toml -- \
 		--out=./src-tauri/target \
 		--conf=./Modules.toml \
 		--modules=./modules \
@@ -22,7 +22,7 @@ clean :
 	mkdir -p ./dist/external && \
 	mkdir -p /home/nmf/.local/share/no.nilsmf.uib/modules/ && \
 	cargo run \
-		--manifest-path=./cm-installer/Cargo.toml -- \
+		--manifest-path=../tools/cm-installer/Cargo.toml -- \
 		--out=./src-tauri/target \
 		--clean \
 		--conf=./Modules.toml \
