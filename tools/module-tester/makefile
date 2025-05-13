@@ -1,6 +1,6 @@
 modules : clean
 	cargo run \
-		--manifest-path=../core/cm-installer/Cargo.toml -- \
+		--manifest-path=../../core/cm-installer/Cargo.toml -- \
 		--out=./rsm-grapher/target \
 		--conf=./Modules.toml \
 		--cargo=./rsm-grapher/Cargo.toml \
