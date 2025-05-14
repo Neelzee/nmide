@@ -1,12 +1,10 @@
-use core_std_lib::{core::Core, core_modification::CoreModification};
-use log::debug;
-use tauri::Emitter;
-use tokio::sync::mpsc::channel;
-
 use crate::{
     core::NmideCore,
     statics::{NMIDE, NMIDE_SENDER, NMIDE_STATE, NMIDE_UI},
 };
+use core_std_lib::{core::Core, core_modification::CoreModification};
+use log::debug;
+use tokio::sync::mpsc::channel;
 
 pub fn spawn_core_modification_handler() {
     tokio::spawn({
@@ -21,16 +19,12 @@ pub fn spawn_core_modification_handler() {
                 let (new_state, ui_builder) = modification.clone().build_state(state);
                 let mut st = NMIDE_STATE.write().await;
                 *st = new_state;
-                let app = NMIDE
-                    .get()
-                    .expect("AppHandle should be initialized")
-                    .read()
-                    .await;
                 let state = st.clone();
                 let inst = ui_builder.instruction();
                 let mut current_ui = NMIDE_UI.write().await;
                 *current_ui = ui_builder.build(ui);
                 let ui = current_ui.clone();
+                let app = NMIDE.get().expect("App should be initialized");
                 debug!(
                     place = "backend",
                     state:serde,
@@ -44,8 +38,7 @@ pub fn spawn_core_modification_handler() {
                     ui,
                     modification
                 );
-                app.emit("nmide://render", inst)
-                    .expect("AppHandle emit should always succeed");
+                app.rerender(inst).await;
             }
         }
     });

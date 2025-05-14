@@ -8,7 +8,6 @@ use core_std_lib::{core::Core, core_modification::CoreModification, event::Event
 use foreign_std_lib::event::rs_event::REvent;
 use futures;
 use log::info;
-use tauri::Emitter;
 
 pub async fn init(cm: CoreModification) {
     let rt_modules = RUNTIME_MODULES
@@ -26,13 +25,7 @@ pub async fn init(cm: CoreModification) {
     futures::future::join_all(module_futures).await;
     futures::future::join_all(rt_module_futures).await;
 
-    NMIDE
-        .get()
-        .expect("AppHandle should be initialized at this point")
-        .read()
-        .await
-        .emit("nmide://event", Event::post_init())
-        .expect("Emit should succeed")
+    NmideCore.throw_event(Event::PostInit).await;
 }
 
 pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
@@ -81,12 +74,11 @@ pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
     NmideCore.send_modification(cm).await;
 
     if matches!(evt, Event::PreExit) {
-        let app = NMIDE
+        info!(place = "backend"; "Exiting");
+        NMIDE
             .get()
             .expect("AppHandle should be initialized")
-            .read()
+            .exit()
             .await;
-        info!(place = "backend"; "Exiting");
-        app.exit(0);
     }
 }

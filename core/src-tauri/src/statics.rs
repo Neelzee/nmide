@@ -1,11 +1,10 @@
 //! Contains thread safe structs for access across the application.
 
-use crate::core::ModuleEventRegister;
+use crate::{app::App, core::ModuleEventRegister};
 use core_module_lib::{rs_module::RsModule, Module};
 use core_std_lib::{core_modification::CoreModification, html::Html, state::State};
 use once_cell::sync::{Lazy, OnceCell};
 use std::{collections::HashMap, path::PathBuf};
-use tauri::AppHandle;
 use tokio::sync::{mpsc::Sender, RwLock};
 
 /// HashMap, mapping module names to their corresponding runtime-module, is
@@ -53,4 +52,4 @@ pub static NMIDE_SENDER: tokio::sync::OnceCell<Sender<CoreModification>> =
 
 /// Thread safe AppHandle. Used because some processes need to `emit` events,
 /// which is a one-way method for the backend to communicate with the frontend.
-pub static NMIDE: tokio::sync::OnceCell<RwLock<AppHandle>> = tokio::sync::OnceCell::const_new();
+pub static NMIDE: tokio::sync::OnceCell<Box<dyn App>> = tokio::sync::OnceCell::const_new();
