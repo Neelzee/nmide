@@ -1,0 +1,15 @@
+{
+  "name": "event_sender",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@nmide/js-debug-module": "link:@nmide/js-debug-module"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@nmide/js-utils": "link:@nmide/js-utils"
+  }
+}

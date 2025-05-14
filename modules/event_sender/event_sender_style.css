@@ -1,9 +1,7 @@
-.show-form,
-.show-debug {
-  display: block;
+#debug-content {
+  display: none;
 }
 
-.hide-form,
-.hide-debug {
-  display: none;
+.show-content {
+  display: block;
 }
