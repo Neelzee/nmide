@@ -10,6 +10,8 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@nmide/js-client": "link:@nmide/js-client",
+    "@nmide/js-core-std-lib": "link:@nmide/js-core-std-lib",
     "@nmide/js-utils": "file:../libs/js-utils",
     "@tauri-apps/api": "^2.4.1",
     "@tauri-apps/plugin-dialog": "~2",

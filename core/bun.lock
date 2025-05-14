@@ -4,6 +4,8 @@
     "": {
       "name": "core",
       "dependencies": {
+        "@nmide/js-client": "link:@nmide/js-client",
+        "@nmide/js-core-std-lib": "link:@nmide/js-core-std-lib",
         "@nmide/js-utils": "file:../libs/js-utils",
         "@tauri-apps/api": "^2.4.1",
         "@tauri-apps/plugin-dialog": "~2",
@@ -167,6 +169,10 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.0", "", {}, "sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.25", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ=="],
+
+    "@nmide/js-client": ["@nmide/js-client@link:@nmide/js-client", {}],
+
+    "@nmide/js-core-std-lib": ["@nmide/js-core-std-lib@link:@nmide/js-core-std-lib", {}],
 
     "@nmide/js-utils": ["@nmide/js-utils@file:../libs/js-utils", { "dependencies": { "fp-ts": "^2.16.9", "io-ts": "^2.2.22" }, "devDependencies": { "typescript": "^5.8.3", "vitest": "^2.1.9" } }],
 
