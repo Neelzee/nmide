@@ -1,15 +1,13 @@
 use crate::{
-    core::NmideCore,
+    core_modification_handler::spawn_core_modification_handler,
     setup::setup,
-    statics::{NMIDE, NMIDE_SENDER, NMIDE_STATE, NMIDE_UI},
+    statics::{NMIDE, NMIDE_STATE, NMIDE_UI},
 };
-use core_std_lib::{
-    core::Core, core_modification::CoreModification, event::Event, html::Html, state::Value,
-};
-use log::{debug, info};
+use core_std_lib::{core_modification::CoreModification, event::Event, html::Html, state::Value};
+use log::info;
 use std::{collections::HashMap, path::PathBuf};
 use tauri::{Emitter, Manager, RunEvent};
-use tokio::sync::{mpsc, RwLock};
+use tokio::sync::RwLock;
 
 mod setup;
 
@@ -71,46 +69,7 @@ pub async fn run() {
         .build(tauri::generate_context!())
         .expect("IDE Application should build successfully");
 
-    tokio::spawn({
-        let (sender, mut recv) = mpsc::channel::<CoreModification>(100);
-        NMIDE_SENDER.set(sender).expect("NMIDE_SENDER not set yet");
-        async move {
-            while let Some(pre_modification) = recv.recv().await {
-                let modification = pre_modification.clone().optimize();
-                let state = NmideCore.state().await;
-                let ui = NmideCore.ui().await;
-
-                let (new_state, ui_builder) = modification.clone().build_state(state);
-                let mut st = NMIDE_STATE.write().await;
-                *st = new_state;
-                let app = NMIDE
-                    .get()
-                    .expect("AppHandle should be initialized")
-                    .read()
-                    .await;
-                let state = st.clone();
-                let inst = ui_builder.instruction();
-                let mut current_ui = NMIDE_UI.write().await;
-                *current_ui = ui_builder.build(ui);
-                let ui = current_ui.clone();
-                debug!(
-                    place = "backend",
-                    state:serde,
-                    ui:serde,
-                    pre_modification:serde,
-                    pre_len = pre_modification.len(),
-                    post_len = modification.len(),
-                    modification:serde;
-                    "recieved modification {:?} {:?} {:?}",
-                    state,
-                    ui,
-                    modification
-                );
-                app.emit("nmide://render", inst)
-                    .expect("AppHandle emit should always succeed");
-            }
-        }
-    });
+    spawn_core_modification_handler();
 
     app.run(move |app_handle, event| match &event {
         RunEvent::ExitRequested { .. } => app_handle
