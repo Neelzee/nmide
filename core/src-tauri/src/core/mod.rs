@@ -34,6 +34,17 @@ impl ModuleEventRegister {
                 .unwrap_or(Vec::new()),
         );
 
+
+        modules.append(
+            &mut self
+                .event
+                .read()
+                .await
+                .get("*")
+                .cloned()
+                .unwrap_or(Vec::new()),
+        );
+
         modules
     }
 
