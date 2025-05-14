@@ -24,14 +24,14 @@ const moduleWrapper = (m: ModuleUnknown): Module => {
       TE.getOrElse(() => task.of(E.right(emptyCm()))),
       TE.mapLeft(formatValidationErrors),
       TE.getOrElse(errs => {
-          window.__nmideConfig__
-            .log
-            .error(`Error on Module.init from module: ${m.name}, error: ${JSON.stringify(errs)}`);
-          return T.of(emptyCm());
+        window.__nmideConfig__
+          .log
+          .error(`Error on Module.init from module: ${m.name}, error: ${JSON.stringify(errs)}`);
+        return T.of(emptyCm());
       }),
       task => task(),
     ),
-  handler: (event: Event, core: Core) => pipe(
+    handler: (event: Event, core: Core) => pipe(
       TE.tryCatch(
         () => m.handler(event, core),
         err => {
@@ -45,10 +45,10 @@ const moduleWrapper = (m: ModuleUnknown): Module => {
       TE.getOrElse(() => task.of(E.right(emptyCm()))),
       TE.mapLeft(formatValidationErrors),
       TE.getOrElse(errs => {
-          window.__nmideConfig__
-            .log
-            .error(`Error on decoding result from Module.handler from module: ${m.name}, error: ${JSON.stringify(errs)}`);
-          return T.of(emptyCm());
+        window.__nmideConfig__
+          .log
+          .error(`Error on decoding result from Module.handler from module: ${m.name}, error: ${JSON.stringify(errs)}`);
+        return T.of(emptyCm());
       }),
       task => task(),
     )

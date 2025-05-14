@@ -47,6 +47,7 @@ export const DInstrHtml: t.Type<Instruction<Html>> = t.recursion("DInstrHtml", (
       t.type({ "click": DEvent }),
       t.type({ "onInput": DEvent }),
       t.type({ "emitInput": DEvent }),
+      t.type({ "change": DEvent }),
       t.type({ "src": t.string }),
       t.type({ "type": t.string }),
       t.type({ "checked": t.boolean }),
@@ -118,13 +119,14 @@ export const DInstrAttr: t.Type<Instruction<Attr>> = t.recursion("DInstrAttr", (
     ]);
 
 
-    const DAttr = t.union([
+    const DAttr: t.Type<Attr> = t.union([
       t.type({ "id": t.string }),
       t.type({ "clss": t.string }),
       t.type({ "style": t.string }),
       t.type({ "click": DEvent }),
       t.type({ "onInput": DEvent }),
       t.type({ "emitInput": DEvent }),
+      t.type({ "change": DEvent }),
       t.type({ "src": t.string }),
       t.type({ "type": t.string }),
       t.type({ "checked": t.boolean }),
@@ -210,6 +212,7 @@ export const DInstrAttr: t.Type<Instruction<Attr>> = t.recursion("DInstrAttr", (
     t.type({ "style": t.string }),
     t.type({ "click": DEvent }),
     t.type({ "onInput": DEvent }),
+    t.type({ "change": DEvent }),
     t.type({ "emitInput": DEvent }),
     t.type({ "src": t.string }),
     t.type({ "type": t.string }),
@@ -240,6 +243,7 @@ export const DInstrValue: t.Type<Instruction<Value>> = t.recursion("DInstrValue"
       t.type({ "click": DEvent }),
       t.type({ "onInput": DEvent }),
       t.type({ "emitInput": DEvent }),
+      t.type({ "change": DEvent }),
       t.type({ "src": t.string }),
       t.type({ "type": t.string }),
       t.type({ "checked": t.boolean }),

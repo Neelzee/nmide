@@ -38,6 +38,7 @@ export const DHtml: t.Type<Html> = t.recursion("DHtml", () => {
     t.type({ "click": DEvent }),
     t.type({ "onInput": DEvent }),
     t.type({ "emitInput": DEvent }),
+    t.type({ "change": DEvent }),
     t.type({ "src": t.string }),
     t.type({ "type": t.string }),
     t.type({ "checked": t.boolean }),

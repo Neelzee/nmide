@@ -35,6 +35,7 @@ export const DEvent: t.Type<Event> = t.recursion("DEvent", () => {
       t.type({ "click": DEvent }),
       t.type({ "onInput": DEvent }),
       t.type({ "emitInput": DEvent }),
+      t.type({ "change": DEvent }),
       t.type({ "src": t.string }),
       t.type({ "type": t.string }),
       t.type({ "checked": t.boolean }),

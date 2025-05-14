@@ -10,5 +10,6 @@ export type Attr =
   | { "click": Event }
   | { "onInput": Event }
   | { "emitInput": Event }
+  | { "change": Event }
   | { "src": string }
   | { "custom": [string, string] };

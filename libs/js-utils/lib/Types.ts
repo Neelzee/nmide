@@ -3,6 +3,7 @@ import { Value } from "./Value";
 import * as O from "fp-ts/Option";
 import * as A from "fp-ts/Array";
 import type { Html } from "./Html";
+import { isT } from "./Utils";
 
 export type ValuePrimitive = number
   | null
@@ -84,7 +85,7 @@ const fromEntries = (xs: [string, Value][]): ValueObj => pipe(
     },
     empty: {} as InnerObject,
   })(([f, v]): InnerObject => {
-    const obj = {};
+    const obj: Record<string, Value | undefined> = {};
     obj[f] = v;
     return obj;
   }),
@@ -111,8 +112,18 @@ export const isObj = (x: unknown): x is [string, ValuePrimitive][] => {
 export const isList = (x: unknown): x is ValuePrimitive[] =>
   Array.isArray(x) && !isObj(x);
 
-export const tValueMaybe = <T>(t: T): O.Option<Value> => {
+export const tValueMaybeOr = <T extends Value>(t: unknown) => (fallback: T): T => pipe(
+  tValueMaybe(t),
+  o => O.isSome(o) && isT<T>(o.value)
+    ? o.value
+    : fallback
+)
+
+export const tValueMaybe = (t: unknown): O.Option<Value> => {
   if (t === null) {
+    return O.none;
+  }
+  if (t === "null") {
     return O.some("null")
   }
   if (isFloat(t)) {
