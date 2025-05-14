@@ -134,7 +134,7 @@ impl Attr {
 
     pub fn is_empty(&self) -> bool {
         match self {
-            Attr::Id(o) | Attr::Class(o) => o.is_empty(),
+            Attr::Id(o) | Attr::Class(o) | Attr::Custom(_, o) => o.is_empty(),
             _ => unimplemented!(),
         }
     }
@@ -176,5 +176,9 @@ impl Attr {
             Attr::Click(e) | Attr::OnInput(e) | Attr::EmitInput(e) => Some(e.clone()),
             _ => None,
         }
+    }
+
+    pub fn to_raw(&self) -> (&str, &str) {
+        (self.as_string_rep(), self.value())
     }
 }
