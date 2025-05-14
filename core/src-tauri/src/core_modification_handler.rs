@@ -6,6 +6,14 @@ use core_std_lib::{core::Core, core_modification::CoreModification};
 use log::debug;
 use tokio::sync::mpsc::channel;
 
+/// Spawns the thread handling Core Modifications.
+///
+/// Initializes `NMIDE_SENDER`, so should only be invoked once.
+///
+/// # Panics
+///
+/// - If `NMIDE_SENDER` already has been set.
+/// - If `NMIDE` has not been set.
 pub fn spawn_core_modification_handler() {
     tokio::spawn({
         let (sender, mut recv) = channel::<CoreModification>(100);

@@ -168,14 +168,8 @@ impl From<Attr> for RAttr {
         match value {
             Attr::Id(s) => Self::new_id(RString::from_str(&s).unwrap_or_default()),
             Attr::Class(s) => Self::new_class(RString::from_str(&s).unwrap_or_default()),
-            Attr::Style(_) => todo!(),
-            Attr::Type(_) => todo!(),
-            Attr::Checked(_) => todo!(),
             Attr::Click(event) => Self::new_click(event.into()),
-            Attr::OnInput(event) => todo!(),
-            Attr::EmitInput(event) => todo!(),
-            Attr::Src(_) => todo!(),
-            Attr::Custom(_, _) => todo!(),
+            _ => unimplemented!(),
         }
     }
 }

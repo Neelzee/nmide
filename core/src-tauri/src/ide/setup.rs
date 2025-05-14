@@ -27,11 +27,11 @@ pub(super) async fn setup_compile_time_modules() -> Result<()> {
 
     module_reg::register_modules(&mut modules);
 
-    info!(
-        place = "backend";
-        "modules: {:?}",
-        modules.values().map(|m| (*m).name()).collect::<Vec<&str>>()
-    );
+    let str_modules = modules
+        .values()
+        .map(|m| (*m).name().to_string())
+        .collect::<Vec<String>>();
+    info!("compile-time modules: {:?}", str_modules,);
 
     let mut m = COMPILE_TIME_MODULES.write().await;
     *m = modules;

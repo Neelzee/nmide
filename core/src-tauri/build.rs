@@ -11,6 +11,5 @@ fn main() {
     let file = file.join("module_reg.rs");
     fs::copy(file.clone(), out_dir.join("module_reg.rs"))
         .expect(&format!("File {:?} should exist", file));
-    #[cfg(feature = "ide")]
     tauri_build::build();
 }

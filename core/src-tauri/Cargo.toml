@@ -22,7 +22,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 name = "core_lib"
 
 [build-dependencies]
-tauri-build = { features = [], optional = true, version = "2.1.1" }
+tauri-build = { features = [], version = "2.1.1" }
 
 [dependencies]
 anyhow = "1.0.97"
@@ -30,20 +30,14 @@ async-trait = "0.1.88"
 futures = "0.3.31"
 log = { version = "0.4.27", features = ["kv", "kv_serde"] }
 once_cell = "1.21.3"
-actix-cors = { optional = true, version = "0.7.1" }
-actix-files = { optional = true, version = "0.6.6" }
-actix-web = { optional = true, version = "4.10.2" }
 core-module-lib = { path = "./core-module-lib" }
 foreign-std-lib = { path = "./foreign-std-lib", optional = true }
 core-std-lib = { path = "core-std-lib", features = ["core"] }
-tauri = { features = [
-  "protocol-asset",
-  "config-toml",
-], optional = true, version = "2.4.1" }
-tauri-plugin-dialog = { optional = true, version = "2" }
-tauri-plugin-fs = { optional = true, version = "2.2.1" }
-tauri-plugin-log = { optional = true, version = "2.3.1" }
-tauri-plugin-shell = { optional = true, version = "2.2.1" }
+tauri = { features = [ "protocol-asset", "config-toml" ], version = "2.4.1" }
+tauri-plugin-dialog = { version = "2" }
+tauri-plugin-fs = { version = "2.2.1" }
+tauri-plugin-log = { version = "2.3.1" }
+tauri-plugin-shell = { version = "2.2.1" }
 tokio = { features = ["full"], version = "1.44.2" }
 abi_stable = { version = "0.11.3", optional = true }
 async-ffi = { version = "0.5.0", features = ["abi_stable"], optional = true }
@@ -51,16 +45,7 @@ log4rs = "1.3.0"
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]
-default = ["ide", "runtime_modules"]
-ide = [
-  "dep:tauri",
-  "dep:tauri-plugin-log",
-  "dep:tauri-plugin-fs",
-  "dep:tauri-plugin-shell",
-  "dep:tauri-plugin-dialog",
-  "dep:tauri-build",
-]
-server = ["dep:actix-web", "dep:actix-files", "dep:actix-cors"]
+default = ["runtime_modules"]
 runtime_modules = ["dep:abi_stable", "dep:async-ffi", "dep:foreign-std-lib"]
 
 # ============================================================================ #
