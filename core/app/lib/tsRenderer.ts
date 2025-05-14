@@ -1,17 +1,29 @@
 import { NmideConfig } from "@nmide/js-core-std-lib";
 import {
   Attr,
-  Event,
+  Event as NmideEvent,
   Html, HtmlKind,
   Instruction,
   objAdd,
+  tStr,
+  tValueMaybeOr,
+  Value,
   ValueObj
 } from "@nmide/js-utils";
 import { emit } from "@tauri-apps/api/event";
 
 const getElementById = (element: HTMLElement, id: string): HTMLElement | undefined => {
-  if (element.matches(`#${id}`)) {
-    return element;
+  try {
+    if (element.matches(`#${id}`)) {
+      return element;
+    }
+  } catch (e) {
+    window.__nmideConfig__
+      .log
+      .error(
+        `Exception on selection: ${JSON.stringify(e)}`
+        + `, selecting: '#${id}'`
+      );
   }
   for (let i = 0; i < element.children.length; i++) {
     const child = element.children[i];
@@ -35,7 +47,8 @@ const evalHtml = (op: Instruction<Html>) => {
   if ("add" in op) {
     const id = op.add[0];
     const ui = op.add[1];
-    const html = parseHtml(getHtml(ui));
+    const thtml = getHtml(ui);
+    const html = parseHtml(thtml);
     if (id !== null && id !== "") {
       const element = getElementById(window.__nmideConfig__.root, id);
       if (element !== undefined) {
@@ -188,6 +201,15 @@ const addAttr = (element: HTMLElement, attr: Attr) => {
     );
     return;
   }
+  if ("change" in attr) {
+    element.addEventListener(
+      "change",
+      function (this, ev: Event) {
+        changeParse(attr.change, this, ev)();
+      }
+    );
+    return;
+  }
   if ("onInput" in attr) {
     return;
   }
@@ -199,13 +221,96 @@ const addAttr = (element: HTMLElement, attr: Attr) => {
     element.setAttribute("class", `${value === null ? "" : value} ${attr.clss}`);
     return;
   }
-  const attrs = Object.entries(attr)[0];
-  const value = element.getAttribute(attrs[0]);
-  element.setAttribute(attrs[0], `${value === null ? "" : value} ${attrs[1]}`);
+  if ("custom" in attr) {
+    const [k, v] = attr.custom;
+    element.setAttribute(k, v);
+    return;
+  }
+  window.__nmideConfig__.log.error(`No Attribute: ${attr}`);
 };
 
-const clickParse = (event: Event, ts: HTMLElement, _: MouseEvent) => {
+const changeParse = (event: NmideEvent, ts: HTMLElement, evt: Event) => {
+  evt.preventDefault();
   let args: ValueObj = { obj: {} };
+
+  if (evt.target !== null && evt.target instanceof Element) {
+    const form = evt.target.closest("form");
+    if (form !== null) {
+      const data = new FormData(form);
+      const obj: Record<string, Value> = {};
+      for (const [k, v] of data.entries()) {
+        obj[k] = tValueMaybeOr(v)(tStr(v.toString()));
+      }
+      args = objAdd(args, "form", { obj });
+    }
+  }
+
+  if (ts instanceof HTMLSelectElement) {
+    const val = ts.value;
+    console.log(val);
+    const id = ts.getAttribute("id");
+    const name = ts.getAttribute("name");
+    if (name !== null) {
+      args = objAdd(args, name, tStr(val));
+    } else if (id !== null) {
+      args = objAdd(args, id, tStr(val));
+    }
+  }
+
+  if (ts instanceof HTMLInputElement || ts.tagName === "TEXTAREA") {
+    // @ts-expect-error selectionStart exists on ts
+    if (ts.selectionStart !== null) {
+      // @ts-expect-error selectionStart exists on ts
+      const pos: number = ts.selectionStart;
+      // @ts-expect-error value exists on ts
+      const txt: string = ts.value;
+      let ln = 1;
+      let cn = 1;
+      for (let i = 0; i < pos; i++) {
+        if (txt[i] === "\n") {
+          ln++;
+          cn = 1;
+        } else {
+          cn++;
+        }
+      }
+      args = objAdd(args, "lineNumber", { int: ln });
+      args = objAdd(args, "columnNumber", { int: cn });
+    }
+  }
+  args = objAdd(args, "id", { str: ts.id });
+  if (typeof event === "object") {
+    if ("event" in event) {
+      if (event.event.args !== null) {
+        args = objAdd(args, "eventArgs", event.event.args);
+      }
+      event = { event: { event: event.event.event, args } };
+    }
+  }
+
+  return () => {
+    emit("nmide://event", event).catch((err) =>
+      window.__nmideConfig__.log.error("Error from onClickParse invoke:", err),
+    );
+  };
+};
+
+const clickParse = (event: NmideEvent, ts: HTMLElement, evt: MouseEvent) => {
+  evt.preventDefault();
+  let args: ValueObj = { obj: {} };
+
+  if (evt.target !== null && evt.target instanceof Element) {
+    const form = evt.target.closest("form");
+    if (form !== null) {
+      const data = new FormData(form);
+      const obj: Record<string, Value> = {};
+      for (const [k, v] of data.entries()) {
+        obj[k] = tValueMaybeOr(v)(tStr(v.toString()));
+      }
+      args = objAdd(args, "form", { obj });
+    }
+  }
+
   if (ts instanceof HTMLInputElement || ts.tagName === "TEXTAREA") {
     // @ts-expect-error selectionStart exists on ts
     if (ts.selectionStart !== null) {
@@ -256,10 +361,12 @@ const createElement = ({ kind, attrs, kids, text }: THtml) => {
   const className = attrs.find((el) => "clss" in el)?.clss;
   const id = attrs.find((el) => "id" in el)?.id;
   const onClick = attrs.find((el) => "click" in el)?.click;
+  const change = attrs.find((el) => "change" in el)?.change;
   //const onInput = attrs.find(el => "onInput" in el)?.onInput;
   const src = attrs.find((el) => "src" in el)?.src;
   const type = attrs.find((el) => "type" in el)?.type;
   const checked = attrs.find((el) => "checked" in el)?.checked;
+  const custom = attrs.find(el => "custom" in el)?.custom;
 
   const elementType = kind === "frag" ? "div" : kind;
 
@@ -275,11 +382,43 @@ const createElement = ({ kind, attrs, kids, text }: THtml) => {
         clickParse(onClick, this, ev)();
       }
     );
+  if (change !== undefined)
+    element.addEventListener(
+      "change",
+      function (this, ev: Event) {
+        changeParse(change, this, ev)();
+      }
+    );
+  if (custom !== undefined) {
+    const [k, v] = custom;
+    element.setAttribute(k, v);
+  }
   //if (onInput !== undefined)
   //element.addEventListener("onInput", OnInputParse(onInput));
+  if (element instanceof HTMLButtonElement) {
+    switch (type) {
+      case "button":
+      case "reset":
+      case "submit":
+        element.type = type;
+        break;
+      default:
+        break;
+    }
+  }
   if (element instanceof HTMLInputElement) {
     if (type !== undefined) element.type = type;
     if (checked !== undefined) element.checked = checked;
+    if (custom !== undefined) {
+      const [k, v] = custom;
+      switch (k) {
+        case "disabled":
+          element.disabled = v === "true";
+          break;
+        default:
+          break;
+      }
+    }
   }
   if (
     (element instanceof HTMLScriptElement ||
