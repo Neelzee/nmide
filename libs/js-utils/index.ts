@@ -1,5 +1,5 @@
-import { CoreModification } from "./lib/CoreModification";
-import { State } from "./lib/State";
+import { type CoreModification } from "./lib/CoreModification";
+import { type State } from "./lib/State";
 
 export * from "./lib/HtmlBuilder";
 export * from "./lib/UiBuilder";

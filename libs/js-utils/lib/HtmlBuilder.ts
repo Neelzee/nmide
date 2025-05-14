@@ -1,5 +1,5 @@
-import { Html } from "./Html";
-import { Attr } from "./Attr";
+import { type Html } from "./Html";
+import { type Attr } from "./Attr";
 
 export type HtmlKind = Html extends { [K: string]: any } ? keyof Html : never;
 export class HtmlBuilder {

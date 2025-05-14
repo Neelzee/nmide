@@ -21,7 +21,7 @@ export interface ModuleUnknown {
   handler: Function;
 }
 
-export const installModule = (module: unknown): void => {
+export const installModule = (module: Module): void => {
   const mod = E.mapLeft(formatValidationErrors)(DModule.decode(module));
   if (E.isLeft(mod)) {
     window.__nmideConfig__

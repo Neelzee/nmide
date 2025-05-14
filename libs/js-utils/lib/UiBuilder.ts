@@ -1,7 +1,7 @@
-import { Html } from "./Html";
-import { Attr } from "./Attr";
-import { Instruction } from "./Instruction";
-import { CoreModification } from "./CoreModification";
+import type { Html } from "./Html";
+import type { Attr } from "./Attr";
+import type { Instruction } from "./Instruction";
+import type { CoreModification } from "./CoreModification";
 import { combine } from "./InstructionHelper";
 import { HtmlBuilder } from "./HtmlBuilder";
 
@@ -23,6 +23,32 @@ export class UiBuilder {
         add: [
           id === undefined ? "" : id,
           node instanceof HtmlBuilder ? node.build() : node
+        ]
+      }
+    );
+    return this;
+  }
+
+  add_attr(attr: Attr, id?: string): UiBuilder {
+    this.attr = combine(
+      this.attr,
+      {
+        add: [
+          id === undefined ? "" : id,
+          attr,
+        ]
+      }
+    );
+    return this;
+  }
+
+  rem_attr(attr: Attr, id?: string): UiBuilder {
+    this.attr = combine(
+      this.attr,
+      {
+        rem: [
+          id === undefined ? "" : id,
+          attr,
         ]
       }
     );

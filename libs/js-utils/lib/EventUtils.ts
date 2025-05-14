@@ -1,4 +1,5 @@
 import { type Event } from "./Event";
+import { tNull, tValueMaybeOr, type ValuePrimitive } from "./Types";
 
 export type PrimitiveEvent = Extract<Event, { event: any }>;
 
@@ -41,3 +42,13 @@ export const getEventName = (event: Event): string =>
         : "dialogFile" in event
           ? event.dialogFile.event
           : event.coreResponse.event;
+
+
+export const mkPrimEvent = (event: string, args?: ValuePrimitive): PrimitiveEvent => {
+  return {
+    event: {
+      event,
+      args: tValueMaybeOr(args)(tNull())
+    }
+  };
+}

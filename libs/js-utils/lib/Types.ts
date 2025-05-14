@@ -1,5 +1,5 @@
 import { pipe } from "fp-ts/lib/function";
-import { Value } from "./Value";
+import { type Value } from "./Value";
 import * as O from "fp-ts/Option";
 import * as A from "fp-ts/Array";
 import type { Html } from "./Html";
@@ -38,6 +38,8 @@ export const isValue = (x: unknown): x is Value => typeof x !== "object"
     || isTBool(x)
     || isTList(x)
     || isTObj(x);
+
+export const tNull = (): ValueNull => "null";
 
 export const tInt = <T extends number = number>(n: T): ValueInt => {
   return { int: n };
@@ -121,9 +123,6 @@ export const tValueMaybeOr = <T extends Value>(t: unknown) => (fallback: T): T =
 
 export const tValueMaybe = (t: unknown): O.Option<Value> => {
   if (t === null) {
-    return O.none;
-  }
-  if (t === "null") {
     return O.some("null")
   }
   if (isFloat(t)) {
