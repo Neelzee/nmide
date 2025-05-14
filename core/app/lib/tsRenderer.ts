@@ -10,7 +10,7 @@ import {
   Value,
   ValueObj
 } from "@nmide/js-utils";
-import { emit } from "@tauri-apps/api/event";
+import { emit as tauri_emit } from "@tauri-apps/api/event";
 
 const getElementById = (element: HTMLElement, id: string): HTMLElement | undefined => {
   try {
@@ -34,13 +34,17 @@ const getElementById = (element: HTMLElement, id: string): HTMLElement | undefin
   }
 }
 
-export const tsRenderer: NmideConfig["render"] = async (ui) => {
-  evalHtml(ui[0]);
+type Emitter = ((event: NmideEvent) => Promise<void>);
+
+export const renderer = (emit: Emitter): NmideConfig["render"] => async (ui) => {
+  evalHtml(ui[0], emit);
   evalText(ui[1]);
-  evalAttr(ui[2]);
+  evalAttr(ui[2], emit);
 }
 
-const evalHtml = (op: Instruction<Html>) => {
+export const tsRenderer: NmideConfig["render"] = renderer((event: NmideEvent) => tauri_emit("nmide://event", event))
+
+const evalHtml = (op: Instruction<Html>, emit: Emitter) => {
   if (op === "noOp" || op === null || op === undefined) {
     return;
   }
@@ -48,7 +52,7 @@ const evalHtml = (op: Instruction<Html>) => {
     const id = op.add[0];
     const ui = op.add[1];
     const thtml = getHtml(ui);
-    const html = parseHtml(thtml);
+    const html = parseHtml(thtml, emit);
     if (id !== null && id !== "") {
       const element = getElementById(window.__nmideConfig__.root, id);
       if (element !== undefined) {
@@ -64,14 +68,14 @@ const evalHtml = (op: Instruction<Html>) => {
   if ("then" in op) {
     const fst = op.then[0];
     const snd = op.then[1];
-    evalHtml(fst);
-    evalHtml(snd);
+    evalHtml(fst, emit);
+    evalHtml(snd, emit);
     return;
   }
   window.__nmideConfig__.log.debug("No parse for instruction: ", op);
 }
 
-const evalAttr = (op: Instruction<Attr>) => {
+const evalAttr = (op: Instruction<Attr>, emit: Emitter) => {
   if (op === "noOp" || op === null || op === undefined) {
     return;
   }
@@ -81,7 +85,7 @@ const evalAttr = (op: Instruction<Attr>) => {
     if (id !== null && id !== "") {
       const element = getElementById(window.__nmideConfig__.root, id);
       if (element !== undefined) {
-        addAttr(element, attr);
+        addAttr(element, attr, emit);
       } else {
         window.__nmideConfig__.log.error(`Could not find HTMLElement with id: "${id}"`);
       }
@@ -104,8 +108,8 @@ const evalAttr = (op: Instruction<Attr>) => {
   if ("then" in op) {
     const fst = op.then[0];
     const snd = op.then[1];
-    evalAttr(fst);
-    evalAttr(snd);
+    evalAttr(fst, emit);
+    evalAttr(snd, emit);
     return;
   }
   window.__nmideConfig__.log.debug("No parse for instruction: ", op);
@@ -191,12 +195,12 @@ const remAttr = (element: HTMLElement, attr: Attr) => {
   }
 }
 
-const addAttr = (element: HTMLElement, attr: Attr) => {
+const addAttr = (element: HTMLElement, attr: Attr, emit: Emitter) => {
   if ("click" in attr) {
     element.addEventListener(
       "click",
       function (this, ev: MouseEvent) {
-        clickParse(attr.click, this, ev)();
+        clickParse(attr.click, this, ev, emit)();
       }
     );
     return;
@@ -205,7 +209,7 @@ const addAttr = (element: HTMLElement, attr: Attr) => {
     element.addEventListener(
       "change",
       function (this, ev: Event) {
-        changeParse(attr.change, this, ev)();
+        changeParse(attr.change, this, ev, emit)();
       }
     );
     return;
@@ -229,7 +233,7 @@ const addAttr = (element: HTMLElement, attr: Attr) => {
   window.__nmideConfig__.log.error(`No Attribute: ${attr}`);
 };
 
-const changeParse = (event: NmideEvent, ts: HTMLElement, evt: Event) => {
+const changeParse = (event: NmideEvent, ts: HTMLElement, evt: Event, emit: Emitter) => {
   evt.preventDefault();
   let args: ValueObj = { obj: {} };
 
@@ -289,13 +293,13 @@ const changeParse = (event: NmideEvent, ts: HTMLElement, evt: Event) => {
   }
 
   return () => {
-    emit("nmide://event", event).catch((err) =>
+    emit(event).catch((err) =>
       window.__nmideConfig__.log.error("Error from onClickParse invoke:", err),
     );
   };
 };
 
-const clickParse = (event: NmideEvent, ts: HTMLElement, evt: MouseEvent) => {
+const clickParse = (event: NmideEvent, ts: HTMLElement, evt: MouseEvent, emit: Emitter) => {
   evt.preventDefault();
   let args: ValueObj = { obj: {} };
 
@@ -343,7 +347,7 @@ const clickParse = (event: NmideEvent, ts: HTMLElement, evt: MouseEvent) => {
   }
 
   return () => {
-    emit("nmide://event", event).catch((err) =>
+    emit(event).catch((err) =>
       window.__nmideConfig__.log.error("Error from onClickParse invoke:", err),
     );
   };
@@ -357,7 +361,7 @@ type THtml = {
 }
 
 // TODO: Add docs
-const createElement = ({ kind, attrs, kids, text }: THtml) => {
+const createElement = ({ kind, attrs, kids, text }: THtml, emit: Emitter) => {
   const className = attrs.find((el) => "clss" in el)?.clss;
   const id = attrs.find((el) => "id" in el)?.id;
   const onClick = attrs.find((el) => "click" in el)?.click;
@@ -379,14 +383,14 @@ const createElement = ({ kind, attrs, kids, text }: THtml) => {
     element.addEventListener(
       "click",
       function (this, ev: MouseEvent) {
-        clickParse(onClick, this, ev)();
+        clickParse(onClick, this, ev, emit)();
       }
     );
   if (change !== undefined)
     element.addEventListener(
       "change",
       function (this, ev: Event) {
-        changeParse(change, this, ev)();
+        changeParse(change, this, ev, emit)();
       }
     );
   if (custom !== undefined) {
@@ -430,14 +434,14 @@ const createElement = ({ kind, attrs, kids, text }: THtml) => {
     element.src = src;
   }
 
-  kids.forEach((kid) => element.appendChild(createElement(kid)));
+  kids.forEach((kid) => element.appendChild(createElement(kid, emit)));
 
   return element;
 };
 
 // TODO: Add docs
-export const parseHtml = (html: THtml) => {
-  return createElement(html);
+export const parseHtml = (html: THtml, emit: Emitter) => {
+  return createElement(html, emit);
 };
 
 export const getHtml = (html: Html): THtml => {
