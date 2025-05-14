@@ -14,5 +14,5 @@ ide-editor = { path = "../modules/ide-editor/", package-manager = "bun", kind = 
 rs-counter-plugin-example = { path = "../modules/rs-counter-plugin-example/", kind = "so", enabled = false }
 dependency-viewer = { path = "../modules/dependency-viewer", package-manager = "bun", kind = "mjs", enabled = false }
 dependency-viewer-style = { path = "../modules/dependency-viewer", kind = "css", enabled = false }
-event_sender = { path = "../modules/event_sender", enabled = true }
+event_sender = { path = "../modules/event_sender", kind = "ts", package-manager = "bun", enabled = true }
 event_sender_style = { path = "../modules/event_sender", kind = "css", enabled = true }
