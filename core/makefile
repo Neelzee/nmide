@@ -13,6 +13,8 @@ install :
 	cd ../libs/js-utils && pwd && bun i && \
 	cd ../js-client && pwd && bun i && \
 	cd ../js-core-std-lib && pwd && bun i && \
+	cd ../js-module-lib && pwd && bun i && \
+	cd ../js-decoder-lib && pwd && bun i && \
 	cd ../../core && pwd && bun i
 
 clean :
