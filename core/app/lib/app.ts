@@ -11,6 +11,7 @@ import { tsRenderer as render } from "./tsRenderer.ts";
 
 const App = {
     initialize: (config: Partial<AppConfig> = {}) => {
+        info("[frontend] Initialized");
         const conf = { ...defaultConfig, ...config, log: { info, debug, error }, render };
         // @ts-expect-error This is okay
         window.__nmideConfig__ = {}
@@ -38,6 +39,7 @@ const App = {
         document.dispatchEvent(new CustomEvent(NMIDE_INITIALIZED));
     },
     installModules: () => {
+        info!("[frontend] installing modules");
         ideInstallModules().then(() => {
             if (window.__nmideConfig__.moduleCount === 0 && !window.__nmideConfig__.installed) {
                 window.__nmideConfig__.installed = true;
@@ -56,6 +58,7 @@ const App = {
         });
     },
     run: () => {
+        info!("[frontend] finished module installation");
         listen("nmide://render", ({ payload: ui }) => {
             window.__nmideConfig__.log.info(`[frontend] Rendering: ${JSON.stringify(ui)}`);
             window.__nmideConfig__.render(ui)
