@@ -15,7 +15,7 @@ pub mod impls;
     Default, Debug, Clone, PartialEq, PartialOrd, Ord, Serialize, Deserialize, TS, Hash, Eq,
 )]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
+#[ts(export_to = "State.ts")]
 pub enum Value {
     #[default]
     Null,
@@ -201,7 +201,7 @@ impl From<HashMap<String, Value>> for Value {
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, TS)]
-#[ts(export)]
+#[ts(export, type = "Record<string, Value | undefined>")]
 pub struct State(HashMap<String, Value>);
 
 impl State {
