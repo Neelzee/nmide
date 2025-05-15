@@ -1,5 +1,5 @@
-import { defaultConfig, type NmideConfig } from "@nmide/js-core-std-lib";
-import { DebugCore, type Core, type Module, type Event, type CoreModification, emptyCm, mkPrimEvent } from "@nmide/js-utils";
+import { defaultConfig, parseStateInstr, type NmideConfig } from "@nmide/js-core-std-lib";
+import { DebugCore, type Core, type Module, type Event, type CoreModification, emptyCm, mkPrimEvent, type Value, type State } from "@nmide/js-utils";
 
 declare global {
   interface Window {
@@ -8,6 +8,7 @@ declare global {
       handler: (event?: Event) => Promise<void>
     };
     __nmideConfig__: NmideConfig,
+    state: Record<string, Value | undefined>,
   }
 }
 
@@ -18,7 +19,10 @@ export const debug_module = (
   config?: Partial<NmideConfig>,
 ) => {
   window.__nmideConfig__ = { ...defaultConfig, ...config };
-  const c = core === undefined ? DebugCore() : { ...DebugCore(), ...core };
+  window.state = window.state === undefined ? {} : window.state;
+  const c = core === undefined
+    ? DebugCore()
+    : { ...DebugCore(), state: () => new Promise<State>(r => r(window.state)), ...core };
   window.debug_module = {
     init: async () => {
       const promise = m?.init === undefined ? new Promise<CoreModification>(r => r(emptyCm())) : m.init(c);
@@ -26,10 +30,11 @@ export const debug_module = (
       if (render !== undefined) {
         render(result.ui);
       }
+      window.state = parseStateInstr(result.state)(window.state);
     },
     handler: async (event?: Event) => {
-      const promise = m?.handler === undefined 
-        ? new Promise<CoreModification>(r => r(emptyCm())) 
+      const promise = m?.handler === undefined
+        ? new Promise<CoreModification>(r => r(emptyCm()))
         : m.handler(
           event === undefined
             ? mkPrimEvent("DebugEvent", null)
@@ -40,6 +45,7 @@ export const debug_module = (
       if (render !== undefined) {
         render(result.ui);
       }
+      window.state = parseStateInstr(result.state)(window.state);
     }
   }
 }
