@@ -175,7 +175,7 @@ fn main() {
     let modules = get_modules(conf, modules);
     rs_installer::install(modules.clone(), cargo, out);
     rs_rt_installer::install(modules.clone(), module_folder);
-    let scripts = js_installer::install(dist.clone(), modules.clone());
+    js_installer::install(dist.clone(), modules.clone());
     let styles = css_installer::install(dist, modules);
 
     if index.is_empty() {
@@ -193,8 +193,6 @@ fn main() {
         .expect("Could not read contents");
     let regex = Regex::new(r#"<!--MODULES-->(\s*|.*)*<!--MODULES-->"#).unwrap();
     let mut new_scripts = format!("{}\n", MODULE_SEP);
-    new_scripts.push_str(scripts.join("\n").as_str());
-    new_scripts.push('\n');
     new_scripts.push_str(styles.join("\n").as_str());
     new_scripts.push_str(format!("\n{}", MODULE_SEP).as_str());
     let new_content = regex.replace(&contents, new_scripts).to_string();

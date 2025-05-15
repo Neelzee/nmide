@@ -1,8 +1,8 @@
-use crate::{Kind, Module, run_cmd};
-use std::process::Command;
+use crate::{Module, run_cmd};
+use std::{fs, process::Command};
 
-pub(crate) fn install(dist: String, mods: Vec<Module>) -> Vec<String> {
-    let mut scripts = Vec::new();
+pub(crate) fn install(dist: String, mods: Vec<Module>) {
+    let mut imports = Vec::new();
     for m in mods {
         if !m.enabled {
             continue;
@@ -27,22 +27,11 @@ pub(crate) fn install(dist: String, mods: Vec<Module>) -> Vec<String> {
             run_cmd(build_cmd);
             path = path.join("build/index.js")
         }
-        let mut copy_cmd = Command::new("cp");
-        copy_cmd.arg("-r");
-        copy_cmd.arg(&path);
-        copy_cmd.arg(format!("{}/{}.{}", &dist, m.name, m.kind.as_ext()));
-        run_cmd(copy_cmd);
-        let script = format!(
-            "<script src='./dist/external/{}.{}' type={}></script>",
-            &m.name,
-            m.kind.as_ext(),
-            if m.kind == Kind::MJavaScript {
-                "module"
-            } else {
-                "\"\""
-            },
-        );
-        scripts.push(script);
+        let import = format!("import '{}'", path.as_os_str().to_str().unwrap());
+        imports.push(import);
     }
-    scripts
+
+    let s: String = imports.join("\n");
+
+    fs::write(format!("{dist}/modules.js"), s).unwrap();
 }
