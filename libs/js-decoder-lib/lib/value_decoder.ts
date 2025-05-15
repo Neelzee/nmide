@@ -1,7 +1,20 @@
-import type { Html, Event, Value, ValueBool, ValueFloat, ValueInt, ValueNull, ValueStr } from "@nmide/js-utils";
+import type {
+  Attr,
+  Html,
+  Event,
+  Value,
+  ValueBool,
+  ValueFloat,
+  ValueInt,
+  ValueNull,
+  ValueStr,
+  State
+} from "@nmide/js-utils";
 import * as t from "io-ts";
-import { OptionalString } from "./html_decoder";
-import { DDialogBtn, DDialogEvtKind, DDialogFileKind } from "./event_decoder";
+
+const DDialogEvtKind = t.union([t.literal("info"), t.literal("warning"), t.literal("error")]);
+const DDialogFileKind = t.union([t.literal("singleFile"), t.literal("singleDir"), t.literal("multiFile"), t.literal("saveFile"), t.literal("multiDir")]);
+const DDialogBtn = t.union([t.literal("ok"), t.literal("okCancel"), t.literal("yesNo"), t.type({ okCustom: t.string }), t.type({ okCancelCustom: t.tuple([t.string, t.string]) })]);
 
 export const DValueNull: t.Type<ValueNull> = t.literal("null");
 export const DValueInt: t.Type<ValueInt> = t.type({ int: t.number })
@@ -14,14 +27,14 @@ export const DValue: t.Type<Value> = t.recursion("DValue", () => {
   const DEvent: t.Type<Event> = t.union([
     t.type({ event: t.type({ event: t.string, args: t.union([DValue, t.null]) }) }),
     t.type({ coreResponse: t.type({ event: t.string, args: t.union([DValue, t.null]) }) }),
-    t.type({ dialogFile: t.type({ event: t.string, title: OptionalString, file_kind: DDialogFileKind, filter_ext: t.array(t.string), create_dirs: t.boolean, }) }),
-    t.type({ dialogEvent: t.type({ event: t.string, kind: t.union([DDialogEvtKind, t.null]), message: t.string, btn: t.union([DDialogBtn, t.null]), title: OptionalString, }) }),
+    t.type({ dialogFile: t.type({ event: t.string, title: t.union([t.null, t.string]), file_kind: DDialogFileKind, filter_ext: t.array(t.string), create_dirs: t.boolean, }) }),
+    t.type({ dialogEvent: t.type({ event: t.string, kind: t.union([DDialogEvtKind, t.null]), message: t.string, btn: t.union([DDialogBtn, t.null]), title: t.union([t.null, t.string]), }) }),
     t.literal("nmide://pre-exit"),
     t.literal("nmide://post-init"),
   ]);
 
 
-  const DAttr = t.union([
+  const DAttr: t.Type<Attr> = t.union([
     t.type({ "id": t.string }),
     t.type({ "clss": t.string }),
     t.type({ "style": t.string }),
@@ -36,7 +49,7 @@ export const DValue: t.Type<Value> = t.recursion("DValue", () => {
   ]);
 
   const DHtml: t.Type<Html> = t.recursion("DHtml", () => {
-    const DHtmlBody = t.type({ kids: t.array(DHtml), attrs: t.array(DAttr), text: OptionalString, })
+    const DHtmlBody = t.type({ kids: t.array(DHtml), attrs: t.array(DAttr), text: t.union([t.null, t.string]), })
 
     return t.union([
       t.type({ div: DHtmlBody }),
@@ -98,4 +111,4 @@ export const DValue: t.Type<Value> = t.recursion("DValue", () => {
   ]);
 });
 
-export const DState = t.record(t.string, DValue);
+export const DState: t.Type<State> = t.record(t.string, t.union([DValue, t.undefined]));

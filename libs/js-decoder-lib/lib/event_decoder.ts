@@ -1,8 +1,7 @@
 import * as t from "io-ts";
 import { OptionalString } from "./html_decoder";
-import type { Event, Html, Instruction, Value, Attr } from "@nmide/js-utils";
+import type { Event, Html, Value, Attr } from "@nmide/js-utils";
 import { DValueBool, DValueFloat, DValueInt, DValueNull, DValueStr } from "./value_decoder";
-import { DInstrAttr, DInstrHtml, DInstrString } from "./instr_decoder";
 
 export const DDialogEvtKind = t.union([t.literal("info"), t.literal("warning"), t.literal("error")]);
 export const DDialogFileKind = t.union([t.literal("singleFile"), t.literal("singleDir"), t.literal("multiFile"), t.literal("saveFile"), t.literal("multiDir")]);
@@ -28,7 +27,7 @@ export const DEvent: t.Type<Event> = t.recursion("DEvent", () => {
       ]);
     });
 
-    const DAttr = t.union([
+    const DAttr: t.Type<Attr> = t.union([
       t.type({ "id": t.string }),
       t.type({ "clss": t.string }),
       t.type({ "style": t.string }),

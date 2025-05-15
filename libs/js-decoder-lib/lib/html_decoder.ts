@@ -1,4 +1,4 @@
-import type { Html, Value, Event } from "@nmide/js-utils";
+import type { Html, Value, Event, Attr } from "@nmide/js-utils";
 import * as t from "io-ts";
 import { DValueBool, DValueFloat, DValueInt, DValueNull, DValueStr } from "./value_decoder";
 import { DDialogBtn, DDialogEvtKind, DDialogFileKind } from "./event_decoder";
@@ -31,7 +31,7 @@ export const DHtml: t.Type<Html> = t.recursion("DHtml", () => {
   ]);
 
 
-  const DAttr = t.union([
+  const DAttr: t.Type<Attr> = t.union([
     t.type({ "id": t.string }),
     t.type({ "clss": t.string }),
     t.type({ "style": t.string }),

@@ -40,7 +40,7 @@ export const DInstrHtml: t.Type<Instruction<Html>> = t.recursion("DInstrHtml", (
     ]);
 
 
-    const DAttr = t.union([
+    const DAttr: t.Type<Attr> = t.union([
       t.type({ "id": t.string }),
       t.type({ "clss": t.string }),
       t.type({ "style": t.string }),
@@ -206,7 +206,7 @@ export const DInstrAttr: t.Type<Instruction<Attr>> = t.recursion("DInstrAttr", (
   ]);
 
 
-  const DAttr = t.union([
+  const DAttr: t.Type<Attr> = t.union([
     t.type({ "id": t.string }),
     t.type({ "clss": t.string }),
     t.type({ "style": t.string }),
@@ -236,7 +236,7 @@ export const DInstrValue: t.Type<Instruction<Value>> = t.recursion("DInstrValue"
     ]);
 
 
-    const DAttr = t.union([
+    const DAttr: t.Type<Attr> = t.union([
       t.type({ "id": t.string }),
       t.type({ "clss": t.string }),
       t.type({ "style": t.string }),
