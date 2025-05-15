@@ -129,6 +129,12 @@ export const isObj = (x: unknown): x is [string, ValuePrimitive][] => {
   // is the first element of the tuple?
   return isStr(x[0][0]);
 };
+export const isHtml = (x: unknown): x is Html => {
+  if (typeof x !== "object") {
+    return false;
+  }
+  return true;
+}
 export const isList = (x: unknown): x is ValuePrimitive[] =>
   Array.isArray(x) && !isObj(x);
 
@@ -170,6 +176,9 @@ export const tValueMaybe = (t: unknown): O.Option<Value> => {
       ),
       obj => obj.length !== t.length ? O.none : O.some(fromEntries(obj))
     );
+  }
+  if (isHtml(t)) {
+    return O.some({ html: t });
   }
   return O.none;
 };
