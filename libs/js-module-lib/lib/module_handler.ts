@@ -26,7 +26,7 @@ const moduleWrapper = (m: ModuleUnknown): Module => {
       TE.getOrElse(errs => {
         window.__nmideConfig__
           .log
-          .error(`Error on Module.init from module: ${m.name}, error: ${JSON.stringify(errs)}`);
+          .error(`Error when parsing result from Module.init from module: ${m.name}, error: ${JSON.stringify(errs)}`);
         return T.of(emptyCm());
       }),
       task => task(),
