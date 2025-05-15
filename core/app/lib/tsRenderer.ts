@@ -42,7 +42,9 @@ export const renderer = (emit: Emitter): NmideConfig["render"] => async (ui) => 
   evalAttr(ui[2], emit);
 }
 
-export const tsRenderer: NmideConfig["render"] = renderer((event: NmideEvent) => tauri_emit("nmide://event", event))
+export const tsRenderer: NmideConfig["render"] = renderer((event: NmideEvent) =>
+    tauri_emit("nmide://event", event)
+      .catch(err => window.__nmideConfig__.log.error(`Error on emitting: ${JSON.stringify(err)}`)))
 
 const evalHtml = (op: Instruction<Html>, emit: Emitter) => {
   if (op === "noOp" || op === null || op === undefined) {
