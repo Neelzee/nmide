@@ -29,6 +29,11 @@ impl Module for ProjectManagerModule {
     }
 
     async fn init(&self, core: Box<dyn Core>) {
+        core.send_modification(
+            CoreModification::default()
+                .set_state(StateInstructionBuilder::default().add(STATE_FIELD, Value::new_obj())),
+        )
+        .await;
         core.add_handler(Event::PreExit.to_string(), MODULE_NAME.to_string())
             .await;
         core.add_handler(Event::PostInit.to_string(), MODULE_NAME.to_string())
@@ -81,7 +86,7 @@ impl Module for ProjectManagerModule {
                 if !project_path.exists() {
                     let _ = File::create(project_path).unwrap();
                 }
-                let mut file = OpenOptions::new().append(true).open(project_path).unwrap();
+                let mut file = OpenOptions::new().write(true).open(project_path).unwrap();
                 writeln!(file, "{}", serde_json::to_string_pretty(&cache).unwrap()).unwrap();
             }
             _ => (),
