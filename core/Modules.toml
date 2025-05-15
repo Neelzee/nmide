@@ -1,5 +1,6 @@
 [modules]
 trivial_module = { path = "../modules/trivial_module/", enabled = true }
+trivial_module_style = { kind = "css", path = "../modules/trivial_module/", enabled = true }
 magnolia_dependency = { path = "../modules/magnolia_dependency/", enabled = true }
 ide_fsa = { path = "../modules/ide_fsa/", enabled = true }
 ide_framework = { path = "../modules/ide_framework/", enabled = true }
