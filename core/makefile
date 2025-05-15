@@ -7,7 +7,8 @@ modules : clean
 		--cargo=./src-tauri/Cargo.toml \
 		--dist=./dist/external \
 		--index=./index.html \
-		--module-dist="/home/nmf/.local/share/no.nilsmf.uib/modules/"
+		--module-dist="/home/nmf/.local/share/no.nilsmf.uib/modules/" && \
+	bun run build.ts
 	
 install :
 	cd ../libs/js-utils && pwd && bun i && \
@@ -15,6 +16,7 @@ install :
 	cd ../js-core-std-lib && pwd && bun i && \
 	cd ../js-module-lib && pwd && bun i && \
 	cd ../js-decoder-lib && pwd && bun i && \
+	cd ../js-debug-module && pwd && bun i && \
 	cd ../../core && pwd && bun i
 
 clean :
@@ -22,6 +24,9 @@ clean :
 	rm -rf ./dist/external && \
 	rm -rf /home/nmf/.local/share/no.nilsmf.uib/modules/ && \
 	mkdir -p ./dist/external && \
+	touch ./dist/external/modules.js && \
+	touch ./src-tauri/target/module_reg.rs && \
+	echo "pub fn register_modules(modules: &mut HashMap<String, Box<dyn Module>>) {}" > ./src-tauri/target/module_reg.rs && \
 	mkdir -p /home/nmf/.local/share/no.nilsmf.uib/modules/ && \
 	cargo run \
 		--manifest-path=../tools/cm-installer/Cargo.toml -- \
