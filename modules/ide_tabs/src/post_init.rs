@@ -31,19 +31,7 @@ pub async fn handler(core: Box<dyn Core>) {
         .get(STATE_TAB_STORAGE)
         .and_then(|v| v.list())
     {
-        println!("\n{xs:?}\n");
-        xs.into_iter()
-            .filter_map(|v| v.obj())
-            .filter_map(|o| {
-                match (
-                    o.get("id").and_then(|v| v.str()),
-                    o.get("content").and_then(|v| v.html()),
-                ) {
-                    (Some(_), None) | (None, Some(_)) | (None, None) => None,
-                    (Some(id), Some(html)) => Some((id, html)),
-                }
-            })
-            .fold(builder, |build, (id, html)| build.add_node(html, Some(id)))
+        build_from_storage(xs, builder)
     } else {
         builder
     };
@@ -56,10 +44,26 @@ pub async fn handler(core: Box<dyn Core>) {
                 Value::new_obj().obj_add("id", Value::Int(1)),
             ]),
         )
+        .set(STATE_TAB_STORAGE, Value::List(Vec::new()))
         .add(STATE_CURRENT_TAB_KEY, Value::Int(0))
         .set(STATE_INITIALIZED, Value::Bool(true));
     core.send_modification(mods.set_state(state).set_ui(ui))
         .await;
+}
+
+pub fn build_from_storage(xs: Vec<Value>, builder: UIInstructionBuilder) -> UIInstructionBuilder {
+    xs.into_iter()
+        .filter_map(|v| v.obj())
+        .filter_map(|o| {
+            match (
+                o.get("id").and_then(|v| v.str()),
+                o.get("content").and_then(|v| v.html()),
+            ) {
+                (Some(_), None) | (None, Some(_)) | (None, None) => None,
+                (Some(id), Some(html)) => Some((id, html)),
+            }
+        })
+        .fold(builder, |build, (id, html)| build.add_node(html, Some(id)))
 }
 
 pub fn create_tab_content(id: i32) -> Html {

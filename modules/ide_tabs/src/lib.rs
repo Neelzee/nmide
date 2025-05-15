@@ -2,8 +2,10 @@ use core_std_lib::{
     core::Core,
     core_modification::CoreModification,
     event::Event,
+    html::UIInstructionBuilder,
     state::{StateInstructionBuilder, Value},
 };
+use post_init::build_from_storage;
 
 mod event;
 mod post_init;
@@ -31,6 +33,8 @@ pub const EVENT_CHANGE_TAB: &str = "change_tab";
 pub const EVENT_ADD_TAB: &str = "add_tab";
 
 pub const EVENT_REM_TAB: &str = "rem_tab";
+
+pub const EVENT_REFRESH_TAB: &str = "refresh_tab";
 
 pub const STATE_TABS: &str = "ide-cache.ide_tabs_tabs";
 
@@ -65,6 +69,8 @@ impl core_module_lib::Module for Module {
             .await;
         core.add_handler(EVENT_REM_TAB.to_string(), MODULE_NAME.to_string())
             .await;
+        core.add_handler(EVENT_REFRESH_TAB.to_string(), MODULE_NAME.to_string())
+            .await;
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
@@ -80,6 +86,26 @@ impl core_module_lib::Module for Module {
             }
             Event::Event { event: evt, .. } if evt == EVENT_ADD_TAB => {
                 event::tab_add_handler(event, core).await;
+            }
+            Event::Event { event: evt, .. } if evt == EVENT_REFRESH_TAB => {
+                let xs = core
+                    .state()
+                    .await
+                    .get(STATE_TAB_STORAGE)
+                    .and_then(|v| v.list())
+                    .unwrap_or_default();
+                if xs.is_empty() {
+                    return;
+                }
+                core.send_modification(
+                    CoreModification::default()
+                        .set_ui(build_from_storage(xs, UIInstructionBuilder::default()))
+                        .set_state(
+                            StateInstructionBuilder::default()
+                                .set(STATE_CURRENT_TAB_KEY, Value::List(Vec::new())),
+                        ),
+                )
+                .await;
             }
             Event::Event { event: evt, .. } if evt == EVENT_REM_TAB => {
                 todo!();
