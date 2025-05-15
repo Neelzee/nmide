@@ -10,6 +10,11 @@ export function initializeGraph(nodes, links) {
   const width = container.clientWidth;
   const height = container.clientHeight;
 
+  const _svg = document.getElementById("canvas");
+  if (_svg !== null) {
+    document.removeChild(_svg);
+  }
+
   // Create SVG with zoom capabilities
   const svg = d3.select("#visualization")
     .append("svg")

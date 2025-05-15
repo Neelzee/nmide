@@ -1,4 +1,5 @@
 import {
+  click,
   cls,
   Core,
   CoreModification,
@@ -6,14 +7,15 @@ import {
   Event,
   HtmlBuilder,
   id,
-  isPostInit,
   isPrimAnd,
+  isTBool,
   isTList,
   isTObj,
   isTStr,
+  mkPrimEvent,
   primDec,
+  StateBuilder,
   tList,
-  tObjLookup,
   tObjLookupOr,
   UiBuilder,
   ValueList
@@ -21,7 +23,10 @@ import {
 import { initializeGraph } from "./dag";
 
 const controls_div = new HtmlBuilder()
-  .attrs(cls("controls"))
+  .attrs(
+    cls("dv controls"),
+    id("dv-controls")
+  )
   .kids(
     new HtmlBuilder()
       .kind("button")
@@ -96,12 +101,20 @@ const controls_div = new HtmlBuilder()
           .kind("span")
           .attrs(id("nodeSizeValue"))
       ),
+    new HtmlBuilder()
+      .kids(
+        new HtmlBuilder()
+          .kind("label")
+          .text("Hide Graph")
+          .attrs(click(mkPrimEvent("")))
+      )
   );
 
-const legend_div = new HtmlBuilder().attrs(id("packageLegend"));
+const legend_div = new HtmlBuilder()
+  .attrs(id("packageLegend"), cls("dv legend"));
 
 const package_filter_div = new HtmlBuilder()
-  .attrs(id("packageFilter"))
+  .attrs(id("packageFilter"), cls("dv package-filter"))
   .kids(
     new HtmlBuilder().kind("h3").text("Package Filter"),
     new HtmlBuilder().attrs(id("packageCheckboxes")),
@@ -120,42 +133,45 @@ const Module = {
     document.head.appendChild(script);
     await core.registerHandler("DependencyViewer", "graph")
       .catch(err => console.error("error from module: ", err));
-    await core.registerHandler("DependencyViewer", "post-init")
-      .catch(err => console.error("error from module: ", err));
-    return emptyCm();
+    return new UiBuilder()
+      .add(
+        controls_div,
+      )
+      .add(
+        legend_div,
+      )
+      .add(
+        package_filter_div,
+      )
+      .add(
+        new HtmlBuilder()
+          .attrs(id("visualization"), cls("dv")),
+      )
+      .build();
   },
-  handler: async (evt: Event, __: Core) => {
-    console.log("Dp: ", evt);
-    if (isPostInit(evt)) {
-      console.log("post-init");
-      return new UiBuilder()
-        .add(
-          controls_div,
-          "content"
-        )
-        .add(
-          legend_div,
-          "content"
-        )
-        .add(
-          package_filter_div,
-          "content"
-        )
-        .add(
-          new HtmlBuilder()
-            .attrs(id("visualization")),
-          "content"
-        )
-        .build();
-    }
-
+  handler: async (evt: Event, core: Core) => {
     if (!isPrimAnd(evt, "graph")) return emptyCm();
+
+    const val = (await core.state())["dv-init"];
+    const toggled = isTBool(val) ? val.bool : true;
+
+    const mods = (toggled
+      ? new UiBuilder()
+        .add_attr(cls("show-dv"), "dv-controls")
+        .add_attr(cls("show-dv"), "packageLegend")
+        .add_attr(cls("show-dv"), "packageFilter")
+        .add_attr(cls("show-dv"), "visualization")
+      : new UiBuilder()
+        .rem_attr(cls("show-dv"), "dv-controls")
+        .rem_attr(cls("show-dv"), "packageLegend")
+        .rem_attr(cls("show-dv"), "packageFilter")
+        .rem_attr(cls("show-dv"), "visualization")).build(new StateBuilder().set("dv-init", !toggled));
 
     const { args } = primDec(evt);
 
-    if (args === null) return emptyCm();
+    if (args === null) return mods;
 
-    if (!isTList(args)) return emptyCm();
+    if (!isTList(args)) return mods;
 
     const data = args.list
       .filter(v => isTObj(v))
@@ -192,8 +208,12 @@ const Module = {
           && nodes.find(n => n.id === target) !== undefined
       );
 
-
-    let graphContext = initializeGraph(nodes, links);
+    let graphContext;
+    try {
+      graphContext = initializeGraph(nodes, links)
+    } catch (e) {
+      window.__nmideConfig__.log.error(`Error when initializing graph: ${JSON.stringify(e)}`);
+    }
 
     function handleResize() {
       if (graphContext === undefined) {
@@ -230,17 +250,17 @@ const Module = {
       }
     }
 
-    window.addEventListener('resize', handleResize);
-
-    /*
-    const resizeObserver = new ResizeObserver(entries => {
-      handleResize();
+    window.addEventListener('resize', () => {
+      try {
+        handleResize();
+      } catch (e) {
+        window.__nmideConfig__
+          .log
+          .error(`Error when handleResize: ${JSON.stringify(e)}`);
+      }
     });
 
-    resizeObserver.observe(document.getElementById("content")!!);
-    */
-
-    return emptyCm();
+    return mods;
   }
 };
 
