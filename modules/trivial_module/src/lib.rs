@@ -46,34 +46,16 @@ impl core_module_lib::Module for Module {
                     .add_attr(Attr::Id("PID".to_string())),
             )
             .add_attr(Attr::Id("DivId".to_string()));
+        core.add_handler("post-ide-pm".to_string(), "trivial_module".to_string())
+            .await;
         core.throw_event(Event::new("add_content", Some(Value::Html(ui))))
             .await;
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
         match (event.event_name(), event.args()) {
-            ("nmide://post-init", _) => {
-                let ui = UIInstructionBuilder::default().add_node(
-                    Html::Div()
-                        .adopt(
-                            Html::Button()
-                                .set_text("Click")
-                                .add_attr(Attr::Click(Event::new(
-                                    "counter".to_string(),
-                                    Some(Value::Int(1)),
-                                )))
-                                .add_attr(Attr::Id("ButtonID".to_string())),
-                        )
-                        .adopt(
-                            Html::P()
-                                .set_text("Count: 0")
-                                .add_attr(Attr::Id("PID".to_string())),
-                        )
-                        .add_attr(Attr::Id("DivId".to_string())),
-                    Some("content"),
-                );
-                core.send_modification(CoreModification::default().set_ui(ui))
-                    .await;
+            ("post-ide-pm", _) => {
+                core.throw_event(Event::new("refresh_tab", None)).await;
             }
             ("counter", Some(v))
                 if v.is_int() || v.obj().is_some_and(|o| o.contains_key("eventArgs")) =>
