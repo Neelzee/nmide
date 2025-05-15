@@ -53,7 +53,7 @@ const evalHtml = (op: Instruction<Html>, emit: Emitter) => {
     const ui = op.add[1];
     const thtml = getHtml(ui);
     const html = parseHtml(thtml, emit);
-    if (id !== null && id !== "") {
+    if (id !== "") {
       const element = getElementById(window.__nmideConfig__.root, id);
       if (element !== undefined) {
         element.appendChild(html);
@@ -233,6 +233,15 @@ const addAttr = (element: HTMLElement, attr: Attr, emit: Emitter) => {
   window.__nmideConfig__.log.error(`No Attribute: ${attr}`);
 };
 
+const formHandler = (args: ValueObj, form: HTMLFormElement): ValueObj => {
+  const data = new FormData(form);
+  const obj: Record<string, Value> = {};
+  for (const [k, v] of data.entries()) {
+    obj[k] = tValueMaybeOr(v)(tStr(v.toString()));
+  }
+  return objAdd(args, "form", { obj });
+}
+
 const changeParse = (event: NmideEvent, ts: HTMLElement, evt: Event, emit: Emitter) => {
   evt.preventDefault();
   let args: ValueObj = { obj: {} };
@@ -240,18 +249,12 @@ const changeParse = (event: NmideEvent, ts: HTMLElement, evt: Event, emit: Emitt
   if (evt.target !== null && evt.target instanceof Element) {
     const form = evt.target.closest("form");
     if (form !== null) {
-      const data = new FormData(form);
-      const obj: Record<string, Value> = {};
-      for (const [k, v] of data.entries()) {
-        obj[k] = tValueMaybeOr(v)(tStr(v.toString()));
-      }
-      args = objAdd(args, "form", { obj });
+      args = formHandler(args, form);
     }
   }
 
   if (ts instanceof HTMLSelectElement) {
     const val = ts.value;
-    console.log(val);
     const id = ts.getAttribute("id");
     const name = ts.getAttribute("name");
     if (name !== null) {
@@ -306,12 +309,7 @@ const clickParse = (event: NmideEvent, ts: HTMLElement, evt: MouseEvent, emit: E
   if (evt.target !== null && evt.target instanceof Element) {
     const form = evt.target.closest("form");
     if (form !== null) {
-      const data = new FormData(form);
-      const obj: Record<string, Value> = {};
-      for (const [k, v] of data.entries()) {
-        obj[k] = tValueMaybeOr(v)(tStr(v.toString()));
-      }
-      args = objAdd(args, "form", { obj });
+      args = formHandler(args, form);
     }
   }
 
