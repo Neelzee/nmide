@@ -7,7 +7,7 @@
   display: flex;
 }
 
-#debug button {
+#debug-btn {
   writing-mode: vertical-rl;
   text-orientation: mixed;
   padding: 10px 5px;

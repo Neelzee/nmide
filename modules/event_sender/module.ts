@@ -36,6 +36,7 @@ const Module = {
       .kids(
         new HtmlBuilder()
           .kind("button")
+          .attrs(id("debug-btn"))
           .attrs(click(mkPrimEvent("toggle-debug")))
           .text("Debug"),
         new HtmlBuilder()
@@ -126,7 +127,7 @@ const Module = {
                   .text("Args: ")
                   .attrs({ custom: ["for", "args"] }),
                 new HtmlBuilder()
-                  .kind("textarea")
+                  .kind("textArea")
                   .attrs(
                     { custom: ["name", "args"] },
                   ),
@@ -154,7 +155,7 @@ const Module = {
                   .text("Args: ")
                   .attrs({ custom: ["for", "args"] }),
                 new HtmlBuilder()
-                  .kind("textarea")
+                  .kind("textArea")
                   .attrs(
                     { custom: ["name", "args"] },
                   ),
@@ -182,7 +183,7 @@ const Module = {
                   .text("Args: ")
                   .attrs({ custom: ["for", "args"] }),
                 new HtmlBuilder()
-                  .kind("textarea")
+                  .kind("textArea")
                   .attrs(
                     { custom: ["name", "args"] },
                   ),
@@ -210,7 +211,7 @@ const Module = {
                   .text("Args: ")
                   .attrs({ custom: ["for", "args"] }),
                 new HtmlBuilder()
-                  .kind("textarea")
+                  .kind("textArea")
                   .attrs(
                     { custom: ["name", "args"] },
                   ),
@@ -221,7 +222,9 @@ const Module = {
               )
           )
       )
-    return new UiBuilder().add(ui).build(new StateBuilder().add("debug-toggle", false));
+    const res = new UiBuilder().add(ui).build(new StateBuilder().add("debug-toggle", false));
+    window.__nmideConfig__.log.debug(`event_sender: ${JSON.stringify(res)}`)
+    return res;
   },
   handler: async (evt: Event, core: Core): Promise<CoreModification> => {
     const state = await core.state();
