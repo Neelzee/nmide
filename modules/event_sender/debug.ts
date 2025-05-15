@@ -11,10 +11,5 @@ const core = {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  debug_module(module, core, renderer(async (evt) => {
-    console.log("Event:", evt);
-    window.debug_module.handler(evt)
-      .catch(console.error);
-    return;
-  }));
+  debug_module(module, core, renderer(core.eventThrower));
 })

@@ -1,7 +1,68 @@
-#debug-content {
-  display: none;
+#debug {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  display: flex;
 }
 
-.show-content {
+#debug button {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  padding: 10px 5px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-right: none;
+  cursor: pointer;
+  border-radius: 5px 0 0 5px;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+#debug-content {
+  display: none;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 15px;
+  width: 300px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+#debug-content.show-debug {
   display: block;
+}
+
+#debug-content form {
+  display: none;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+#debug-content form.show-debug-event {
+  display: block;
+}
+
+#debug-content label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+#debug-content input,
+#debug-content select,
+#debug-content textarea {
+  width: 100%;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+#debug-content button {
+  writing-mode: horizontal-tb;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 5px 10px;
+  display: block;
+  width: auto;
 }
