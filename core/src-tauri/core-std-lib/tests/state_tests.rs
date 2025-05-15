@@ -17,6 +17,19 @@ mod state_modification_test {
         );
     }
 
+    #[test]
+    fn removing_from_obj_does_not_remove_entire_obj() {
+        let state = State::default().add(
+            "nested.obj",
+            Value::new_obj()
+                .obj_add("field", Value::Null)
+                .obj_add("field2", Value::Null),
+        );
+        let state = state.rem("nested.obj.field2");
+        assert!(state.get("nested.obj.field").is_some());
+        assert!(state.get("nested.obj.field2").is_none());
+    }
+
     #[rstest]
     #[case(Value::Int(2))]
     #[case(Value::new_float(2f32))]

@@ -283,10 +283,30 @@ impl State {
         return Self(map);
     }
 
-    pub(crate) fn rem<S: ToString>(self, field: S) -> Self {
-        let mut map = self.0;
-        map.remove(&field.to_string());
-        Self(map)
+    fn _rem(mut map: HashMap<String, Value>, fields: &[String]) -> Value {
+        if fields.is_empty() {
+            return Value::Obj(HHMap::from(map));
+        } else if fields.len() == 1 {
+            let field = fields[0].clone();
+            map.remove(&field);
+            return Value::Obj(HHMap::from(map));
+        }
+        let field = fields[0].clone();
+        match map.get(&field) {
+            Some(o) if o.is_obj() => {
+                let inner_map = o.obj().unwrap();
+                map.insert(field, Self::_rem(inner_map, &fields[1..]));
+                Value::Obj(HHMap::from(map))
+            }
+            _ => Value::Obj(HHMap::from(map)),
+        }
+    }
+
+    pub fn rem<S: ToString>(self, field: S) -> Self {
+        let map = self.0;
+        let field = field.to_string();
+        let fields: Vec<String> = field.split(".").map(|s| s.to_string()).collect();
+        Self(Self::_rem(map, &fields).obj().unwrap())
     }
 }
 
