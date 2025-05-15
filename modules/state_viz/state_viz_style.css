@@ -111,6 +111,9 @@
 
 /* Debug visualization container */
 #state-viz {
+  display: block;
+  position: absolute;
+  z-index: 10;
   transition: all 0.3s ease;
   max-height: 800px;
   overflow: hidden;
@@ -118,5 +121,6 @@
 
 /* Hidden state */
 #state-viz.hide-debug-state {
+  display: none;
   opacity: 0;
 }
