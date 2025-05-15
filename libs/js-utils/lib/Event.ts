@@ -2,7 +2,7 @@
 import type { DialogBtn } from "./DialogBtn";
 import type { DialogEvtKind } from "./DialogEvtKind";
 import type { DialogFileKind } from "./DialogFileKind";
-import type { Value } from "./Value";
+import type { Value } from "./State";
 
 export type Event =
   | { "event": { event: string; args: Value | null } }

@@ -4,6 +4,7 @@ import type { Instruction } from "./Instruction";
 import type { CoreModification } from "./CoreModification";
 import { combine } from "./InstructionHelper";
 import { HtmlBuilder } from "./HtmlBuilder";
+import type { StateBuilder } from "./StateBuilder";
 
 export class UiBuilder {
   private node: Instruction<Html>;
@@ -55,9 +56,11 @@ export class UiBuilder {
     return this;
   }
 
-  build(): CoreModification {
+  build(builder?: StateBuilder): CoreModification {
+    const supplied_state = builder?.build().state;
+    const state = supplied_state === undefined ? "noOp" : supplied_state;
     return {
-      state: "noOp",
+      state,
       ui: [this.node, this.text, this.attr]
     };
   }

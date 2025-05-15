@@ -1,8 +1,8 @@
-import { Instruction } from "./Instruction";
-import { CoreModification } from "./CoreModification";
+import type { Instruction } from "./Instruction";
+import type { CoreModification } from "./CoreModification";
 import { combine } from "./InstructionHelper";
-import { Value } from "./Value";
-import { isValue, tValueMaybe, ValuePrimitive } from "./Types";
+import type { Value } from "./Value";
+import { isValue, tValueMaybe, type ValuePrimitive } from "./Types";
 import * as O from "fp-ts/Option";
 
 export class StateBuilder {
@@ -14,7 +14,25 @@ export class StateBuilder {
     } else {
       this.state = combine(
         this.state,
-        { add: [field, O.getOrElse((): Value => "null")(tValueMaybe(value)) ] }
+        { add: [field, O.getOrElse((): Value => "null")(tValueMaybe(value))] }
+      );
+    }
+    return this;
+  }
+
+  set(field: string, value: Value | ValuePrimitive): StateBuilder {
+    return this.rem(field, value).add(field, value);
+  }
+
+  rem(field: string, value?: Value | ValuePrimitive): StateBuilder {
+    if (value === undefined) {
+      this.state = combine(this.state, { rem: [field, "null"] });
+    } else if (isValue(value)) {
+      this.state = combine(this.state, { rem: [field, value] });
+    } else {
+      this.state = combine(
+        this.state,
+        { rem: [field, O.getOrElse((): Value => "null")(tValueMaybe(value))] }
       );
     }
     return this;

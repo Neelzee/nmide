@@ -10,7 +10,8 @@ export type ValuePrimitive = number
   | boolean
   | string
   | ValuePrimitive[]
-  | { [key in string]?: Value };
+  | { [key in string]?: Value }
+  | Html;
 
 export type ValueNull = "null";
 export type ValueInt = { int: number };
@@ -20,11 +21,13 @@ export const isTFloat = (x: object): x is ValueFloat => "float" in x;
 export type ValueStr = { str: string };
 export const isTStr = (x: unknown): x is ValueStr => typeof x === "object" && x !== null && "str" in x;
 export type ValueBool = { bool: boolean };
-export const isTBool = (x: object): x is ValueBool => "bool" in x;
+export const isTBool = (x: unknown): x is ValueBool => typeof x === "object" && x !== null && "bool" in x;
 export type ValueList = { list: Value[] };
 export const isTList = (x: unknown): x is ValueList => typeof x === "object" && x !== null && "list" in x;
 export type ValueObj = { obj: { [key in string]?: Value } };
 export const isTObj = (x: unknown): x is ValueObj => typeof x === "object" && x !== null && "obj" in x;
+export type ValueHtml = { html: Html };
+export const isTHtml = (x: unknown): x is ValueHtml => typeof x === "object" && x !== null && "html" in x;
 
 export type ValueSimple = Exclude<Exclude<Exclude<Value, ValueObj>, { html: Html }>, ValueList>;
 
@@ -68,7 +71,7 @@ export const tList = <T extends ValuePrimitive>(lst: T[]): ValueList => {
 
 type InnerObject = { [key in string]?: Value };
 
-export const tObj = <T extends ValuePrimitive>(obj: [string, T][]): ValueObj => pipe(
+export const tObjLst = <T extends ValuePrimitive>(obj: [string, T][]): ValueObj => pipe(
   obj,
   A.filterMap(
     // { "obj": { [key in string]?: Value } }
@@ -76,6 +79,21 @@ export const tObj = <T extends ValuePrimitive>(obj: [string, T][]): ValueObj => 
   ),
   fromEntries,
 );
+
+export const tObj = (obj: Record<string, unknown>): ValueObj => pipe(
+  obj,
+  flatten,
+  A.filterMap(
+    ([k, v]) => O.map<Value, [string, Value]>(_v => [k, _v])(tValueMaybe(v))
+  ),
+  fromEntries,
+);
+
+const flatten = (rec: Record<string, unknown>): [string, unknown][] => pipe(
+  rec,
+  Object.keys,
+  A.map(k => [k, rec[k]]),
+)
 
 const fromEntries = (xs: [string, Value][]): ValueObj => pipe(
   xs,

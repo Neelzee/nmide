@@ -2,7 +2,7 @@
 import type { Attr } from "./Attr";
 import type { Html } from "./Html";
 import type { Instruction } from "./Instruction";
-import type { Value } from "./Value";
+import type { Value } from "./State";
 
 export type CoreModification = {
   state: Instruction<Value>;
