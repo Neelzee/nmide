@@ -56,6 +56,7 @@ impl DialogBuilder {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
 pub enum DialogBuilderError {
     MissingEventName,
     MissingMessage,
