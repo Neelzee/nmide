@@ -15,16 +15,18 @@ import {
   mkPrimEvent,
   primDec,
   StateBuilder,
+  tBool,
   tList,
   tObjLookupOr,
   UiBuilder,
   ValueList
 } from "@nmide/js-utils";
 import { initializeGraph } from "./dag";
+import * as d3 from "d3";
 
 const controls_div = new HtmlBuilder()
   .attrs(
-    cls("dv controls"),
+    cls("dv controls hide-dv"),
     id("dv-controls")
   )
   .kids(
@@ -104,17 +106,20 @@ const controls_div = new HtmlBuilder()
     new HtmlBuilder()
       .kids(
         new HtmlBuilder()
-          .kind("label")
-          .text("Hide Graph")
-          .attrs(click(mkPrimEvent("")))
+          .kind("button")
+          .text("Hide Grap")
+          .attrs(click(mkPrimEvent("graph-toggle"))),
       )
   );
 
 const legend_div = new HtmlBuilder()
-  .attrs(id("packageLegend"), cls("dv legend"));
+  .attrs(id("packageLegend"), cls("dv legend hide-dv"));
 
 const package_filter_div = new HtmlBuilder()
-  .attrs(id("packageFilter"), cls("dv package-filter"))
+  .attrs(
+    id("packageFilter"),
+    cls("dv package-filter hide-dv")
+  )
   .kids(
     new HtmlBuilder().kind("h3").text("Package Filter"),
     new HtmlBuilder().attrs(id("packageCheckboxes")),
@@ -127,11 +132,9 @@ const package_filter_div = new HtmlBuilder()
 const Module = {
   name: "DependencyViewer",
   init: async (core: Core): Promise<CoreModification> => {
-    const script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = "https://cdn.jsdelivr.net/npm/d3@7"
-    document.head.appendChild(script);
     await core.registerHandler("DependencyViewer", "graph")
+      .catch(err => console.error("error from module: ", err));
+    await core.registerHandler("DependencyViewer", "graph-toggle")
       .catch(err => console.error("error from module: ", err));
     return new UiBuilder()
       .add(
@@ -145,27 +148,41 @@ const Module = {
       )
       .add(
         new HtmlBuilder()
-          .attrs(id("visualization"), cls("dv")),
+          .attrs(id("visualization"), cls("dv hide-dv")),
       )
       .build();
   },
   handler: async (evt: Event, core: Core) => {
-    if (!isPrimAnd(evt, "graph")) return emptyCm();
-
     const val = (await core.state())["dv-init"];
     const toggled = isTBool(val) ? val.bool : true;
 
-    const mods = (toggled
+    let state_builder = new StateBuilder().add("dv-init", !toggled);
+    const init_val = (await core.state())["dv-init-init"];
+    const inited = isTBool(init_val) ? init_val.bool : false;
+    let builder = (!toggled
       ? new UiBuilder()
-        .add_attr(cls("show-dv"), "dv-controls")
-        .add_attr(cls("show-dv"), "packageLegend")
-        .add_attr(cls("show-dv"), "packageFilter")
-        .add_attr(cls("show-dv"), "visualization")
+        .add_attr(cls("hide-dv"), "dv-controls")
+        .add_attr(cls("hide-dv"), "packageLegend")
+        .add_attr(cls("hide-dv"), "packageFilter")
+        .add_attr(cls("hide-dv"), "visualization")
+        .add_attr(cls("hide-dv"), "canvas")
       : new UiBuilder()
-        .rem_attr(cls("show-dv"), "dv-controls")
-        .rem_attr(cls("show-dv"), "packageLegend")
-        .rem_attr(cls("show-dv"), "packageFilter")
-        .rem_attr(cls("show-dv"), "visualization")).build(new StateBuilder().set("dv-init", !toggled));
+        .rem_attr(cls("hide-dv"), "dv-controls")
+        .rem_attr(cls("hide-dv"), "packageLegend")
+        .rem_attr(cls("hide-dv"), "packageFilter")
+        .rem_attr(cls("hide-dv"), "canvas")
+        .rem_attr(cls("hide-dv"), "visualization"));
+    if (isPrimAnd(evt, "graph-toggle")) {
+      if (!inited) {
+        state_builder = state_builder.add("dv-init-init", tBool(true));
+      }
+      return builder.build(state_builder);
+    }
+    if (!isPrimAnd(evt, "graph")) return emptyCm();
+
+    const mods = builder.build(state_builder);
+
+    if (inited) return mods;
 
     const { args } = primDec(evt);
 
@@ -175,8 +192,8 @@ const Module = {
 
     const data = args.list
       .filter(v => isTObj(v))
-      .map((obj) => {
-        const id = obj["name"]?.["str"];
+      .map(obj => {
+        const id = obj.obj["name"]?.["str"];
         return {
           id,
           name: id,
@@ -208,10 +225,20 @@ const Module = {
           && nodes.find(n => n.id === target) !== undefined
       );
 
+    let container = document.getElementById("content");
+    if (container === null) {
+      console.log("Error on graphing: could not find element with id: `content`");
+    }
+    const w = container?.clientHeight;
+    const width = w === undefined ? window.innerWidth : w;
+    const h = container?.clientHeight;
+    const height = h === undefined ? window.innerHeight : h;
+
     let graphContext;
     try {
-      graphContext = initializeGraph(nodes, links)
+      graphContext = initializeGraph(nodes, links, width, height)
     } catch (e) {
+      console.log("Error: ", e);
       window.__nmideConfig__.log.error(`Error when initializing graph: ${JSON.stringify(e)}`);
     }
 
@@ -220,18 +247,7 @@ const Module = {
         return emptyCm();
       }
 
-      const container = document.getElementById("content");
-      if (container === null) {
-        console.log("Error on graphing: could not find element with id: `content`");
-        return emptyCm();
-      }
-      const width = container.clientWidth;
-      const height = container.clientHeight;
-
-      d3.select("#visualization svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("viewBox", [0, 0, width, height]);
+      d3.select("#visualization svg");
 
       if (graphContext.simulation) {
         graphContext.simulation

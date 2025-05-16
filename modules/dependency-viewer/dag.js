@@ -1,15 +1,6 @@
 import * as d3 from "d3";
 
-export function initializeGraph(nodes, links) {
-  // Get the container dimensions
-  const container = document.getElementById("content");
-  if (container == null) {
-    console.error("Could not find element with id: `content`");
-    return undefined;
-  }
-  const width = container.clientWidth;
-  const height = container.clientHeight;
-
+export function initializeGraph(nodes, links, width, height) {
   const _svg = document.getElementById("canvas");
   if (_svg !== null) {
     document.removeChild(_svg);
