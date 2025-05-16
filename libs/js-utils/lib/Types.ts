@@ -21,7 +21,11 @@ export const isTFloat = (x: object): x is ValueFloat => "float" in x;
 export type ValueStr = { str: string };
 export const isTStr = (x: unknown): x is ValueStr => typeof x === "object" && x !== null && "str" in x;
 export type ValueBool = { bool: boolean };
-export const isTBool = (x: unknown): x is ValueBool => typeof x === "object" && x !== null && "bool" in x;
+export const isTBool = (x: unknown): x is ValueBool =>
+  typeof x === "object"
+  && x !== null
+  && "bool" in x
+  && typeof x.bool === "boolean";
 export type ValueList = { list: Value[] };
 export const isTList = (x: unknown): x is ValueList => typeof x === "object" && x !== null && "list" in x;
 export type ValueObj = { obj: { [key in string]?: Value } };
