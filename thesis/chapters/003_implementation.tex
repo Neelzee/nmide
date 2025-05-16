@@ -680,12 +680,12 @@ on a separate thread.
 
 A zero-core \gls{ide} is equivalent to a microservice architecture, in that
 testing is important to ensure changes in one module does not inadvertently
-affect another. This is commonly achived by using \textit{pipelines}, a part
+affect another. This is commonly achieved by using \textit{pipelines}, a part
 of the \gls{cicd} process, where we run several \textit{jobs} whenever we make a
 change to our application. If we are bundling different modules together, and
 serving that as an \gls{ide}, we want to ensure that a change to a module does
-not negativly affect the other. This is where \textit{pipline jobs} come in, as
-each \textit{job} test some part of our \gls{ide}. While it is cheaper to
+not negatively affect the other. This is where \textit{pipeline jobs} come in,
+as each \textit{job} test some part of our \gls{ide}. While it is cheaper to
 \textit{spin} up an instance of the \gls{ide} in a pipeline, than an application
 dedicated to serve millions of users, we still want to avoid doing this
 unnecessarily. This is why we split up our testing into different stages.
@@ -846,6 +846,38 @@ expensive computation on another thread, while \textit{ending} their
 invocation, ensuring a smooth \gls{ide} experience.
 
 Here are some examples of modules implemented using the proposed architecture.
+
+
+\subsection{Module Tools}
+
+When developing against a module architecture, having tools to help debug issues
+is useful. \dots
+
+Some examples of issues we have experienced when developing modules are as
+follows:
+
+\begin{enumerate}
+  \item Incorrect handler registration
+  \item Incorrect Event name
+  \item Incorrect arguments in response
+  \item Incorrect arguments in request
+  \item Incorrect State
+  \item Concurrent Events
+\end{enumerate}
+
+Most of these issues relate to the Event system, so being able to mock events
+is a useful tool. Luckily, this is quite simpel to implement. In
+pircture \ref{pic:eventMock} we can see this in action.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{event-mocking.png}
+  \caption{
+    Event Mocking module that adds a simple pop-up menu for manually sending
+    Events.
+  }
+  \label{pic:eventMock}
+\end{figure}
 
 \subsection{Magnolia Dependency Graph Visualizer}
 
@@ -1059,11 +1091,11 @@ change, they can be trivially refactored to use the cache field instead, by
 simply pre-fixing all their paths with \textit{ide-cache}. In the dependency
 visualizer, we can prefix the graph storing, with this, and then the generated
 graph would be stored across sessions, ensuring a speedier visualisation
-process, as we don't have to wait for an, relativley, expensive IO operation.
+process, as we don't have to wait for an, relatively, expensive IO operation.
 
 \subsection{IDE Framework}
 
-An important aspect development, is seperation of concerns. This is also
+An important aspect development, is separation of concerns. This is also
 relevant for module development. A module that renders a \gls{dag}, should not
 also be responsible for parsing a library and retrievieng the data to be
 rendered. The same principle has been applied when developing prototype modules
@@ -1078,7 +1110,7 @@ of the \gls{ide}:
   \item \textit{ide\_errors}: Responsible in displaying module errors
 \end{enumerate}
 
-In the figure \ref{fig:ideLayout}, we have layed out the naming convention we
+In the figure \ref{fig:ideLayout}, we have laid out the naming convention we
 use when referring to different \textit{places} in the \gls{ide}.
 
 \todo{Create the figure}

@@ -7,6 +7,23 @@ Would've, could've, should've.
 
 It just piles and piles and piles on.
 
+\subsection{Module Market}
+
+No module market. How should we distribute modules?
+
+\subsection{Testing}
+
+No unit tests for the TypeScript side, no integration testing between the
+frontend and backend.
+
+\subsection{Attribute and Instructions}
+
+Can't remove or change eventListeners currently. This is because to remove an
+EventListener, the exact same function passed to the \textit{addEventListener}
+must be used, which means a reference to this function needs to be stored, but
+having two or more of the same type? It can get confusing for a module developer
+of what should actually happen.
+
 \section{Modular Language Server}
 
 Once the compiler \cite{wiig} is implemented, a proper \gls{ls} can be created.
