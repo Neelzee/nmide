@@ -137,6 +137,7 @@ impl Attr {
     pub fn is_empty(&self) -> bool {
         match self {
             Attr::Id(o) | Attr::Class(o) | Attr::Custom(_, o) => o.is_empty(),
+            Attr::Click(_) => false,
             _ => unimplemented!(),
         }
     }
