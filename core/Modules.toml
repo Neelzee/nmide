@@ -11,6 +11,9 @@ ide_tabs_style = { path = "../modules/ide_tabs/", kind  = "css", enabled = true 
 ide_cache = { path = "../modules/ide_cache/", enabled = true }
 ide_pm_style = { path = "../modules/ide_pm_style/", kind = "css", enabled = true }
 ide_errors = { path = "../modules/ide-errors/", package-manager = "bun", kind = "ts", enabled = true }
+ide_explorer = { path = "../modules/ide_explorer/", enabled = true }
+ide_explorer_style = { path = "../modules/ide_explorer/", kind = "css", enabled = true }
+ide_explorer_expanded = { path = "../modules/ide_explorer/", package-manager = "bun", kind = "ts", enabled = true }
 ide-editor = { path = "../modules/ide-editor/", package-manager = "bun", kind = "ts", enabled = true }
 rs-counter-plugin-example = { path = "../modules/rs-counter-plugin-example/", kind = "so", enabled = true }
 dependency-viewer = { path = "../modules/dependency-viewer", package-manager = "bun", kind = "mjs", enabled = true }
