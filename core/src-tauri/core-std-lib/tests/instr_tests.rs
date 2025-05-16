@@ -56,11 +56,9 @@ mod instr_opt_test {
         Box::new(Instruction::Then(
             Box::new(Instruction::Rem("a".to_string(), 5)),
             Box::new(Instruction::Then(
-                
                 Box::new(Instruction::Then(
                     Box::new(Instruction::Rem("b".to_string(), 10)),
 Box::new(Instruction::Add("b".to_string(), 20)),
-                    
                 )),
     Box::new(Instruction::Add("c".to_string(), 30))
             ))
@@ -84,9 +82,7 @@ Box::new(Instruction::Add("b".to_string(), 20)),
                 Box::new(Instruction::Rem("node3".to_string(), 100)),
                 Box::new(Instruction::Then(
                 Box::new(Instruction::Add("node4".to_string(), 300)),
-                Box::new(Instruction::Add("node3".to_string(), 200)),
-            )) 
-            )),
+                Box::new(Instruction::Add("node3".to_string(), 200)),)))),
             Box::new(Instruction::Rem("node4".to_string(), 150))
         ))
     )
@@ -113,9 +109,8 @@ Box::new(Instruction::Add("b".to_string(), 20)),
         let flat = Instruction::optimize(instr.flatten()).flatten();
         if flat.len() != 1 {
             assert!(!flat.contains(&Instruction::NoOp));
-        } 
+        }
     }
-
 }
 
 #[cfg(test)]
@@ -252,11 +247,9 @@ mod instr_flatten {
         Box::new(Instruction::Then(
             Box::new(Instruction::Rem("a".to_string(), 5)),
             Box::new(Instruction::Then(
-                
                 Box::new(Instruction::Then(
                     Box::new(Instruction::Rem("b".to_string(), 10)),
 Box::new(Instruction::Add("b".to_string(), 20)),
-                    
                 )),
     Box::new(Instruction::Add("c".to_string(), 30))
             ))
@@ -280,9 +273,7 @@ Box::new(Instruction::Add("b".to_string(), 20)),
                 Box::new(Instruction::Rem("node3".to_string(), 100)),
                 Box::new(Instruction::Then(
                 Box::new(Instruction::Add("node4".to_string(), 300)),
-                Box::new(Instruction::Add("node3".to_string(), 200)),
-            )) 
-            )),
+                Box::new(Instruction::Add("node3".to_string(), 200)),)))),
             Box::new(Instruction::Rem("node4".to_string(), 150))
         ))
     )
@@ -347,12 +338,9 @@ Box::new(Instruction::Add("b".to_string(), 20)),
         Box::new(Instruction::Then(
             Box::new(Instruction::Rem("a".to_string(), 5)),
             Box::new(Instruction::Then(
-                
-                Box::new(Instruction::Then(
+                                Box::new(Instruction::Then(
                     Box::new(Instruction::Rem("b".to_string(), 10)),
-Box::new(Instruction::Add("b".to_string(), 20)),
-                    
-                )),
+Box::new(Instruction::Add("b".to_string(), 20)),)),
     Box::new(Instruction::Add("c".to_string(), 30))
             ))
         ))
@@ -375,8 +363,7 @@ Box::new(Instruction::Add("b".to_string(), 20)),
                 Box::new(Instruction::Rem("node3".to_string(), 100)),
                 Box::new(Instruction::Then(
                 Box::new(Instruction::Add("node4".to_string(), 300)),
-                Box::new(Instruction::Add("node3".to_string(), 200)),
-            )) 
+                Box::new(Instruction::Add("node3".to_string(), 200)))) 
             )),
             Box::new(Instruction::Rem("node4".to_string(), 150))
         ))
@@ -401,7 +388,8 @@ Box::new(Instruction::Add("b".to_string(), 20)),
         )
     )]
     fn flattening_opt_does_not_contain_noop(#[case] instr: Instruction<i32>) {
-        assert!(!Instruction::opt(&instr.flatten()).flatten().contains(&Instruction::NoOp))
+        assert!(!Instruction::opt(&instr.flatten())
+            .flatten()
+            .contains(&Instruction::NoOp))
     }
 }
-
