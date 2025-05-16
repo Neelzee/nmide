@@ -43,8 +43,8 @@ export const renderer = (emit: Emitter): NmideConfig["render"] => async (ui) => 
 }
 
 export const tsRenderer: NmideConfig["render"] = renderer((event: NmideEvent) =>
-    tauri_emit("nmide://event", event)
-      .catch(err => window.__nmideConfig__.log.error(`Error on emitting: ${JSON.stringify(err)}`)))
+  tauri_emit("nmide://event", event)
+    .catch(err => window.__nmideConfig__.log.error(`Error on emitting: ${JSON.stringify(err)}`)))
 
 const evalHtml = (op: Instruction<Html>, emit: Emitter) => {
   if (op === "noOp" || op === null || op === undefined) {
@@ -74,7 +74,7 @@ const evalHtml = (op: Instruction<Html>, emit: Emitter) => {
     evalHtml(snd, emit);
     return;
   }
-  window.__nmideConfig__.log.debug("No parse for instruction: ", op);
+  window.__nmideConfig__.log.debug(`No parse for html-instruction: ${JSON.stringify(op)}`);
 }
 
 const evalAttr = (op: Instruction<Attr>, emit: Emitter) => {
@@ -114,7 +114,7 @@ const evalAttr = (op: Instruction<Attr>, emit: Emitter) => {
     evalAttr(snd, emit);
     return;
   }
-  window.__nmideConfig__.log.debug("No parse for instruction: ", op);
+  window.__nmideConfig__.log.debug(`No parse for attr-instruction: ${JSON.stringify(op)}`);
 }
 
 const evalText = (op: Instruction<string>) => {
@@ -166,7 +166,7 @@ const evalText = (op: Instruction<string>) => {
     evalText(snd);
     return;
   }
-  window.__nmideConfig__.log.debug("No parse for instruction: ", op);
+  window.__nmideConfig__.log.debug(`No parse for text-instruction: ${JSON.stringify(op)}`);
 }
 
 const remAttr = (element: HTMLElement, attr: Attr) => {
