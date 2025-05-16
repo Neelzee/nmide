@@ -42,6 +42,7 @@ tokio = { features = ["full"], version = "1.44.2" }
 abi_stable = { version = "0.11.3", optional = true }
 async-ffi = { version = "0.5.0", features = ["abi_stable"], optional = true }
 log4rs = "1.3.0"
+env_logger = "0.11.8"
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]

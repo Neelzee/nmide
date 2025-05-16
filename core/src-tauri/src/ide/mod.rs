@@ -16,7 +16,7 @@ use std::{collections::HashMap, path::PathBuf};
 use tauri::{AppHandle, Emitter, Manager, RunEvent};
 use tauri_plugin_dialog::{DialogExt as _, MessageDialogButtons, MessageDialogKind};
 
-mod setup;
+pub mod setup;
 
 #[tauri::command]
 async fn init(mods: Vec<CoreModification>) {
