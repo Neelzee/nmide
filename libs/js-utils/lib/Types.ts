@@ -15,9 +15,17 @@ export type ValuePrimitive = number
 
 export type ValueNull = "null";
 export type ValueInt = { int: number };
-export const isTInt = (x: object): x is ValueInt => "int" in x;
+export const isTInt = (x: unknown): x is ValueInt =>
+  typeof x === "object"
+  && x !== null
+  && "int" in x
+  && typeof x.int === "number";
 export type ValueFloat = { float: number };
-export const isTFloat = (x: object): x is ValueFloat => "float" in x;
+export const isTFloat = (x: unknown): x is ValueFloat =>
+  typeof x === "object"
+  && x !== null
+  && "float" in x
+  && typeof x.float === "number";
 export type ValueStr = { str: string };
 export const isTStr = (x: unknown): x is ValueStr => typeof x === "object" && x !== null && "str" in x;
 export type ValueBool = { bool: boolean };

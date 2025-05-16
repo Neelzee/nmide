@@ -30,8 +30,8 @@ export class HtmlBuilder {
     return this;
   }
 
-  attrs(...attrs: Attr[]): HtmlBuilder {
-    this._attrs.push(...attrs);
+  attrs(...attrs: (undefined | Attr)[]): HtmlBuilder {
+    this._attrs.push(...(attrs.filter(a => a !== undefined)));
     return this;
   }
 
