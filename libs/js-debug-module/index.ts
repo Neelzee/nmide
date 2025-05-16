@@ -8,21 +8,22 @@ declare global {
       handler: (event?: Event) => Promise<void>
     };
     __nmideConfig__: NmideConfig,
-    state: Record<string, Value | undefined>,
+    debug_state: State,
   }
 }
 
 export const debug_module = (
   m: Partial<Module>,
   core?: Partial<Core>,
+  initial_state?: State,
   render?: NmideConfig["render"],
   config?: Partial<NmideConfig>,
 ) => {
   window.__nmideConfig__ = { ...defaultConfig, ...config };
-  window.state = window.state === undefined ? {} : window.state;
+  window.debug_state = initial_state || {};
   const c = core === undefined
     ? DebugCore()
-    : { ...DebugCore(), state: () => new Promise<State>(r => r(window.state)), ...core };
+    : { ...DebugCore(), state: () => new Promise<State>(r => r(window.debug_state)), ...core };
   window.debug_module = {
     init: async () => {
       const promise = m?.init === undefined ? new Promise<CoreModification>(r => r(emptyCm())) : m.init(c);
@@ -30,7 +31,7 @@ export const debug_module = (
       if (render !== undefined) {
         render(result.ui);
       }
-      window.state = parseStateInstr(result.state)(window.state);
+      window.debug_state = parseStateInstr(result.state)(window.debug_state);
     },
     handler: async (event?: Event) => {
       const promise = m?.handler === undefined
@@ -45,7 +46,7 @@ export const debug_module = (
       if (render !== undefined) {
         render(result.ui);
       }
-      window.state = parseStateInstr(result.state)(window.state);
+      window.debug_state = parseStateInstr(result.state)(window.debug_state);
     }
   }
 }
