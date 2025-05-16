@@ -1,9 +1,9 @@
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 
 use anyhow::{anyhow, Result};
 use async_trait::async_trait;
 use core_std_lib::{core::Core, event::Event, state::Value};
-use fsa::{walk_dir, Fo};
+use fsa::{walk_dir, FOptions, Fo};
 use tokio::{
     fs::{File, OpenOptions},
     io::{AsyncReadExt, AsyncWriteExt},
@@ -22,7 +22,7 @@ impl core_module_lib::ModuleBuilder for ModuleBuilder {
 pub struct Module;
 
 const fn module_name() -> &'static str {
-    "ide-fsa"
+    "ide_fsa"
 }
 
 #[async_trait]
@@ -41,6 +41,7 @@ impl core_module_lib::Module for Module {
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
+        println!("{:?}", event);
         let result = match event.event_name() {
             "fsa-write" => fsa_write(&event, &core).await,
             "fsa-read" => fsa_read(&event, &core).await,
@@ -55,7 +56,10 @@ impl core_module_lib::Module for Module {
         let obj = Value::new_obj()
             .obj_add("error_event", Value::Str(event.event_name().to_string()))
             .obj_add("error_args", event.args().cloned().unwrap_or_default())
-            .obj_add("error_msg", Value::Str(format!("{:?}", result.unwrap())));
+            .obj_add(
+                "error_msg",
+                Value::Str(format!("{:?}", result.unwrap_err())),
+            );
 
         core.throw_event(Event::new("fsa-error", Some(obj))).await;
     }
@@ -97,8 +101,13 @@ async fn fsa_write(event: &Event, core: &Box<dyn Core>) -> Result<()> {
     let mut file = OpenOptions::new().write(true).open(file_path).await?;
 
     file.write_all(content.as_bytes()).await?;
-
-    core.throw_event(Event::new(format!("fsa_write_{}", todo!()), None))
+    let module = event
+        .args()
+        .and_then(|o| o.obj())
+        .and_then(|o| o.get("module").cloned())
+        .and_then(|v| v.str())
+        .unwrap_or_default();
+    core.throw_event(Event::new(format!("fsa_write_{}", module), None))
         .await;
 
     Ok(())
@@ -130,8 +139,15 @@ async fn fsa_read(event: &Event, core: &Box<dyn Core>) -> Result<()> {
     let mut buff = String::new();
     file.read_to_string(&mut buff).await?;
 
+    let module = event
+        .args()
+        .and_then(|o| o.obj())
+        .and_then(|o| o.get("module").cloned())
+        .and_then(|v| v.str())
+        .unwrap_or_default();
+
     core.throw_event(Event::new(
-        format!("fsa_read_{}", todo!()),
+        format!("fsa_read_{}", module),
         Some(Value::Str(buff)),
     ))
     .await;
@@ -144,8 +160,15 @@ async fn fsa_dir(event: &Event, core: &Box<dyn Core>) -> Result<()> {
         .args()
         .ok_or(anyhow!("Expected argument, got nothing"))?
         .obj()
+        .or_else(|| {
+            event.args().unwrap().str().map(|s| {
+                let mut map = HashMap::new();
+                map.insert("file_path".to_string(), Value::Str(s));
+                map
+            })
+        })
         .ok_or(anyhow!(
-            "Expected argument to be of type Object, but got: {:?}",
+            "Expected argument to be of type Object or Str, but got: {:?}",
             event.args()
         ))?;
 
@@ -161,9 +184,31 @@ async fn fsa_dir(event: &Event, core: &Box<dyn Core>) -> Result<()> {
         })?
         .into();
 
+    let module = event
+        .args()
+        .and_then(|o| o.obj())
+        .and_then(|o| o.get("module").cloned())
+        .and_then(|v| v.str())
+        .unwrap_or_default();
+
+    let depth = event
+        .args()
+        .and_then(|o| o.obj())
+        .and_then(|o| o.get("depth").cloned())
+        .and_then(|v| v.int())
+        .map(|v| v.abs() as usize);
+
+    let ignore_hidden = event
+        .args()
+        .and_then(|o| o.obj())
+        .and_then(|o| o.get("ignore_hidden").cloned())
+        .and_then(|v| v.bool());
+
     core.throw_event(Event::new(
-        format!("fsa_dir_{}", todo!()),
-        Some(objectify(walk_dir(file_path, Default::default())?.unwrap())),
+        format!("fsa_dir_{}", module),
+        Some(objectify(
+            walk_dir(file_path, FOptions::new(depth, None, ignore_hidden))?.unwrap(),
+        )),
     ))
     .await;
 

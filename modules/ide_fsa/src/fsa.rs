@@ -15,11 +15,16 @@ pub enum Fo {
 }
 
 impl FOptions {
-    pub fn new(depth: usize, ignore: Vec<PathBuf>, ignore_hidden: bool) -> Self {
+    pub fn new(
+        depth: Option<usize>,
+        ignore: Option<Vec<PathBuf>>,
+        ignore_hidden: Option<bool>,
+    ) -> Self {
+        let def = FOptions::default();
         Self {
-            depth,
-            ignore_hidden,
-            ignore,
+            depth: depth.unwrap_or(def.depth),
+            ignore_hidden: ignore_hidden.unwrap_or(def.ignore_hidden),
+            ignore: ignore.unwrap_or(def.ignore),
         }
     }
 }
