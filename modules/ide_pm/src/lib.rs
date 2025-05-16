@@ -1,10 +1,12 @@
+use std::collections::HashMap;
+
 use core_module_lib::Module;
 use core_std_lib::attrs::Attr;
 use core_std_lib::core::Core;
 use core_std_lib::core_modification::CoreModification;
-use core_std_lib::event::Event;
+use core_std_lib::event::{DialogFileKind, Event};
 use core_std_lib::html::{Html, UIInstructionBuilder};
-use core_std_lib::state::{StateInstructionBuilder, Value};
+use core_std_lib::state::{HHMap, StateInstructionBuilder, Value};
 
 pub struct ModuleBuilder;
 
@@ -74,6 +76,8 @@ impl Module for ProjectManagerModule {
             .await;
         core.add_handler("fsa_dir_ide_pm".to_string(), MODULE_NAME.to_string())
             .await;
+        core.add_handler("ide-pm-folder-res".to_string(), MODULE_NAME.to_string())
+            .await;
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
@@ -138,19 +142,41 @@ impl Module for ProjectManagerModule {
             "ide-pm-folder" => {
                 tokio::spawn({
                     async move {
-                        core.throw_event(Event::new("nmide://folder?", None)).await;
+                        let builder = Event::new_file_dialog()
+                            .event("ide-pm-folder-res")
+                            .file_kind(DialogFileKind::SingleDir)
+                            .title("Project")
+                            .create_dirs(true)
+                            .build()
+                            .unwrap();
+                        core.throw_event(builder).await;
                     }
                 });
             }
-            "nmide://folder" => {
-                core.throw_event(Event::new("fsa-dir", event.args().cloned()))
+            "ide-pm-folder-res" | "nmide://folder" => {
+                let mut args = event
+                    .args()
+                    .and_then(|o| o.obj())
+                    .or_else(|| {
+                        event.args().unwrap().str().map(|s| {
+                            let mut map = HashMap::new();
+                            map.insert("file_path".to_string(), Value::Str(s));
+                            map
+                        })
+                    })
+                    .unwrap_or_default();
+                args.insert("module".to_string(), Value::Str("ide_pm".to_string()));
+                args.insert("depth".to_string(), Value::Int(5));
+                args.insert("ignore_hidden".to_string(), Value::Bool(true));
+                core.throw_event(Event::new("fsa-dir", Some(Value::Obj(HHMap::from(args)))))
                     .await;
             }
-            "fsa-read-ide_pm" => {
-                println!("DATA: {:?}", event.args());
+            "fsa_read_ide_pm" => {
+                return;
             }
-            "fsa-dir-ide_pm" => {
-                println!("DIR-DATA: {:?}", event.args());
+            "fsa_dir_ide_pm" => {
+                core.throw_event(Event::new("open-project", event.args().cloned()))
+                    .await;
             }
             _ => (),
         }
