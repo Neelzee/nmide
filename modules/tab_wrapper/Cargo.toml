@@ -1,0 +1,9 @@
+[package]
+name = "tab_wrapper"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+async-trait = "0.1.88"
+core-std-lib = { path = "../../core/src-tauri/core-std-lib" }
+core-module-lib = { path = "../../core/src-tauri/core-module-lib" }
