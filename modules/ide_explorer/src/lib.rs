@@ -114,6 +114,10 @@ fn render(f: Fo) -> Html {
                 .set_text(file_name)
                 .add_attr(Attr::Id(path.replace("/", "_")))
                 .add_attr(Attr::Class("file".to_string()))
+                .add_attr(Attr::Click(Event::new(
+                    "click-file",
+                    Some(Value::Str(path)),
+                )))
         }
         Fo::Folder(path, fos) => {
             let file_name = path.split("/").last().unwrap_or(&path);
