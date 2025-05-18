@@ -26,13 +26,14 @@ const registerHandler = async (
 };
 
 const eventThrower = async (event: Event) => {
+  window.__nmideConfig__.log.debug(`[Frontend] throwing event: ${JSON.stringify(event)}`);
   emit(
     "nmide://event",
     { event }
   ).catch(
     err =>
       window.__nmideConfig__.log.error(
-        `Event ${event} resulted in error from backend: `, err
+        `Event ${JSON.stringify(event)} resulted in error from backend: ${err} ${JSON.stringify(err)}`, err
       )
   );
 };
@@ -59,7 +60,7 @@ const tsHandler = async (evt: Event) => {
 
   const event_modules = window.__nmideConfig__.handlerRegister.event.get(getEventName(evt));
   const modules = event_modules === undefined ? [] : event_modules;
-  // TODO: Add proper validation/handling
+  window.__nmideConfig__.log.info(`Event: ${JSON.stringify(evt)}, Modules: ${JSON.stringify(modules)}`);
   const modifications: CoreModification[] = await Promise.all(
     modules
       .map(m => window.__nmideConfig__.modules.get(m))
@@ -73,9 +74,7 @@ const tsHandler = async (evt: Event) => {
 const tsInit = async () => {
   const core: Core = await mkCore();
 
-  // TODO: Figure out a way to sort modules by runtime
   const modules = Array.from(window.__nmideConfig__.modules.values());
-  // TODO: Add proper validation/handling
   const modifications: CoreModification[] = await Promise.all(
     modules.map(m => m.init(core))
   );
