@@ -30,6 +30,8 @@ pub const EVENT_ADD_CONTENT: &str = "add_content";
 
 pub const EVENT_CHANGE_TAB: &str = "change_tab";
 
+pub const EVENT_CHANGED_TAB: &str = "changed_tab";
+
 pub const EVENT_ADD_TAB: &str = "add_tab";
 
 pub const EVENT_REM_TAB: &str = "rem_tab";

@@ -18,11 +18,9 @@ pub async fn handler(core: Box<dyn Core>) {
             .adopt(
                 Html::Div()
                     .add_attr(Attr::Id(ID_TAB_BTN_CONTAINER.to_string()))
-                    .adopt(create_tab_btn(0, "0".to_string()))
-                    .adopt(create_tab_btn(1, "1".to_string())),
+                    .adopt(create_tab_btn(0, "0".to_string())),
             )
-            .adopt(create_tab_content(0).add_attr(Attr::Class(SHOW_TAB_CLASS.to_string())))
-            .adopt(create_tab_content(1)),
+            .adopt(create_tab_content(0).add_attr(Attr::Class(SHOW_TAB_CLASS.to_string()))),
         Some("content"),
     );
     let ui = if let Some(xs) = core
@@ -39,10 +37,7 @@ pub async fn handler(core: Box<dyn Core>) {
     let state = StateInstructionBuilder::default()
         .add(
             STATE_TABS,
-            Value::List(vec![
-                Value::new_obj().obj_add("id", Value::Int(0)),
-                Value::new_obj().obj_add("id", Value::Int(1)),
-            ]),
+            Value::List(vec![Value::new_obj().obj_add("id", Value::Int(0))]),
         )
         .set(STATE_TAB_STORAGE, Value::List(Vec::new()))
         .add(STATE_CURRENT_TAB_KEY, Value::Int(0))

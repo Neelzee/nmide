@@ -1,5 +1,5 @@
 use crate::{
-    EVENT_CHANGE_TAB, ID_TAB_BTN_CONTAINER, ID_TAB_CONTAINER, SHOW_TAB_CLASS,
+    EVENT_CHANGE_TAB, EVENT_CHANGED_TAB, ID_TAB_BTN_CONTAINER, ID_TAB_CONTAINER, SHOW_TAB_CLASS,
     STATE_CURRENT_TAB_KEY, STATE_INITIALIZED, STATE_TAB_STORAGE, STATE_TABS,
     post_init::create_tab_content,
 };
@@ -110,6 +110,8 @@ pub async fn change_handler(event: Event, core: Box<dyn Core>) {
             ),
     )
     .await;
+    core.throw_event(Event::new(EVENT_CHANGED_TAB, event.args().cloned()))
+        .await;
 }
 
 /// Adds a new tab
@@ -136,19 +138,16 @@ pub async fn tab_add_handler(event: Event, core: Box<dyn Core>) {
                 .get("title")
                 .cloned()
                 .and_then(|v| v.str())
-                .unwrap_or(format!("{id}"));
+                .unwrap_or(id.to_string());
 
             (id, title)
         })
         .collect::<Vec<(i32, String)>>();
-    tabs.sort_by(|a, b| a.0.cmp(&b.0));
     let max_id = tabs
         .iter()
         .max_by(|a, b| a.0.cmp(&b.0))
         .map(|i| i.0)
         .unwrap_or_default();
-    tabs.push((max_id + 1, format!("{}", max_id + 1)));
-    let (id, title) = tabs.last().cloned().unwrap();
     let title = event
         .args()
         .and_then(|v| {
@@ -160,7 +159,11 @@ pub async fn tab_add_handler(event: Event, core: Box<dyn Core>) {
                     .and_then(|v| v.str())
             }
         })
-        .unwrap_or(title);
+        .unwrap_or((max_id + 1).to_string());
+    tabs.push((max_id + 1, title));
+    let (id, title) = tabs.iter().max_by(|(a, _), (b, _)| a.cmp(b)).unwrap();
+    let id = *id;
+    let title = title.to_string();
     let state = StateInstructionBuilder::default().set(
         STATE_TABS,
         Value::List(
@@ -177,6 +180,8 @@ pub async fn tab_add_handler(event: Event, core: Box<dyn Core>) {
         .add_node(create_tab_btn(id, title), Some(ID_TAB_BTN_CONTAINER))
         .add_node(create_tab_content(id), Some(ID_TAB_CONTAINER.to_string()));
     core.send_modification(CoreModification::default().set_state(state).set_ui(ui))
+        .await;
+    core.throw_event(Event::new(EVENT_CHANGE_TAB, Some(Value::Int(id))))
         .await;
 }
 
