@@ -27,6 +27,8 @@ html {
 }
 
 #content {
+  display: flex;
+  align-items: stretch;
   grid-row: 2;
   overflow: auto;
   background: #1e1e1e;
