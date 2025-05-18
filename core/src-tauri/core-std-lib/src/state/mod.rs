@@ -105,6 +105,51 @@ impl From<HashMap<String, Value>> for HHMap {
 }
 
 impl Value {
+    /// Adds the given value onto itself.
+    /// If Value is not an Object variant, its transformed into one,
+    /// where `0` is the index of the original value.
+    ///
+    /// ```rust
+    /// use core_std_lib::state::Value;
+    /// let value = Value::Null;
+    /// let new_val = value.clone().add("foo", Value::Int(0));
+    /// assert!(new_val.is_obj());
+    /// assert_eq!(new_val.get("foo").unwrap(), value);
+    /// ```
+    pub fn add<S: Into<String>>(self, field: S, value: Self) -> Self {
+        match self {
+            Value::Obj(map) => {
+                let mut map = map.to_hm();
+                map.insert(field.into(), value);
+                Value::Obj(HHMap::from(map))
+            }
+            _ => Value::new_obj().add("0", self).add(field.into(), value),
+        }
+    }
+
+    pub fn rem<S: Into<String>>(self, field: S) -> Self {
+        let s: String = field.into();
+        let ind = s.parse::<usize>();
+        match self {
+            Value::Str(mut str) if ind.is_ok() => {
+                let ind = ind.unwrap();
+                str.remove(ind);
+                Value::Str(str)
+            }
+            Value::List(mut lst) if ind.is_ok() => {
+                let ind = ind.unwrap();
+                lst.remove(ind);
+                Value::List(lst)
+            }
+            Value::Obj(map) => {
+                let mut map = map.to_hm();
+                map.remove(&s);
+                Value::Obj(HHMap::from(map))
+            }
+            _ => self,
+        }
+    }
+
     pub fn new_str<S: Into<String>>(s: S) -> Self {
         Self::Str(s.into())
     }
