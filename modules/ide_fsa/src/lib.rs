@@ -41,7 +41,6 @@ impl core_module_lib::Module for Module {
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
-        println!("{:?}", event);
         let result = match event.event_name() {
             "fsa-write" => fsa_write(&event, &core).await,
             "fsa-read" => fsa_read(&event, &core).await,
