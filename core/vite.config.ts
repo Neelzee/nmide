@@ -15,7 +15,9 @@ export default defineConfig({
     // TODO: Remove when @nmide/js-utils is stable.
     // Because @nmide/js-utils is _installed_ by referencing
     // it as a path, it needs to be installed for the core to work.
-
+    fs: {
+      allow: [".."]
+    }
   },
   // Env variables starting with the item of `envPrefix` will be exposed in tauri's source code through `import.meta.env`.
   envPrefix: ["VITE_", "TAURI_ENV_*"],
