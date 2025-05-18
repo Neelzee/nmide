@@ -43,7 +43,7 @@ mod rs_rt_installer;
 
 const MODULE_SEP: &str = "<!--MODULES-->";
 
-#[derive(Debug, Default, Eq, PartialEq, Clone)]
+#[derive(Debug, Default, Eq, PartialEq, Clone, Copy)]
 pub(crate) enum Kind {
     #[default]
     Rust,
@@ -173,6 +173,22 @@ fn main() {
         return;
     }
     let modules = get_modules(conf, modules);
+    println!("\n{}\n", "=".repeat(80));
+    println!("Installing modules:");
+    println!(
+        "{}",
+        modules
+            .iter()
+            .map(|m| format!(
+                "Module: {}, path: {:?}, kind: {:?}",
+                m.name(),
+                m.path.to_str().unwrap(),
+                m.kind
+            ))
+            .collect::<Vec<_>>()
+            .join("\n")
+    );
+    println!("\n{}\n", "=".repeat(80));
     rs_installer::install(modules.clone(), cargo, out);
     rs_rt_installer::install(modules.clone(), module_folder);
     js_installer::install(dist.clone(), modules.clone());
