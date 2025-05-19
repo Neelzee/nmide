@@ -44,7 +44,16 @@ Debouncing and throttling work in less complex \gls{gui} structures, but as the
 amount of features in an application increases, the complexity will also
 increase. These event-coalescing-strategies are a source of subtle bugs, as
 event coalescing can easily break modularity. In a \gls{jsms}, this issue could
-be solved by using \textit{flushable promises} \cite{flush}.
+be solved by using \textit{flushable promises} \cite{flush}. This could have
+solved our issue, where we had some Event handler that took noticeably longer
+time to return, but since this was a Rust-Module, we could \textit{solve} this
+by doing this computation on another thread. If it was a JavaScript module we
+could have solved it by using \textit{flushable promises}.
+
+If we implement a \gls{ls}-client in JavaScript, \textit{flushable promises}
+could allow for a smoother experience, as things like \textit{looking up}
+renaming in a Magnolia project is a more involved process for the compiler,
+and in larger projects, could take a noticeably long time.
 
 
 \section{Automated Testing}

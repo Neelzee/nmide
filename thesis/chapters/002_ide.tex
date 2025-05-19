@@ -87,7 +87,9 @@ the models used in the core. The \textit{primitive} types, are the same as in
 JavaScript, the notion of an empty value, numbers, strings, lists and
 \textit{objects}, can be serialized/deserialized to/from any language. So the
 manipulation on these types can be extracted and rewritten in another preferred
-language.
+language. Therefore, to be fully language agnostic, modules should be
+syntactically translatable between each other. The same two modules, one
+implemented in JavaScript, the other in Rust, should be semantically the same.
 
 \subsection{Existing Third Party Libraries}
 

@@ -134,7 +134,6 @@ undefined behavior was avoided, was using the \textit{abi\_stable}-crate, which
 enables \textit{safe} loading of external libraries, meaning modules. This is
 only an issue for runtime modules, which means they need to be handled
 differently than compile time modules.
-%\todo{Explain this more concretely}
 
 If the types in the core application change, either by expansion or renaming or
 such, the crate would crash the application during startup, because the existing
@@ -210,7 +209,7 @@ invocations and outputs needs to be sanitized before it can be used in the core
 application. This is achieved by wrapping all invocations in a
 \textit{try-catch}, and using the \textit{io-fp} library to decode types during
 runtime. This enables us to safely invoke modules, as we can translate all
-computations into a product type, where it is either an success, giving us the
+computations into a product type, where it is either a success, giving us the
 wanted computation from the module, or an error. But even with types, we cannot
 verify functions. Since during runtime, we are in the JavaScript environment,
 we can only validate if something is a function, using the
@@ -694,25 +693,43 @@ unnecessarily. This is why we split up our testing into different stages.
 
 Due to the \textit{pureness} of modules, mocking can be achieved easily, and
 therefore, modules can be tested alone, which is good, because testing a
-singular module is inexpensive.
+singular module is inexpensive. There are several ways to do this mocking in our
+architectural setup. For both the \gls{jsms} and \gls{rsms}, there are
+\textit{mock-cores}, which can mock the expected functionality of the Core
+instance, which we can extend to evaluate actual modifications, ensuring we can
+assert that some state or \gls{ui} change has occurred after an Event has been
+sent.
 
 \subsection{Unit Testing}
 
 A module developer should create unit tests for their module. This can easily be
 done, and tested many times, due to the light-weightiness of a module. This,
-together with mocking, ensures we can test our modules, as if they where in an
-\gls{ide}. This means we can ensure changes made to a module is non-breaking.
+together with mocking, ensures we can test our modules, as if they were in a
+\gls{ide}. Which means we can ensure changes made to a module is non-breaking.
+
+This also applies to maintainers of the \gls{ide}, as maintaining the core
+functionality and \gls{api} of our library, means documenting possible breaking
+changes, which unit tests can help ensure.
 
 \subsubsection{UI Testing}
 
 We can also combine this with existing testing libraries, like \textit{Playwright}\footnote{\url{https://playwright.dev/}},
-which can enable us to create tests specifically for UI behavior.
+which can enable us to create tests specifically for UI behavior. In the case of
+\textit{Playwright}, our \gls{ui} testing is dependent on that our
+\textit{mock-core} has the necessary functionality to transform the
+\textbf{Html} type we have implemented, to actual \gls{html}, which can be
+rendered on a webpage, or \textit{headless}, in \textit{Playwright}s case, so
+that \textit{Playwright} can assert the state of our \gls{dom}.
 
 \subsection{Module Family Testing}
 
 If a module changes some feature, let's say in the editor functionality, the
 module family tree encompassing this functionality needs to be tested, to ensure
-nothing breaks.
+nothing breaks. This means creating tests that use all the modules in a family,
+and asserting that the state and \gls{ui} behave as expected. In the case of
+the editor functionality, that after the Event \textit{open-file} is sent with
+a path to some file, that there exists a \textit{textarea}-\gls{html}-element in
+the \gls{dom}, with the same contents as the file.
 
 \subsubsection{Contract Testing}
 
@@ -866,17 +883,36 @@ follows:
 \end{enumerate}
 
 Most of these issues relate to the Event system, so being able to mock events
-is a useful tool. Luckily, this is quite simpel to implement. In
-pircture \ref{pic:eventMock} we can see this in action.
+is a useful tool. Luckily, this is quite simple to implement. In
+picture \ref{pic:eventMock} we can see this in action.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.75\textwidth]{event-mocking.png}
   \caption{
     Event Mocking module that adds a simple pop-up menu for manually sending
-    Events.
+    Events, with specific arguments
   }
   \label{pic:eventMock}
+\end{figure}
+
+When mocking in \gls{rest}-\gls{api} development, one creates the expected
+response, which is usually a \gls{json}-file. The same is done here, where the
+\textit{Args} field in this form expects the argument to be in \gls{json}. This
+is helpful, as other testing libraries, like \textit{Playwright} does the same,
+and the \gls{ide} logs the Event arguments in the same formatting, meaning we
+can simply copy-paste the Event argument we want to mock, into the field.
+
+In the picture \ref{pic:debugState}, we can see a module which helps visualize
+the current state of the \gls{ide}, in a tree-graph.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{debug-state.png}
+  \caption{
+    Debug-tool for visualizing the current \gls{ide}-state
+  }
+  \label{pic:debugState}
 \end{figure}
 
 \subsection{Magnolia Dependency Graph Visualizer}
@@ -890,7 +926,7 @@ One way to help a developer, would be to give them a tool to visualize the
 dependency graph, so that they could see what modules are connected. Using the
 Magnolia library as the input, we can create a visualization of the dependencies
 in Magnolia. Using two modules, one for \textit{parsing} the Magnolia library,
-finding all packages, and their dependencies, and another for for visualizing
+finding all packages, and their dependencies, and another for visualizing
 this.
 
 \begin{center}
@@ -1118,15 +1154,65 @@ use when referring to different \textit{places} in the \gls{ide}.
 The module \textit{ide\_pm}, being responsible for the menu bar at the top of
 the \gls{ide}, has an \textit{easy} job, as it just simplifies the creation of
 interactive \gls{ui} elements for other modules. With the dependency graph
-visualisation module, we can create a module which sends the initial Event that
-triggers the graph visualisation, and have the button be under the \textit{View}
+visualization module, we can create a module which sends the initial Event that
+triggers the graph visualization, and have the button be under the \textit{View}
 dropdown content.
 
-\todo{Show the code for this}
+In picture \ref{pic:ideEx} we can see the ide\_explorer in action, showing the
+Magnolia library visualized as a tree-like structure with collapsible folders.
+When we click on the \textit{File}, a dropdown appears, where we can click on a
+button, \textit{Open Folder}, which sends an Event to \gls{ide}\_fsa, the
+module in charge of handling file system operations, where we get in
+\textit{response}, all the folders and files in the path we selected. Which we
+transform into \gls{html}, and along with some \gls{css}, we get the collapsible
+folders.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.25\textwidth]{ide-explorer.png}
+  \caption{
+    \gls{ide}-explorer module, showing the Magnolia library.
+  }
+  \label{pic:ideEx}
+\end{figure}
+
+There are also some icons, on files and folders, this is done using \gls{css},
+in listing \ref{lst:ideEx}, we can see a snippet of this, since we are adding
+the file exstension as a class attribute, we can very simply add
+style-predicates to our files.
+
+\begin{center}
+  \lstinputlisting
+    [ language=css
+    , caption={
+      Module for styling the file explorer, adding an latex icon to all files
+      with the \textit{tex} exstension (\gls{css})
+    }
+    , label=lst:ideEx
+    , firstline=152
+    , lastline=154
+    ]{./modules/ide\_explorer/ide\_explorer\_style.css}
+\end{center}
 
 \subsection{Editor Module Family}
 
-\todo{Implement a rudimentary editor}
+The editor module family is coupled with the \gls{ide} framework, as using the
+ide\_explorer module, we can open and edit files. By adding a \textit{click}
+attribute to the files in the tree, we send an Event to \gls{ide}\_fsa, which
+reads the file we clicked on. We know what file we clicked on, because each
+\textit{click} attribute has sends an Event with their corresponding path. When
+we get the texts contents of the file in response, we create an textarea with
+the contents of the file added to it. In picture \ref{pic:editorModule} we can
+see this in action.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{editor.png}
+  \caption{
+    Editor module showing the contents of this section
+  }
+  \label{pic:editorModule}
+\end{figure}
 
 \subsection{Magnolia Language Server}
 
