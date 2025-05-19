@@ -2,7 +2,7 @@ use core_module_lib::Module;
 use core_std_lib::core::Core;
 use core_std_lib::core_modification::CoreModification;
 use core_std_lib::event::Event;
-use core_std_lib::state::{StateInstructionBuilder, Value};
+use core_std_lib::state::{HHMap, StateInstructionBuilder, Value};
 use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
@@ -61,14 +61,16 @@ impl Module for ProjectManagerModule {
                     eprintln!("Error when serializing: {:?}, file: {:?}", obj, pth);
                     return;
                 }
-                let obj: Result<Value, _> = serde_json::from_value(obj.unwrap());
+                let obj: Result<HashMap<String, Value>, _> = serde_json::from_value(obj.unwrap());
                 if obj.is_err() {
                     eprintln!("Error when serializing: {:?}, file: {:?}", obj, pth);
                     return;
                 }
                 let obj = obj.unwrap();
-                let mods = CoreModification::default()
-                    .set_state(StateInstructionBuilder::default().add(STATE_FIELD, obj));
+                let mods = CoreModification::default().set_state(
+                    StateInstructionBuilder::default()
+                        .add(STATE_FIELD, Value::Obj(HHMap::from(obj))),
+                );
                 core.send_modification(mods).await;
             }
             Event::PreExit => {
