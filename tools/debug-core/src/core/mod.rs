@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use core_std_lib::{core_modification::CoreModification, event::Event, html::Html, state::State};
 use futures::future::join_all;
 use statics::{HANDLER_REGISTER, MODULES, STATE, UI};
@@ -55,5 +57,9 @@ impl core_std_lib::core::Core for InnerCore {
         let (new_state, new_ui) = opt.build(STATE.read().await.clone(), UI.read().await.clone());
         *STATE.write().await = new_state;
         *UI.write().await = new_ui;
+    }
+
+    async fn appdir(&self) -> PathBuf {
+        ".".into()
     }
 }
