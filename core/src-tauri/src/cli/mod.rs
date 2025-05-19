@@ -1,11 +1,12 @@
 use crate::{
-    app::App, core::{runtime_core::RuntimeCore, NmideCore}, core_modification_handler::spawn_core_modification_handler, ide::setup, statics::{COMPILE_TIME_MODULES, MODULE_EVENT_REGISTER, NMIDE, RUNTIME_MODULES}
+    app::App,
+    core::NmideCore,
+    core_modification_handler::spawn_core_modification_handler,
+    ide::setup,
+    statics::{COMPILE_TIME_MODULES, MODULE_EVENT_REGISTER, NMIDE},
 };
-use abi_stable::sabi_trait::TD_CanDowncast;
 use anyhow::Result;
-use core_module_lib::rs_module::RCore_CTO;
 use core_std_lib::{core::Core, core_modification::UIInstr, event::Event, state::Value};
-use foreign_std_lib::event::rs_event::REvent;
 use log::{info, warn};
 use tokio::{
     io::{self, AsyncReadExt},

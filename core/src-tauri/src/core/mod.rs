@@ -1,10 +1,12 @@
-use crate::statics::{MODULE_EVENT_REGISTER, NMIDE, NMIDE_SENDER, NMIDE_STATE, NMIDE_UI};
+use crate::statics::{
+    APP_DATA_DIR, MODULE_EVENT_REGISTER, NMIDE, NMIDE_SENDER, NMIDE_STATE, NMIDE_UI,
+};
 use async_trait::async_trait;
 use core_std_lib::{
     core::Core, core_modification::CoreModification, event::Event, html::Html, state::State,
 };
 use log::info;
-use std::collections::HashMap;
+use std::{collections::HashMap, path::PathBuf};
 use tokio::sync::RwLock;
 
 #[cfg(feature = "runtime_modules")]
@@ -91,5 +93,15 @@ impl Core for NmideCore {
             .send(modification)
             .await
             .expect("Channel should be opened");
+    }
+
+    async fn appdir(&self) -> PathBuf {
+        APP_DATA_DIR
+            .get()
+            .expect("Should be initialized")
+            .read()
+            .await
+            .as_path()
+            .to_path_buf()
     }
 }
