@@ -9,6 +9,9 @@ use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
 };
 
+#[cfg(test)]
+mod test_fsa;
+
 mod fsa;
 
 pub struct ModuleBuilder;

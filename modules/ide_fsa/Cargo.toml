@@ -7,6 +7,9 @@ edition = "2021"
 name = "ide_fsa"
 crate-type = ["cdylib", "rlib"]
 
+[dev-dependencies]
+debug-core = { path = "../../tools/debug-core" }
+
 [dependencies]
 anyhow = "1.0.97"
 core-std-lib = { path = "../../core/src-tauri/core-std-lib" }
