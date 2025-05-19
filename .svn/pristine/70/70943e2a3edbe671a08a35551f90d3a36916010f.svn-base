@@ -1,0 +1,51 @@
+\chapter{Future Work}
+
+Would've, could've, should've.
+
+
+\section{Technical Debt}
+
+It just piles and piles and piles on.
+
+\subsection{Module Market}
+
+No module market. How should we distribute modules?
+
+\subsection{Testing}
+
+No unit tests for the TypeScript side, no integration testing between the
+frontend and backend.
+
+\subsection{Attribute and Instructions}
+
+Can't remove or change eventListeners currently. This is because to remove an
+EventListener, the exact same function passed to the \textit{addEventListener}
+must be used, which means a reference to this function needs to be stored, but
+having two or more of the same type? It can get confusing for a module developer
+of what should actually happen.
+
+\subsection{Keypresses}
+
+Create a module that emits keypresses, or maybe look into Tauri's
+keybind/keypress thing.
+
+\subsection{Compile-time Module Installation}
+
+It's kinda cursed.
+
+\subsection{Unify the tooling}
+
+A lot of different scripts doing stuff, should be one \gls{cli}-tool.
+
+\section{Modular Language Server}
+
+Once the compiler \cite{wiig} is implemented, a proper \gls{ls} can be created.
+
+\section{Modular Editor}
+
+The prototype editor module develop for this \gls{ide} is subpar compared to
+existing ones. A new one should be developed, in tandem with a \gls{ls} client.
+This will ensure that this \gls{ide} can support more languages. This editor
+should then utilize existing technology that is already used by other
+\gls{ide}s, like the tree-sitter\footnote{\url{https://github.com/tree-sitter/tree-sitter}}
+parsing system, which amongst other things, can help with syntax highlighting.

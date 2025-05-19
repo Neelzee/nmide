@@ -1,0 +1,18 @@
+{
+  "name": "ide_explorer",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "bun run build.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@nmide/js-utils": "link:@nmide/js-utils"
+  }
+}

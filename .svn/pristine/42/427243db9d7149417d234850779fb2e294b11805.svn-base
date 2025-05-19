@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!--MODULES-->
+    <script src='./dist/external/dependency-viewer.mjs' type=module></script>
+    <script src='./dist/external/ide-editor.ts' type=""></script>
+    <script src='./dist/external/ide_errors.ts' type=""></script>
+    <link rel="stylesheet" href="./dist/external/dependency-viewer-style.css" type="text/css" />
+    <link rel="stylesheet" href="./dist/external/ide_framework_style.css" type="text/css" />
+    <link rel="stylesheet" href="./dist/external/ide_pm_style.css" type="text/css" />
+    <!--MODULES-->
+    <script type="module" src="index.ts"></script>
+</head>
+
+<body></body>
+
+</html>

@@ -1,0 +1,80 @@
+\documentclass[runningheads]{llncs}
+
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{newclude}
+\usepackage{tikz}
+\usepackage{listings}
+\usetikzlibrary{shapes.geometric,positioning,shapes.symbols}
+
+\begin{document}
+
+\section{Adding support for Foreign Modules}
+
+Here we have a snippet of the Core, handling an Event being thrown:
+
+\begin{lstlisting}[language=Rust]
+  pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
+    let evt = event.clone();
+    tokio::spawn({
+        async move {
+            let evt = event.clone();
+            let mut revt = None;
+            let mods = COMPILE_TIME_MODULES.read().await;
+            let rt_mods = RUNTIME_MODULES
+                .get()
+                .expect("Should be initialized")
+                .read()
+                .await;
+            let mut modules = Vec::new();
+            let mut rt_modules = Vec::new();
+            let triggered_modules = MODULE_EVENT_REGISTER
+                .read()
+                .await
+                .get_module_names(&evt)
+                .await;
+            info!(place = "backend", event:serde, triggered_modules:serde; "Handler, {:?} {:?}", event, triggered_modules);
+            for mod_name in triggered_modules {
+                if let Some(m) = mods.get(&mod_name) {
+                    modules.push(m.handler(evt.clone(), Box::new(NmideCore)));
+                }
+
+                if let Some(m) = rt_mods.get(&mod_name) {
+                    if revt.is_none() {
+                        revt = Some(REvent::from(evt.clone()));
+                    }
+                    rt_modules.push(m.handler(revt.clone().unwrap(), || {
+                        RCore_CTO::from_const(&RuntimeCore, TD_CanDowncast)
+                    }));
+                }
+            }
+            futures::future::join_all(modules).await;
+            futures::future::join_all(rt_modules).await;
+        }
+    });
+
+    let cm = modifications
+        .into_iter()
+        .fold(CoreModification::default(), |acc, cm| acc.combine(cm));
+
+    NmideCore.send_modification(cm).await;
+
+    if matches!(evt, Event::PreExit) {
+        info!(place = "backend"; "Exiting");
+        NMIDE
+            .get()
+            .expect("AppHandle should be initialized")
+            .exit()
+            .await;
+    }
+}
+\end{lstlisting}
+
+This could be improved, for example, by implementing some trait, unifying
+Runtime and Compile-time modules, but this is missing currently. So, to add
+support for a foreign module in the Core, all we need to do is ensue that we
+get the modules who have a handle for this Event, and ensure we \textit{await}
+their handling of said Event.
+
+
+\end{document}

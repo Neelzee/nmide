@@ -1,0 +1,22 @@
+\documentclass[runningheads]{llncs}
+
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{newclude}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,positioning,shapes.symbols}
+
+\begin{document}
+
+\section{What is Nmide}
+
+Nmide is a zero-core application. It has no existing functionality, except
+managing Modules, which give the application features. It achives this by using
+two kinds of Modules, compile-time and runtime. Compile-time modules can only be
+added during compilation of the application, and cannot be removed afterwards.
+Runtime modules are modules which are added after compilation, and can be
+removed. Removal or addition of a module during application uptime will not
+cause the Module to be added, the application has to restart for the removal or
+addition to take effect.
+
+\end{document}

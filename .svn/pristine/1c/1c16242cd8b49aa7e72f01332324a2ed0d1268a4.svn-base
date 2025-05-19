@@ -1,6 +1,0 @@
-CMakeFiles/nmiden.dir/nmide.c.o: \
- /home/nmf/Documents/uib/nmide/nmide-lib/nmide.c \
- /usr/include/stdc-predef.h \
- /home/nmf/Documents/uib/nmide/nmide-lib/nmide.h \
- /home/nmf/Documents/uib/nmide/nmide-lib/html/css.h \
- /home/nmf/Documents/uib/nmide/nmide-lib/html/html.h

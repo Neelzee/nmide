@@ -1,0 +1,107 @@
+use crate::statics::{
+    APP_DATA_DIR, MODULE_EVENT_REGISTER, NMIDE, NMIDE_SENDER, NMIDE_STATE, NMIDE_UI,
+};
+use async_trait::async_trait;
+use core_std_lib::{
+    core::Core, core_modification::CoreModification, event::Event, html::Html, state::State,
+};
+use log::info;
+use std::{collections::HashMap, path::PathBuf};
+use tokio::sync::RwLock;
+
+#[cfg(feature = "runtime_modules")]
+pub mod runtime_core;
+
+#[derive(Default)]
+pub struct ModuleEventRegister {
+    event: RwLock<HashMap<String, Vec<String>>>,
+}
+
+impl ModuleEventRegister {
+    pub async fn get_module_names(&self, event: &Event) -> Vec<String> {
+        let mut modules = Vec::new();
+
+        modules.append(
+            &mut self
+                .event
+                .read()
+                .await
+                .get(event.event_name())
+                .cloned()
+                .unwrap_or(Vec::new()),
+        );
+
+        modules.append(
+            &mut self
+                .event
+                .read()
+                .await
+                .get("*")
+                .cloned()
+                .unwrap_or(Vec::new()),
+        );
+
+        modules
+    }
+
+    pub async fn register_module(&mut self, event: String, handler: String) {
+        info!(
+            place = "backend";
+            "register module: {}, to event {:?}",
+            handler, event
+        );
+        let mut modules = self.event.write().await;
+        let mut vec = modules.get(&event).cloned().unwrap_or(Vec::new());
+        vec.push(handler.clone());
+        modules.insert(event, vec);
+    }
+}
+
+pub struct NmideCore;
+
+#[async_trait]
+impl Core for NmideCore {
+    async fn state(&self) -> State {
+        info!("[backend] state");
+        let st = NMIDE_STATE.read().await;
+        st.clone()
+    }
+
+    async fn ui(&self) -> Html {
+        info!("[backend] ui");
+        let ui = NMIDE_UI.read().await;
+        ui.clone()
+    }
+
+    async fn throw_event(&self, event: Event) {
+        NMIDE
+            .get()
+            .expect("AppHandle should be initialized")
+            .event(event)
+            .await;
+    }
+
+    async fn add_handler(&self, event_name: String, handler_name: String) {
+        let mut reg = MODULE_EVENT_REGISTER.write().await;
+        reg.register_module(event_name, handler_name).await;
+    }
+
+    async fn send_modification(&self, modification: CoreModification) {
+        NMIDE_SENDER
+            .get()
+            .expect("Sender should be initialized")
+            .send(modification)
+            .await
+            .expect("Channel should be opened");
+    }
+
+    async fn appdir(&self) -> PathBuf {
+        APP_DATA_DIR
+            .get()
+            .expect("Should be initialized")
+            .read()
+            .await
+            .as_path()
+            .to_path_buf()
+    }
+}

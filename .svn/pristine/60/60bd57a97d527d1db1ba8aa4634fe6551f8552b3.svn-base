@@ -1,7 +1,0 @@
-[package]
-name = "core-macros"
-version = "1.0.1"
-edition = "2021"
-
-[dependencies]
-serde = { version = "1.0.214", features = ["derive"] }
