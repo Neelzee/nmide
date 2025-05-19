@@ -24,3 +24,5 @@ event_sender_style = { path = "../modules/event_sender", kind = "css", enabled =
 state_viz = { path = "../modules/state_viz", kind = "ts", package-manager = "bun", enabled = true }
 state_viz_style = { path = "../modules/state_viz", kind = "css", enabled = true }
 tab_wrapper = { path = "../modules/tab_wrapper/", enabled = true }
+module_installer = { path = "../modules/module_installer/", enabled = true }
+module_installer_style = { path = "../modules/module_installer/", kind = "css", enabled = true }
