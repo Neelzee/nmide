@@ -24,32 +24,39 @@ fn navbar(xs: Vec<(&str, Vec<(&str, Event)>)>) -> Vec<Html> {
     xs.into_iter()
         .map(|(x, ys)| {
             let id = format!("ide-pm-drop-{}", x.replace(" ", "-"));
-            (
-                Html::Button()
-                    .set_text(x)
-                    .add_attr(Attr::Click(Event::new(
-                        "ide-pm-dropdown".to_string(),
-                        Some(Value::Str(id.clone().to_lowercase())),
-                    )))
-                    .add_attr(Attr::Id(id.to_lowercase()))
-                    .add_attr(Attr::Class("dropbtn".to_string())),
-                Html::Div()
-                    .add_attr(Attr::Id(format!("{id}-content").to_lowercase()))
-                    .add_attr(Attr::Class("dropdown-content".to_string()))
-                    .replace_kids(
-                        ys.into_iter()
-                            .map(|(y, evt)| {
-                                let yid = format!("ide-pm-{}", y.replace(" ", "-"));
-                                Html::Button()
-                                    .set_text(y)
-                                    .add_attr(Attr::Id(yid.to_lowercase()))
-                                    .add_attr(Attr::Click(evt))
-                            })
-                            .collect(),
-                    ),
-            )
+            Html::Div()
+                .add_attr(Attr::Class("dropdown".to_string()))
+                .adopt(
+                    Html::Button()
+                        .set_text(x)
+                        .add_attr(Attr::Click(Event::new(
+                            "ide-pm-dropdown".to_string(),
+                            Some(Value::Str(id.clone().to_lowercase())),
+                        )))
+                        .add_attr(Attr::Id(id.to_lowercase()))
+                        .add_attr(Attr::Class("dropbtn".to_string())),
+                )
+                .adopt(
+                    Html::Div()
+                        .add_attr(Attr::Id(format!("{id}-content").to_lowercase()))
+                        .add_attr(Attr::Class("dropdown-content".to_string()))
+                        .replace_kids(
+                            ys.into_iter()
+                                .map(|(y, evt)| {
+                                    let yid = format!("ide-pm-{}", y.replace(" ", "-"));
+                                    Html::Button()
+                                        .set_text(y)
+                                        .add_attr(Attr::Id(yid.to_lowercase()))
+                                        .add_attr(Attr::Click(evt))
+                                        .add_attr(Attr::Click(Event::new(
+                                            "ide-pm-dropdown".to_string(),
+                                            Some(Value::Str(id.clone().to_lowercase())),
+                                        )))
+                                })
+                                .collect(),
+                        ),
+                )
         })
-        .flat_map(|(b, c)| vec![b, c])
         .collect()
 }
 
@@ -92,7 +99,10 @@ impl Module for ProjectManagerModule {
                                 ("Open Folder", Event::new("ide-pm-folder", None)),
                             ],
                         ),
-                        ("Edit", vec![]),
+                        (
+                            "Edit",
+                            vec![("Add Module", Event::new("toggle-add-module", None))],
+                        ),
                         ("Selection", vec![]),
                         (
                             "View",
@@ -115,7 +125,7 @@ impl Module for ProjectManagerModule {
                         .cloned()
                         .and_then(|v| v.str())
                         .unwrap(),
-                    _ => panic!("Unhallowed argument"),
+                    _ => panic!("Unallowed argument"),
                 };
                 let id = format!("{id}-content");
                 let toggle = !state.get(&id).and_then(|v| v.bool()).is_some_and(|v| v);
