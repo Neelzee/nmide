@@ -61,6 +61,7 @@ body {
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #ddd;
+  color: black;
 }
 
 .legend {
@@ -72,6 +73,7 @@ body {
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #ddd;
+  color: black;
 }
 
 .legend-item {
@@ -97,6 +99,7 @@ body {
   border: 1px solid #ddd;
   max-height: 80vh;
   overflow-y: auto;
+  color: black;
 }
 
 .package-filter h3 {
