@@ -16,3 +16,6 @@ export const click = (event: Event): { click: Event } => {
 export const change = (event: Event): { change: Event } => {
   return { change: event };
 }
+
+export const idCmp = (a: Attr, id: string): boolean =>
+  "id" in a && a.id === id;

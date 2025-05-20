@@ -18,6 +18,7 @@ export * from "./lib/StateBuilder";
 export * from "./lib/AttrUtils.ts";
 export * from "./lib/EventUtils.ts";
 export * from "./lib/DevCore.ts";
+export * from "./lib/HtmlUtils.ts";
 
 export const emptyCm = (): CoreModification => {
   return {
