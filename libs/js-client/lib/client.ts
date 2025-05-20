@@ -3,7 +3,7 @@ import { type CoreModification, type Event } from "@nmide/js-utils";
 import * as E from "fp-ts/Either";
 import * as t from "io-ts";
 import { pipe } from "fp-ts/lib/function";
-import { DState, DHtml } from "@nmide/js-decoder-lib";
+import { DState, DHtml, DCoreModification } from "@nmide/js-decoder-lib";
 import { formatValidationErrors } from "io-ts-reporters";
 
 export type ClientArgs = {
@@ -23,6 +23,11 @@ export type ClientArgs = {
   },
   ui: {
     args: undefined,
+  },
+  modification: {
+    args: {
+      modification: CoreModification
+    }
   }
 }
 
@@ -31,6 +36,7 @@ export const ClientDecodedType = {
   handler: t.void,
   state: DState,
   ui: DHtml,
+  modification: DCoreModification,
 }
 
 export const ClientDecoder = {
@@ -38,6 +44,7 @@ export const ClientDecoder = {
   handler: (e: unknown) => E.mapLeft(formatValidationErrors)(t.void.decode(e)),
   state: (e: unknown) => E.mapLeft(formatValidationErrors)(DState.decode(e)),
   ui: (e: unknown) => E.mapLeft(formatValidationErrors)(DHtml.decode(e)),
+  modification: (e: unknown) => E.mapLeft(formatValidationErrors)(DCoreModification.decode(e)),
 }
 
 type ClientDecodedType<K extends keyof ClientArgs & keyof typeof ClientDecoder>
