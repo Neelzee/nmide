@@ -5,7 +5,7 @@ use empty_module::EmptyModule;
 use futures::FutureExt;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, thread::sleep, time::Duration};
+use std::{collections::HashMap, path::PathBuf, thread::sleep, time::Duration};
 use suite::Suite;
 use tokio::sync::{self, RwLock, mpsc::Sender, oneshot};
 use ts_rs::TS;
@@ -16,7 +16,7 @@ mod suite;
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Dependency {
     pub providing: Vec<Event>,
-    pub consuming: Vec<(Option<String>, Option<String>)>,
+    pub consuming: Vec<Consumer>,
     pub success: bool,
 }
 
@@ -25,28 +25,23 @@ impl Dependency {
         NamedDependency {
             name,
             providing: self.providing,
-            consuming: self
-                .consuming
-                .into_iter()
-                .map(|t| Consumer::from_tup(t))
-                .collect(),
+            consuming: self.consuming,
             success: self.success,
         }
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord, TS)]
 pub struct Consumer {
-    event_name: Option<String>,
-    module_name: Option<String>,
+    event_name: String,
 }
 
 impl Consumer {
-    pub fn from_tup((event_name, module_name): (Option<String>, Option<String>)) -> Self {
-        Self {
-            event_name,
-            module_name,
-        }
+    pub fn name(&self) -> &str {
+        &self.event_name
+    }
+    pub fn new(event_name: String) -> Self {
+        Self { event_name }
     }
 }
 
@@ -79,7 +74,13 @@ pub async fn init(module: Box<dyn Module>, dur: Duration) -> Result<Dependency> 
                 sleep(dur);
             }
             let providing = THROWN_EVENTS.read().await.clone();
-            let consuming = CONSUMER.read().await.clone();
+            let consuming = CONSUMER
+                .read()
+                .await
+                .clone()
+                .into_iter()
+                .map(Consumer::new)
+                .collect();
             Ok(Dependency {
                 providing,
                 consuming,
@@ -96,8 +97,7 @@ pub static STATE: Lazy<RwLock<State>> = Lazy::new(|| RwLock::new(State::default(
 pub static UI: Lazy<RwLock<Html>> = Lazy::new(|| RwLock::new(Html::Main()));
 pub static SENDER: sync::OnceCell<Sender<CoreModification>> = sync::OnceCell::const_new();
 /// Modules -> Partial Events it consumes on
-pub static CONSUMER: Lazy<RwLock<Vec<(Option<String>, Option<String>)>>> =
-    Lazy::new(|| RwLock::new(Vec::new()));
+pub static CONSUMER: Lazy<RwLock<Vec<String>>> = Lazy::new(|| RwLock::new(Vec::new()));
 
 pub static MODULE_EVENT_REGISTER: Lazy<RwLock<ModuleEventRegister>> =
     Lazy::new(|| RwLock::new(ModuleEventRegister::default()));
@@ -133,7 +133,7 @@ impl ModuleEventRegister {
                 .module
                 .read()
                 .await
-                .get(event.module_name())
+                .get("*")
                 .cloned()
                 .unwrap_or(Vec::new()),
         );
@@ -141,24 +141,11 @@ impl ModuleEventRegister {
         modules
     }
 
-    pub async fn register_module(
-        &mut self,
-        event: Option<String>,
-        module: Option<String>,
-        handler: String,
-    ) {
-        if let Some(evt) = event.clone() {
-            let mut modules = self.event.write().await;
-            let mut vec = modules.get(&evt).cloned().unwrap_or(Vec::new());
-            vec.push(handler.clone());
-            modules.insert(evt, vec);
-        }
-        if let Some(md) = module.clone() {
-            let mut modules = self.module.write().await;
-            let mut vec = modules.get(&md).cloned().unwrap_or(Vec::new());
-            vec.push(handler.clone());
-            modules.insert(md, vec);
-        }
+    pub async fn register_module(&mut self, evt: String, handler: String) {
+        let mut modules = self.event.write().await;
+        let mut vec = modules.get(&evt).cloned().unwrap_or(Vec::new());
+        vec.push(handler.clone());
+        modules.insert(evt.clone(), vec);
         let m_name = MODULE_NAME.read().await.clone();
 
         if handler != m_name {
@@ -166,7 +153,7 @@ impl ModuleEventRegister {
         }
 
         let mut cons = CONSUMER.write().await;
-        cons.push((event, module))
+        cons.push(evt);
     }
 }
 
@@ -206,18 +193,21 @@ impl core_std_lib::core::Core for Core {
         });
     }
 
-    async fn add_handler(
-        &self,
-        event_name: Option<String>,
-        module_name: Option<String>,
-        handler_name: String,
-    ) {
+    async fn add_handler(&self, event_name: String, handler_name: String) {
         let mut reg = MODULE_EVENT_REGISTER.write().await;
-        reg.register_module(event_name, module_name, handler_name)
-            .await;
+        reg.register_module(event_name, handler_name).await;
     }
 
-    async fn get_sender(&self) -> Sender<CoreModification> {
-        SENDER.get().unwrap().clone()
+    async fn send_modification(&self, modification: CoreModification) {
+        SENDER
+            .get()
+            .unwrap()
+            .send(modification)
+            .await
+            .expect("Channel should be opened");
+    }
+
+    async fn appdir(&self) -> PathBuf {
+        unimplemented!()
     }
 }

@@ -94,13 +94,7 @@ async fn main() {
             .consuming
             .clone()
             .into_iter()
-            .map(|(evt_name, mod_name)| {
-                Event::new(
-                    evt_name.unwrap_or_default(),
-                    mod_name.unwrap_or_default(),
-                    None,
-                )
-            })
+            .map(|c| Event::new(c.name(), None))
             .collect();
         println!("Analysing event handling of `{m}`");
         match handling(module, m.clone(), initial_events, dep).await {
@@ -120,7 +114,7 @@ async fn main() {
     file.write_all(s.as_bytes())
         .expect("File writing should succeed");
 
-    println!("Finished");
+    println!("Finished creating graph");
 }
 
 async fn handling(

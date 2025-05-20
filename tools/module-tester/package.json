@@ -10,6 +10,9 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@nmide/js-utils": "link:@nmide/js-utils",
+    "d3": "^7.9.0",
+    "jsdom": "^26.1.0",
     "toml": "^3.0.0"
   }
 }

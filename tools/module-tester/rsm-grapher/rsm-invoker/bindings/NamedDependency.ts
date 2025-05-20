@@ -2,4 +2,9 @@
 import type { Consumer } from "./Consumer";
 import type { Event } from "./Event";
 
-export type NamedDependency = { name: string, providing: Array<Event>, consuming: Array<Consumer>, success: boolean, };
+export type NamedDependency = {
+  name: string;
+  providing: Array<Event>;
+  consuming: Array<Consumer>;
+  success: boolean;
+};

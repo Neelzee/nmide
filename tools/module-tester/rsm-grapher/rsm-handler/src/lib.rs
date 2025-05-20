@@ -1,8 +1,8 @@
-use anyhow::{Context, Result, anyhow};
+use anyhow::{Result, anyhow};
 use core_module_lib::Module;
 use core_std_lib::event::Event;
 use futures::FutureExt;
-use rsm_invoker::{CONSUMER, Core, Dependency, MODULE, SUITE, THROWN_EVENTS};
+use rsm_invoker::{CONSUMER, Consumer, Core, Dependency, MODULE, SUITE, THROWN_EVENTS};
 use std::{collections::HashSet, time::Duration};
 use tokio::{
     sync::{mpsc, oneshot},
@@ -55,7 +55,13 @@ pub async fn handle(
                 sleep(dur).await;
             }
             let providing = THROWN_EVENTS.read().await.clone();
-            let consuming = CONSUMER.read().await.clone();
+            let consuming = CONSUMER
+                .read()
+                .await
+                .clone()
+                .into_iter()
+                .map(Consumer::new)
+                .collect();
             deps.push(Dependency {
                 providing,
                 consuming,
@@ -73,9 +79,11 @@ pub async fn handle(
                 .ok_or(anyhow!("No dependencies found"))
             {
                 Ok(dep) => {
-                    let evts = dep.consuming.clone().into_iter().map(|(e, m)| {
-                        Event::new(e.unwrap_or_default(), m.unwrap_or_default(), None)
-                    });
+                    let evts = dep
+                        .consuming
+                        .clone()
+                        .into_iter()
+                        .map(|e| Event::new(e.name(), None));
 
                     let mut new_event = false;
 
