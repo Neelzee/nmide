@@ -1,5 +1,4 @@
 import type { Core } from "./Core";
-import type { CoreModification } from "./CoreModification";
 import { formatValidationErrors } from "io-ts-reporters";
 import { DModule } from "@nmide/js-decoder-lib";
 import * as E from "fp-ts/Either";
@@ -8,8 +7,8 @@ import { type Event } from "./Event";
 
 export interface Module {
   name: string;
-  init: (core: Core) => Promise<CoreModification>;
-  handler: (event: Event, core: Core) => Promise<CoreModification>;
+  init: (core: Core) => Promise<void>;
+  handler: (event: Event, core: Core) => Promise<void>;
 }
 
 /**
