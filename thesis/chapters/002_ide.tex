@@ -81,7 +81,17 @@ bindings to Rust. This is called an \gls{abi}, specifically the C-\gls{abi}.
 This module could be a singular one, acting as a translator, translating the
 data flowing between the core and foreign-modules as shown in figure
 \ref{fig:fm1}, or each foreign-module could have their own translator as shown
-in figure \ref{fig:fm2}. But this language agnosticism also means that
+in figure \ref{fig:fm2}. For some languages such a setup would be necessary.
+A Haskell module, for example, would require some translation module, either a
+unique translator for each module, where the Rust module would start the
+required Haskell runtime \cite{ghcRts}, when invoking the Haskell module, and
+exit before returning, avoiding \gls{ub}. The reason Haskell is of interest,
+is that the new compiler is written in Haskell \cite{wiig}, and as such, if one
+where to develop \gls{lsp} capable modules for the \gls{ide}, a translation
+module from Rust to Haskell is necessary.
+
+
+But this language agnosticism also means that
 translating from one language to another should be trivial. This is achieved by
 the models used in the core. The \textit{primitive} types, are the same as in
 JavaScript, the notion of an empty value, numbers, strings, lists and

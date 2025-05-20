@@ -180,8 +180,24 @@ development time for modules, which means features that are standard in
 \subsection{Security}
 
 This framework gives a lot of security which is needed in an
-application which runs third party code.
-\todo{Look into isolation pattern from Tauri}
+application which runs third party code. An example of this, would be the
+so-called \textit{isolation pattern} that Tauri supports. Since we allow for
+evaluation of JavaScript code in the \gls{ide}, we allow for third-party-code to
+access all of Tauris \gls{api}. This \gls{api} is quite powerful, allowing for
+features such as access to the system shell, the file system, etc. Being
+powerful, it is dangerous to expose this to third-parties, but we can
+intercept and modify all Tauri \gls{api} calls sent from the JavaScript side,
+before they reach Tauri. We can therefore, depending on the perceived threat or
+sensitivity of a Tauri \gls{api} call, choose to disregard the invocation of the
+\gls{api}. We could also choose to disregard \textit{all} invocations that comes
+from the JavaScript side, effectivaly only allowing Tauri \gls{api} invocations
+through the \gls{ide} itself, meaning only Tauri functionality exposed by the
+\gls{ide} itself are callable.
+
+This of course has \textit{some} performance implications, as we now have some overhead on
+each Tauri \gls{api} invocation, but this is negliable\footnotemark{}
+
+\footnotetext{According to Tauri themself \url{https://v2.tauri.app/concept/inter-process-communication/isolation/\#performance-implications}}
 
 \subsubsection{Module Validation}
 
