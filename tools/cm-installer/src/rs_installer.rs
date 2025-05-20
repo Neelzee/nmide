@@ -29,14 +29,16 @@ pub(crate) fn install(modules: Vec<Module>, cargo: String, out: String) {
             module, module
         ));
     }
+    let is_empty = mods.is_empty();
     tbl.insert(
         "dependencies".to_string(),
         Value::try_from(mods).expect("Should be valid serialization"),
     );
 
-    let c = toml::to_string_pretty(&tbl)
-        .and_then(|p| Ok(p.replace("[[dependencies]]\n", "")))
-        .unwrap();
+    let c = Result::and_then(toml::to_string_pretty(&tbl), |p| {
+        Ok(p.replace("[[dependencies]]\n", ""))
+    })
+    .unwrap();
 
     let mut file = File::open(&cargo_path).expect("Cargo.toml file not found");
     let mut buf = String::new();
@@ -56,11 +58,15 @@ pub(crate) fn install(modules: Vec<Module>, cargo: String, out: String) {
         }
     }
 
-    final_buffer.push_str(&format!("\n{c}"));
+    if !is_empty {
+        final_buffer.push_str(&format!("\n{c}"));
+    }
 
     fs::write(cargo_path, final_buffer).unwrap();
     let p = Path::new(&out).join("module_reg.rs");
-    let mut reg_file = File::create(p).unwrap();
+    let mut reg_file = File::create(p.clone())
+        .inspect_err(|e| panic!("Failed to create file: {p:?}, got error: {e:?}"))
+        .unwrap();
     for import in &module_imports {
         writeln!(reg_file, "{}", import).unwrap();
     }
