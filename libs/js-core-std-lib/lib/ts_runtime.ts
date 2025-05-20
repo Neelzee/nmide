@@ -38,6 +38,19 @@ const eventThrower = async (event: Event) => {
   );
 };
 
+const sendModification = async (modification: CoreModification) => {
+  window.__nmideConfig__.log.debug(`[Frontend] sending modification: ${JSON.stringify(modification)}`);
+  client(
+    "modification",
+    { modification }
+  ).catch(
+    err =>
+      window.__nmideConfig__.log.error(
+        `Modification ${JSON.stringify(modification)} resulted in error from backend: ${err} ${JSON.stringify(err)}`, err
+      )
+  );
+};
+
 const mkCore = async (): Promise<Core> => {
   return {
     state: pipe(
@@ -52,6 +65,7 @@ const mkCore = async (): Promise<Core> => {
     ),
     registerHandler,
     eventThrower,
+    sendModification,
   };
 }
 
