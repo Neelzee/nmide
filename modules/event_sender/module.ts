@@ -2,8 +2,6 @@ import {
   change,
   click,
   cls,
-  emptyCm,
-  getEventName,
   getValue,
   HtmlBuilder,
   id,
@@ -14,13 +12,11 @@ import {
   StateBuilder,
   tBool,
   tObj,
-  tObjLookupNullable,
   tObjLookupOr,
   tObjLookupUnd,
   tStr,
   UiBuilder,
   type Core,
-  type CoreModification,
   type Event,
   type ValueObj,
   type ValueStr
@@ -28,7 +24,7 @@ import {
 
 const Module = {
   name: "event_sender",
-  init: async (core: Core): Promise<CoreModification> => {
+  init: async (core: Core): Promise<void> => {
     core.registerHandler("event_sender", "toggle-debug")
       .catch(console.error);
     const ui = new HtmlBuilder()
@@ -222,26 +218,25 @@ const Module = {
               )
           )
       )
-    const res = new UiBuilder().add(ui).build(new StateBuilder().add("debug-toggle", false));
-    window.__nmideConfig__.log.debug(`event_sender: ${JSON.stringify(res)}`)
-    return res;
+    await core.sendModification(new UiBuilder().add(ui).build(new StateBuilder().add("debug-toggle", false)));
   },
-  handler: async (evt: Event, core: Core): Promise<CoreModification> => {
+  handler: async (evt: Event, core: Core): Promise<void> => {
     const state = await core.state();
     const value = state["debug-toggle"];
     const toggle = !(isTBool(value) ? value.bool : false);
     const builder = new StateBuilder().add("debug-toggle", tBool(toggle));
-    if (!isPrimitiveEvent(evt)) return emptyCm();
+    if (!isPrimitiveEvent(evt)) return;
     const { event, args } = evt.event;
     switch (event) {
       case "toggle-debug":
-        return toggle
+        await core.sendModification(toggle
           ? new UiBuilder()
             .add_attr(cls("show-debug"), "debug-content")
             .build(builder)
           : new UiBuilder()
             .rem_attr(cls("show-debug"), "debug-content")
-            .build(builder)
+            .build(builder));
+        return;
       case "debug-event-selection":
         const events = ["pre-exit-id", "event-id", "post-init-id", "dialog-id", "file-dialog-id", "core-response-id"];
         const { str: event_selection } = isTObj(args)
@@ -253,10 +248,11 @@ const Module = {
           .forEach(e => {
             ui_builder = ui_builder.rem_attr(cls("show-debug-event"), e);
           });
-        return ui_builder.build();
+        await core.sendModification(ui_builder.build());
+        return;
       case "dialog event":
         {
-          if (!isTObj(args)) return emptyCm();
+          if (!isTObj(args)) return;
           const form = tObjLookupOr<ValueObj>("form")(tObj({}))(args);
           core.eventThrower({
             dialogEvent: {
@@ -271,7 +267,7 @@ const Module = {
         break;
       case "Event":
         {
-          if (!isTObj(args)) return emptyCm();
+          if (!isTObj(args)) return;
           const form = tObjLookupOr<ValueObj>("form")(tObj({}))(args);
           const arg = tObjLookupUnd("args")(form);
           core.eventThrower(mkPrimEvent(
@@ -290,7 +286,6 @@ const Module = {
       default:
         break;
     }
-    return emptyCm();
   }
 };
 

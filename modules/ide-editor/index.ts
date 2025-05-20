@@ -2,8 +2,6 @@ import {
   click,
   cls,
   Core,
-  CoreModification,
-  emptyCm,
   Event, HtmlBuilder,
   installModule, isPrimAnd, mkPrimEvent, UiBuilder
 } from "@nmide/js-utils";
@@ -13,14 +11,13 @@ const moduleName = "ide-editor";
 installModule(
   {
     name: moduleName,
-    init: async (core: Core): Promise<CoreModification> => {
+    init: async (core: Core): Promise<void> => {
       await core.registerHandler(moduleName, "editor-click")
         .catch(err => console.error(moduleName, err));
       await core.registerHandler(moduleName, "open-editor-area")
         .catch(err => console.error(moduleName, err));
-      return emptyCm();
     },
-    handler: async (event: Event, core: Core): Promise<CoreModification> => {
+    handler: async (event: Event, core: Core): Promise<void> => {
       if (isPrimAnd(event, "open-editor-area")) {
         await core.eventThrower(mkPrimEvent("add_content",
           new HtmlBuilder()
@@ -38,7 +35,6 @@ installModule(
             ).build()
         ));
       }
-      return emptyCm();
     }
   }
 );

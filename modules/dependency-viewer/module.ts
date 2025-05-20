@@ -131,12 +131,12 @@ const package_filter_div = new HtmlBuilder()
 
 const Module = {
   name: "DependencyViewer",
-  init: async (core: Core): Promise<CoreModification> => {
+  init: async (core: Core): Promise<void> => {
     await core.registerHandler("DependencyViewer", "graph")
       .catch(err => console.error("error from module: ", err));
     await core.registerHandler("DependencyViewer", "graph-toggle")
       .catch(err => console.error("error from module: ", err));
-    return new UiBuilder()
+    await core.sendModification(new UiBuilder()
       .add(
         controls_div,
       )
@@ -150,9 +150,9 @@ const Module = {
         new HtmlBuilder()
           .attrs(id("visualization"), cls("dv hide-dv")),
       )
-      .build();
+      .build());
   },
-  handler: async (evt: Event, core: Core) => {
+  handler: async (evt: Event, core: Core): Promise<void> => {
     const val = (await core.state())["dv-init"];
     const toggled = isTBool(val) ? val.bool : true;
 
@@ -176,19 +176,29 @@ const Module = {
       if (!inited) {
         state_builder = state_builder.add("dv-init-init", tBool(true));
       }
-      return builder.build(state_builder);
+      await core.sendModification(builder.build(state_builder));
+      return;
     }
-    if (!isPrimAnd(evt, "graph")) return emptyCm();
+    if (!isPrimAnd(evt, "graph")) return;
 
     const mods = builder.build(state_builder);
 
-    if (inited) return mods;
+    if (inited) {
+      await core.sendModification(mods);
+      return;
+    }
 
     const { args } = primDec(evt);
 
-    if (args === null) return mods;
+    if (args === null) {
+      await core.sendModification(mods);
+      return;
+    }
 
-    if (!isTList(args)) return mods;
+    if (!isTList(args)) {
+      await core.sendModification(mods);
+      return;
+    }
 
     const data = args.list
       .filter(v => isTObj(v))
@@ -244,7 +254,7 @@ const Module = {
 
     function handleResize() {
       if (graphContext === undefined) {
-        return emptyCm();
+        return;
       }
 
       d3.select("#visualization svg");
@@ -276,7 +286,7 @@ const Module = {
       }
     });
 
-    return mods;
+    await core.sendModification(mods);
   }
 };
 

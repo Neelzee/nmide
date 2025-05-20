@@ -111,14 +111,14 @@ const stateField = (field: string, val: Value): HtmlBuilder => {
 }
 const module: Module = {
   name: "state-man",
-  init: async function (core: Core): Promise<CoreModification> {
+  init: async function(core: Core) {
     await core.registerHandler("state-man", "state-man-update");
     const state = await core.state();
     const keys = Object.keys(state);
-    return new UiBuilder()
+    await core.sendModification(new UiBuilder()
       .add(
         new HtmlBuilder()
-  .attrs(id("state-man"))
+          .attrs(id("state-man"))
           .kids(
             new HtmlBuilder()
               .kind("button")
@@ -134,11 +134,11 @@ const module: Module = {
               .kids(
                 ...keys.map(k => stateField(k, state[k]!!))
               )
-          )        
+          )
       )
-      .build();
+      .build());
   },
-  handler: async function (event: Event, core: Core): Promise<CoreModification> {
+  handler: async function(event: Event, core: Core) {
     throw new Error("Function not implemented.");
   }
 }

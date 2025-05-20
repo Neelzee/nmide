@@ -50,10 +50,10 @@ const module: Module = {
           )
       );
 
-    return new UiBuilder().add(ui).build(state);
+    await core.sendModification(new UiBuilder().add(ui).build(state));
   },
   handler: async (evt: Event, core: Core) => {
-    if (!isPrimitiveEvent(evt)) return emptyCm();
+    if (!isPrimitiveEvent(evt)) return;
     const { event } = evt.event;
     const state = await core.state();
     const v = state["toggle-state-debug"];
@@ -66,13 +66,14 @@ const module: Module = {
           state_builder = state_builder.add("state-viz-init", tBool(true));
         }
         updateTree(state);
-        return (toggled
+        await core.sendModification((toggled
           ? new UiBuilder()
             .add_attr(cls("hide-debug-state"), "state-viz")
           : new UiBuilder()
-            .rem_attr(cls("hide-debug-state"), "state-viz")).build(state_builder);
+            .rem_attr(cls("hide-debug-state"), "state-viz")).build(state_builder));
+        return;
       default:
-        return emptyCm();
+        return;
     }
   },
 };

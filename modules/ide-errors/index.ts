@@ -5,22 +5,23 @@ import {
   emptyCm,
   Value,
   UiBuilder,
-  installModule, HtmlBuilder
+  installModule, HtmlBuilder,
+  isPrimitiveEvent
 } from "@nmide/js-utils";
 
 
 installModule(
   {
     name: "ide-errors",
-    init: async (core: Core): Promise<CoreModification> => {
+    init: async (core: Core): Promise<void> => {
       await core.registerHandler("ide-errors", "fsa-errors");
-      return emptyCm();
     },
-    handler: async (event: Event, _: Core): Promise<CoreModification> => {
-      const { args } = event;
-      if (args === null) return emptyCm();
+    handler: async (event: Event, core: Core): Promise<void> => {
+      if (!isPrimitiveEvent(event)) return;
+      const { args } = event.event;
+      if (args === null) return;
       const kp: [string, Value][] = Object.keys(args).map(k => [k, args[k]]);
-      return new UiBuilder()
+      await core.sendModification(new UiBuilder()
         .add(
           new HtmlBuilder()
             .kind("li")
@@ -36,7 +37,7 @@ installModule(
             )
           ,
           "errors"
-        ).build();
+        ).build());
     },
   }
 );

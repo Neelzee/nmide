@@ -3,18 +3,16 @@ import { run } from "./unPureCode";
 
 installModule({
   name: "ide_explorer_expanded",
-  init: async function (core: Core): Promise<CoreModification> {
+  init: async function(core: Core): Promise<void> {
     await core.registerHandler("ide_explorer_expanded", "open-project-post");
-    return emptyCm();
   },
-  handler: async function (event: Event, core: Core): Promise<CoreModification> {
+  handler: async function(event: Event, core: Core): Promise<void> {
     if (isPrimAnd(event, "open-project-post")) {
       let val = (await core.state())["ide_explorer_expanded_init"];
       if (val === undefined) {
         run();
-        return new StateBuilder().add("ide_explorer_expanded_init", null).build();
+        await core.sendModification(new StateBuilder().add("ide_explorer_expanded_init", null).build());
       }
     }
-    return emptyCm();
   }
 })
