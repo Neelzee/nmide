@@ -1,9 +1,11 @@
 use crate::{
     app::App,
+    core::NmideCore,
     core_modification_handler::spawn_core_modification_handler,
     setup::setup,
     statics::{NMIDE, NMIDE_STATE, NMIDE_UI},
 };
+use core_std_lib::core::Core;
 use core_std_lib::event::DialogFileKind::{MultiDir, MultiFile, SaveFile, SingleDir, SingleFile};
 use core_std_lib::{
     core_modification::{CoreModification, UIInstr},
@@ -43,6 +45,11 @@ async fn state() -> HashMap<String, Value> {
 async fn ui() -> Html {
     let ui = NMIDE_UI.read().await;
     ui.clone()
+}
+
+#[tauri::command]
+async fn modification(modification: CoreModification) {
+    NmideCore.send_modification(modification).await;
 }
 
 pub struct NmideApp {
@@ -209,7 +216,13 @@ pub async fn run() {
             setup(setup::ide_setup(app).expect("IDE-setup should always succeed"));
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![init, state, ui, handler])
+        .invoke_handler(tauri::generate_handler![
+            init,
+            state,
+            ui,
+            handler,
+            modification
+        ])
         .build(tauri::generate_context!())
         .expect("IDE Application should build successfully");
 
