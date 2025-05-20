@@ -7,3 +7,12 @@ edition = "2024"
 core-std-lib = { path = "../../core/src-tauri/core-std-lib/" }
 core-module-lib = { path = "../../core/src-tauri/core-module-lib/" }
 async-trait = "0.1.88"
+reqwest = "0.12.15"
+serde = "1.0.219"
+url = "2.5.4"
+serde_json = "1.0.140"
+anyhow = "1.0.98"
+
+[dev-dependencies]
+tokio = { version = "1.45.0", features = ["macros"] }
+semver = "1.0.26"
