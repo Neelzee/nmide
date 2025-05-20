@@ -1,10 +1,10 @@
-import { emptyCm, type Core, type Module, type ModuleUnknown } from "@nmide/js-utils";
+import { type Core, type Module, type ModuleUnknown } from "@nmide/js-utils";
 import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/Either";
 import * as TE from "fp-ts/TaskEither";
 import * as T from "fp-ts/Task";
-import { DCoreModification } from "@nmide/js-decoder-lib";
 import { formatValidationErrors } from "io-ts-reporters";
+import * as t from "io-ts";
 import { task } from "fp-ts";
 
 const moduleWrapper = (m: ModuleUnknown): Module => {
@@ -20,14 +20,14 @@ const moduleWrapper = (m: ModuleUnknown): Module => {
           return;
         },
       ),
-      TE.map(DCoreModification.decode),
-      TE.getOrElse(() => task.of(E.right(emptyCm()))),
+      TE.map(t.void.decode),
+      TE.getOrElse(() => task.of(E.right(((): void => { })()))),
       TE.mapLeft(formatValidationErrors),
       TE.getOrElse(errs => {
         window.__nmideConfig__
           .log
           .error(`Error when parsing result from Module.init from module: ${m.name}, error: ${JSON.stringify(errs)}`);
-        return T.of(emptyCm());
+        return T.of(((): void => { })());
       }),
       task => task(),
     ),
@@ -41,14 +41,14 @@ const moduleWrapper = (m: ModuleUnknown): Module => {
           return;
         },
       ),
-      TE.map(DCoreModification.decode),
-      TE.getOrElse(() => task.of(E.right(emptyCm()))),
+      TE.map(t.void.decode),
+      TE.getOrElse(() => task.of(E.right(((): void => { })()))),
       TE.mapLeft(formatValidationErrors),
       TE.getOrElse(errs => {
         window.__nmideConfig__
           .log
           .error(`Error on decoding result from Module.handler from module: ${m.name}, error: ${JSON.stringify(errs)}`);
-        return T.of(emptyCm());
+        return T.of(((): void => { })());
       }),
       task => task(),
     )
