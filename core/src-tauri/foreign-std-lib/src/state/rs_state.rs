@@ -11,6 +11,8 @@ use ordered_float::NotNan;
 use rstest::rstest;
 use std::{collections::HashMap, convert::Into, mem::ManuallyDrop};
 
+use crate::html::rs_html::RHtml;
+
 #[repr(C)]
 #[derive(StableAbi)]
 pub struct RValue {
@@ -138,6 +140,7 @@ pub union RValueUnion {
     pub(crate) _str: ManuallyDrop<RString>,
     pub(crate) _lst: ManuallyDrop<RVec<RValue>>,
     pub(crate) _obj: ManuallyDrop<RVec<RKeyPair>>,
+    pub(crate) _html: ManuallyDrop<RHtml>,
 }
 
 impl RValueUnion {
