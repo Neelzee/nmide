@@ -97,6 +97,7 @@ impl Module for ProjectManagerModule {
                             vec![
                                 ("Open File", Event::new("ide-pm-file", None)),
                                 ("Open Folder", Event::new("ide-pm-folder", None)),
+                                ("Save File", Event::new("ide-save", None)),
                             ],
                         ),
                         (
