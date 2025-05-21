@@ -7,7 +7,7 @@ ide_framework = { path = "../modules/ide_framework/", enabled = true }
 ide_framework_style = { path = "../modules/ide_framework/", kind = "css", enabled = true }
 ide_pm = { path = "../modules/ide_pm/", enabled = true }
 ide_tabs = { path = "../modules/ide_tabs/", enabled = true }
-ide_tabs_style = { path = "../modules/ide_tabs/", kind  = "css", enabled = true }
+ide_tabs_style = { path = "../modules/ide_tabs/", kind = "css", enabled = true }
 ide_cache = { path = "../modules/ide_cache/", enabled = true }
 ide_pm_style = { path = "../modules/ide_pm_style/", kind = "css", enabled = true }
 ide_errors = { path = "../modules/ide-errors/", package-manager = "bun", kind = "ts", enabled = true }
@@ -26,3 +26,5 @@ state_viz_style = { path = "../modules/state_viz", kind = "css", enabled = true 
 tab_wrapper = { path = "../modules/tab_wrapper/", enabled = true }
 module_installer = { path = "../modules/module_installer/", enabled = true }
 module_installer_style = { path = "../modules/module_installer/", kind = "css", enabled = true }
+ide_save = { path = "../modules/ide_save/", kind = "ts", package-manager = "bun", enabled = true }
+
