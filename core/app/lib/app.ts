@@ -1,13 +1,14 @@
 import client, { listen } from "@nmide/js-client";
-import { Module } from "@nmide/js-utils";
+import { AppConfig, Module } from "@nmide/js-utils";
 import { ideInstallModules } from "./ideInstallModules.ts";
-import { AppConfig, defaultConfig } from "@nmide/js-core-std-lib";
+import { defaultConfig } from "@nmide/js-core-std-lib";
 import {
   NMIDE_INITIALIZED,
   NMIDE_MODULES_INSTALLED_EVENT
 } from "./nmideConstants.ts";
 import { info, debug, error } from "@tauri-apps/plugin-log";
 import { tsRenderer as render } from "./tsRenderer.ts";
+import { emit } from "@tauri-apps/api/event";
 
 const App = {
   initialize: (config: Partial<AppConfig> = {}) => {
@@ -64,6 +65,21 @@ const App = {
       window.__nmideConfig__.render(ui)
         .catch(err => window.__nmideConfig__.log.error(`Error on render: ${JSON.stringify(err)}`));
     }).catch((err) => window.__nmideConfig__.log.error(`nmide://render: ${JSON.stringify(err)}`));
+
+    (async () => {
+      window.__nmideConfig__.log.info("[frontend] sending events");
+      window.__nmideConfig__.events.forEach(event => {
+        emit("nmide://event", { event })
+          .catch(err =>
+            window.__nmideConfig__
+              .log
+              .error(
+                `[frontend] Error from Event: ${JSON.stringify(event)}, Error: ${err}, ${JSON.stringify(err)}`
+              )
+          );
+      });
+      window.__nmideConfig__.events = [];
+    })();
 
     listen("nmide://event", ({ payload: event }) => {
       window.__nmideConfig__.log.info(`[frontend] Event: ${JSON.stringify(event)}`);

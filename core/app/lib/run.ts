@@ -1,8 +1,9 @@
+import { AppConfig } from "@nmide/js-utils";
 import {
   NMIDE_INITIALIZED,
   NMIDE_MODULES_INSTALLED_EVENT
 } from "./nmideConstants.ts";
-import { App, AppConfig } from "@nmide/js-core-std-lib";
+import { App } from "@nmide/js-core-std-lib";
 
 export const run = (app: App, config: Partial<AppConfig>) => {
   document.addEventListener(
