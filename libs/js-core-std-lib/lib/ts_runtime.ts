@@ -75,24 +75,25 @@ const tsHandler = async (evt: Event) => {
   const event_modules = window.__nmideConfig__.handlerRegister.event.get(getEventName(evt));
   const modules = event_modules === undefined ? [] : event_modules;
   window.__nmideConfig__.log.info(`Event: ${JSON.stringify(evt)}, Modules: ${JSON.stringify(modules)}`);
-  const modifications: CoreModification[] = await Promise.all(
+  await Promise.all(
     modules
       .map(m => window.__nmideConfig__.modules.get(m))
       .filter(m => m !== undefined)
       .map(m => m.handler(evt, core))
+  ).catch(err =>
+    window.__nmideConfig__.log.error(`Handler Error: ${err}, ${JSON.stringify(err)}`)
   );
-
-  return modifications;
 }
 
 const tsInit = async () => {
   const core: Core = await mkCore();
 
   const modules = Array.from(window.__nmideConfig__.modules.values());
-  const modifications: CoreModification[] = await Promise.all(
+  await Promise.all(
     modules.map(m => m.init(core))
+  ).catch(err =>
+    window.__nmideConfig__.log.error(`Init Error: ${err}, ${JSON.stringify(err)}`)
   );
-  return modifications;
 }
 
 const TSRuntime = {

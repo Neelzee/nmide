@@ -4,7 +4,6 @@ import type {
   Event,
   Html,
   Attr,
-  CoreModification
 } from "@nmide/js-utils";
 
 
@@ -23,8 +22,8 @@ export interface AppConfig {
   },
   moduleInstallers: (() => Promise<void>)[],
   runtimes: {
-    initializers: (() => Promise<CoreModification[]>)[]
-    handlers: ((event: Event) => Promise<CoreModification[]>)[]
+    initializers: (() => Promise<void>)[]
+    handlers: ((event: Event) => Promise<void>)[]
   },
   render: (ui: [Instruction<Html>, Instruction<string>, Instruction<Attr>]) => Promise<void>,
   eventThrower: (event: Event) => Promise<void>,
