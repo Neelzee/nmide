@@ -91,16 +91,18 @@ impl core_module_lib::Module for Module {
                 .await;
             }
             "fsa_read_tab_wrapper" => {
-                let content = event.args().and_then(|v| v.str()).unwrap_or_default();
+                let obj = event.args().and_then(|v| v.obj()).unwrap_or_default();
+                let content = obj.get("content").and_then(|v| v.str()).unwrap();
+                let fp = obj.get("file_path").and_then(|v| v.str()).unwrap();
                 let html = Html::Div()
-                  .add_attr(Attr::Class("editor-container".to_string()))
-                  .add_attr(Attr::Id("editor-div".to_string()))
-                  .adopt(
-                    Html::TextArea()
-                    .set_text(content)
-                    .add_attr(Attr::Class("code-editor".to_string()))
-                    .add_attr(Attr::Id("editor".to_string()))
-                  );
+                    .add_attr(Attr::Class("editor-container".to_string()))
+                    .add_attr(Attr::Id("editor-div".to_string()))
+                    .adopt(
+                        Html::TextArea()
+                            .set_text(content)
+                            .add_attr(Attr::Class(format!("code-editor {}", fp.replace("/", "_"))))
+                            .add_attr(Attr::Id("editor".to_string())),
+                    );
                 core.throw_event(Event::new("add_content", Some(Value::Html(html))))
                     .await;
             }
