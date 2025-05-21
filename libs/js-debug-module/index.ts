@@ -1,16 +1,5 @@
-import { defaultConfig, parseStateInstr, type NmideConfig } from "@nmide/js-core-std-lib";
-import { DebugCore, type Core, type Module, type Event, type CoreModification, emptyCm, mkPrimEvent, type Value, type State } from "@nmide/js-utils";
-
-declare global {
-  interface Window {
-    debug_module: {
-      init: () => Promise<void>,
-      handler: (event?: Event) => Promise<void>
-    };
-    __nmideConfig__: NmideConfig,
-    debug_state: State,
-  }
-}
+import { defaultConfig, parseStateInstr } from "@nmide/js-core-std-lib";
+import { DebugCore, type Core, type Module, type Event, type CoreModification, emptyCm, mkPrimEvent, type Value, type State, type NmideConfig } from "@nmide/js-utils";
 
 export const debug_module = (
   m: Partial<Module>,
@@ -26,27 +15,15 @@ export const debug_module = (
     : { ...DebugCore(), state: () => new Promise<State>(r => r(window.debug_state)), ...core };
   window.debug_module = {
     init: async () => {
-      const promise = m?.init === undefined ? new Promise<CoreModification>(r => r(emptyCm())) : m.init(c);
-      const result = await promise;
-      if (render !== undefined) {
-        render(result.ui);
-      }
-      window.debug_state = parseStateInstr(result.state)(window.debug_state);
+      m.init?.(c);
     },
     handler: async (event?: Event) => {
-      const promise = m?.handler === undefined
-        ? new Promise<CoreModification>(r => r(emptyCm()))
-        : m.handler(
-          event === undefined
-            ? mkPrimEvent("DebugEvent", null)
-            : event,
-          c
-        );
-      const result = await promise;
-      if (render !== undefined) {
-        render(result.ui);
-      }
-      window.debug_state = parseStateInstr(result.state)(window.debug_state);
+      m?.handler?.(
+        event === undefined
+          ? mkPrimEvent("DebugEvent", null)
+          : event,
+        c
+      );
     }
   }
 }

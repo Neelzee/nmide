@@ -1,9 +1,9 @@
 // TODO: Add docs
 
-import { Html } from "./Html";
-import { Event } from "./Event";
-import { State } from "./State";
-import { CoreModification } from "./CoreModification";
+import type { Html } from "./Html";
+import type { Event } from "./Event";
+import type { State } from "./State";
+import type { CoreModification } from "./CoreModification";
 
 export type Core = {
   readonly ui: () => Promise<Html>;

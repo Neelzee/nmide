@@ -1,54 +1,9 @@
-import type {
-  Instruction,
-  Module,
-  Event,
-  Html,
-  Attr,
-} from "@nmide/js-utils";
-
+import type { AppConfig, NmideConfig } from "@nmide/js-utils";
 
 export interface App {
   initialize: (config: Partial<AppConfig>) => void;
   installModules: () => void;
   run: () => void;
-}
-
-export interface AppConfig {
-  root: HTMLElement,
-  log: {
-    error: (...args: unknown[]) => void,
-    debug: (...args: unknown[]) => void,
-    info: (...args: unknown[]) => void,
-  },
-  moduleInstallers: (() => Promise<void>)[],
-  runtimes: {
-    initializers: (() => Promise<void>)[]
-    handlers: ((event: Event) => Promise<void>)[]
-  },
-  render: (ui: [Instruction<Html>, Instruction<string>, Instruction<Attr>]) => Promise<void>,
-  eventThrower: (event: Event) => Promise<void>,
-  handlerRegistration: (
-    module: string,
-    event_name?: string,
-  ) => Promise<void>
-}
-
-export type HandlerRegister = {
-  event: Map<string, string[]>,
-  module: Map<string, string[]>,
-}
-
-export interface NmideConfig extends AppConfig {
-  moduleCount: number,
-  modules: Map<string, Module>,
-  handlerRegister: HandlerRegister
-  installed: boolean,
-}
-
-declare global {
-  interface Window {
-    __nmideConfig__: NmideConfig;
-  }
 }
 
 export const defaultConfig: NmideConfig = {
@@ -61,16 +16,17 @@ export const defaultConfig: NmideConfig = {
   root: document.body,
   runtimes: { handlers: [], initializers: [] },
   render: _ => {
-    throw Error("Missing renderer")
+    throw Error("Missing renderer");
   },
   handlerRegistration: _ => {
-    throw Error("Missing handlerRegistration")
+    throw Error("Missing handlerRegistration");
   },
   eventThrower: _ => {
-    throw Error("Missing eventThrower")
+    throw Error("Missing eventThrower");
   },
   moduleCount: 0,
   modules: new Map(),
   installed: false,
-  handlerRegister: { event: new Map(), module: new Map() }
+  handlerRegister: { event: new Map(), module: new Map() },
+  events: []
 };

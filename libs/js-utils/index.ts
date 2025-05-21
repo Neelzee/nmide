@@ -1,5 +1,54 @@
 import { type CoreModification } from "./lib/CoreModification";
+import type { Html } from "./lib/Html";
+import type { Instruction } from "./lib/Instruction";
 import { type State } from "./lib/State";
+import type { Event } from "./lib/Event";
+import { Module } from "./lib/Module";
+import { type Attr } from "./lib/Attr";
+
+export interface AppConfig {
+  root: HTMLElement,
+  log: {
+    error: (...args: unknown[]) => void,
+    debug: (...args: unknown[]) => void,
+    info: (...args: unknown[]) => void,
+  },
+  moduleInstallers: (() => Promise<void>)[],
+  runtimes: {
+    initializers: (() => Promise<void>)[]
+    handlers: ((event: Event) => Promise<void>)[]
+  },
+  render: (ui: [Instruction<Html>, Instruction<string>, Instruction<Attr>]) => Promise<void>,
+  eventThrower: (event: Event) => Promise<void>,
+  handlerRegistration: (
+    module: string,
+    event_name?: string,
+  ) => Promise<void>,
+  events: Event[],
+}
+
+export type HandlerRegister = {
+  event: Map<string, string[]>,
+  module: Map<string, string[]>,
+}
+
+export interface NmideConfig extends AppConfig {
+  moduleCount: number,
+  modules: Map<string, Module>,
+  handlerRegister: HandlerRegister
+  installed: boolean,
+}
+
+declare global {
+  interface Window {
+    debug_module: {
+      init: () => Promise<void>,
+      handler: (event?: Event) => Promise<void>
+    };
+    __nmideConfig__: NmideConfig,
+    debug_state: State,
+  }
+}
 
 export * from "./lib/HtmlBuilder";
 export * from "./lib/UiBuilder";

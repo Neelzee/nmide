@@ -27,15 +27,19 @@ const registerHandler = async (
 
 const eventThrower = async (event: Event) => {
   window.__nmideConfig__.log.debug(`[Frontend] throwing event: ${JSON.stringify(event)}`);
-  emit(
-    "nmide://event",
-    { event }
-  ).catch(
-    err =>
-      window.__nmideConfig__.log.error(
-        `Event ${JSON.stringify(event)} resulted in error from backend: ${err} ${JSON.stringify(err)}`, err
-      )
-  );
+  if (window.__nmideConfig__.installed) {
+    emit(
+      "nmide://event",
+      { event }
+    ).catch(
+      err =>
+        window.__nmideConfig__.log.error(
+          `Event ${JSON.stringify(event)} resulted in error from backend: ${err} ${JSON.stringify(err)}`, err
+        )
+    );
+  } else {
+    window.__nmideConfig__.events.push(event);
+  }
 };
 
 const sendModification = async (modification: CoreModification) => {
