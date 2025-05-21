@@ -69,6 +69,13 @@ pub mod module_reg {
 
 #[tokio::main]
 async fn main() {
+    let output = std::env::args()
+        .filter(|a| a.contains("--path="))
+        .collect::<Vec<_>>()
+        .pop()
+        .map(|s| s.replace("--path=", ""))
+        .unwrap_or("../../build/result.json".to_string());
+
     let mut modules: HashMap<String, Box<dyn Module>> = HashMap::new();
     module_reg::register_modules(&mut modules);
 
@@ -109,7 +116,9 @@ async fn main() {
 
     let s = serde_json::to_string_pretty(&final_deps).expect("Serialization should succeed");
 
-    let mut file = File::create("../build/result.json").expect("File creation should succeed");
+    println!("output: {:?}", output);
+
+    let mut file = File::create(output).expect("File creation should succeed");
 
     file.write_all(s.as_bytes())
         .expect("File writing should succeed");

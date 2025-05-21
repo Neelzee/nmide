@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as d3 from "d3";
 import { JSDOM } from "jsdom";
 import { getEventName } from "@nmide/js-utils";
+import svg2img from "svg2img";
 
 import type { NamedDependency } from "./rsm-grapher/rsm-invoker/bindings/NamedDependency";
 import type { Event } from "./rsm-grapher/rsm-invoker/bindings/Event";
@@ -194,22 +195,27 @@ function generateSVG(): string {
     .domain(['event', 'dialog', 'file', 'core', 'response', 'unknown'])
     .range(['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b']);
 
+  // Updated linkArc function with more pronounced curves for better label separation
   const linkArc = (d: any) => {
-    if (d.total === 1) {
-      const dx = d.target.x - d.source.x;
-      const dy = d.target.y - d.source.y;
-      const dr = Math.sqrt(dx * dx + dy * dy);
-
-      const cpX = (d.source.x + d.target.x) / 2;
-      const cpY = (d.source.y + d.target.y) / 2 - dr * 0.2;
-
-      return `M${d.source.x},${d.source.y} Q${cpX},${cpY} ${d.target.x},${d.target.y}`;
-    }
-
     const dx = d.target.x - d.source.x;
     const dy = d.target.y - d.source.y;
     const dr = Math.sqrt(dx * dx + dy * dy);
 
+    // Handle case where source and target might be the same
+    if (dr === 0) {
+      // Create a larger loop for self-references
+      return `M${d.source.x},${d.source.y} C${d.source.x + 80},${d.source.y - 80} ${d.source.x + 80},${d.source.y + 80} ${d.source.x},${d.source.y}`;
+    }
+
+    if (d.total === 1) {
+      // More pronounced curve for single links
+      const cpX = (d.source.x + d.target.x) / 2;
+      const cpY = (d.source.y + d.target.y) / 2 - dr * 0.25; // Increased curve
+
+      return `M${d.source.x},${d.source.y} Q${cpX},${cpY} ${d.target.x},${d.target.y}`;
+    }
+
+    // For multiple links between the same points, increase separation
     const offset = d.linkIndex - (d.total - 1) / 2;
 
     const midX = (d.source.x + d.target.x) / 2;
@@ -218,12 +224,198 @@ function generateSVG(): string {
     const normX = -dy / dr;
     const normY = dx / dr;
 
-    const cpX = midX + normX * offset * 80;
-    const cpY = midY + normY * offset * 80;
+    // Increased offset multiplier for better separation
+    const cpX = midX + normX * offset * 100;
+    const cpY = midY + normY * offset * 100;
 
     return `M${d.source.x},${d.source.y} Q${cpX},${cpY} ${d.target.x},${d.target.y}`;
   };
 
+  {
+    const link = g.append('g')
+      .attr('class', 'links')
+      .selectAll('path')
+      .data(graph.links)
+      .enter().append('path')
+      .attr('d', linkArc)
+      .attr('fill', 'none')
+      .attr('stroke', (d: any) => eventTypeColor(d.eventType))
+      .attr('stroke-opacity', 0.8)
+      .attr('stroke-width', 2);
+
+    svg.append('defs').selectAll('marker')
+      .data(['event', 'dialog', 'file', 'core', 'response', 'unknown'])
+      .enter().append('marker')
+      .attr('id', d => `arrow-${d}`)
+      .attr('viewBox', '0 -5 10 10')
+      .attr('refX', 45)
+      .attr('refY', 0)
+      .attr('markerWidth', 12)
+      .attr('markerHeight', 12)
+      .attr('orient', 'auto')
+      .append('path')
+      .attr('d', 'M0,-5L10,0L0,5')
+      .attr('fill', d => eventTypeColor(d));
+
+    link.attr('marker-end', (d: any) => `url(#arrow-${d.eventType})`);
+  }
+
+  // Create a collision detection system to avoid label overlaps
+  const labelPositions: Array<{ x: number, y: number, width: number, height: number }> = [];
+
+  // Function to check if a new label would overlap with existing ones
+  const wouldOverlap = (x: number, y: number, width: number, height: number): boolean => {
+    const buffer = 10; // Extra buffer space around labels
+
+    for (const pos of labelPositions) {
+      if (
+        x - buffer < pos.x + pos.width + buffer &&
+        x + width + buffer > pos.x - buffer &&
+        y - buffer < pos.y + pos.height + buffer &&
+        y + height + buffer > pos.y - buffer
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  // Improved getLabelPosition function with collision avoidance
+  const getLabelPosition = (d: any) => {
+    // Get the base path points
+    const dx = d.target.x - d.source.x;
+    const dy = d.target.y - d.source.y;
+    const dr = Math.sqrt(dx * dx + dy * dy);
+
+    // Get estimated label dimensions
+    const labelWidth = Math.max(d.eventName.length * 12, 60);
+    const labelHeight = 30;
+
+    // Handle the case where source and target might be the same node
+    if (dr === 0) {
+      return findNonOverlappingPosition(d.source.x + 50, d.source.y + 50, labelWidth, labelHeight);
+    }
+
+    let cpX, cpY;
+    if (d.total > 1) {
+      const offset = d.linkIndex - (d.total - 1) / 2;
+
+      const midX = (d.source.x + d.target.x) / 2;
+      const midY = (d.source.y + d.target.y) / 2;
+
+      const normX = -dy / dr;
+      const normY = dx / dr;
+
+      // Increase offset separation for better spacing
+      cpX = midX + normX * offset * 100;
+      cpY = midY + normY * offset * 100;
+    } else {
+      // For single links, use a simple curve with more pronounced arc
+      cpX = (d.source.x + d.target.x) / 2;
+      cpY = (d.source.y + d.target.y) / 2 - dr * 0.25;
+    }
+
+    // Try different points along the curve for better label positioning
+    let bestPosition: { x: number, y: number } | null = null;
+    let bestT = 0.5; // Default t-value (middle of curve)
+
+    // Try different positions along the path (0.3 to 0.7 of the path)
+    for (let t = 0.3; t <= 0.7; t += 0.1) {
+      // Bezier curve formula for quadratic curves
+      let x = (1 - t) * (1 - t) * d.source.x + 2 * (1 - t) * t * cpX + t * t * d.target.x;
+      let y = (1 - t) * (1 - t) * d.source.y + 2 * (1 - t) * t * cpY + t * t * d.target.y;
+
+      // Skip NaN positions
+      if (isNaN(x) || isNaN(y)) continue;
+
+      // Check if this position would be good (no overlap)
+      if (!wouldOverlap(x - labelWidth / 2, y - labelHeight / 2, labelWidth, labelHeight)) {
+        bestPosition = { x, y };
+        bestT = t;
+        break;
+      }
+    }
+
+    // If we found a good position, use it
+    if (bestPosition) {
+      // Register this position to avoid future overlaps
+      labelPositions.push({
+        x: bestPosition.x - labelWidth / 2,
+        y: bestPosition.y - labelHeight / 2,
+        width: labelWidth,
+        height: labelHeight
+      });
+      return bestPosition;
+    }
+
+    // Default to middle of the curve if all else fails
+    const t = 0.5;
+    let x = (1 - t) * (1 - t) * d.source.x + 2 * (1 - t) * t * cpX + t * t * d.target.x;
+    let y = (1 - t) * (1 - t) * d.source.y + 2 * (1 - t) * t * cpY + t * t * d.target.y;
+
+    // Handle NaN with fallback
+    if (isNaN(x) || isNaN(y)) {
+      // Try to find a non-overlapping position near the midpoint
+      return findNonOverlappingPosition(
+        (d.source.x + d.target.x) / 2,
+        (d.source.y + d.target.y) / 2,
+        labelWidth,
+        labelHeight
+      );
+    }
+
+    // Final position - we'll take this even if it overlaps
+    const finalPos = findNonOverlappingPosition(x, y, labelWidth, labelHeight);
+    return finalPos;
+  };
+
+  // Helper function to find a non-overlapping position near a target point
+  const findNonOverlappingPosition = (x: number, y: number, width: number, height: number) => {
+    // Try the original position first
+    if (!wouldOverlap(x - width / 2, y - height / 2, width, height)) {
+      labelPositions.push({
+        x: x - width / 2,
+        y: y - height / 2,
+        width,
+        height
+      });
+      return { x, y };
+    }
+
+    // Try positions at increasing distances in a spiral pattern
+    const spiralPoints = 16; // Number of points to try in the spiral
+    const maxRadius = 200;   // Maximum radius to try
+
+    for (let i = 1; i <= spiralPoints; i++) {
+      const radius = (i / spiralPoints) * maxRadius;
+      const angle = i * (Math.PI * 0.6); // Create a spiral by increasing angle
+
+      const newX = x + Math.cos(angle) * radius;
+      const newY = y + Math.sin(angle) * radius;
+
+      if (!wouldOverlap(newX - width / 2, newY - height / 2, width, height)) {
+        labelPositions.push({
+          x: newX - width / 2,
+          y: newY - height / 2,
+          width,
+          height
+        });
+        return { x: newX, y: newY };
+      }
+    }
+
+    // If all else fails, just use the original position and register it
+    labelPositions.push({
+      x: x - width / 2,
+      y: y - height / 2,
+      width,
+      height
+    });
+    return { x, y };
+  };
+
+  // Modified rendering of label backgrounds with improved z-ordering
+  // Draw link paths first (lowest z-index)
   const link = g.append('g')
     .attr('class', 'links')
     .selectAll('path')
@@ -235,108 +427,56 @@ function generateSVG(): string {
     .attr('stroke-opacity', 0.8)
     .attr('stroke-width', 2);
 
-  svg.append('defs').selectAll('marker')
-    .data(['event', 'dialog', 'file', 'core', 'response', 'unknown'])
-    .enter().append('marker')
-    .attr('id', d => `arrow-${d}`)
-    .attr('viewBox', '0 -5 10 10')
-    .attr('refX', 45)
-    .attr('refY', 0)
-    .attr('markerWidth', 12)
-    .attr('markerHeight', 12)
-    .attr('orient', 'auto')
-    .append('path')
-    .attr('d', 'M0,-5L10,0L0,5')
-    .attr('fill', d => eventTypeColor(d));
-
   link.attr('marker-end', (d: any) => `url(#arrow-${d.eventType})`);
 
-  const getLabelPosition = (d: any) => {
-    if (d.total === 1) {
-      const dx = d.target.x - d.source.x;
-      const dy = d.target.y - d.source.y;
-      const dr = Math.sqrt(dx * dx + dy * dy);
+  // Create label group with all labels (higher z-index than paths)
+  const labelGroup = g.append('g').attr('class', 'labels');
 
-      const cpX = (d.source.x + d.target.x) / 2;
-      const cpY = (d.source.y + d.target.y) / 2 - dr * 0.2;
+  // Sort links by source-target distance for better label positioning
+  // This helps prioritize labels for shorter connections
+  const sortedLinks = [...graph.links].sort((a, b) => {
+    const distA = Math.hypot(
+      (a.source as any).x - (a.target as any).x,
+      (a.source as any).y - (a.target as any).y
+    );
+    const distB = Math.hypot(
+      (b.source as any).x - (b.target as any).x,
+      (b.source as any).y - (b.target as any).y
+    );
+    return distB - distA; // Process shorter links last (they'll be on top)
+  });
 
-      const t = 0.5;
-      const x = (1 - t) * (1 - t) * d.source.x + 2 * (1 - t) * t * cpX + t * t * d.target.x;
-      const y = (1 - t) * (1 - t) * d.source.y + 2 * (1 - t) * t * cpY + t * t * d.target.y;
+  // Draw label backgrounds and text for all links
+  sortedLinks.forEach((d: any) => {
+    const pos = getLabelPosition(d);
+    const width = Math.max(d.eventName.length * 12, 60);
+    const height = 30;
 
-      const pos = { x, y };
-      if (isNaN(pos.x) || isNaN(pos.y)) {
-        return { x: d.target.x + dx, y: d.target.y + dy };
-      }
-      return pos;
-    }
+    // Draw background rectangle
+    labelGroup.append('rect')
+      .attr('x', pos.x - width / 2)
+      .attr('y', pos.y - 15)
+      .attr('width', width)
+      .attr('height', height)
+      .attr('fill', 'white')
+      .attr('fill-opacity', 0.9)
+      .attr('rx', 8)
+      .attr('ry', 8)
+      .attr('stroke', eventTypeColor(d.eventType))
+      .attr('stroke-width', 1.5);
 
-    const t = 0.5;
-    const dx = d.target.x - d.source.x;
-    const dy = d.target.y - d.source.y;
-    const dr = Math.sqrt(dx * dx + dy * dy);
-
-    const offset = d.linkIndex - (d.total - 1) / 2;
-
-    const midX = (d.source.x + d.target.x) / 2;
-    const midY = (d.source.y + d.target.y) / 2;
-
-    const normX = -dy / dr;
-    const normY = dx / dr;
-
-    const cpX = midX + normX * offset * 80;
-    const cpY = midY + normY * offset * 80;
-
-    const x = (1 - t) * (1 - t) * d.source.x + 2 * (1 - t) * t * cpX + t * t * d.target.x;
-    const y = (1 - t) * (1 - t) * d.source.y + 2 * (1 - t) * t * cpY + t * t * d.target.y;
-
-    const pos = { x, y };
-    if (isNaN(pos.x) || isNaN(pos.y)) {
-      return { x: d.target.x + dx, y: d.target.y + dy };
-    }
-    return pos;
-  };
-
-  g.append('g')
-    .attr('class', 'link-label-backgrounds')
-    .selectAll('rect')
-    .data(graph.links)
-    .enter().append('rect')
-    .attr('x', (d: any) => {
-      const pos = getLabelPosition(d);
-      return pos.x - 100;
-    })
-    .attr('y', (d: any) => {
-      const pos = getLabelPosition(d);
-      return pos.y - 20;
-    })
-    .attr('width', 200)
-    .attr('height', 40)
-    .attr('fill', 'white')
-    .attr('fill-opacity', 0.9)
-    .attr('rx', 8)
-    .attr('ry', 8);
-
-  g.append('g')
-    .attr('class', 'link-labels')
-    .selectAll('text')
-    .data(graph.links)
-    .enter().append('text')
-    .attr('x', (d: any) => {
-      const pos = getLabelPosition(d);
-      return pos.x;
-    })
-    .attr('y', (d: any) => {
-      const pos = getLabelPosition(d);
-      return pos.y + 7;
-    })
-    .attr('text-anchor', 'middle')
-    .attr('font-family', 'Arial')
-    .attr('font-size', '22px')
-    .attr('font-weight', 'bold')
-    .attr('fill', (d: any) => eventTypeColor(d.eventType))
-    .text((d: any) => d.eventName)
-    .attr('pointer-events', 'none');
+    // Draw text on top of the background
+    labelGroup.append('text')
+      .attr('x', pos.x)
+      .attr('y', pos.y + 5)
+      .attr('text-anchor', 'middle')
+      .attr('font-family', 'Arial')
+      .attr('font-size', '16px')
+      .attr('font-weight', 'bold')
+      .attr('fill', eventTypeColor(d.eventType))
+      .text(d.eventName)
+      .attr('pointer-events', 'none');
+  });
 
   const node = g.append('g')
     .attr('class', 'nodes')
@@ -348,6 +488,7 @@ function generateSVG(): string {
     .domain(['0', '1', '2', '3'])
     .range(['#9467bd', '#2ca02c', '#1f77b4', '#e74c3c']);
 
+  // Make sure nodes are drawn after labels so they're on top
   node.append('circle')
     .attr('r', (d: any) => d.id === "Unknown Source" ? 40 : 30)
     .attr('cx', (d: any) => d.x)
@@ -356,6 +497,7 @@ function generateSVG(): string {
     .attr('stroke', '#fff')
     .attr('stroke-width', 4);
 
+  // Draw text on top of everything
   node.append('text')
     .attr('dx', (d: any) => d.x + 35)
     .attr('dy', (d: any) => d.y + 10)
@@ -447,6 +589,15 @@ const svgString = generateSVG();
 fs.writeFileSync('./build/module-dependencies.svg', svgString);
 
 console.log('SVG exported to ./build/module-dependencies.svg');
+
+svg2img(svgString, (err, buff) => {
+  const pngPath = "./build/module-dependencies.png";
+  console.log(`PNG exported to ${pngPath}`);
+  if (err !== undefined && err !== null) {
+    console.error("Svg conversion error: ", err);
+  }
+  fs.writeFileSync(pngPath, buff);
+})
 
 console.log(`Graph contains ${nodes.length} nodes and ${links.length} links.`);
 console.log(`Event types in the graph: ${[...new Set(links.map(l => l.eventType))].join(', ')}`);
