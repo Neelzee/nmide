@@ -100,7 +100,12 @@ async fn fsa_write(event: &Event, core: &Box<dyn Core>) -> Result<()> {
             )
         })?;
 
-    let mut file = OpenOptions::new().write(true).open(file_path).await?;
+    let mut file = OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .create(true)
+        .open(file_path)
+        .await?;
 
     file.write_all(content.as_bytes()).await?;
     let module = event
@@ -137,7 +142,7 @@ async fn fsa_read(event: &Event, core: &Box<dyn Core>) -> Result<()> {
         })?
         .into();
 
-    let mut file = File::open(file_path).await?;
+    let mut file = File::open(&file_path).await?;
     let mut buff = String::new();
     file.read_to_string(&mut buff).await?;
 
@@ -150,7 +155,10 @@ async fn fsa_read(event: &Event, core: &Box<dyn Core>) -> Result<()> {
 
     core.throw_event(Event::new(
         format!("fsa_read_{}", module),
-        Some(Value::Str(buff)),
+        Some(Value::new_obj().add("content", Value::Str(buff)).add(
+            "file_path",
+            Value::Str(file_path.to_str().unwrap_or_default().to_string()),
+        )),
     ))
     .await;
 
