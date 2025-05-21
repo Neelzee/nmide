@@ -50,5 +50,3 @@ default = ["runtime_modules"]
 runtime_modules = ["dep:abi_stable", "dep:async-ffi", "dep:foreign-std-lib"]
 
 # ============================================================================ #
-
-dependencies = []

@@ -9,7 +9,7 @@ use foreign_std_lib::event::rs_event::REvent;
 use futures;
 use log::info;
 
-pub async fn init(cm: CoreModification) {
+pub async fn init() {
     let rt_modules = RUNTIME_MODULES
         .get()
         .expect("Should be initialized at this point")
@@ -21,14 +21,13 @@ pub async fn init(cm: CoreModification) {
         .collect::<Vec<_>>();
     let modules = COMPILE_TIME_MODULES.read().await;
     let module_futures = modules.values().map(|m| m.init(Box::new(NmideCore)));
-    NmideCore.send_modification(cm).await;
     futures::future::join_all(module_futures).await;
     futures::future::join_all(rt_module_futures).await;
 
     NmideCore.throw_event(Event::PostInit).await;
 }
 
-pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
+pub async fn handler(event: Event) {
     let evt = event.clone();
     tokio::spawn({
         async move {
@@ -66,12 +65,6 @@ pub async fn handler(event: Event, modifications: Vec<CoreModification>) {
             futures::future::join_all(rt_modules).await;
         }
     });
-
-    let cm = modifications
-        .into_iter()
-        .fold(CoreModification::default(), |acc, cm| acc.combine(cm));
-
-    NmideCore.send_modification(cm).await;
 
     if matches!(evt, Event::PreExit) {
         info!(place = "backend"; "Exiting");

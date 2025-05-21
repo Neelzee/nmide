@@ -74,9 +74,8 @@ const App = {
           promises.push(handler(event));
         }
         return await Promise.all(promises);
-      })().then(cm => {
-        const mods = cm.flat();
-        client("handler", { event, mods })
+      })().then(() => {
+        client("handler", { event })
           .catch((err) => window.__nmideConfig__.log.error(`Handler: ${JSON.stringify(err)}`))
       }
       );
@@ -96,9 +95,9 @@ const App = {
       const mods = await Promise.all(promises);
       return mods.flat()
     })
-      .then(mods =>
-        client("init", { mods })
-          .catch((err) => window.__nmideConfig__.log.error(`init: ${JSON.stringify(err)}, args: ${JSON.stringify(mods)}`))
+      .then(() =>
+        client("init")
+          .catch((err) => window.__nmideConfig__.log.error(`init: ${JSON.stringify(err)}`))
       );
   }
 };

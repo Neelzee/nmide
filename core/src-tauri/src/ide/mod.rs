@@ -21,18 +21,15 @@ use tauri_plugin_dialog::{DialogExt as _, MessageDialogButtons, MessageDialogKin
 pub mod setup;
 
 #[tauri::command]
-async fn init(mods: Vec<CoreModification>) {
-    info!(place = "backend", mods:serde; "init {:?}", mods);
-    let cm = mods
-        .into_iter()
-        .fold(CoreModification::default(), CoreModification::append);
-    crate::handlers::init(cm).await;
+async fn init() {
+    info!("[Backend] init");
+    crate::handlers::init().await;
 }
 
 #[tauri::command]
-async fn handler(event: Event, mods: Vec<CoreModification>) {
-    info!(place = "backend", event:serde, mods:serde; "handler, {:?} {:?}", event, mods);
-    crate::handlers::handler(event, mods).await
+async fn handler(event: Event) {
+    info!("[Backend] handler, {:?}", event);
+    crate::handlers::handler(event).await
 }
 
 #[tauri::command]
