@@ -8,14 +8,11 @@ import { formatValidationErrors } from "io-ts-reporters";
 
 export type ClientArgs = {
   init: {
-    args: {
-      mods: CoreModification[],
-    },
+    args: undefined,
   },
   handler: {
     args: {
       event: Event,
-      mods: CoreModification[],
     },
   },
   state: {
