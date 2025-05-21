@@ -9,15 +9,18 @@ modules : clean
 		--index=./index.html \
 		--module-dist="/home/nmf/.local/share/no.nilsmf.uib/modules/" && \
 	bun run build.ts
-	
-install :
-	cd ../libs/js-utils && pwd && bun i && \
-	cd ../js-client && pwd && bun i && \
-	cd ../js-core-std-lib && pwd && bun i && \
-	cd ../js-module-lib && pwd && bun i && \
-	cd ../js-decoder-lib && pwd && bun i && \
-	cd ../js-debug-module && pwd && bun i && \
-	cd ../../core && pwd && bun i
+
+install:
+	@( \
+		cd ../libs/ && \
+		find . -maxdepth 1 -type d ! -path . | while read p; do \
+			if [ -f "$$p/package.json" ]; then \
+				echo "Installing in $$p"; \
+				(cd "$$p" && bun i); \
+			fi; \
+		done \
+	) && \
+	cd ../core && echo "Installing Core JS dependencies" && bun i
 
 clean :
 	rm -rf ./src-tauri/target/debug/build/core-* && \
@@ -25,6 +28,7 @@ clean :
 	rm -rf /home/nmf/.local/share/no.nilsmf.uib/modules/ && \
 	mkdir -p ./dist/external && \
 	touch ./dist/external/modules.js && \
+	mkdir -p ./src-tauri/target/ && \
 	touch ./src-tauri/target/module_reg.rs && \
 	echo "pub fn register_modules(modules: &mut HashMap<String, Box<dyn Module>>) {}" > ./src-tauri/target/module_reg.rs && \
 	mkdir -p /home/nmf/.local/share/no.nilsmf.uib/modules/ && \
