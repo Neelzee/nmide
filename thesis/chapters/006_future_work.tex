@@ -32,6 +32,15 @@ keybind/keypress thing.
 \subsection{Inconsistent UI}
 
 Difficult to keep the \gls{ui} representation consistent with the \gls{dom}.
+\dots
+A workaround to this was used, where depending on what element an
+\textit{eventListener} was added to, the sent Event would be \textit{sticky},
+meaning it would add extra arguments to the \textit{args} field of the Event,
+like attribute information, id, value, etc. But this would not update the
+\gls{ui} stored in the \gls{ide}, but rather give Modules a peek at the current
+\gls{ui} state. A better solution would be to somehow keep track of \textit{all}
+user interactions to the \gls{dom}, and somehow bubble these changes down to the
+backend, where the \gls{ui} representation is managed.
 
 \subsection{Compile-time Module Installation}
 

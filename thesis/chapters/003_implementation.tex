@@ -4,7 +4,7 @@ This section will focus on the implementation of the zero core \gls{ide}. In
 section \ref{sec:stack}, we will mention technologies used, and why they were
 chosen. In section \ref{sec:mod1} and \ref{sec:mod2}, we will discuss the
 different iterations the application architecture had, and why they were subpar,
-compared to section \ref{sec:mod3}, which is the implementation of the zero core
+compared to section \ref{sec:moD3}, which is the implementation of the zero core
 \gls{ide}. Section \ref{sec:testing} will explain the necessity of testing when
 using such a modular design, and explore the ease of which functionality can be
 tested.
@@ -469,7 +469,7 @@ for each new subtree that is added, to figure out if there occurs any collision.
 And then notifying the module developer of which field this collision occurred
 on, and which modules tried to modify that field.
 
-\section{Module V.3} \label{sec:mod3}
+\section{Module V.3} \label{sec:moD3}
 
 The third and hopefully final, plan:
 
@@ -931,6 +931,30 @@ the current state of the \gls{ide}, in a tree-graph.
   \label{pic:debugState}
 \end{figure}
 
+\subsection{Module Installer}
+
+Module markets are an important part of the \gls{ide} user experience. Being
+able to install a module with the click of a button essential. Not having a
+dedicated module market like \gls{vscode}, has not been detrimental for
+\gls{vim}, as with a \textit{plugin manager}, a user can install a module by
+simply supplying a URL to a GitHub repository. Similarly, we allow users to
+either install modules from disk, or by supplying a URL to a GitHub repository.
+In the picture \ref{pic:moduleInstaller}, we can see such a form. A user can
+either install a module from disk, in which case, we simply copy the module
+binary at the given path to the runtime module folder, or if a URL has been
+supplied, we get the latest released binary from that GitHub repository, and
+copy this binary instead.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.50\textwidth]{module-installer.png}
+  \caption{
+    A module installation form, where a user can supply a path to a module on
+    disk, or a URL to a GitHub repository containing the module binary.
+  }
+  \label{pic:moduleInstaller}
+\end{figure}
+
 \subsection{Magnolia Dependency Graph Visualizer}
 
 In Magnolia, as in many other languages, one cannot have a cyclic dependency.
@@ -996,7 +1020,10 @@ dependencies. We then end by \textit{responding} with the created graph,
 resulting response can be seen in listing \ref{lst:magLibParserRes}
 
 \begin{code}[H]
-  \begin{lstlisting}[language = TypeScript, label=lst:magLibParserRes, caption={Magnolia library parser response (TypeScript)}]
+  \begin{lstlisting}[
+      language=TypeScript
+    , label=lst:magLibParserRes
+    , caption={Magnolia library parser response (TypeScript)}]
     {
       event: {
         event: "graph",
@@ -1016,11 +1043,14 @@ resulting response can be seen in listing \ref{lst:magLibParserRes}
 \end{code}
 
 The module responsible for rendering the graph, uses
-\textit{d3}\footnote{\url{https://d3js.org/}}, a visualization library for
-JavaScript. \textit{d3} expects \textit{nodes} and \textit{links}, specified in
-listing \ref{lst:d3Type}.
+\textit{D3}\footnote{\url{https://d3js.org/}}, a visualization library for
+JavaScript. \textit{D3} expects \textit{nodes} and \textit{links}, specified in
+listing \ref{lst:D3Type}.
 
-\begin{lstlisting}[language = TypeScript, label=lst:d3Type]
+\begin{lstlisting}[
+    language=TypeScript
+  , label=lst:D3Type
+  , caption={D3 expected input (TypeScript)}]
   type Node = { id: string, name: string };
   type Link = { source: string, target: string };
 \end{lstlisting}
@@ -1037,7 +1067,7 @@ that the argument is of the list variant of \textit{Value}. The full source code
 can be found in appendix \ref{apx:b}. Since the list variant can contain any
 \textit{Value} variant, we filter the list by whether it is an object variant,
 (line 2), we then transform each element in the list, into a intersection of the
-types \textit{d3} expects, (\ref{lst:d3Type}). The questionmark syntax on line
+types \textit{D3} expects, (\ref{lst:D3Type}). The questionmark syntax on line
 4, where we declare the \textit{id} variable, means that if any of the
 expressions on the left are undefined, the resulting expression is undefined.
 Since the object variant of \textit{Value} does not necessarily contain the
@@ -1073,16 +1103,16 @@ quite \textit{noisy}, as there are a lot of crossing between the dependencies.
   \caption{
     Magnolia basic library dependencies visualized. Each colour represents a
     package, which contains several modules. The size of the nodes vary
-    depending on the amount of dependents, (indegree), a module has.
+    depending on the amount of dependents, (in degree), a module has.
   }
   \label{pic:magLib}
 \end{figure}
 
-Luckily, with \textit{d3}, we can mitigate some of the noise. In the picture
+Luckily, with \textit{D3}, we can mitigate some of the noise. In the picture
 \ref{pic:depCont}, we can see the control-panel that our graph module has
 created. With the control panel, we can zoom in and out on the graph,
 (this can also be done with the mouse), reset our view. This is done with the
-help of \textit{d3}, while the final button, find cycles, is implemented by
+help of \textit{D3}, while the final button, find cycles, is implemented by
 simply checking the input data for a cycle, and colouring it red with the help
 of basic JavaScript and \gls{css}. The remaining sliders are specifically for
 the graph ordering itself, where force strength, is with how much force nodes
@@ -1165,7 +1195,12 @@ of the \gls{ide}:
 In the figure \ref{fig:ideLayout}, we have laid out the naming convention we
 use when referring to different \textit{places} in the \gls{ide}.
 
-\todo{Create the figure}
+\begin{figure}
+  \centering
+  \input{./figures/ide-layout}
+  \caption{\gls{ide} layout}
+  \label{fig:ideLayout}
+\end{figure}
 
 The module \textit{ide\_pm}, being responsible for the menu bar at the top of
 the \gls{ide}, has an \textit{easy} job, as it just simplifies the creation of
@@ -1176,12 +1211,12 @@ dropdown content.
 
 In picture \ref{pic:ideEx} we can see the ide\_explorer in action, showing the
 Magnolia library visualized as a tree-like structure with collapsible folders.
-When we click on the \textit{File}, a dropdown appears, where we can click on a
-button, \textit{Open Folder}, which sends an Event to \gls{ide}\_fsa, the
-module in charge of handling file system operations, where we get in
-\textit{response}, all the folders and files in the path we selected. Which we
-transform into \gls{html}, and along with some \gls{css}, we get the collapsible
-folders.
+These folders are rendered in the \textit{sidebar}, on the left. When we click
+on the \textit{File}, a dropdown appears, where we can click on a button,
+\textit{Open Folder}, which sends an Event to \gls{ide}\_fsa, the module in
+charge of handling file system operations, where we get in \textit{response},
+all the folders and files in the path we selected. Which we transform into
+\gls{html}, and along with some \gls{css}, we get the collapsible folders.
 
 \begin{figure}
   \centering
@@ -1219,7 +1254,9 @@ reads the file we clicked on. We know what file we clicked on, because each
 \textit{click} attribute has sends an Event with their corresponding path. When
 we get the texts contents of the file in response, we create an textarea with
 the contents of the file added to it. In picture \ref{pic:editorModule} we can
-see this in action.
+see this in action, as the editor is created in the \textit{content} place, in
+the center of the \gls{ide}, along with a \textit{tab}, with the name of the
+file being edited as the title of the tab.
 
 \begin{figure}
   \centering
