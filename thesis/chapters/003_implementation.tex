@@ -809,21 +809,66 @@ tooling.
 
 \subsection{Module Dependency Visualization}
 
-\todo{Still being developed}
+When developing against a modular architecture, it is useful to be able to see
+what different module families appear, and what the different dependencies
+between the modules are. By loading all specified modules, we can note their
+dependencies, by looking at the different consumer and providers. A Module has
+two different states, initialization, and handling. During initialization, a
+Module cant have any dependency on other Modules, but it can register for an
+Event, meaning the Module will be invoked once the specified Event is triggered,
+or it can throw an Event. Registration for an Event can always be directly
+analyzed, as it happens on the Core instance. The way a registration occurs, is
+that a Module supplies a string for a specific Event name to trigger on,
+meaning after the first initialization, the consumer graph looks 
+like this: $Module \to Event$.
 
-\subsection{Module Isolation Testing}
+To find the providers, we can initialize a Module, and see what possible
+Events, if any are thrown. If an Event is thrown, then that Module is a
+provider of that Event. The mapping between Event and Module is not unique,
+as several Modules can provide the same Event. Another way a Module can
+provide an Event, is through user interaction. A Module can create some
+\gls{ui}, which a user can interact with, which would trigger an Event. The
+\gls{ui} can be analyzed for such triggers, and a mapping between that Event and
+Module would be created.
 
-\todo{Still being developed}
+During a handling of a triggered Event, a Module could register for new
+Events, trigger another Event, or do nothing. To find more dependencies, a
+Module is triggered with the Events it subscribed to, and analyzed for new
+registrations or triggers. If the list all subscribed Events have been
+exhausted, and no new registration or trigger has occurred, that Module is
+considered \textit{exhausted}, and won't be analyzed anymore.
 
-This is as simple as creating a minified version of our \gls{ide}, that has
-extra tools for mocking Events.
+Since Modules are asynchronous, and can possibly spawn their own threads, there
+is a possibility for deadlocks to occur. There is no way to avoid this, without
+restricting Module developers, which is not wanted. Therefore, it is up to
+the user of the module dependency graphing tool to avoid this, by supplying a
+timeout value, ensuring that if, after some time $N$, the analyzation of a
+Module is still occurring, the analyzation is killed.
+
+Modules could be depending on a certain state, before triggering or
+subscribing to an Event, this is not really possible to know without doing
+static code analysis, so this is out of scope for this tool.
+
+In picture \ref{pic:modDep} we can see the resulting graph of the \gls{ide}
+modules.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{module-dependencies.png}
+  \caption{
+    The different modules and their dependencies. Some are coming from an
+    unknown source, meaning they subscribe to an Event that has not been
+    detected during the analysis
+  }
+  \label{pic:modDep}
+\end{figure}
 
 \subsection{Module Boilerplate Generation}
 
 \todo{Still being developed}
 
 This \gls{cli}-tool enables a developer to quickly get started on developing
-modules, as the tidous work of setting up a project can be automated away.
+modules, as the tedious work of setting up a project can be automated away.
 
 \section{Modules}
 
@@ -1066,17 +1111,17 @@ verifying that the event has an argument, (since its optional to pass one), and
 that the argument is of the list variant of \textit{Value}. The full source code
 can be found in appendix \ref{apx:b}. Since the list variant can contain any
 \textit{Value} variant, we filter the list by whether it is an object variant,
-(line 2), we then transform each element in the list, into a intersection of the
-types \textit{D3} expects, (\ref{lst:D3Type}). The questionmark syntax on line
+(line 2), we then transform each element in the list, into an intersection of the
+types \textit{D3} expects, (\ref{lst:D3Type}). The question mark syntax on line
 4, where we declare the \textit{id} variable, means that if any of the
 expressions on the left are undefined, the resulting expression is undefined.
 Since the object variant of \textit{Value} does not necessarily contain the
 \textit{name} field, or is of the kind \textit{str}. On line 9 to 13, we are
 getting all the dependencies from the object, with a helper method,
 \textit{tObjLookUpOr}. This method does a \textit{lookup} on the supplied field
-on an object, and a typecheck. If the object does not exist, or is not of the
+on an object, and a type check. If the object does not exist, or is not of the
 correct type, the passed fallback value is returned instead, in this case, an
-empty list (line 10). Since we know the value is an list, we can safely access
+empty list (line 10). Since we know the value is a list, we can safely access
 it, (line 11), and filter by the string variant, and transforming the
 \textit{Value} to a string primitive, (line 11 to 13).
 
@@ -1118,7 +1163,7 @@ of basic JavaScript and \gls{css}. The remaining sliders are specifically for
 the graph ordering itself, where force strength, is with how much force nodes
 exert on each other, and link distance is how far a link between two nodes
 can/\textit{wants} to be. This, along with the node size scale, scaling how big
-a node is depending on how many dependents it has, ensures this visualisation
+a node is depending on how many dependents it has, ensures this visualization
 tool can be used for other programming libraries, not just Magnolia.
 
 \begin{figure}
@@ -1157,25 +1202,8 @@ other packages, except the \textit{Fundamentals} package.
 
 \subsection{IDE Module Family}
 
-\subsection{Caching}
-
-There are two difficult problems in computer science\footnote{\url{https://martinfowler.com/bliki/TwoHardThings.html}}.
-Cache invalidation, naming things and off-by-one errors. Compiler for
-programming languages stores compiled code, such that it is not unnecessarily
-re-compiled. Similarly, \gls{ide}s like \gls{intellij} or \gls{vscode} store the
-application state between sessions, what files where opened, where in the files
-one where, etc. In this \gls{ide}, something similar can be done, by using the
-\textit{ide\_cache} module. This module declares a field on the state,
-\textit{ide-cache}, which everytime the \gls{ide} exits, it writes to a file the
-contents of the field, which it reads and adds to the state during the
-\textit{PostInit}-event. That way, if existing modules are doing some state
-change, they can be trivially refactored to use the cache field instead, by
-simply pre-fixing all their paths with \textit{ide-cache}. In the dependency
-visualizer, we can prefix the graph storing, with this, and then the generated
-graph would be stored across sessions, ensuring a speedier visualisation
-process, as we don't have to wait for an, relatively, expensive IO operation.
-
-\subsection{IDE Framework}
+There are a lot of different features that an \gls{ide} encompass. The following
+modules are helpful prototypes to implement some of these features.
 
 An important aspect development, is separation of concerns. This is also
 relevant for module development. A module that renders a \gls{dag}, should not
@@ -1201,6 +1229,26 @@ use when referring to different \textit{places} in the \gls{ide}.
   \caption{\gls{ide} layout}
   \label{fig:ideLayout}
 \end{figure}
+
+\subsection{Caching}
+
+There are two difficult problems in computer science\footnote{\url{https://martinfowler.com/bliki/TwoHardThings.html}}.
+Cache invalidation, naming things and off-by-one errors. Compiler for
+programming languages stores compiled code, such that it is not unnecessarily
+re-compiled. Similarly, \gls{ide}s like \gls{intellij} or \gls{vscode} store the
+application state between sessions, what files where opened, where in the files
+one where, etc. In this \gls{ide}, something similar can be done, by using the
+\textit{ide\_cache} module. This module declares a field on the state,
+\textit{ide-cache}, which everytime the \gls{ide} exits, it writes to a file the
+contents of the field, which it reads and adds to the state during the
+\textit{PostInit}-event. That way, if existing modules are doing some state
+change, they can be trivially refactored to use the cache field instead, by
+simply pre-fixing all their paths with \textit{ide-cache}. In the dependency
+visualizer, we can prefix the graph storing, with this, and then the generated
+graph would be stored across sessions, ensuring a speedier visualisation
+process, as we don't have to wait for an, relatively, expensive IO operation.
+
+\subsection{IDE PM}
 
 The module \textit{ide\_pm}, being responsible for the menu bar at the top of
 the \gls{ide}, has an \textit{easy} job, as it just simplifies the creation of
@@ -1229,7 +1277,7 @@ all the folders and files in the path we selected. Which we transform into
 
 There are also some icons, on files and folders, this is done using \gls{css},
 in listing \ref{lst:ideEx}, we can see a snippet of this, since we are adding
-the file exstension as a class attribute, we can very simply add
+the file extension as a class attribute, we can very simply add
 style-predicates to our files.
 
 \begin{center}
@@ -1267,6 +1315,3 @@ file being edited as the title of the tab.
   \label{pic:editorModule}
 \end{figure}
 
-\subsection{Magnolia Language Server}
-
-\todo{Implement a rudimentary Magnolia LS}
