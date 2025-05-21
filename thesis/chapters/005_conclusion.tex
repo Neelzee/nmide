@@ -50,8 +50,84 @@ modules, so more time was spent on re-implementing them.
 \subsection{Language Agnosticism}
 
 Not really achieved, because we cannot syntactically translate between a
-JavaScript Module and a Rust Module, but again, this is due breaking changes
-being made, (in the past), which deprecated modules.
+JavaScript Module and a Rust Module. This is due to the differences between the
+utility libraries created for \gls{jsms} and \gls{rsms}. When \gls{jsms} modules
+where created, they were primarily made for using existing JavaScript libraries,
+to showcase this interoperability. So, much of the \gls{html} elements were
+created using JavaScript, so the utility library primarily focused on this,
+having builder pattern for creating \gls{html}. There is a similar builder
+pattern in the Rust utility library, but it is not a one-to-one mapping, meaning
+there are some semantic differences between two modules doing the same.
+
+\subsection{Foreign Modules}
+
+Languages like Gleam and PureScript, which compile directly to JavaScript can
+be trivially added. But for languages that can target the C-\gls{abi}, this is
+less trivial. This is because of how the core-\gls{ide} was designed. We decided
+to use a \textit{Rust-y} approach, meaning we utilized many of the features that
+made interoperability between the Rust-\gls{abi} and C-\gls{abi} more complex.
+An example of this, can be found in the listing \ref{lst:value} and
+\ref{lst:rsValue}, where we have the \textit{standard} value variant, and then
+the \textit{C-safe} variant.
+
+\begin{code}[H]
+  \lstinputlisting
+    [ language=Rust
+    , caption={Value variant (Rust)}
+    , label=lst:value
+    , firstline=19
+    , lastline=31
+    ]{./core/src-tauri/core-std-lib/src/state/mod.rs}
+\end{code}
+
+\begin{code}[H]
+  \lstinputlisting
+    [ language=Rust
+    , caption={C-safe value variant (Rust)}
+    , label=lst:rsValue
+    , firstline=16
+    , lastline=21
+    ]{./core/src-tauri/foreign-std-lib/src/state/rs\_state.rs}
+\end{code}
+
+Note the \textbf{\#[repr(C)]} macro attribute, and the two fields,
+\textit{kind} and \textit{val}. The macro attribute specifies to the Rust
+compiler that it should \textit{do what C does}. This is in regard to order,
+size and alignment of fields of a structure. Since we cannot have the same enum
+structure as we can in Rust, the work-around was an enum that specifies what
+kind of value we are working with (\textit{val}), and a union, that holds the
+specific value. A union in both C and Rust, has the same size in memory, as the
+largest possible value it can store. In listing \ref{lst:rsValueUnion} we can
+see this union. Accessing a field is inherently an \textit{unsafe} action, as we
+cannot tell the compiler if the bytes we are reading are actually and integer,
+or is a list of values. We can see this, as in the listing
+\ref{lst:rsValueUnsafe}, on line three, we have to use the \textit{unsafe}
+keyword in Rust, which essentially means the compiler cannot promise what we are
+doing in this code block is \textit{valid}.
+
+\begin{code}
+  \lstinputlisting
+    [ language=Rust
+    , caption={Union used to hold the values the C-safe value can have (Rust)}
+    , label=lst:rsValueUnion
+    , firstline=134
+    , lastline=144
+    ]{./core/src-tauri/foreign-std-lib/src/state/rs\_state.rs}
+\end{code}
+
+\begin{code}
+  \lstinputlisting
+    [ language=Rust
+    , caption={
+      Accessing a value in the C-safe value variant is inherently unsafe
+    }
+    , label=lst:rsValueUnsafe
+    , firstline=53
+    , lastline=59
+    , numbers=left
+    , numberstyle=\tiny\color{gray}
+    ]{./core/src-tauri/foreign-std-lib/src/state/rs\_state.rs}
+\end{code}
 
 \section{Making an IDE is hard}
 
