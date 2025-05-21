@@ -129,6 +129,18 @@ doing in this code block is \textit{valid}.
     ]{./core/src-tauri/foreign-std-lib/src/state/rs\_state.rs}
 \end{code}
 
+\subsection{Ad-hoc solutions for lackluster API}
+
+As mentioned, there is an issue in the current \gls{api} on maintaining
+consistency between the \gls{ui} in the frontend, and the \gls{ui}
+representation the \gls{rsms} has access to. This means that there is no
+good way to achieve saving of an edited file. But this is still a feature the
+editor module supports. The way saving was implemented, was to add plain
+JavaScript to the save button, where when the user presses it, the contents
+of the textarea are sent to the \gls{ide}\_fsa module, which can save the
+contents. This is an action that bypasses the core \gls{ide}, which was
+necessary due to the lacking \gls{api}.
+
 \section{Making an IDE is hard}
 
 An \gls{ide} has many features, which are needed to enhance the developer
