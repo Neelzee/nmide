@@ -59,6 +59,20 @@ having builder pattern for creating \gls{html}. There is a similar builder
 pattern in the Rust utility library, but it is not a one-to-one mapping, meaning
 there are some semantic differences between two modules doing the same.
 
+But \textit{installation} of the modules also differ. In JavaScript, module
+developers can simply invoke the \textit{installModule} function, with their
+created module, to install the module. The reason this works, is that when we
+bundle all JavaScript modules during compile time, it ends up as a script-tag in
+the \gls{dom}. The same is for the case of runtime JavaScript modules. The
+result, in either case, is that the entire contents of the JavaScript file is
+evaluated, meaning even though we are simply importing a JavaScript file, and
+not explicitly invoking anything, it ends up with the modules being installed.
+
+This is not the case in Rust, importing another Rust crate does not mean we
+invoke it. That is why we need the extra steps of creating a
+\textit{ModuleBuilder}, which has to implement the \textit{ModuleBuilder} trait,
+so that we can build the module.
+
 \subsection{Foreign Modules}
 
 Languages like Gleam and PureScript, which compile directly to JavaScript can
