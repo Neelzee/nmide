@@ -1,0 +1,450 @@
+{
+  "basic_events": [
+    {
+      "name": "simple_event_no_args",
+      "input": {
+        "event": {
+          "event": "click",
+          "args": null
+        }
+      }
+    },
+    {
+      "name": "event_with_string_args",
+      "input": {
+        "event": {
+          "event": "buttonClicked",
+          "args": {
+            "str": "submit-button"
+          }
+        }
+      }
+    },
+    {
+      "name": "event_with_int_args",
+      "input": {
+        "event": {
+          "event": "itemSelected",
+          "args": {
+            "int": 42
+          }
+        }
+      }
+    },
+    {
+      "name": "event_with_bool_args",
+      "input": {
+        "event": {
+          "event": "toggleState",
+          "args": {
+            "Bool": true
+          }
+        }
+      }
+    },
+    {
+      "name": "event_with_float_args",
+      "input": {
+        "event": {
+          "event": "valueChanged",
+          "args": {
+            "float": 3.14159
+          }
+        }
+      }
+    }
+  ],
+  "events_with_complex_args": [
+    {
+      "name": "event_with_object_args",
+      "input": {
+        "event": {
+          "event": "userAction",
+          "args": {
+            "obj": {
+              "userId": {
+                "int": 123
+              },
+              "action": {
+                "str": "login"
+              },
+              "timestamp": {
+                "int": 1640995200
+              },
+              "success": {
+                "Bool": true
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "event_with_list_args",
+      "input": {
+        "event": {
+          "event": "multiSelect",
+          "args": {
+            "list": [
+              {
+                "str": "option1"
+              },
+              {
+                "str": "option2"
+              },
+              {
+                "str": "option3"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "event_with_nested_object_args",
+      "input": {
+        "event": {
+          "event": "formSubmitted",
+          "args": {
+            "obj": {
+              "formData": {
+                "obj": {
+                  "username": {
+                    "str": "john_doe"
+                  },
+                  "email": {
+                    "str": "john@example.com"
+                  },
+                  "preferences": {
+                    "obj": {
+                      "notifications": {
+                        "Bool": true
+                      },
+                      "theme": {
+                        "str": "dark"
+                      }
+                    }
+                  }
+                }
+              },
+              "metadata": {
+                "obj": {
+                  "ip": {
+                    "str": "192.168.1.1"
+                  },
+                  "userAgent": {
+                    "str": "Mozilla/5.0..."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "event_with_html_args",
+      "input": {
+        "event": {
+          "event": "elementCreated",
+          "args": {
+            "html": {
+              "div": {
+                "kids": [
+                  {
+                    "span": {
+                      "kids": [],
+                      "attrs": [],
+                      "text": "Dynamic content"
+                    }
+                  }
+                ],
+                "attrs": [
+                  {
+                    "id": "dynamic-element"
+                  }
+                ],
+                "text": null
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "system_events": [
+    {
+      "name": "post_init",
+      "input": "nmide://post-init"
+    },
+    {
+      "name": "pre_exit",
+      "input": "nmide://pre-exit"
+    }
+  ],
+  "core_response_events": [
+    {
+      "name": "core_response_no_args",
+      "input": {
+        "coreResponse": {
+          "event": "dataFetched",
+          "args": null
+        }
+      }
+    },
+    {
+      "name": "core_response_with_string",
+      "input": {
+        "coreResponse": {
+          "event": "errorOccurred",
+          "args": {
+            "str": "Network timeout"
+          }
+        }
+      }
+    },
+    {
+      "name": "core_response_with_data",
+      "input": {
+        "coreResponse": {
+          "event": "dataLoaded",
+          "args": {
+            "obj": {
+              "records": {
+                "list": [
+                  {
+                    "obj": {
+                      "id": {
+                        "int": 1
+                      },
+                      "name": {
+                        "str": "Record 1"
+                      }
+                    }
+                  },
+                  {
+                    "obj": {
+                      "id": {
+                        "int": 2
+                      },
+                      "name": {
+                        "str": "Record 2"
+                      }
+                    }
+                  }
+                ]
+              },
+              "total": {
+                "int": 2
+              },
+              "hasMore": {
+                "Bool": false
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "core_response_with_complex_data",
+      "input": {
+        "coreResponse": {
+          "event": "configurationUpdated",
+          "args": {
+            "obj": {
+              "settings": {
+                "obj": {
+                  "theme": {
+                    "str": "dark"
+                  },
+                  "language": {
+                    "str": "en-US"
+                  },
+                  "features": {
+                    "obj": {
+                      "beta": {
+                        "Bool": true
+                      },
+                      "experimental": {
+                        "Bool": false
+                      }
+                    }
+                  }
+                }
+              },
+              "timestamp": {
+                "int": 1640995200
+              },
+              "version": {
+                "str": "1.2.3"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "edge_case_events": [
+    {
+      "name": "event_empty_name",
+      "input": {
+        "event": {
+          "event": "",
+          "args": null
+        }
+      }
+    },
+    {
+      "name": "event_with_special_chars",
+      "input": {
+        "event": {
+          "event": "user:action@domain.com",
+          "args": {
+            "str": "special-event"
+          }
+        }
+      }
+    },
+    {
+      "name": "event_with_null_in_object",
+      "input": {
+        "event": {
+          "event": "mixedData",
+          "args": {
+            "obj": {
+              "validField": {
+                "str": "value"
+              },
+              "nullField": "null",
+              "emptystring": {
+                "str": ""
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "core_response_empty_event",
+      "input": {
+        "coreResponse": {
+          "event": "",
+          "args": {
+            "str": "empty event name"
+          }
+        }
+      }
+    }
+  ],
+  "common_ui_events": [
+    {
+      "name": "button_click",
+      "input": {
+        "event": {
+          "event": "onClick",
+          "args": {
+            "obj": {
+              "buttonId": {
+                "str": "submit-btn"
+              },
+              "x": {
+                "int": 150
+              },
+              "y": {
+                "int": 75
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "form_submit",
+      "input": {
+        "event": {
+          "event": "onSubmit",
+          "args": {
+            "obj": {
+              "formId": {
+                "str": "user-form"
+              },
+              "valid": {
+                "Bool": true
+              },
+              "data": {
+                "obj": {
+                  "email": {
+                    "str": "user@example.com"
+                  },
+                  "password": {
+                    "str": "hidden"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "input_change",
+      "input": {
+        "event": {
+          "event": "onChange",
+          "args": {
+            "obj": {
+              "inputId": {
+                "str": "username-field"
+              },
+              "value": {
+                "str": "new_value"
+              },
+              "isValid": {
+                "Bool": true
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "hover_event",
+      "input": {
+        "event": {
+          "event": "onHover",
+          "args": {
+            "obj": {
+              "elementId": {
+                "str": "tooltip-trigger"
+              },
+              "x": {
+                "int": 200
+              },
+              "y": {
+                "int": 100
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "focus_event",
+      "input": {
+        "event": {
+          "event": "onFocus",
+          "args": {
+            "obj": {
+              "inputId": {
+                "str": "search-input"
+              },
+              "timestamp": {
+                "int": 1640995300
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

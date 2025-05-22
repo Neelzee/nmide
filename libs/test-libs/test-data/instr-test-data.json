@@ -1,0 +1,699 @@
+{
+  "basic_instructions": [
+    {
+      "name": "no_op",
+      "input": "noOp"
+    },
+    {
+      "name": "add_string",
+      "input": {
+        "add": [
+          "field1",
+          "Hello World"
+        ]
+      }
+    },
+    {
+      "name": "remove_string",
+      "input": {
+        "rem": [
+          "field1",
+          "Hello World"
+        ]
+      }
+    },
+    {
+      "name": "add_value_int",
+      "input": {
+        "add": [
+          "counter",
+          {
+            "int": 42
+          }
+        ]
+      }
+    },
+    {
+      "name": "remove_value_int",
+      "input": {
+        "rem": [
+          "counter",
+          {
+            "int": 42
+          }
+        ]
+      }
+    }
+  ],
+  "value_instructions": [
+    {
+      "name": "add_value_null",
+      "input": {
+        "add": [
+          "empty_field",
+          "null"
+        ]
+      }
+    },
+    {
+      "name": "add_value_bool",
+      "input": {
+        "add": [
+          "is_active",
+          {
+            "Bool": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "add_value_float",
+      "input": {
+        "add": [
+          "price",
+          {
+            "float": 19.99
+          }
+        ]
+      }
+    },
+    {
+      "name": "add_value_string",
+      "input": {
+        "add": [
+          "username",
+          {
+            "str": "john_doe"
+          }
+        ]
+      }
+    },
+    {
+      "name": "add_value_list",
+      "input": {
+        "add": [
+          "tags",
+          {
+            "list": [
+              {
+                "str": "important"
+              },
+              {
+                "str": "urgent"
+              },
+              {
+                "int": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "add_value_object",
+      "input": {
+        "add": [
+          "user_data",
+          {
+            "obj": {
+              "id": {
+                "int": 123
+              },
+              "name": {
+                "str": "Alice"
+              },
+              "active": {
+                "Bool": true
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "remove_value_object",
+      "input": {
+        "rem": [
+          "user_data",
+          {
+            "obj": {
+              "id": {
+                "int": 123
+              },
+              "name": {
+                "str": "Alice"
+              },
+              "active": {
+                "Bool": true
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "html_instructions": [
+    {
+      "name": "add_html_simple",
+      "input": {
+        "add": [
+          "content",
+          {
+            "div": {
+              "kids": [],
+              "attrs": [],
+              "text": "Simple div"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "add_html_complex",
+      "input": {
+        "add": [
+          "form_content",
+          {
+            "form": {
+              "kids": [
+                {
+                  "input": {
+                    "kids": [],
+                    "attrs": [
+                      {
+                        "custom": [
+                          "type",
+                          "text"
+                        ]
+                      },
+                      {
+                        "id": "username"
+                      }
+                    ],
+                    "text": null
+                  }
+                },
+                {
+                  "button": {
+                    "kids": [],
+                    "attrs": [
+                      {
+                        "click": {
+                          "event": {
+                            "event": "submit",
+                            "args": null
+                          }
+                        }
+                      }
+                    ],
+                    "text": "Submit"
+                  }
+                }
+              ],
+              "attrs": [
+                {
+                  "clss": "user-form"
+                }
+              ],
+              "text": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "remove_html_element",
+      "input": {
+        "rem": [
+          "sidebar",
+          {
+            "aside": {
+              "kids": [],
+              "attrs": [
+                {
+                  "id": "sidebar"
+                }
+              ],
+              "text": "Sidebar content"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "attr_instructions": [
+    {
+      "name": "add_attr_id",
+      "input": {
+        "add": [
+          "element_id",
+          {
+            "id": "main-content"
+          }
+        ]
+      }
+    },
+    {
+      "name": "add_attr_class",
+      "input": {
+        "add": [
+          "element_classes",
+          {
+            "clss": "container fluid active"
+          }
+        ]
+      }
+    },
+    {
+      "name": "add_attr_event",
+      "input": {
+        "add": [
+          "click_handler",
+          {
+            "click": {
+              "event": {
+                "event": "handleClick",
+                "args": {
+                  "str": "button-clicked"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "add_attr_custom",
+      "input": {
+        "add": [
+          "data_attr",
+          {
+            "custom": [
+              "data-testid",
+              "test-element"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "remove_attr_id",
+      "input": {
+        "rem": [
+          "element_id",
+          {
+            "id": "main-content"
+          }
+        ]
+      }
+    },
+    {
+      "name": "remove_attr_custom",
+      "input": {
+        "rem": [
+          "aria_label",
+          {
+            "custom": [
+              "aria-label",
+              "Close button"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "then_instructions": [
+    {
+      "name": "simple_then",
+      "input": {
+        "then": [
+          {
+            "add": [
+              "field1",
+              "value1"
+            ]
+          },
+          {
+            "add": [
+              "field2",
+              "value2"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "then_with_noop",
+      "input": {
+        "then": [
+          {
+            "add": [
+              "active",
+              {
+                "Bool": true
+              }
+            ]
+          },
+          "noOp"
+        ]
+      }
+    },
+    {
+      "name": "nested_then",
+      "input": {
+        "then": [
+          {
+            "then": [
+              {
+                "add": [
+                  "user",
+                  {
+                    "str": "john"
+                  }
+                ]
+              },
+              {
+                "add": [
+                  "role",
+                  {
+                    "str": "admin"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "add": [
+              "timestamp",
+              {
+                "int": 1640995200
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "complex_then_chain",
+      "input": {
+        "then": [
+          {
+            "add": [
+              "step1",
+              {
+                "str": "initialize"
+              }
+            ]
+          },
+          {
+            "then": [
+              {
+                "add": [
+                  "step2",
+                  {
+                    "str": "process"
+                  }
+                ]
+              },
+              {
+                "rem": [
+                  "temp_data",
+                  "null"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "optimization_test_cases": [
+    {
+      "name": "add_then_remove_same_field",
+      "input": {
+        "then": [
+          {
+            "add": [
+              "temp",
+              {
+                "str": "temporary"
+              }
+            ]
+          },
+          {
+            "rem": [
+              "temp",
+              {
+                "str": "temporary"
+              }
+            ]
+          }
+        ]
+      },
+      "expected_optimized": "noOp"
+    },
+    {
+      "name": "remove_then_add_same_field",
+      "input": {
+        "then": [
+          {
+            "rem": [
+              "field",
+              {
+                "int": 42
+              }
+            ]
+          },
+          {
+            "add": [
+              "field",
+              {
+                "int": 42
+              }
+            ]
+          }
+        ]
+      },
+      "expected_optimized": "noOp"
+    },
+    {
+      "name": "multiple_noops",
+      "input": {
+        "then": [
+          "noOp",
+          {
+            "then": [
+              "noOp",
+              {
+                "add": [
+                  "keep",
+                  {
+                    "str": "this"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "expected_optimized": {
+        "add": [
+          "keep",
+          {
+            "str": "this"
+          }
+        ]
+      }
+    },
+    {
+      "name": "chain_with_canceling_operations",
+      "input": {
+        "then": [
+          {
+            "add": [
+              "counter",
+              {
+                "int": 1
+              }
+            ]
+          },
+          {
+            "then": [
+              {
+                "rem": [
+                  "counter",
+                  {
+                    "int": 1
+                  }
+                ]
+              },
+              {
+                "add": [
+                  "final",
+                  {
+                    "Bool": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "expected_optimized": {
+        "add": [
+          "final",
+          {
+            "Bool": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested_then_flattening",
+      "input": {
+        "then": [
+          {
+            "then": [
+              {
+                "add": [
+                  "a",
+                  {
+                    "int": 1
+                  }
+                ]
+              },
+              {
+                "add": [
+                  "b",
+                  {
+                    "int": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "add": [
+              "c",
+              {
+                "int": 3
+              }
+            ]
+          }
+        ]
+      },
+      "expected_optimized": {
+        "then": [
+          {
+            "add": [
+              "a",
+              {
+                "int": 1
+              }
+            ]
+          },
+          {
+            "then": [
+              {
+                "add": [
+                  "b",
+                  {
+                    "int": 2
+                  }
+                ]
+              },
+              {
+                "add": [
+                  "c",
+                  {
+                    "int": 3
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "edge_cases": [
+    {
+      "name": "add_empty_string_field",
+      "input": {
+        "add": [
+          "",
+          "empty_key"
+        ]
+      }
+    },
+    {
+      "name": "remove_with_special_chars",
+      "input": {
+        "rem": [
+          "field-with.special@chars",
+          {
+            "str": "special"
+          }
+        ]
+      }
+    },
+    {
+      "name": "then_with_single_operation",
+      "input": {
+        "then": [
+          {
+            "add": [
+              "single",
+              {
+                "Bool": true
+              }
+            ]
+          },
+          "noOp"
+        ]
+      },
+      "expected_optimized": {
+        "add": [
+          "single",
+          {
+            "Bool": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "deeply_nested_then",
+      "input": {
+        "then": [
+          {
+            "then": [
+              {
+                "then": [
+                  {
+                    "add": [
+                      "deep",
+                      {
+                        "int": 1
+                      }
+                    ]
+                  },
+                  "noOp"
+                ]
+              },
+              "noOp"
+            ]
+          },
+          "noOp"
+        ]
+      },
+      "expected_optimized": {
+        "add": [
+          "deep",
+          {
+            "int": 1
+          }
+        ]
+      }
+    }
+  ]
+}

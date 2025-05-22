@@ -1,0 +1,300 @@
+{
+  "id_attributes": [
+    {
+      "name": "simple_id",
+      "input": {
+        "id": "simple-id"
+      }
+    },
+    {
+      "name": "id_with_numbers",
+      "input": {
+        "id": "element-123"
+      }
+    },
+    {
+      "name": "id_with_underscores",
+      "input": {
+        "id": "my_element_id"
+      }
+    },
+    {
+      "name": "id_with_dashes",
+      "input": {
+        "id": "my-element-id"
+      }
+    }
+  ],
+  "class_attributes": [
+    {
+      "name": "single_class",
+      "input": {
+        "clss": "primary"
+      }
+    },
+    {
+      "name": "multiple_classes",
+      "input": {
+        "clss": "primary secondary active"
+      }
+    },
+    {
+      "name": "class_with_dashes",
+      "input": {
+        "clss": "btn-primary btn-large"
+      }
+    },
+    {
+      "name": "class_with_underscores",
+      "input": {
+        "clss": "form_input form_required"
+      }
+    },
+    {
+      "name": "empty_class",
+      "input": {
+        "clss": ""
+      }
+    }
+  ],
+  "event_attributes": [
+    {
+      "name": "simple_click_event",
+      "input": {
+        "click": {
+          "event": {
+            "event": "handleClick",
+            "args": null
+          }
+        }
+      }
+    },
+    {
+      "name": "click_event_with_string_args",
+      "input": {
+        "click": {
+          "event": {
+            "event": "handleClick",
+            "args": {
+              "str": "button-clicked"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "click_event_with_object_args",
+      "input": {
+        "click": {
+          "event": {
+            "event": "handleClick",
+            "args": {
+              "obj": {
+                "elementId": {
+                  "str": "submit-btn"
+                },
+                "timestamp": {
+                  "int": 1234567890
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "post_init_event",
+      "input": {
+        "click": "nmide://post-init"
+      }
+    },
+    {
+      "name": "pre_exit_event",
+      "input": {
+        "click": "nmide://pre-exit"
+      }
+    },
+    {
+      "name": "core_response_event",
+      "input": {
+        "click": {
+          "coreResponse": {
+            "event": "dataLoaded",
+            "args": {
+              "list": [
+                {
+                  "str": "item1"
+                },
+                {
+                  "str": "item2"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "custom_attributes": [
+    {
+      "name": "data_attribute",
+      "input": {
+        "custom": [
+          "data-testid",
+          "test-element"
+        ]
+      }
+    },
+    {
+      "name": "aria_attribute",
+      "input": {
+        "custom": [
+          "aria-label",
+          "Close button"
+        ]
+      }
+    },
+    {
+      "name": "role_attribute",
+      "input": {
+        "custom": [
+          "role",
+          "button"
+        ]
+      }
+    },
+    {
+      "name": "html_attribute",
+      "input": {
+        "custom": [
+          "type",
+          "text"
+        ]
+      }
+    },
+    {
+      "name": "custom_empty_value",
+      "input": {
+        "custom": [
+          "disabled",
+          ""
+        ]
+      }
+    },
+    {
+      "name": "custom_boolean_like",
+      "input": {
+        "custom": [
+          "checked",
+          "true"
+        ]
+      }
+    },
+    {
+      "name": "custom_numeric_value",
+      "input": {
+        "custom": [
+          "tabindex",
+          "0"
+        ]
+      }
+    },
+    {
+      "name": "custom_with_special_chars",
+      "input": {
+        "custom": [
+          "data-info",
+          "user@example.com"
+        ]
+      }
+    }
+  ],
+  "attribute_combinations": [
+    {
+      "name": "id_and_class",
+      "input": [
+        {
+          "id": "main-content"
+        },
+        {
+          "clss": "container fluid"
+        }
+      ]
+    },
+    {
+      "name": "all_attribute_types",
+      "input": [
+        {
+          "id": "complex-element"
+        },
+        {
+          "clss": "btn btn-primary active"
+        },
+        {
+          "click": {
+            "event": {
+              "event": "handleComplexClick",
+              "args": {
+                "str": "complex"
+              }
+            }
+          }
+        },
+        {
+          "custom": [
+            "data-component",
+            "button"
+          ]
+        },
+        {
+          "custom": [
+            "aria-pressed",
+            "false"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "multiple_custom_attributes",
+      "input": [
+        {
+          "custom": [
+            "data-testid",
+            "user-profile"
+          ]
+        },
+        {
+          "custom": [
+            "data-user-id",
+            "12345"
+          ]
+        },
+        {
+          "custom": [
+            "aria-expanded",
+            "false"
+          ]
+        },
+        {
+          "custom": [
+            "role",
+            "tabpanel"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "multiple_events",
+      "input": [
+        {
+          "click": {
+            "event": {
+              "event": "onClick",
+              "args": null
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
