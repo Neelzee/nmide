@@ -25,6 +25,12 @@ category = "DeveloperTool"
 shortDescription = "A simple IDE"
 
 [plugins]
+cli.description = "Nmide CLI"
+cli.args = [
+  { short = "p", name = "primitive", description = "Value passed to the Event args are ValuePrimitives" },
+  { name = "event", short = "e", takesValue = true, multiple = true },
+  { name = "args", short = "a", takesValue = true, multiple = true },
+]
 
 [app.security]
 csp = "asset: https://asset.localhost; connect-src ipc: http://ipc.localhost"

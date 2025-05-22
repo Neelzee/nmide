@@ -9,3 +9,9 @@ pub trait App: Send + Sync {
     /// Exits the application
     async fn exit(&self);
 }
+
+impl std::fmt::Debug for dyn App {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("App")
+    }
+}

@@ -8,5 +8,3 @@ pub mod core;
 pub mod core_modification_handler;
 
 pub mod app;
-
-pub mod cli;

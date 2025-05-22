@@ -22,7 +22,7 @@ pub static RUNTIME_MODULE_DIR: tokio::sync::OnceCell<PathBuf> = tokio::sync::Onc
 /// this functionality is currently not exposed to modules.
 pub static APP_DATA_DIR: OnceCell<RwLock<PathBuf>> = OnceCell::new();
 
-/// Thread safe representation of the webview. Should be represantative, but
+/// Thread safe representation of the webview. Should be representative, but
 /// changes made to the webview outside of the application, i.e. by modules
 /// directly adding elements with `createElement`, are not dected. Used by
 /// modules for "reading" the Html-tree.
@@ -30,16 +30,16 @@ pub static NMIDE_UI: Lazy<RwLock<Html>> = Lazy::new(|| RwLock::new(Html::Main())
 
 /// Thread safe state of the application, can only be changed by using the
 /// application itself, so will always be representative of what is actually
-/// happening. A copy is accessable by modules.
+/// happening. A copy is accessible by modules.
 pub static NMIDE_STATE: Lazy<RwLock<State>> = Lazy::new(|| RwLock::new(State::default()));
 
 /// Thread safe hashmap, mapping module names to a Module implementation. Not
-/// accessable by other modules.
+/// accessible by other modules.
 pub static COMPILE_TIME_MODULES: Lazy<RwLock<HashMap<String, Box<dyn Module>>>> =
     Lazy::new(|| RwLock::new(HashMap::new()));
 
 /// Thread safe ModuleEventRegister, a manager struct for storing the mapping
-/// between modules, and events they are triggered by. Not accessable by other
+/// between modules, and events they are triggered by. Not accessible by other
 /// modules
 pub static MODULE_EVENT_REGISTER: Lazy<RwLock<ModuleEventRegister>> =
     Lazy::new(|| RwLock::new(ModuleEventRegister::default()));

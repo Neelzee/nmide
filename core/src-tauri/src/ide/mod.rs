@@ -1,23 +1,19 @@
 use crate::{
-    app::App,
     core::NmideCore,
     core_modification_handler::spawn_core_modification_handler,
+    ide::app::NmideApp,
     setup::setup,
     statics::{NMIDE, NMIDE_STATE, NMIDE_UI},
 };
-use core_std_lib::core::Core;
-use core_std_lib::event::DialogFileKind::{MultiDir, MultiFile, SaveFile, SingleDir, SingleFile};
 use core_std_lib::{
-    core_modification::{CoreModification, UIInstr},
-    event::{DialogBtn, DialogEvtKind, Event},
-    html::Html,
-    state::Value,
+    core::Core, core_modification::CoreModification, event::Event, html::Html, state::Value,
 };
-use log::info;
+use log::{info, warn};
 use std::{collections::HashMap, path::PathBuf};
-use tauri::{AppHandle, Emitter, Manager, RunEvent};
-use tauri_plugin_dialog::{DialogExt as _, MessageDialogButtons, MessageDialogKind};
+use tauri::{Emitter, Manager, RunEvent};
+use tauri_plugin_cli::CliExt;
 
+pub mod app;
 pub mod setup;
 
 #[tauri::command]
@@ -49,141 +45,6 @@ async fn modification(modification: CoreModification) {
     NmideCore.send_modification(modification).await;
 }
 
-pub struct NmideApp {
-    handle: AppHandle,
-}
-
-#[async_trait::async_trait]
-impl App for NmideApp {
-    async fn rerender(&self, instr: UIInstr) {
-        info!("[backend] re-render: {:?}", instr);
-        self.handle
-            .emit("nmide://render", instr)
-            .expect("WebView should exists");
-    }
-
-    async fn event(&self, event: Event) {
-        let app = self.handle.clone();
-        match event {
-            Event::DialogEvent {
-                event,
-                kind,
-                message,
-                btn,
-                title,
-            } => {
-                let mut dia = app.dialog().message(message);
-
-                dia = if let Some(t) = title {
-                    dia.title(t)
-                } else {
-                    dia
-                };
-
-                dia = match kind {
-                    Some(DialogEvtKind::Info) => dia.kind(MessageDialogKind::Info),
-                    Some(DialogEvtKind::Warning) => dia.kind(MessageDialogKind::Warning),
-                    Some(DialogEvtKind::Error) => dia.kind(MessageDialogKind::Error),
-                    _ => dia,
-                };
-
-                dia = match btn {
-                    Some(DialogBtn::Ok) => dia.buttons(MessageDialogButtons::Ok),
-                    Some(DialogBtn::OkCancel) => dia.buttons(MessageDialogButtons::OkCancel),
-                    Some(DialogBtn::OkCancelCustom(x, y)) => {
-                        dia.buttons(MessageDialogButtons::OkCancelCustom(x, y))
-                    }
-                    Some(DialogBtn::OkCustom(x)) => dia.buttons(MessageDialogButtons::OkCustom(x)),
-                    Some(DialogBtn::YesNo) => dia.buttons(MessageDialogButtons::YesNo),
-                    None => todo!(),
-                };
-
-                dia.show(move |result| {
-                    app.emit(
-                        "nmide://event",
-                        Event::core_response(event, Some(Value::Bool(result))),
-                    )
-                    .expect("Emitting event should succeed");
-                });
-            }
-            Event::DialogFile {
-                event,
-                title,
-                file_kind,
-                filter_ext,
-                create_dirs,
-            } => {
-                let mut dia = app.dialog().file();
-                dia = if let Some(t) = title {
-                    dia.set_title(t)
-                } else {
-                    dia
-                };
-
-                dia = dia.set_can_create_directories(create_dirs);
-
-                dia = dia.add_filter(
-                    format!("{event}-filter"),
-                    &filter_ext.iter().map(|s| s.as_str()).collect::<Vec<&str>>(),
-                );
-
-                match file_kind {
-                    SingleFile => dia.pick_file(move |fp| {
-                        let file = fp
-                            .map(|x| x.as_path().map(|y| y.to_path_buf()))
-                            .and_then(|p| p.map(|x| x.to_str().map(|s| s.to_string())))
-                            .and_then(|s| s.map(|x| Value::Str(x)));
-                        app.emit("nmide://event", Event::core_response(event, file))
-                            .expect("Emitting event should succeed");
-                    }),
-                    SingleDir => dia.pick_folder(move |fp| {
-                        let file = fp
-                            .map(|x| x.as_path().map(|y| y.to_path_buf()))
-                            .and_then(|p| p.map(|x| x.to_str().map(|s| s.to_string())))
-                            .and_then(|s| s.map(|x| Value::Str(x)));
-                        app.emit("nmide://event", Event::core_response(event, file))
-                            .expect("Emitting event should succeed");
-                    }),
-                    MultiFile => dia.pick_files(move |fp| {
-                        let files = fp
-                            .and_then(|xs| {
-                                xs.into_iter()
-                                    .map(|x| x.as_path().map(|y| y.to_path_buf()))
-                                    .map(|x| x.and_then(|p| p.to_str().map(|s| s.to_string())))
-                                    .map(|s| s.map(|x| Value::Str(x)))
-                                    .collect()
-                            })
-                            .map(|xs| Value::List(xs));
-                        app.emit("nmide://event", Event::core_response(event, files))
-                            .expect("Emitting event should succeed");
-                    }),
-                    MultiDir => dia.pick_folders(move |fp| {
-                        let files = fp
-                            .and_then(|xs| {
-                                xs.into_iter()
-                                    .map(|x| x.as_path().map(|y| y.to_path_buf()))
-                                    .map(|x| x.and_then(|p| p.to_str().map(|s| s.to_string())))
-                                    .map(|s| s.map(|x| Value::Str(x)))
-                                    .collect()
-                            })
-                            .map(|xs| Value::List(xs));
-                        app.emit("nmide://event", Event::core_response(event, files))
-                            .expect("Emitting event should succeed");
-                    }),
-                    SaveFile => todo!(),
-                };
-            }
-            e => {
-                app.emit("nmide://event", e).expect("WebView should exists");
-            }
-        }
-    }
-
-    async fn exit(&self) {
-        self.handle.exit(0);
-    }
-}
-
 /// Runs the Tauri application
 pub async fn run() {
     setup::setup_compile_time_modules()
@@ -201,16 +62,15 @@ pub async fn run() {
                 ))
                 .build(),
         )
+        .plugin(tauri_plugin_cli::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
-            NMIDE
-                .set(Box::new(NmideApp {
-                    handle: app.handle().clone(),
-                }))
-                .unwrap_or_else(|_| panic!("AppHandle setup should always succeed"));
             setup(setup::ide_setup(app).expect("IDE-setup should always succeed"));
+            NMIDE
+                .set(Box::new(NmideApp::new(app.handle().clone())))
+                .unwrap_or_else(|_| panic!("AppHandle setup should always succeed"));
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -240,6 +100,94 @@ pub async fn run() {
                 .expect("Emit should succeed");
             api.prevent_close();
         }
+        RunEvent::Ready => match app_handle.cli().matches() {
+            Ok(matches) => {
+                println!("Matches: {matches:?}");
+                tokio::spawn({
+                    async move {
+                        init().await;
+                        let events: Vec<String> = matches
+                            .args
+                            .get("event")
+                            .and_then(|a| a.value.as_array())
+                            .map(|xs| {
+                                xs.iter()
+                                    .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                                    .collect()
+                            })
+                            .unwrap_or_default();
+                        let primitive = matches
+                            .args
+                            .get("primitive")
+                            .and_then(|a| a.value.as_bool())
+                            .unwrap_or(false);
+                        let args = matches
+                            .args
+                            .get("args")
+                            .and_then(|a| a.value.as_array())
+                            .cloned()
+                            .unwrap_or_default()
+                            .into_iter()
+                            .map(|v| {
+                                if primitive {
+                                    let val: Result<Value, _> =
+                                        serde_json::from_str(v.as_str().unwrap_or_default());
+                                    return val.ok();
+                                }
+                                fn parse(x: serde_json::Value) -> Option<Value> {
+                                    match x {
+                                        serde_json::Value::Null => Some(Value::Null),
+                                        serde_json::Value::Bool(b) => Some(Value::Bool(b)),
+                                        serde_json::Value::Number(number) if number.is_i64() => {
+                                            // WARN: This is an unsafe casting!
+                                            Some(Value::Int(
+                                                number.as_i64().unwrap_or_default() as i32
+                                            ))
+                                        }
+                                        serde_json::Value::Number(number) => {
+                                            // WARN: This is an unsafe casting!
+                                            Some(Value::new_float(
+                                                number.as_f64().unwrap_or_default() as f32,
+                                            ))
+                                        }
+                                        serde_json::Value::String(s) if s.trim() == "!" => None,
+                                        serde_json::Value::String(s) => Some(Value::Str(s)),
+                                        serde_json::Value::Array(values) => Some(Value::List(
+                                            values.into_iter().filter_map(parse).collect(),
+                                        )),
+                                        serde_json::Value::Object(map) => {
+                                            Some(map.into_iter().fold(
+                                                Value::new_obj(),
+                                                |acc, (key, val)| {
+                                                    acc.add(key, parse(val).unwrap_or_default())
+                                                },
+                                            ))
+                                        }
+                                    }
+                                }
+                                parse(v)
+                            })
+                            .collect::<Vec<_>>();
+                        if args.len() > events.len() {
+                            warn!("More Event Arguments given than Events!");
+                        }
+                        let mut events = events
+                            .into_iter()
+                            .zip(args)
+                            .map(|(e, a)| Event::new(e, a))
+                            .collect::<Vec<Event>>();
+                        events.push(Event::pre_exit());
+                        for e in events {
+                            handler(e).await;
+                        }
+                    }
+                });
+            }
+            Err(err) => {
+                eprintln!("Error: {err:?}");
+                app_handle.exit(0);
+            }
+        },
         _ => (),
     })
 }
