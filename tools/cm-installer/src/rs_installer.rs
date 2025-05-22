@@ -23,7 +23,7 @@ pub(crate) fn install(modules: Vec<Module>, cargo: String, out: String) {
         let module = m.name().to_string();
         t.insert(module.clone(), m.to_value());
         mods.push(t);
-        module_imports.push(format!("extern crate {};", module));
+        module_imports.push(format!("use {};", module));
         module_reg.push(format!(
             "modules.insert(\"{}\".to_string(), Box::new({}::ModuleBuilder.build()));",
             module, module
