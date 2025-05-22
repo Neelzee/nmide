@@ -21,7 +21,7 @@ pub(crate) fn clean_up(index: String, cargo_path: String, out: String) {
     for line in contents.lines() {
         if line.contains("<!--MODULES-->") {
             ignore = !ignore;
-            new_contents.push_str(format!("<!--MODULES-->\n").as_ref());
+            new_contents.push_str("<!--MODULES-->\n".to_string().as_ref());
             continue;
         }
         if !ignore {

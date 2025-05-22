@@ -135,9 +135,14 @@ fn main() {
     let mut index = String::new();
     let mut clean = false;
     let mut module_folder = String::new();
+    let mut dry_run = false;
     args.for_each(|arg| {
         if arg.contains("--clean") {
             clean = true;
+            return;
+        }
+        if arg.contains("--dry-run") {
+            dry_run = true;
             return;
         }
         if arg.contains("--module-dist=") {
@@ -168,16 +173,70 @@ fn main() {
             dist = arg.replace("--dist=", "");
         }
     });
+
+    let modules_list = get_modules(&conf, &modules);
+
+    let files = get_files(&conf, &modules);
+
+    if dry_run {
+        if clean {
+            println!(
+                "Cleaning files: {:?}",
+                vec![conf, cargo, modules, out, dist, index, module_folder]
+            )
+        } else {
+            println!(
+                "Installing modules to: {:?}",
+                vec![
+                    conf,
+                    cargo,
+                    modules,
+                    out,
+                    dist.clone(),
+                    index,
+                    module_folder
+                ]
+            );
+
+            println!("\n{}\n", "=".repeat(80));
+            println!("Installing modules:");
+            println!(
+                "{}",
+                modules_list
+                    .iter()
+                    .map(|m| format!(
+                        "Module: {}, path: {:?}, kind: {:?}",
+                        m.name(),
+                        m.path.to_str().unwrap(),
+                        m.kind
+                    ))
+                    .collect::<Vec<_>>()
+                    .join("\n")
+            );
+            println!("Copying files:");
+            println!(
+                "{}",
+                files
+                    .iter()
+                    .map(|f| format!("File: {f} to {}", &dist))
+                    .collect::<Vec<_>>()
+                    .join("\n")
+            );
+            println!("\n{}\n", "=".repeat(80));
+        }
+
+        return;
+    }
+
     if clean {
         clean_up(index, cargo, out);
         return;
     }
-    let modules = get_modules(conf, modules);
     println!("\n{}\n", "=".repeat(80));
     println!("Installing modules:");
     println!(
         "{}",
-        modules
+        modules_list
             .iter()
             .map(|m| format!(
                 "Module: {}, path: {:?}, kind: {:?}",
@@ -189,10 +248,10 @@ fn main() {
             .join("\n")
     );
     println!("\n{}\n", "=".repeat(80));
-    rs_installer::install(modules.clone(), cargo, out);
-    rs_rt_installer::install(modules.clone(), module_folder);
-    js_installer::install(dist.clone(), modules.clone());
-    let styles = css_installer::install(dist, modules);
+    rs_installer::install(modules_list.clone(), cargo, out);
+    rs_rt_installer::install(modules_list.clone(), module_folder);
+    js_installer::install(dist.clone(), modules_list.clone());
+    let styles = css_installer::install(dist.clone(), modules_list);
 
     if index.is_empty() {
         println!("No index file to install");
@@ -214,9 +273,48 @@ fn main() {
     let new_content = regex.replace(&contents, new_scripts).to_string();
     file.write_at(new_content.as_bytes(), 0)
         .expect("Should be able to write to file");
+
+    println!("Copying files:");
+    for f in files {
+        println!("{f}");
+        let mut copy_cmd = Command::new("cp");
+        copy_cmd.arg(f);
+        copy_cmd.arg(format!("{}/", &dist));
+        run_cmd(copy_cmd);
+    }
 }
 
-fn get_modules(conf: String, modules: String) -> Vec<Module> {
+fn get_files(conf: &str, modules: &str) -> Vec<String> {
+    let mut files = Vec::new();
+    let module_toml_path = Path::new(&conf)
+        .canonicalize()
+        .unwrap_or_else(|err| panic!("Can't canonicalize config: {modules:?}, error: {:?}", err));
+    if !module_toml_path.exists() {
+        panic!("Can't find files from {module_toml_path:?}");
+    }
+    let module_content = fs::read_to_string(&module_toml_path).unwrap_or_else(|_| {
+        panic!("Path should exist, and be of valid encoding: {module_toml_path:?}")
+    });
+    let module_config: Value =
+        toml::from_str(&module_content).expect("Module should be a valid TOML");
+
+    let opt_files = module_config.get("files");
+    if opt_files.is_none() {
+        panic!("Can't find [files] section in {module_toml_path:?}");
+    }
+    let of = opt_files.unwrap().as_array();
+    if of.is_none() {
+        panic!("Files is not of valid type: {:?}", opt_files);
+    }
+    let opt_files = of.unwrap().clone();
+    for file in opt_files {
+        files.push(file.as_str().unwrap_or_default().to_string());
+    }
+
+    files
+}
+
+fn get_modules(conf: &str, modules: &str) -> Vec<Module> {
     let mut mods = Vec::new();
     let module_toml_path = Path::new(&conf)
         .canonicalize()
