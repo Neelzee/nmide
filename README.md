@@ -94,8 +94,8 @@ Minimal JavaScript Module
 ```JavaScript
 import { emptyCm, installModule } from "@nmide/js-utils";
 installModule({
-  init: async (_) => [],
-  handler: async (_, __) => emptyCm(),
+  init: async (_) => {},
+  handler: async (_, __) => {},
 });
 ```
 
