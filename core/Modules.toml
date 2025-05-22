@@ -1,3 +1,5 @@
+files = ["../modules/ide_explorer/magnolia.png"]
+
 [modules]
 trivial_module = { path = "../modules/trivial_module/", enabled = true }
 trivial_module_style = { kind = "css", path = "../modules/trivial_module/", enabled = true }
@@ -27,4 +29,3 @@ tab_wrapper = { path = "../modules/tab_wrapper/", enabled = true }
 module_installer = { path = "../modules/module_installer/", enabled = true }
 module_installer_style = { path = "../modules/module_installer/", kind = "css", enabled = true }
 ide_save = { path = "../modules/ide_save/", kind = "ts", package-manager = "bun", enabled = true }
-
