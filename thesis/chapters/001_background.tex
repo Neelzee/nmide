@@ -5,6 +5,7 @@
 Magnolia is designed to support a high level of abstraction and ease of
 reasoning. With Bagge \cite{baggeThesis}, we can summarize a Magnolia program to
 three fundamental ideas.
+\todo{Expand the intro}
 
 \begin{itemize}
   \item \textit{Concept}: A set of operations, type declarations and axioms.
@@ -156,10 +157,12 @@ together, by ensuring our axiom are upheld.
 When implementing a concept in Magnolia, one could do so incorrectly. In other
 programming languages, one might still have \textit{imparted} some meaning in an
 interface, like that in the interface \textbf{Action} in listing
-\ref{lst:jeditor}, is an associative operation. To detect this, one would have
-to create a unit test for each implementation of the interface, while in
-Magnolia one writes a satisfaction as shown in listing \ref{lst:sat}, which in
-turn is \textit{transpiled} to a format understandable by an \gls{smt} solver.
+\ref{lst:jeditor}, is an associative operation. To \textit{enforce} this, one
+would have to create a unit test for each implementation of the interface, while
+in Magnolia one writes a satisfaction as shown in listing \ref{lst:sat}, which
+in turn is \textit{transpiled} to a format understandable by an \gls{smt}
+solver. This \gls{smt} solver can \textit{prove} that our implementation upholds
+our axioms in the implemented concept.
 
 \subsubsection{Satisfiability Modulo Theories solvers}
 
@@ -199,6 +202,8 @@ of the \textbf{Log(A)}-type matters. Representing the composition of the
     a \odot \left ( b \odot c \right ) = \left ( a \odot b \right ) \odot c
   \end{equation}
 \end{definition}
+
+\todo{Maybe redo this, to make the logging more clear}
 
 Now we have a good logger, as the logs of the entire call stack is available for
 us to read when something goes wrong. Moving on, a good feature of a text
@@ -294,26 +299,26 @@ more interesting, is that we can see, clearily in the case of the Magnolia
 listing \ref{lst:meditor}, that there is some kind of relation between these
 \gls{api}s.
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
     [ language=Java
     , caption={Editor structure (Java)}
     , label=lst:jeditor]{./code/editor.java}
-\end{center}
+\end{code}
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
     [ language=Rust
     , caption={Editor structure (Rust)}
     , label=lst:reditor]{./code/editor.rs}
-\end{center}
+\end{code}
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
     [ language=Magnolia
     , caption={Editor structure (Magnolia)}
     , label=lst:meditor]{./code/editor.mg}
-\end{center}
+\end{code}
 
 Both the logging example, and the text editor example, are some binary operation
 over some set. In the first example, our set was all different log statements of
@@ -325,6 +330,8 @@ undoing an action. This is related to mathematics, specifically abstract
 algebra, the study of algebraic structures.
 
 \subsection{Abstract Algebra}
+
+\todo{Expand this maybe, drag out the explanations?}
 
 In the first example, we are working with a \textit{semigroup}, and in the
 second example, we are working with a \textit{group}. These are known as
@@ -1057,6 +1064,7 @@ multiple definitions, and resolving this can be complex.
 
 \subsection{Renaming}
 
+\todo{List are a free monoid}
 String concatenation is a monoid, so is list concatenation.
 Given our definition of a moniod (\ref{def:monoid}), one can trivially see that
 string concatenation and list concatenation falls under this definition, and are

@@ -1,4 +1,4 @@
-concept Editor = {
+concept Action = {
   type Action;
   function noop(): Action;
   function addText(): Action;

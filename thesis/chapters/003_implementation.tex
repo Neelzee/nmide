@@ -587,46 +587,74 @@ that field from the state, as shown in listing \ref{lst:inst}, in the
   core \gls{ide}, there is an optimization step that does this.
 \end{remark}
 
-To formalize this, that the \textbf{Instruction}-set is an group, we can look at
+To formalize this, that the \textbf{Instruction}-set is a group, we can look at
 a subset, since \textbf{Instruction} is parameterized by some type \textbf{T},
 we will look at it when \textbf{T} is \textbf{Value}, noted by the subscript
 \textbf{val}.
 
-\begin{theorem}[Instruction Group] \label{thm:intr}
+\begin{lemma}[Instruction Group] \label{lem:intr}
   Let $\Sigma$ be the set of all strings, $Val$ be the set of all
-  \textbf{Values}, $Html$ be the set of all \textbf{Html} variants, and
+  \textbf{Values}, and
   $Inst_{val}$ be the set of all \textbf{Instruction} defined as:
-  $$
-    NoOp = \left \{ noOp \right \}
-  $$
   $$
     NoOp \in Inst_{val}
   $$
   $$
-    Add_{val} = \left \{ (x, y, z) \vert x \in \Sigma, y \in \Sigma, z \in Val \right \}
+    Add_{val} = \left \{ (x, y) \vert x \in \Sigma, y \in Val \right \}
   $$
   $$
-    Add_{val} \in Inst_{val}
+    Add_{val} \subset Inst_{val}
   $$
   $$
-    Rem_{val} = \left \{ (x, y, z) \vert x \in \Sigma, y \in \Sigma, z \in Val \right \}
+    Rem_{val} = \left \{ (x, y) \vert x \in \Sigma, y \in Val \right \}
   $$
   $$
-    Rem_{val} \in Inst_{val}
+    Rem_{val} \subset Inst_{val}
   $$
   $$
     Then_{val} = \left \{ (x, y) \vert x, y \in Inst_{val} \right \}
   $$
   $$
-    Then_{val} \in Inst_{val}
+    Then_{val} \subset Inst_{val}
   $$
-  For any $x \in Add_{val}$ there exist a unique $y \in Rem_{val}$, such that:
+  Let $\circledast$ be a binary operation such that:
   $$
-    x \oplus y = noOp
+  a, b, c \in Inst_{val}, a \circledast b = c
   $$
-\end{theorem}
+  $$
+  a, b, c \in Inst_{val}, \left ( a \circledast b \right ) \circledast c = a \circledast \left ( b \circledast c \right )
+  $$
+  $$
+  \forall a, \exists U \in Inst_{val}, a \oplus U = a
+  $$
+  And $U$ is unique.
+  $$
+  \forall a, \exists b, U \in Inst_{val}, a \circledast b = U
+  $$
+  And for all $a$, $b$ is unique
+\end{lemma}
 
-The theorem \ref{thm:intr}, unfortunately, cannot be encoded in Rusts type
+\begin{proof}
+  The set $Inst_{val}$, with the binary operation: $\circledast$, and the
+  identity element as $NoOp$ is a group since
+  the following requirements are met:
+  \begin{enumerate}
+    \item $\circledast$ is closed. (Definition \ref{def:closed})
+    \item $\circledast$ is associative. (Definition \ref{def:assoc})
+    \item $U$ is the \textit{identity}. (Definition \ref{def:ident})
+    \item $\circledast$ is invertible. (Definition \ref{def:inv})
+  \end{enumerate}
+  $Instr_{val}$ is closed by definition. It is also associative, since
+  regardless of where we place  the parenthesis, it will be evaluated the same.
+  Finally, it is also invertible. Trivially, for element $Add_{val}$ there
+  exists an element from $Rem_{val}$, such as the first element of each pair,
+  being the \textit{key} are the same, and therefore correspond to the same
+  field being modified, and therefore are inverses. Plainly written, for any
+  $a \in Instr_{val}$, we can find a corresponding, unique, $b \in Instr_{val}$,
+  such as $a \circledast b = NoOp$.
+\end{proof}
+
+The lemma \ref{lem:intr}, unfortunately, cannot be encoded in Rusts type
 system, but when implementing $combine$, we can map the variants along with the
 specific fields being added ($Add$), modified ($Mod$), or removed ($Rem$), to get
 a more optimized instruction set. If we are modifying a value on field $foobar$,
@@ -1147,8 +1175,8 @@ it, (line 11), and filter by the string variant, and transforming the
     , label=lst:depVisMod
     , numbers=left
     , numberstyle=\tiny\color{gray}
-    , firstline=160
-    , lastline=174
+    , firstline=203
+    , lastline=217
     ]{./modules/dependency-viewer/module.ts}
 \end{code}
 
