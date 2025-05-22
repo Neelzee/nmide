@@ -42,5 +42,17 @@ clean :
 		--dist=./dist/external \
 		--index=./index.html
 
+dry :
+	cargo run \
+		--manifest-path=../tools/cm-installer/Cargo.toml -- \
+		--out=./src-tauri/target \
+		--conf=./Modules.toml \
+		--modules=./modules \
+		--cargo=./src-tauri/Cargo.toml \
+		--dist=./dist/external \
+		--index=./index.html \
+		--module-dist="/home/nmf/.local/share/no.nilsmf.uib/modules/" \
+		--dry-run
+
 nmide :
 	#cargo build --manifest-path=./src-tauri/Cargo.toml
