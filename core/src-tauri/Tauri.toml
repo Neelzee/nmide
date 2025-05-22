@@ -28,8 +28,12 @@ shortDescription = "A simple IDE"
 cli.description = "Nmide CLI"
 cli.args = [
   { short = "p", name = "primitive", description = "Value passed to the Event args are ValuePrimitives" },
-  { name = "event", short = "e", takesValue = true, multiple = true },
-  { name = "args", short = "a", takesValue = true, multiple = true },
+  { name = "event", short = "e", takesValue = true, multiple = true, description = "Event name" },
+  { name = "args", short = "a", takesValue = true, multiple = true, description = "Event args" },
+  { name = "module", short = "m", takesValue = true, multiple = true, description = "Module name" },
+  { name = "exit", description = "Add an Exit Event" },
+  { name = "init", short = "i", description = "Runs initialization" },
+  { name = "force", short = "f", description = "Runs each event to modules handler" },
 ]
 
 [app.security]

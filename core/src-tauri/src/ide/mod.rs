@@ -8,18 +8,19 @@ use crate::{
 use core_std_lib::{
     core::Core, core_modification::CoreModification, event::Event, html::Html, state::Value,
 };
-use log::{info, warn};
+use log::info;
 use std::{collections::HashMap, path::PathBuf};
 use tauri::{Emitter, Manager, RunEvent};
 use tauri_plugin_cli::CliExt;
 
 pub mod app;
+pub mod cli;
 pub mod setup;
 
 #[tauri::command]
 async fn init() {
     info!("[Backend] init");
-    crate::handlers::init().await;
+    crate::handlers::init().await
 }
 
 #[tauri::command]
@@ -102,84 +103,9 @@ pub async fn run() {
         }
         RunEvent::Ready => match app_handle.cli().matches() {
             Ok(matches) => {
-                println!("Matches: {matches:?}");
                 tokio::spawn({
                     async move {
-                        init().await;
-                        let events: Vec<String> = matches
-                            .args
-                            .get("event")
-                            .and_then(|a| a.value.as_array())
-                            .map(|xs| {
-                                xs.iter()
-                                    .filter_map(|v| v.as_str().map(|s| s.to_string()))
-                                    .collect()
-                            })
-                            .unwrap_or_default();
-                        let primitive = matches
-                            .args
-                            .get("primitive")
-                            .and_then(|a| a.value.as_bool())
-                            .unwrap_or(false);
-                        let args = matches
-                            .args
-                            .get("args")
-                            .and_then(|a| a.value.as_array())
-                            .cloned()
-                            .unwrap_or_default()
-                            .into_iter()
-                            .map(|v| {
-                                if primitive {
-                                    let val: Result<Value, _> =
-                                        serde_json::from_str(v.as_str().unwrap_or_default());
-                                    return val.ok();
-                                }
-                                fn parse(x: serde_json::Value) -> Option<Value> {
-                                    match x {
-                                        serde_json::Value::Null => Some(Value::Null),
-                                        serde_json::Value::Bool(b) => Some(Value::Bool(b)),
-                                        serde_json::Value::Number(number) if number.is_i64() => {
-                                            // WARN: This is an unsafe casting!
-                                            Some(Value::Int(
-                                                number.as_i64().unwrap_or_default() as i32
-                                            ))
-                                        }
-                                        serde_json::Value::Number(number) => {
-                                            // WARN: This is an unsafe casting!
-                                            Some(Value::new_float(
-                                                number.as_f64().unwrap_or_default() as f32,
-                                            ))
-                                        }
-                                        serde_json::Value::String(s) if s.trim() == "!" => None,
-                                        serde_json::Value::String(s) => Some(Value::Str(s)),
-                                        serde_json::Value::Array(values) => Some(Value::List(
-                                            values.into_iter().filter_map(parse).collect(),
-                                        )),
-                                        serde_json::Value::Object(map) => {
-                                            Some(map.into_iter().fold(
-                                                Value::new_obj(),
-                                                |acc, (key, val)| {
-                                                    acc.add(key, parse(val).unwrap_or_default())
-                                                },
-                                            ))
-                                        }
-                                    }
-                                }
-                                parse(v)
-                            })
-                            .collect::<Vec<_>>();
-                        if args.len() > events.len() {
-                            warn!("More Event Arguments given than Events!");
-                        }
-                        let mut events = events
-                            .into_iter()
-                            .zip(args)
-                            .map(|(e, a)| Event::new(e, a))
-                            .collect::<Vec<Event>>();
-                        events.push(Event::pre_exit());
-                        for e in events {
-                            handler(e).await;
-                        }
+                        cli::run(matches).await;
                     }
                 });
             }
