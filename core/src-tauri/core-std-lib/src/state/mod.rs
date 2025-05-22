@@ -360,6 +360,10 @@ impl State {
 pub struct StateInstructionBuilder(Instruction<Value>);
 
 impl StateInstructionBuilder {
+    pub fn combine(self, other: Self) -> Self {
+        Self(self.0.combine(other.0))
+    }
+
     pub fn instruction(&self) -> Instruction<Value> {
         self.0.clone()
     }

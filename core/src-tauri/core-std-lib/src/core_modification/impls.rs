@@ -7,6 +7,30 @@ use crate::{
     state::{State, StateInstructionBuilder},
 };
 
+use super::UIInstr;
+
+struct UIInstrWrapper(UIInstr);
+
+impl UIInstrWrapper {
+    pub fn combine(self, other: Self) -> Self {
+        let (a, b, c) = self.0;
+        let (x, y, z) = other.0;
+        Self((a.combine(x), b.combine(y), c.combine(z)))
+    }
+}
+
+impl From<UIInstr> for UIInstrWrapper {
+    fn from(value: UIInstr) -> Self {
+        Self(value)
+    }
+}
+
+impl From<UIInstrWrapper> for UIInstr {
+    fn from(value: UIInstrWrapper) -> Self {
+        value.0
+    }
+}
+
 impl Default for CoreModification {
     fn default() -> Self {
         Self {
@@ -17,11 +41,28 @@ impl Default for CoreModification {
 }
 
 impl CoreModification {
+    #[allow(clippy::len_without_is_empty)]
     pub fn len(&self) -> usize {
         self.state.clone().flatten().len()
             + self.ui.0.clone().flatten().len()
             + self.ui.1.clone().flatten().len()
             + self.ui.2.clone().flatten().len()
+    }
+
+    pub fn add_ui(self, ui: UIInstructionBuilder) -> Self {
+        Self {
+            ui: UIInstrWrapper::from(self.ui)
+                .combine(ui.instruction().into())
+                .into(),
+            ..self
+        }
+    }
+
+    pub fn add_state(self, state: StateInstructionBuilder) -> Self {
+        Self {
+            state: self.state.combine(state.instruction()),
+            ..self
+        }
     }
 
     pub fn from_instr(
@@ -132,10 +173,10 @@ impl CoreModification {
     /// We can also do further optimalization, since we don't on only work
     /// on `T`, we can also work on different `T`, the way we have structured
     /// the UI, makes it so that there are three instructions for changing the
-    /// UI, and these three instructions habe dependencies. For example, if we
+    /// UI, and these three instructions have dependencies. For example, if we
     /// `Rem`-ove an Html node, that another `Add`-instruction were going to
     /// add an `Attr` to, we can optimize away this `Add`-instruction, as it is
-    /// effectivly an `NoOp`.
+    /// effectively an `NoOp`.
     ///
     pub fn optimize(self) -> Self {
         Self {
