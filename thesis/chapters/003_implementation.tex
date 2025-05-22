@@ -418,7 +418,11 @@ state or view.
 
 \paragraph{Ever-growing State} There was no way to remove a field on the state,
 the state is appending/overwriting -only, which was a side effect of the
-\textit{solution} to state collisions.
+coalescing of states, as we looked at the differences between the previous
+state, and the new state, and if the new state did not have a field that the
+previous one has, we kept it. If they had the same field, the new state
+overwrote the old one. So since we only did tree comparisons, there was no way
+to encode removal of a field.
 
 \subsubsection{State Collision} \label{sec:collision}
 
@@ -456,7 +460,7 @@ between two states:
 Since the states are ordered by the name of the module they come from, we
 have a consistent ordering of left-hand side and right-hand side. Due to the
 fact that module invocation is synchronous, and ordered. If the same modules
-gives a collision on the same input, (given that all modules are pure), the
+give a collision on the same input, (given that all modules are pure), the
 resulting state will be the same every time. The problem is that applying some
 function on the values could be an unwanted way to resolve collisions. The
 standard way will be to log the collision, and then drop both states. Even
@@ -690,6 +694,17 @@ instead of the core collecting all modifications, each module is invoked and
 core modification, sends the modification to the core channel, which works on
 a first come, first server basis. Here the core can evaluate the changes, also
 on a separate thread.
+
+\subsection{Compile time modules}
+
+In the previous iterations of the module architecture, all modules where
+\textit{runtime} modules. This of course, came with some challenges when it came
+to develop the \gls{rsms}, as the Rust-\gls{abi} is not stable, but this was
+mitigated by using the \textit{stable\_abi} crate, which meant that the modules
+where closer to C, when it came to ordering and alignment of fields in a struct,
+and other necessities to ensure that the \gls{abi} is stable. But having support
+for compile time modules would allow for a more \textit{Rust-y} approach to the
+modules.
 
 \section{Testing} \label{sec:testing}
 

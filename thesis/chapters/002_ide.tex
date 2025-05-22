@@ -91,15 +91,15 @@ where to develop \gls{lsp} capable modules for the \gls{ide}, a translation
 module from Rust to Haskell is necessary.
 
 
-But this language agnosticism also means that
-translating from one language to another should be trivial. This is achieved by
-the models used in the core. The \textit{primitive} types, are the same as in
-JavaScript, the notion of an empty value, numbers, strings, lists and
-\textit{objects}, can be serialized/deserialized to/from any language. So the
-manipulation on these types can be extracted and rewritten in another preferred
-language. Therefore, to be fully language agnostic, modules should be
-syntactically translatable between each other. The same two modules, one
-implemented in JavaScript, the other in Rust, should be semantically the same.
+But this language agnosticism also means that translating from one language to
+another should be trivial. This is achieved by the models used in the core. The
+\textit{primitive} types, are the same as in JavaScript, the notion of an empty
+value, numbers, strings, lists and \textit{objects}, can be
+serialized/deserialized to/from any language. So the manipulation on these types
+can be extracted and rewritten in another preferred language. Therefore, to be
+fully language agnostic, modules should be syntactically translatable between
+each other. The same two modules, one implemented in JavaScript, the other in
+Rust, should be semantically the same.
 
 \subsection{Existing Third Party Libraries}
 
@@ -149,7 +149,22 @@ is compiled, it finds the mentioned modules in the configuration file, and
 directly integrates them into the core, ensuring that the resulting binary is a
 fully fledged \gls{ide}. And then this \gls{ide} can be distributed to the
 students, who can still extend the \gls{ide} with runtime modules at their own
-digression.
+digression. In the figure \ref{fig:compMod}, we can see a diagram of this
+process.
+
+\begin{figure}
+  \centering
+  \input{./figures/compile-time-module}
+  \caption{
+    Diagram of compile time module integration, we can see that when we invoke
+    the installer tool, it reads the Modules.toml config, gets the necessary
+    module paths, and \textit{installs} them by writing them onto a file,
+    \textit{module\_reg.rs}, which is imported by the \gls{ide}. All imports
+    need to be specified in \textit{Cargo.toml}, which is also handled by the
+    installer tool.
+  }
+  \label{fig:compMod}
+\end{figure}
 
 \section{Maintainer}
 
