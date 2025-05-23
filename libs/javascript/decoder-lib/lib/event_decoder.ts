@@ -49,6 +49,8 @@ export const DEvent: t.Type<Event> = t.recursion("DEvent", () => {
       t.type({ h1: DHtmlBody }),
       t.type({ h2: DHtmlBody }),
       t.type({ p: DHtmlBody }),
+      t.type({ strong: DHtmlBody }),
+      t.type({ thead: DHtmlBody }),
       t.type({ h4: DHtmlBody }),
       t.type({ h5: DHtmlBody }),
       t.type({ h6: DHtmlBody }),

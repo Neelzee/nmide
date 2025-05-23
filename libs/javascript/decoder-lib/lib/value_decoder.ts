@@ -59,6 +59,8 @@ export const DValue: t.Type<Value> = t.recursion("DValue", () => {
       t.type({ p: DHtmlBody }),
       t.type({ h4: DHtmlBody }),
       t.type({ h5: DHtmlBody }),
+      t.type({ strong: DHtmlBody }),
+      t.type({ thead: DHtmlBody }),
       t.type({ h6: DHtmlBody }),
       t.type({ span: DHtmlBody }),
       t.type({ section: DHtmlBody }),

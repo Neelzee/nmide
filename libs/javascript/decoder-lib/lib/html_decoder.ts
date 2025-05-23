@@ -91,5 +91,7 @@ export const DHtml: t.Type<Html> = t.recursion("DHtml", () => {
     t.type({ tbody: DHtmlBody }),
     t.type({ main: DHtmlBody }),
     t.type({ textArea: DHtmlBody }),
+    t.type({ strong: DHtmlBody }),
+    t.type({ thead: DHtmlBody }),
   ]);
 });
