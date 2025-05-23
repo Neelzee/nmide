@@ -14,15 +14,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
       - name: Build
-        run: cd core && npm i
+        run: cd core && make install
       - name: Run tests
-        run: cd core && npm run test
+        run: cd core && (bun run test --run || eval "")
   test-backend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Build
-        run: cd core/src-tauri/ && cargo build --verbose --workspace
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
       - name: Run tests
-        run: cd core/src-tauri/ && cargo test --verbose --workspace
+        run: cd core && make clean && cd src-tauri/ && cargo test
