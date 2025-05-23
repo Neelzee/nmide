@@ -15,6 +15,12 @@ install:
 		cd ../libs/javascript && \
 		find . -maxdepth 1 -type d ! -path . | while read p; do \
 			if [ -f "$$p/package.json" ]; then \
+				echo "Linking $$p"; \
+				(cd "$$p" && bun link); \
+			fi; \
+		done && \
+		find . -maxdepth 1 -type d ! -path . | while read p; do \
+			if [ -f "$$p/package.json" ]; then \
 				echo "Installing in $$p"; \
 				(cd "$$p" && bun i); \
 			fi; \
