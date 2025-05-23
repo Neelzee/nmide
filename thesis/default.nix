@@ -18,7 +18,7 @@ let
   file = "thesis";
   projectRoot = ./..;
   envVars = {
-    TEXINPUTS = ".:${rustListing}/tex/latex//:${projectRoot}/core:${projectRoot}/modules:";
+    TEXINPUTS = ".:${rustListing}/tex/latex//:${projectRoot}/core:${projectRoot}/modules:${projectRoot}/libs:";
     TEXMFHOME = ".cache";
     TEXMFVAR = ".cache/texmf-var";
   };
@@ -32,6 +32,7 @@ let
     export TEXMFVAR="${envVars.TEXMFVAR}"
     ln -s ${projectRoot}/core core
     ln -s ${projectRoot}/modules modules
+    ln -s ${projectRoot}/libs libs
     export LANG="en_US.UTF-8";
     export LC_ALL="en_US.UTF-8";
     export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
