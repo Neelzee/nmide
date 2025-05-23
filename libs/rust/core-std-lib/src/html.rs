@@ -28,6 +28,7 @@ define_html!(
     Audio,
     B,
     Br,
+    Strong,
     Button,
     Code,
     Em,
@@ -53,6 +54,7 @@ define_html!(
     Video,
     Frag,
     Script,
+    Thead,
     Tbody,
     Main,
     TextArea

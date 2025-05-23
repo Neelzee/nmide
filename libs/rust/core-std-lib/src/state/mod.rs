@@ -100,7 +100,7 @@ impl HHMap {
 
 impl From<HashMap<String, Value>> for HHMap {
     fn from(value: HashMap<String, Value>) -> Self {
-        Self(HashableHashMap::from_iter(value.into_iter()))
+        Self(HashableHashMap::from_iter(value))
     }
 }
 
@@ -114,7 +114,8 @@ impl Value {
     /// let value = Value::Null;
     /// let new_val = value.clone().add("foo", Value::Int(0));
     /// assert!(new_val.is_obj());
-    /// assert_eq!(new_val.get("foo").unwrap(), value);
+    /// assert!(new_val.clone().get("foo").unwrap().is_int());
+    /// assert_eq!(new_val.get("0").unwrap(), value);
     /// ```
     pub fn add<S: Into<String>>(self, field: S, value: Self) -> Self {
         match self {
@@ -124,6 +125,13 @@ impl Value {
                 Value::Obj(HHMap::from(map))
             }
             _ => Value::new_obj().add("0", self).add(field.into(), value),
+        }
+    }
+
+    pub fn get<S: Into<String>>(self, field: S) -> Option<Self> {
+        match self {
+            Value::Obj(map) => map.to_hm().get(&field.into()).cloned(),
+            _ => None,
         }
     }
 
