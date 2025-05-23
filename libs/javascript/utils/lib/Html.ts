@@ -21,6 +21,7 @@ export type Html =
   | { "audio": { kids: Array<Html>; attrs: Array<Attr>; text: string | null } }
   | { "b": { kids: Array<Html>; attrs: Array<Attr>; text: string | null } }
   | { "br": { kids: Array<Html>; attrs: Array<Attr>; text: string | null } }
+  | { "strong": { kids: Array<Html>; attrs: Array<Attr>; text: string | null } }
   | { "button": { kids: Array<Html>; attrs: Array<Attr>; text: string | null } }
   | { "code": { kids: Array<Html>; attrs: Array<Attr>; text: string | null } }
   | { "em": { kids: Array<Html>; attrs: Array<Attr>; text: string | null } }
@@ -48,6 +49,7 @@ export type Html =
   | { "video": { kids: Array<Html>; attrs: Array<Attr>; text: string | null } }
   | { "frag": { kids: Array<Html>; attrs: Array<Attr>; text: string | null } }
   | { "script": { kids: Array<Html>; attrs: Array<Attr>; text: string | null } }
+  | { "thead": { kids: Array<Html>; attrs: Array<Attr>; text: string | null } }
   | { "tbody": { kids: Array<Html>; attrs: Array<Attr>; text: string | null } }
   | { "main": { kids: Array<Html>; attrs: Array<Attr>; text: string | null } }
   | {
