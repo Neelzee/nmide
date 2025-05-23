@@ -7,8 +7,8 @@ edition = "2024"
 members = ["rsm-handler", "rsm-invoker"]
 
 [dependencies]
-core-std-lib = { path = "../../../core/src-tauri/core-std-lib/" }
-core-module-lib = { path = "../../../core/src-tauri/core-module-lib/" }
+core-std-lib = { git = "https://github.com/Neelzee/nmide.git" }
+core-module-lib = { git = "https://github.com/Neelzee/nmide.git" }
 rsm-invoker = { path = "rsm-invoker" }
 rsm-handler = { path = "rsm-handler" }
 async-trait = "0.1.88"
