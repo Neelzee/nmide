@@ -1,4 +1,4 @@
-\chapter{Conclusion} \label{cha:conclusion}
+\chapter{Conclusion \& Discussion} \label{cha:conclusion}
 
 The hypothesis \ref{hyp:modular} is right, source? Me.
 
@@ -9,13 +9,13 @@ architecture is trivial. By utilizing separation of concerns, a module developer
 needs to only understand the feature they want to extend, or if it is an
 entirely new feature, find out what has been done before.
 
-Developing against an unstable \gls{api} is difficult, when developing a module
-architecture, it is like an unstable \gls{api} when it is not \textit{mature},
+Developing against an unstable \gls*{api} is difficult, when developing a module
+architecture, it is like an unstable \gls*{api} when it is not \textit{mature},
 e.g. when it does not have settled modules to develop against. Since this is
 the case, there are a lot of issues with the existing modules, making the user
-experience less than competing \gls{ide}s. Most of these are minors, and can be
+experience less than competing \gls*{ide}s. Most of these are minors, and can be
 fixed with some minor revisions to the existing modules, for instance, when
-closing the \gls{ide}, unsaved changes are discarded, with no information given
+closing the \gls*{ide}, unsaved changes are discarded, with no information given
 to the user. Or how what project a user was working on, is not saved between
 instances, so a user has to re-open the project they worked on. This is a side
 effect of the development plan, and not the architecture. To fully test out this
@@ -24,38 +24,38 @@ to quickly iron out issues with the implementation of the architecture, and to
 figure out what functionality Tauri has, that we can expose, like the file
 selection.
 So not only were modules needed to cover the necessities to qualify as an
-\gls{ide}, but they were also needed to \textit{test} the implementation. Not
+\gls*{ide}, but they were also needed to \textit{test} the implementation. Not
 having a developer dedicated to only implement modules, meant that module
 development was usually dropped for other things. As every time a module where
-worked on, it would eventually lead to a discovery, that the current \gls{api}
+worked on, it would eventually lead to a discovery, that the current \gls*{api}
 needed some change, which would enable the module feature to be easier
 implemented. A concrete example of this, is the editor module.
-An essential part of an editor, in an \gls{ide} at least, is being able to
-utilize a \gls{lsp}. Most of the communication between a client and \gls{ls},
+An essential part of an editor, in an \gls*{ide} at least, is being able to
+utilize a \gls*{lsp}. Most of the communication between a client and \gls*{ls},
 require information about \textit{where} the user is in the text. This
 information is available in a \textit{textarea}-element, but some change to how
 Events are sent were needed. In standard JavaScript development,
-\textit{eventListeners} can be specific to the \gls{html}-element they are
-applied to. The same is not possible in our \gls{api}, as Events are generic.
-Instead we made Events gather information about the \gls{dom}-Event they were
+\textit{eventListeners} can be specific to the \gls*{html}-element they are
+applied to. The same is not possible in our \gls*{api}, as Events are generic.
+Instead we made Events gather information about the \gls*{dom}-Event they were
 triggered by, so in the case of \textit{click} attribute, we know the
-\gls{dom}-event is of type \textit{MouseEvent}, which can give us some,
+\gls*{dom}-event is of type \textit{MouseEvent}, which can give us some,
 information. And if the \textit{target}, (a field on \textit{MouseEvent}) is an
 instance of \textit{HtmlInputElement} or \textit{textarea}, we know that the
 \textit{selectionStart} and \textit{value} field exist on the target. With
 which, we can manually calculate the position of the click. Implementing this
-meant adding a breaking change to the \gls{api}, which deprecated different
+meant adding a breaking change to the \gls*{api}, which deprecated different
 modules, so more time was spent on re-implementing them.
 
 \subsection{Language Agnosticism}
 
 Not really achieved, because we cannot syntactically translate between a
 JavaScript Module and a Rust Module. This is due to the differences between the
-utility libraries created for \gls{jsms} and \gls{rsms}. When \gls{jsms} modules
+utility libraries created for \gls*{jsms} and \gls*{rsms}. When \gls*{jsms} modules
 where created, they were primarily made for using existing JavaScript libraries,
-to showcase this interoperability. So, much of the \gls{html} elements were
+to showcase this interoperability. So, much of the \gls*{html} elements were
 created using JavaScript, so the utility library primarily focused on this,
-having builder pattern for creating \gls{html}. There is a similar builder
+having builder pattern for creating \gls*{html}. There is a similar builder
 pattern in the Rust utility library, but it is not a one-to-one mapping, meaning
 there are some semantic differences between two modules doing the same.
 
@@ -63,7 +63,7 @@ But \textit{installation} of the modules also differ. In JavaScript, module
 developers can simply invoke the \textit{installModule} function, with their
 created module, to install the module. The reason this works, is that when we
 bundle all JavaScript modules during compile time, it ends up as a script-tag in
-the \gls{dom}. The same is for the case of runtime JavaScript modules. The
+the \gls*{dom}. The same is for the case of runtime JavaScript modules. The
 result, in either case, is that the entire contents of the JavaScript file is
 evaluated, meaning even though we are simply importing a JavaScript file, and
 not explicitly invoking anything, it ends up with the modules being installed.
@@ -76,10 +76,10 @@ so that we can build the module.
 \subsection{Foreign Modules}
 
 Languages like Gleam and PureScript, which compile directly to JavaScript can
-be trivially added. But for languages that can target the C-\gls{abi}, this is
-less trivial. This is because of how the core-\gls{ide} was designed. We decided
+be trivially added. But for languages that can target the C-\gls*{abi}, this is
+less trivial. This is because of how the core-\gls*{ide} was designed. We decided
 to use a \textit{Rust-y} approach, meaning we utilized many of the features that
-made interoperability between the Rust-\gls{abi} and C-\gls{abi} more complex.
+made interoperability between the Rust-\gls*{abi} and C-\gls*{abi} more complex.
 An example of this, can be found in the listing \ref{lst:value} and
 \ref{lst:rsValue}, where we have the \textit{standard} value variant, and then
 the \textit{C-safe} variant.
@@ -91,7 +91,7 @@ the \textit{C-safe} variant.
     , label=lst:value
     , firstline=19
     , lastline=31
-    ]{./core/src-tauri/core-std-lib/src/state/mod.rs}
+    ]{./libs/rust/core-std-lib/src/state/mod.rs}
 \end{code}
 
 \begin{code}[H]
@@ -101,7 +101,7 @@ the \textit{C-safe} variant.
     , label=lst:rsValue
     , firstline=16
     , lastline=21
-    ]{./core/src-tauri/foreign-std-lib/src/state/rs\_state.rs}
+    ]{./libs/rust/foreign-std-lib/src/state/rs\_state.rs}
 \end{code}
 
 Note the \textbf{\#[repr(C)]} macro attribute, and the two fields,
@@ -126,7 +126,7 @@ doing in this code block is \textit{valid}.
     , label=lst:rsValueUnion
     , firstline=134
     , lastline=144
-    ]{./core/src-tauri/foreign-std-lib/src/state/rs\_state.rs}
+    ]{./libs/rust/foreign-std-lib/src/state/rs\_state.rs}
 \end{code}
 
 \begin{code}
@@ -140,24 +140,24 @@ doing in this code block is \textit{valid}.
     , lastline=59
     , numbers=left
     , numberstyle=\tiny\color{gray}
-    ]{./core/src-tauri/foreign-std-lib/src/state/rs\_state.rs}
+    ]{./libs/rust/foreign-std-lib/src/state/rs\_state.rs}
 \end{code}
 
 \subsection{Ad-hoc solutions for lackluster API}
 
-As mentioned, there is an issue in the current \gls{api} on maintaining
-consistency between the \gls{ui} in the frontend, and the \gls{ui}
-representation the \gls{rsms} has access to. This means that there is no
+As mentioned, there is an issue in the current \gls*{api} on maintaining
+consistency between the \gls*{ui} in the frontend, and the \gls*{ui}
+representation the \gls*{rsms} has access to. This means that there is no
 good way to achieve saving of an edited file. But this is still a feature the
 editor module supports. The way saving was implemented, was to add plain
 JavaScript to the save button, where when the user presses it, the contents
-of the textarea are sent to the \gls{ide}\_fsa module, which can save the
-contents. This is an action that bypasses the core \gls{ide}, which was
-necessary due to the lacking \gls{api}.
+of the textarea are sent to the \gls*{ide}\_fsa module, which can save the
+contents. This is an action that bypasses the core \gls*{ide}, which was
+necessary due to the lacking \gls*{api}.
 
 \section{Making an IDE is hard}
 
-An \gls{ide} has many features, which are needed to enhance the developer
+An \gls*{ide} has many features, which are needed to enhance the developer
 experience. To achieve this, the modular approach enables future users to
 enhance the application.
 

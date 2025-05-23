@@ -19,15 +19,15 @@ To optimize an instruction set, these are the steps taken:
    , label=lst:aInst
    , firstline=4
    , lastline=16
-   ]{./core/src-tauri/core-std-lib/src/instruction/inst.rs}
+   ]{./libs/rust/core-std-lib/src/instruction/inst.rs}
 \end{center}
 
 \textbf{Instruction} is a recursive data type, parameterized by \textbf{T}. In
-Rust we can have generic data types, as shown in \ref{lst:aInst}, by the type
-parameter, $T$, but we have to restrict the type $T$ to a type that implements
-the trait \textbf{PartialEq}, which means we can use equality on it. We need
-this restrictions, because the attribute macro \textbf{Instruction} has. These
-macros generate the needed code to implement the different traits:
+Rust we can have generic data types, as shown in listing \ref{lst:aInst}, by the
+type parameter, $T$, but we have to restrict the type $T$ to a type that
+implements the trait \textbf{PartialEq}, which means we can use equality on it.
+We need this restrictions, because the attribute macro \textbf{Instruction} has.
+These macros generate the needed code to implement the different traits:
 
 \begin{itemize}
   \item Debug: Enables the implementer to be printed to \textit{stdout}
@@ -57,7 +57,7 @@ methods, shown in listings \ref{lst:opt} and \ref{lst:flatten} respectively.
    , label=lst:opt
    , firstline=87
    , lastline=93
-   ]{./core/src-tauri/core-std-lib/src/instruction/opt.rs}
+   ]{./libs/rust/core-std-lib/src/instruction/opt.rs}
 \end{center}
 
 \begin{center}
@@ -71,7 +71,7 @@ methods, shown in listings \ref{lst:opt} and \ref{lst:flatten} respectively.
    , label=lst:flatten
    , firstline=9
    , lastline=19
-   ]{./core/src-tauri/core-std-lib/src/instruction/opt.rs}
+   ]{./libs/rust/core-std-lib/src/instruction/opt.rs}
 \end{center}
 
 In listing \ref{lst:count}, we then iterate over each instruction in the
@@ -90,7 +90,7 @@ unreachable, but something the compiler can't prove.
    , label=lst:count
    , firstline=28
    , lastline=55
-   ]{./core/src-tauri/core-std-lib/src/instruction/opt.rs}
+   ]{./libs/rust/core-std-lib/src/instruction/opt.rs}
 \end{center}
 
 Finally, in the listing \ref{lst:fold}, we \textit{unflatten} the sequence of
@@ -111,5 +111,5 @@ the initial NoOp element is removed as soon as possible.
    , label=lst:fold
    , firstline=57
    , lastline=83
-   ]{./core/src-tauri/core-std-lib/src/instruction/opt.rs}
+   ]{./libs/rust/core-std-lib/src/instruction/opt.rs}
 \end{center}

@@ -19,11 +19,11 @@ frontend and backend.
 \subsection{Language Agnosticism}
 
 Steps should be made to mitigate the shortfall of this solution, with regard to
-language agnosticism. The differences in installation for \gls{rsms} and
-\gls{jsms} are mainly due to how trivial it is to install JavaScript modules,
-compared to Rust modules. \gls{jsms} should enforce a similar system of module
-building as \gls{rsms}, not only to ensure less semantic differences, but also
-to ensure safety, as restricting the \gls{jsms} is good.
+language agnosticism. The differences in installation for \gls*{rsms} and
+\gls*{jsms} are mainly due to how trivial it is to install JavaScript modules,
+compared to Rust modules. \gls*{jsms} should enforce a similar system of module
+building as \gls*{rsms}, not only to ensure less semantic differences, but also
+to ensure safety, as restricting the \gls*{jsms} is good.
 
 \subsection{Attribute and Instructions}
 
@@ -40,34 +40,41 @@ keybind/keypress thing.
 
 \subsection{Inconsistent UI}
 
-Difficult to keep the \gls{ui} representation consistent with the \gls{dom}.
+Difficult to keep the \gls*{ui} representation consistent with the \gls*{dom}.
 \dots
 A workaround to this was used, where depending on what element an
 \textit{eventListener} was added to, the sent Event would be \textit{sticky},
 meaning it would add extra arguments to the \textit{args} field of the Event,
 like attribute information, id, value, etc. But this would not update the
-\gls{ui} stored in the \gls{ide}, but rather give Modules a peek at the current
-\gls{ui} state. A better solution would be to somehow keep track of \textit{all}
-user interactions to the \gls{dom}, and somehow bubble these changes down to the
-backend, where the \gls{ui} representation is managed.
+\gls*{ui} stored in the \gls*{ide}, but rather give Modules a peek at the current
+\gls*{ui} state. A better solution would be to somehow keep track of \textit{all}
+user interactions to the \gls*{dom}, and somehow bubble these changes down to the
+backend, where the \gls*{ui} representation is managed.
 
 \subsection{Compile-time Module Installation}
 
 It's kinda cursed.
 
+A \gls{cli} tool should be made for users to add compile-time modules.
+Currently, a user has to specify what kind of module they are adding, the
+language and package manager if it is a JavaScript module. This is trivial to
+detect by a program. A user should be able to simply invoke the tool with
+either a URL or a path to the module, and then the tool can infer what kind of
+module it is, and add it to the configuration file correctly.
+
 \subsection{Unify the tooling}
 
-A lot of different scripts doing stuff, should be one \gls{cli}-tool.
+A lot of different scripts doing stuff, could be one \gls*{cli}-tool.
 
 \section{Modular Language Server}
 
-Once the compiler \cite{wiig} is implemented, a proper \gls{ls} can be created.
+Once the compiler~\cite{wiig} is implemented, a proper \gls*{ls} can be created.
 
 \section{Modular Editor}
 
-The prototype editor module develop for this \gls{ide} is subpar compared to
-existing ones. A new one should be developed, in tandem with a \gls{ls} client.
-This will ensure that this \gls{ide} can support more languages. This editor
+The prototype editor module develop for this \gls*{ide} is subpar compared to
+existing ones. A new one should be developed, in tandem with a \gls*{ls} client.
+This will ensure that this \gls*{ide} can support more languages. This editor
 should then utilize existing technology that is already used by other
-\gls{ide}s, like the tree-sitter\footnote{\url{https://github.com/tree-sitter/tree-sitter}}
+\gls*{ide}s, like the tree-sitter\footnote{\url{https://github.com/tree-sitter/tree-sitter}}
 parsing system, which amongst other things, can help with syntax highlighting.

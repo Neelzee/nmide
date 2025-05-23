@@ -1,24 +1,64 @@
 \chapter{Related Work} \label{cha:related}
 
+\section{Existing module architectures in IDEs}
+
+There exists module architectures in other \gls{ide}s.
+
+\subsection{IntelliJ \& JetBrains}
+
+Has a module architecture.
+
+\subsection{NetBeans}
+
+Has a module architecture.
+
+\subsection{Visual Studio}
+
+Has a module architecture.
+
+\subsection{Visual Studio Code}
+
+Has a module architecture.
+
+\subsection{Theia}
+
+Has a module architecture.
+
+\subsection{Eclipse}
+
+Has a module architecture.
+
+\subsubsection{Eclipse Rich Client Platform}
+
+\gls*{ide}s are one of the most common application that supports extensions by
+third-party code. \gls*{ide}s like \gls*{eclipse} and \gls*{intellij} are
+specialized for working with Java, but they can still support other languages
+with the help of modules. A module in \gls*{eclipse} for instance, could extend
+\gls*{eclipse} with functionality like syntax highlighting, code completion,
+Go-to-definitions, debugging, and more, for standard programming languages.
+A lot of this functionality, comes from module-to-module extension, as in
+\gls*{eclipse} modules can extend modules, with the use of the Eclipse Rich
+Client Platform~\cite{eclipseRcp}.
+
 \section{Multi-way Dataflow Constraint System} \label{sec:mdcs}
 
 One thing this application does not provide a solution for, is the difficulty
-in designing good \gls{gui}. Following the \gls{mvc}-pattern, \gls{gui}s can
+in designing good \gls*{gui}. Following the \gls*{mvc}-pattern, \gls*{gui}s can
 represent structures such as lists, which users might want to manipulate in
 some fashion, like appending or rearranging the items in the list. Managing such
-a change, especially one that involves \gls{gui} widgets can be a challenge,
+a change, especially one that involves \gls*{gui} widgets can be a challenge,
 since a change in the view should be reflected in the model, and encoding this
 can be very involved. Luckily, there exists frameworks that make this task
-easier. \textit{WarmDrink}, \cite{warmDrink, dslMdcs} is a JavaScript
+easier. \textit{WarmDrink},~\cite{warmDrink, dslMdcs} is a JavaScript
 framework that allow a developer to declarative specify structural changes in
-an application. This can be achieved, since the \gls{ide} exposes a simple
-\gls{api} for runtime systems. A runtime system specifically for a \gls{mdcs}
+an application. This can be achieved, since the \gls*{ide} exposes a simple
+\gls*{api} for runtime systems. A runtime system specifically for a \gls*{mdcs}
 could be implemented for JavaScript modules. This could also be done for the
-Rust modules, by utilizing the crate developed by Svartveit. \cite{mcdsRust}
+Rust modules, by utilizing the crate developed by Svartveit~\cite{mcdsRust}.
 The module developer experience is important, so it's good that there exist
-\gls{mdcs} tooling to ease a module developers experience. \cite{toolMcds}
+\gls*{mdcs} tooling to ease a module developers experience~\cite{toolMcds}.
 
-Another issue in \gls{gui}s is optimizing performance in regard to events
+Another issue in \gls*{gui}s is optimizing performance in regard to events
 triggered by user actions, such as scrolling, resizing or typing. These events
 could happen many times in a second, while in theory user speed is trivial for a
 computer to keep up with, there are instances where a module family could be
@@ -31,7 +71,7 @@ an event until after some time period $T$ has passed. Once the event is triggere
 $T_0$ starts counting down. If the same event is re-triggered while $T_0 > 0$,
 $T_0$ is reset by $T_0 = T$. If $T_0 = 0$, then the event is sent. Ensuring that
 $T$ is not too large, is important, as if $T$ is above some threshold, the user
-of the \gls{gui} will notice, and it will make the application \textit{feel}
+of the \gls*{gui} will notice, and it will make the application \textit{feel}
 slow.
 
 \paragraph{Throttling} Throttling is a similar technique to debouncing, except
@@ -40,17 +80,17 @@ $T_0 = 0$. Meaning the event is sent at regular intervals, and could be sent at
 the exact same point in time when the user triggered the event, or it could
 happen at most, $T$ units after the user action.
 
-Debouncing and throttling work in less complex \gls{gui} structures, but as the
+Debouncing and throttling work in less complex \gls*{gui} structures, but as the
 amount of features in an application increases, the complexity will also
 increase. These event-coalescing-strategies are a source of subtle bugs, as
-event coalescing can easily break modularity. In a \gls{jsms}, this issue could
-be solved by using \textit{flushable promises} \cite{flush}. This could have
+event coalescing can easily break modularity. In a \gls*{jsms}, this issue could
+be solved by using \textit{flushable promises}~\cite{flush}. This could have
 solved our issue, where we had some Event handler that took noticeably longer
 time to return, but since this was a Rust-Module, we could \textit{solve} this
 by doing this computation on another thread. If it was a JavaScript module we
 could have solved it by using \textit{flushable promises}.
 
-If we implement a \gls{ls}-client in JavaScript, \textit{flushable promises}
+If we implement a \gls*{ls}-client in JavaScript, \textit{flushable promises}
 could allow for a smoother experience, as things like \textit{looking up}
 renaming in a Magnolia project is a more involved process for the compiler,
 and in larger projects, could take a noticeably long time.
@@ -60,26 +100,82 @@ and in larger projects, could take a noticeably long time.
 
 Due to the extensive modularity of the application, all modules can be tested
 individually, by \textit{mocking} the expected state and events. This means that
-breaking changes in one module can be detected before \gls{e2e} testing, which
+breaking changes in one module can be detected before \gls*{e2e} testing, which
 is expensive. But this can only verify the general logic of a module and module
 family, not the UI. To achieve such automation, one could rely on an automated
-testing framework, like the one in \cite{autoUi}. Or if one is working with a
+testing framework, like the one in~\cite{autoUi}. Or if one is working with a
 \textit{simple} JavaScript runtime, one could use third party software like
-\textit{Playwright} for creating tests, as it can auto generate the \gls{dsl},
-while the developer uses the module or entire \gls{ide} if it is an \gls{e2e}
+\textit{Playwright} for creating tests, as it can auto generate the \gls*{dsl},
+while the developer uses the module or entire \gls*{ide} if it is an \gls*{e2e}
 test. This would help a module developer to discover behavior that a user might
-not expect \cite{leastGui}.
+not expect~\cite{leastGui}.
 
 
 \section{Abstract Algebra}
 
-Magnolia is a kind of algebraic specification language, like CafeOBJ
-\cite{cafeObj}. An algebraic specification language, is a language where one can
-develop similarly as to how one might create an algebraic structure. As shown in
-the development of this \gls{ide}, this can be quite useful way of thinking.
+Magnolia is a kind of algebraic specification language, like CafeOBJ~\cite{cafeObj}.
+An algebraic specification language, is a language where one can develop
+similarly as to how one might create an algebraic structure. As shown in the
+development of this \gls*{ide}, this can be quite useful way of thinking.
 
 
 \section{Syntactic Theory Functor}
 
-\gls{stf} is used by the compiler \cite{wiig} for stuff. Amongst them being
-resolving renaming, and flatting the \gls{asr} to be shown to the developer.
+\gls*{stf} is used by the compiler~\cite{wiig} for stuff. Amongst them being
+resolving renaming, and flatting the \gls*{asr} to be shown to the developer.
+
+
+\section{Language Workbench}
+
+Language workbenches are environments for simplifying the creation and use of
+computer languages~\cite{lwb}.
+
+\todo{Expand}
+
+\section{Language Server}
+
+The most important features in a modern \gls*{ide} are possible due to the
+\gls*{lsp}. \gls*{lsp} is a protocol for a language server and editor,
+(the client), in which they communicate, allowing for many of the features
+mentioned in section \ref{sec:ide}, and explicitly mentioned in table
+\ref{tbl:ide}. \gls*{lsp} being the standard since the 2020s, is a sign of
+modularity being preferred, as now a single \gls*{lsp} can be created, and used
+across several different applications, like IntelliJ, VS Code and \gls*{vim}.
+While useful for \textit{standard} language, this is the limiting factor when it
+comes to supporting experimental languages, as not only does a new set of
+protocols need to be appended to a language server, the editor itself needs to
+be changed to actually use these protocols. This creates a lot of work, for both
+the \gls*{ide} developer and for the compiler developer. Here is where a modular
+approach can help both. If some new functionality or feature is added to the
+experimental language, this off course means the compiler/interpreter has to be
+expanded and/or modified, but for the \gls*{ide}, a module could be added and/or
+modified to utilize this change, instead of having to change the entire
+application.
+
+\begin{table}[]
+  \centering
+  \caption{\gls*{ide} features enabled by \gls*{lsp}}
+  \label{tbl:ide}
+  \begin{tabular}{|l|l|}
+    \hline
+    IDE Feature & \gls*{lsp}-method \\ \hline
+    Go to Declaration & textDocument/definition \\ \hline
+    Go to Implementation & textDocument/implementation \\ \hline
+    Auto-completion & textDocument/completion \\ \hline
+    Hover & textDocument/hover \\ \hline
+    Warnings & textDocument/publishDiagnostics \\ \hline
+    Rename & textDocument/rename \\ \hline
+  \end{tabular}
+\end{table}
+
+An example of this in action, say a developer is working on a file
+\textit{main.ts}, in their Typescript project. They hover over a type imported
+from, and defined in \textit{types.ts}. This is what happens:
+
+\begin{enumerate}
+  \item The editor detects the user is hovering over a \textit{special} word
+  \item The editor sends a request to the Typescript \gls*{ls}
+  \item The \gls*{ls} responds
+  \item The editor formats the response into a small window showcasing the
+    documentation and implementation of the type
+\end{enumerate}
