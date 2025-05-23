@@ -97,13 +97,13 @@
     {
       "name": "true_value",
       "input": {
-        "Bool": true
+        "bool": true
       }
     },
     {
       "name": "false_value",
       "input": {
-        "Bool": false
+        "bool": false
       }
     }
   ],
@@ -207,7 +207,7 @@
             "str": "mixed"
           },
           {
-            "Bool": true
+            "bool": true
           },
           "null",
           {
@@ -287,7 +287,7 @@
                 "str": "Alice"
               },
               "active": {
-                "Bool": true
+                "bool": true
               }
             }
           },
@@ -342,7 +342,7 @@
             "float": 3.14
           },
           "bool_field": {
-            "Bool": true
+            "bool": true
           },
           "string_field": {
             "str": "text"

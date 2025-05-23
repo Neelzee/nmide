@@ -37,7 +37,7 @@
         "event": {
           "event": "toggleState",
           "args": {
-            "Bool": true
+            "bool": true
           }
         }
       }
@@ -72,7 +72,7 @@
                 "int": 1640995200
               },
               "success": {
-                "Bool": true
+                "bool": true
               }
             }
           }
@@ -118,7 +118,7 @@
                   "preferences": {
                     "obj": {
                       "notifications": {
-                        "Bool": true
+                        "bool": true
                       },
                       "theme": {
                         "str": "dark"
@@ -238,7 +238,7 @@
                 "int": 2
               },
               "hasMore": {
-                "Bool": false
+                "bool": false
               }
             }
           }
@@ -263,10 +263,10 @@
                   "features": {
                     "obj": {
                       "beta": {
-                        "Bool": true
+                        "bool": true
                       },
                       "experimental": {
-                        "Bool": false
+                        "bool": false
                       }
                     }
                   }
@@ -369,7 +369,7 @@
                 "str": "user-form"
               },
               "valid": {
-                "Bool": true
+                "bool": true
               },
               "data": {
                 "obj": {
@@ -400,7 +400,7 @@
                 "str": "new_value"
               },
               "isValid": {
-                "Bool": true
+                "bool": true
               }
             }
           }

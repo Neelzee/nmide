@@ -297,7 +297,7 @@
                       "event": {
                         "event": "submitForm",
                         "args": {
-                          "Str": "login-form"
+                          "str": "login-form"
                         }
                       }
                     }

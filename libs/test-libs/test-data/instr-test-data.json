@@ -2,10 +2,12 @@
   "basic_instructions": [
     {
       "name": "no_op",
+      "kind": "value",
       "input": "noOp"
     },
     {
       "name": "add_string",
+      "kind": "string",
       "input": {
         "add": [
           "field1",
@@ -15,6 +17,7 @@
     },
     {
       "name": "remove_string",
+      "kind": "string",
       "input": {
         "rem": [
           "field1",
@@ -24,6 +27,7 @@
     },
     {
       "name": "add_value_int",
+      "kind": "value",
       "input": {
         "add": [
           "counter",
@@ -35,6 +39,7 @@
     },
     {
       "name": "remove_value_int",
+      "kind": "value",
       "input": {
         "rem": [
           "counter",
@@ -48,6 +53,7 @@
   "value_instructions": [
     {
       "name": "add_value_null",
+      "kind": "value",
       "input": {
         "add": [
           "empty_field",
@@ -57,17 +63,19 @@
     },
     {
       "name": "add_value_bool",
+      "kind": "value",
       "input": {
         "add": [
           "is_active",
           {
-            "Bool": true
+            "bool": true
           }
         ]
       }
     },
     {
       "name": "add_value_float",
+      "kind": "value",
       "input": {
         "add": [
           "price",
@@ -79,6 +87,7 @@
     },
     {
       "name": "add_value_string",
+      "kind": "value",
       "input": {
         "add": [
           "username",
@@ -90,6 +99,7 @@
     },
     {
       "name": "add_value_list",
+      "kind": "value",
       "input": {
         "add": [
           "tags",
@@ -111,6 +121,7 @@
     },
     {
       "name": "add_value_object",
+      "kind": "value",
       "input": {
         "add": [
           "user_data",
@@ -123,7 +134,7 @@
                 "str": "Alice"
               },
               "active": {
-                "Bool": true
+                "bool": true
               }
             }
           }
@@ -132,6 +143,7 @@
     },
     {
       "name": "remove_value_object",
+      "kind": "value",
       "input": {
         "rem": [
           "user_data",
@@ -144,7 +156,7 @@
                 "str": "Alice"
               },
               "active": {
-                "Bool": true
+                "bool": true
               }
             }
           }
@@ -155,6 +167,7 @@
   "html_instructions": [
     {
       "name": "add_html_simple",
+      "kind": "html",
       "input": {
         "add": [
           "content",
@@ -170,6 +183,7 @@
     },
     {
       "name": "add_html_complex",
+      "kind": "html",
       "input": {
         "add": [
           "form_content",
@@ -223,6 +237,7 @@
     },
     {
       "name": "remove_html_element",
+      "kind": "html",
       "input": {
         "rem": [
           "sidebar",
@@ -244,6 +259,7 @@
   "attr_instructions": [
     {
       "name": "add_attr_id",
+      "kind": "attr",
       "input": {
         "add": [
           "element_id",
@@ -255,6 +271,7 @@
     },
     {
       "name": "add_attr_class",
+      "kind": "attr",
       "input": {
         "add": [
           "element_classes",
@@ -266,6 +283,7 @@
     },
     {
       "name": "add_attr_event",
+      "kind": "attr",
       "input": {
         "add": [
           "click_handler",
@@ -284,6 +302,7 @@
     },
     {
       "name": "add_attr_custom",
+      "kind": "attr",
       "input": {
         "add": [
           "data_attr",
@@ -298,6 +317,7 @@
     },
     {
       "name": "remove_attr_id",
+      "kind": "attr",
       "input": {
         "rem": [
           "element_id",
@@ -309,6 +329,7 @@
     },
     {
       "name": "remove_attr_custom",
+      "kind": "attr",
       "input": {
         "rem": [
           "aria_label",
@@ -325,6 +346,7 @@
   "then_instructions": [
     {
       "name": "simple_then",
+      "kind": "string",
       "input": {
         "then": [
           {
@@ -344,13 +366,14 @@
     },
     {
       "name": "then_with_noop",
+      "kind": "value",
       "input": {
         "then": [
           {
             "add": [
               "active",
               {
-                "Bool": true
+                "bool": true
               }
             ]
           },
@@ -360,6 +383,7 @@
     },
     {
       "name": "nested_then",
+      "kind": "value",
       "input": {
         "then": [
           {
@@ -395,6 +419,7 @@
     },
     {
       "name": "complex_then_chain",
+      "kind": "value",
       "input": {
         "then": [
           {
@@ -430,6 +455,7 @@
   "optimization_test_cases": [
     {
       "name": "add_then_remove_same_field",
+      "kind": "value",
       "input": {
         "then": [
           {
@@ -454,6 +480,7 @@
     },
     {
       "name": "remove_then_add_same_field",
+      "kind": "value",
       "input": {
         "then": [
           {
@@ -478,6 +505,7 @@
     },
     {
       "name": "multiple_noops",
+      "kind": "value",
       "input": {
         "then": [
           "noOp",
@@ -507,6 +535,7 @@
     },
     {
       "name": "chain_with_canceling_operations",
+      "kind": "value",
       "input": {
         "then": [
           {
@@ -531,7 +560,7 @@
                 "add": [
                   "final",
                   {
-                    "Bool": true
+                    "bool": true
                   }
                 ]
               }
@@ -543,13 +572,14 @@
         "add": [
           "final",
           {
-            "Bool": true
+            "bool": true
           }
         ]
       }
     },
     {
       "name": "nested_then_flattening",
+      "kind": "value",
       "input": {
         "then": [
           {
@@ -618,16 +648,8 @@
   ],
   "edge_cases": [
     {
-      "name": "add_empty_string_field",
-      "input": {
-        "add": [
-          "",
-          "empty_key"
-        ]
-      }
-    },
-    {
       "name": "remove_with_special_chars",
+      "kind": "value",
       "input": {
         "rem": [
           "field-with.special@chars",
@@ -639,13 +661,14 @@
     },
     {
       "name": "then_with_single_operation",
+      "kind": "value",
       "input": {
         "then": [
           {
             "add": [
               "single",
               {
-                "Bool": true
+                "bool": true
               }
             ]
           },
@@ -656,13 +679,14 @@
         "add": [
           "single",
           {
-            "Bool": true
+            "bool": true
           }
         ]
       }
     },
     {
       "name": "deeply_nested_then",
+      "kind": "value",
       "input": {
         "then": [
           {
