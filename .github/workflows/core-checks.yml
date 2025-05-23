@@ -17,9 +17,6 @@ jobs:
   linting-backend:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
       - uses: actions/checkout@v4
       - name: Build
         run: |
