@@ -41,7 +41,7 @@ pub fn spawn_core_modification_handler() {
                     pre_len = pre_modification.len(),
                     post_len = modification.len(),
                     modification:serde;
-                    "recieved modification {:?} {:?} {:?}",
+                    "received modification {:?} {:?} {:?}",
                     state,
                     ui,
                     modification

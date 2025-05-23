@@ -5,6 +5,6 @@ use anyhow::Result;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    core_lib::ide::run().await;
+    core_lib::ide::run().await?;
     Ok(())
 }

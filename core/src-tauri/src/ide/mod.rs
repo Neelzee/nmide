@@ -5,6 +5,7 @@ use crate::{
     setup::setup,
     statics::{NMIDE, NMIDE_STATE, NMIDE_UI},
 };
+use anyhow::{Context, Result};
 use core_std_lib::{
     core::Core, core_modification::CoreModification, event::Event, html::Html, state::Value,
 };
@@ -47,10 +48,10 @@ async fn modification(modification: CoreModification) {
 }
 
 /// Runs the Tauri application
-pub async fn run() {
+pub async fn run() -> Result<()> {
     setup::setup_compile_time_modules()
         .await
-        .expect("Compile time module setup should always succeed");
+        .context("Compile time module setup should always succeed")?;
 
     let app = tauri::Builder::default()
         .plugin(
@@ -82,11 +83,11 @@ pub async fn run() {
             modification
         ])
         .build(tauri::generate_context!())
-        .expect("IDE Application should build successfully");
+        .context("IDE Application should build successfully")?;
 
     spawn_core_modification_handler();
 
-    app.run(move |app_handle, event| match &event {
+    let exitcode = app.run_return(move |app_handle, event| match &event {
         RunEvent::ExitRequested { .. } => app_handle
             .get_webview_window("main")
             .expect("Webview: `main` should exist")
@@ -115,5 +116,11 @@ pub async fn run() {
             }
         },
         _ => (),
-    })
+    });
+
+    if exitcode != 0 {
+        eprintln!("Non-zero return code: {exitcode}");
+    }
+
+    Ok(())
 }
