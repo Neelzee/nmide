@@ -9,10 +9,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@nmide/js-utils": "file:../../libs/js-utils",
+    "@nmide/js-utils": "link:@nmide/js-utils",
     "esbuild": "^0.24.0",
     "typescript": "^5.7.2"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }

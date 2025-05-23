@@ -202,6 +202,7 @@ checksum = "53857514f72ee4a2b583de67401e3ff63a5472ca4acf289d09a9ea7636dfec17"
 [[package]]
 name = "core-macros"
 version = "1.0.1"
+source = "git+https://github.com/Neelzee/nmide.git#897828ea36a0d951fc7b0af47ad39143979b22b9"
 dependencies = [
  "serde",
  "ts-rs",
@@ -210,6 +211,7 @@ dependencies = [
 [[package]]
 name = "core-module-lib"
 version = "1.0.1"
+source = "git+https://github.com/Neelzee/nmide.git#897828ea36a0d951fc7b0af47ad39143979b22b9"
 dependencies = [
  "abi_stable",
  "anyhow",
@@ -224,6 +226,7 @@ dependencies = [
 [[package]]
 name = "core-std-lib"
 version = "2.0.2"
+source = "git+https://github.com/Neelzee/nmide.git#897828ea36a0d951fc7b0af47ad39143979b22b9"
 dependencies = [
  "async-trait",
  "core-macros",
@@ -397,6 +400,7 @@ checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
 [[package]]
 name = "foreign-std-lib"
 version = "0.1.0"
+source = "git+https://github.com/Neelzee/nmide.git#897828ea36a0d951fc7b0af47ad39143979b22b9"
 dependencies = [
  "abi_stable",
  "core-std-lib",
