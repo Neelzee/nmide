@@ -12,7 +12,7 @@ modules : clean
 
 install:
 	@( \
-		cd ../libs/ && \
+		cd ../libs/javascript && \
 		find . -maxdepth 1 -type d ! -path . | while read p; do \
 			if [ -f "$$p/package.json" ]; then \
 				echo "Installing in $$p"; \
