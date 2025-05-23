@@ -8,6 +8,7 @@ pub type Core {
     state: promise.Promise(state.State),
     ui: promise.Promise(value.Html),
     throw_event: fn(value.Event) -> promise.Promise(Nil),
+    /// Module Name, Event Name
     registrate_handler: fn(
       String,
       String,

@@ -1,0 +1,20 @@
+{
+  "name": "@nmide/gleam-utils",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "vitest",
+    "build": "bun run build.ts && gleam build"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@nmide/js-debug-module": "link:@nmide/js-debug-module",
+    "vitest": "^3.1.4"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@nmide/js-utils": "link:@nmide/js-utils"
+  }
+}
