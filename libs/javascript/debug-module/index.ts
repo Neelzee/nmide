@@ -12,13 +12,22 @@ export const debug_module = (
   window.debug_state = initial_state || {};
   const c = core === undefined
     ? DebugCore()
-    : { ...DebugCore(), state: () => new Promise<State>(r => r(window.debug_state)), ...core };
+    : {
+      ...DebugCore(),
+      state: () => new Promise<State>(r => r(window.debug_state)),
+      sendModification: async (modification: CoreModification) => {
+        console.log("Core.sendModification", modification);
+        const ui = modification.ui;
+        render?.(ui);
+      },
+      ...core
+    };
   window.debug_module = {
     init: async () => {
-      m.init?.(c);
+      await m.init?.(c);
     },
     handler: async (event?: Event) => {
-      m?.handler?.(
+      await m?.handler?.(
         event === undefined
           ? mkPrimEvent("DebugEvent", null)
           : event,
