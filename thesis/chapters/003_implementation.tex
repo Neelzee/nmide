@@ -1,10 +1,10 @@
 \chapter{Implementation} \label{cha:impl}
 
-This section will focus on the implementation of the zero core \gls*{ide}. In
+This section will focus on the implementation of the zero-core \gls*{ide}. In
 section \ref{sec:stack}, we will mention technologies used, and why they were
 chosen. In section \ref{sec:mod1} and \ref{sec:mod2}, we will discuss the
 different iterations the application architecture had, and why they were subpar,
-compared to section \ref{sec:moD3}, which is the implementation of the zero core
+compared to section \ref{sec:moD3}, which is the implementation of the zero-core
 \gls*{ide}. Section \ref{sec:testing} will explain the necessity of testing when
 using such a modular design, and explore the ease of which functionality can be
 tested in a modular architecture. Section \ref{sec:modules} and \ref{sec:mdt}
@@ -231,7 +231,7 @@ without explicitly invoking the function.
 
 \section{Module V.1} \label{sec:mod1}
 
-We did not attempt at first, to create a zero core application; this was a
+We did not attempt at first, to create a zero-core application; this was a
 \textit{natural} conclusion to the existing problem. The first attempt was a
 simple generic \gls*{ide}, in which the module architecture was a concern from
 day one of development. The general plan was this:
@@ -1001,14 +1001,14 @@ Manually adding compile-time modules can be tedious, so we automated the task.
 For \gls{jsms}, it is quite trivial, simply bundle the JavaScript code into a
 single script, and import it into one file, and, as a final step, bundle this
 file. This ensures that all JavaScript modules are included, and loaded after
-the initial system has loaded. \todo{Mention the initial system}
+the core system.
 
 For the \gls{rsms}, it is less trivial. A compile-time Rust module is a Rust
-crate, and since we are using Cargo~\footnote{Build tool for Rust} we need to
+crate, and since we are using Cargo\footnote{Build tool for Rust} we need to
 specify all our imported crates in a \textit{Cargo.toml} file. We then also
 need to explicitly import and add the module into a list of all compile-time
 modules. With a build script, we could automate this. In the figure
-\ref{fig:compMod}, we can see a diagram of this process. \todo{Add appendix about the build system?}
+\ref{fig:compMod}, we can see a diagram of this process.
 
 \begin{figure}
   \centering
@@ -1024,26 +1024,6 @@ modules. With a build script, we could automate this. In the figure
   \label{fig:compMod}
 \end{figure}
 
-Some examples of issues we have experienced when developing modules are as
-follows:
-
-\begin{enumerate}
-  \item Incorrect handler registration
-  \item Incorrect Event name
-  \item Incorrect arguments in response
-  \item Incorrect arguments in request
-  \item Incorrect State
-  \item Concurrent Events
-\end{enumerate}
-
-Most of these issues relate to the Event system, so being able to mock events
-is a useful tool. When mocking in \gls*{rest}-\gls*{api} development, one
-creates the expected response, which is usually a \gls*{json}-file. The same is
-done here, where the \textit{Args} field in this form expects the argument to be
-in \gls*{json}. This is helpful, as other testing libraries, like
-\textit{Playwright} does the same, and the \gls*{ide} logs the Event arguments
-in the same formatting, meaning we can simply copy-paste the Event argument we
-want to mock, into the field.
 
 \subsection{Magnolia dependency graph visualizer}
 

@@ -29,7 +29,7 @@ return the wanted icon.
 
 So a change in the \gls*{ide} architecture could break a \textit{plugin} for the
 newer version of the \gls*{ide}, as with Bagge's Magnolia \gls*{ide}~\cite{baggeIde}.
-While in this zero core \gls*{ide} module developers are quite important, as they
+While in this zero-core \gls*{ide} module developers are quite important, as they
 are the ones who add the functionality to the \gls*{ide}. Therefore, the core
 \gls*{api} has to be more stable, and it is by virtue of not having much
 functionality.
@@ -42,7 +42,7 @@ integrated module architecture. Which is used to extend/change the \gls*{ide},
 from as simple as to change the theme, to more drastic changes, like changing
 all key binds to \textit{vim-motions}. In any case, a user expects certain
 functionality to already exist in an \gls*{ide}, like text editing. A maintainer
-of a zero core \gls*{ide} could supply modules added at compile time, meaning the
+of a zero-core \gls*{ide} could supply modules added at compile time, meaning the
 expected functionality is there out of the box, while more thematic modules
 could be supplied as runtime modules.
 
@@ -234,7 +234,7 @@ copy this binary instead.
 
 \section{Module Developer}
 
-Being a zero core application; all functionality comes from modules, the module
+Being a zero-core application; all functionality comes from modules, the module
 developer experience is the most important. To achieve this, documentation is
 important. If a module developer has a question about how the core might react,
 it should be answered by the documentation. In \gls*{eclipse}, this is in the
@@ -243,7 +243,7 @@ runtime handles \textit{plugins}. \footnote{\url{https://help.eclipse.org/latest
 
 The documentation for \textit{plugin} developers, in both \gls*{intellij} and
 \gls*{eclipse} has to be large, due to of how \textit{plugins} interact with the
-\gls*{ide}; it is a large \gls*{api}. In a zero core \gls*{ide} it is smaller,
+\gls*{ide}; it is a large \gls*{api}. In a zero-core \gls*{ide} it is smaller,
 simply due to the fact that the core \gls*{ide} offers fewer features, as features
 necessarily come from a module.
 
@@ -311,7 +311,7 @@ text editor used by Visual Studio Code. It comes with an integrated
 \gls*{lsp}-client, which would enable the application to easily support existing
 popular languages.
 
-However, being zero core, this application could be anything, from an audio
+However, being zero-core, this application could be anything, from an audio
 editing program, to a game emulator. Simply using the \textit{JS-DOS} library,
 would allow the application to run video games like Doom.
 
