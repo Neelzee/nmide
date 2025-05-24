@@ -3,7 +3,7 @@ import type { Html } from "./lib/Html";
 import type { Instruction } from "./lib/Instruction";
 import { type State } from "./lib/State";
 import type { Event } from "./lib/Event";
-import { Module } from "./lib/Module";
+import { type Module } from "./lib/Module";
 import { type Attr } from "./lib/Attr";
 
 export interface AppConfig {
@@ -29,7 +29,6 @@ export interface AppConfig {
 
 export type HandlerRegister = {
   event: Map<string, string[]>,
-  module: Map<string, string[]>,
 }
 
 export interface NmideConfig extends AppConfig {

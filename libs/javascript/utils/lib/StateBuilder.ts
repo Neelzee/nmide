@@ -1,9 +1,10 @@
 import type { Instruction } from "./Instruction";
 import type { CoreModification } from "./CoreModification";
-import { combine } from "./InstructionHelper";
+import { combine, flatten, isAdd, isNoOp } from "./InstructionHelper";
 import type { Value } from "./Value";
 import { isValue, tValueMaybe, type ValuePrimitive } from "./Types";
 import * as O from "fp-ts/Option";
+import type { State } from "./State";
 
 export class StateBuilder {
   private state: Instruction<Value> = "noOp";
@@ -36,6 +37,22 @@ export class StateBuilder {
       );
     }
     return this;
+  }
+
+  toState(): State {
+    const state: State = {};
+    const xs = flatten(this.state);
+    xs.filter(x => !isNoOp(x))
+      .forEach(x => {
+        if (isAdd(x)) {
+          const [k, v] = x.add;
+          state[k] = v;
+        } else {
+          const [k, _] = x.rem;
+          state[k] = undefined;
+        }
+      });
+    return state;
   }
 
   build(): CoreModification {

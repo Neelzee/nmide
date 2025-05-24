@@ -1,7 +1,8 @@
 import { type Core } from "./Core";
-import { Event } from "./Event";
-import { Html } from "./Html";
-import { State } from "./State";
+import type { CoreModification } from "./CoreModification";
+import type { Event } from "./Event";
+import type { Html } from "./Html";
+import type { State } from "./State";
 
 /**
  * A _valid_ Core variant, that simply logs the result of its invocations.
@@ -26,6 +27,9 @@ export const DebugCore = (): Core => {
       module?: string
     ): Promise<void> => {
       console.log("Core.registerHandler: ", name, event, module);
+    },
+    sendModification: async (modification: CoreModification): Promise<void> => {
+      console.log("Core.sendModification", modification);
     }
   };
 }

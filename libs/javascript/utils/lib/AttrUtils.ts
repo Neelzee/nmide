@@ -19,3 +19,12 @@ export const change = (event: Event): { change: Event } => {
 
 export const idCmp = (a: Attr, id: string): boolean =>
   "id" in a && a.id === id;
+
+export const attrIsEvent = (a: Attr): a is ({ click: Event } | { change: Event }) =>
+  "click" in a || "change" in a;
+
+export const getEvent = (a: Attr): Event | undefined => !attrIsEvent(a)
+  ? undefined
+  : "click" in a
+    ? a.click
+    : a.change
