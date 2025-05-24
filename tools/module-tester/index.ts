@@ -1,11 +1,12 @@
 import * as fs from "fs";
 import * as d3 from "d3";
 import { JSDOM } from "jsdom";
-import { getEventName } from "@nmide/js-utils";
+import { getEventName, objAdd, tList, tStr, Value, ValueList, ValueObj } from "@nmide/js-utils";
 import svg2img from "svg2img";
 
 import type { NamedDependency } from "./rsm-grapher/rsm-invoker/bindings/NamedDependency";
 import type { Event } from "./rsm-grapher/rsm-invoker/bindings/Event";
+import { pipe } from "fp-ts/lib/function";
 
 function getEventType(event: Event): string {
   if (typeof event === "string") {
@@ -42,7 +43,10 @@ interface Graph {
   links: Link[];
 }
 
-const data: NamedDependency[] = JSON.parse(fs.readFileSync("./build/result.json", "utf-8"));
+const rsm_data: NamedDependency[] = JSON.parse(fs.readFileSync("./build/result.json", "utf-8"));
+const jsm_data: NamedDependency[] = JSON.parse(fs.readFileSync("./build/jsm_result.json", "utf-8"));
+const copy_data: (NamedDependency & { kind: "Rust" | "JavaScript" })[] = JSON.parse(JSON.stringify([...rsm_data.map(ndep => { return { ...ndep, kind: "Rust" } }), ...jsm_data.map(ndep => { return { ...ndep, kind: "JavaScript" } })]));
+const data = [...rsm_data.map(ndep => { return { ...ndep, kind: "Rust" } }), ...jsm_data.map(ndep => { return { ...ndep, kind: "JavaScript" } })];
 
 const s_t = data.flatMap(n_d => {
   const consumer = n_d.name;
@@ -618,3 +622,28 @@ console.log('Link counts by event type:', eventTypeCounts);
 
 fs.writeFileSync('./build/module-dependencies.json', JSON.stringify(graph, null, 2));
 console.log('Graph data exported to ./build/module-dependencies.json');
+
+console.log("Translating graph data to DependencyViewer format");
+
+const dp_format: { event: string, args: ValueList } = {
+  event: "graph",
+  args: {
+    list: copy_data.map(ndep => {
+      const obj: ValueObj = { obj: {} };
+      const dependencies = ndep.consuming
+        .map(c => {
+          return copy_data.find(({ providing }) => providing.map(getEventName).includes(c.event_name));
+        })
+        .filter(x => x !== undefined)
+        .map(s => `${s.kind}.${s.name}`);
+      return pipe(
+        obj,
+        o => objAdd(o, "name", tStr(`${ndep.kind}.${ndep.name}`)),
+        o => objAdd(o, "dependencies", tList(dependencies)),
+      );
+    }),
+  }
+};
+
+fs.writeFileSync('./build/dependency-viewer-format.json', JSON.stringify(dp_format, null, 2));
+console.log('Graph data exported to ./build/dependency-viewer-format.json');
