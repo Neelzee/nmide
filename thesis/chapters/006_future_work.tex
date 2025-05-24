@@ -1,9 +1,9 @@
-\chapter{Future Work}
+\chapter{Future Work} \label{cha:future}
 
 Would've, could've, should've.
 
 
-\section{Technical Debt}
+\section{Technical debt}
 
 It just piles and piles and piles on.
 
@@ -16,7 +16,7 @@ No module market. How should we distribute modules?
 No unit tests for the TypeScript side, no integration testing between the
 frontend and backend.
 
-\subsection{Language Agnosticism}
+\subsection{Language agnosticism}
 
 Steps should be made to mitigate the shortfall of this solution, with regard to
 language agnosticism. The differences in installation for \gls*{rsms} and
@@ -25,7 +25,7 @@ compared to Rust modules. \gls*{jsms} should enforce a similar system of module
 building as \gls*{rsms}, not only to ensure less semantic differences, but also
 to ensure safety, as restricting the \gls*{jsms} is good.
 
-\subsection{Attribute and Instructions}
+\subsection{Attribute and instructions}
 
 Can't remove or change eventListeners currently. This is because to remove an
 EventListener, the exact same function passed to the \textit{addEventListener}
@@ -51,7 +51,7 @@ like attribute information, id, value, etc. But this would not update the
 user interactions to the \gls*{dom}, and somehow bubble these changes down to the
 backend, where the \gls*{ui} representation is managed.
 
-\subsection{Compile-time Module Installation}
+\subsection{Compile-time module installation}
 
 It's kinda cursed.
 
@@ -70,7 +70,7 @@ A lot of different scripts doing stuff, could be one \gls*{cli}-tool.
 
 Once the compiler~\cite{wiig} is implemented, a proper \gls*{ls} can be created.
 
-\section{Modular Editor}
+\section{Modular editor}
 
 The prototype editor module develop for this \gls*{ide} is subpar compared to
 existing ones. A new one should be developed, in tandem with a \gls*{ls} client.

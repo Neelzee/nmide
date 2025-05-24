@@ -7,9 +7,11 @@ different iterations the application architecture had, and why they were subpar,
 compared to section \ref{sec:moD3}, which is the implementation of the zero core
 \gls*{ide}. Section \ref{sec:testing} will explain the necessity of testing when
 using such a modular design, and explore the ease of which functionality can be
-tested.
+tested in a modular architecture. Section \ref{sec:modules} and \ref{sec:mdt}
+will discuss the implementation of \gls{ide} specific functionality, and
+module development tools, using modules, respectively.
 
-\section{Tech Stack} \label{sec:stack}
+\section{Tech stack} \label{sec:stack}
 
 A module can extend an application at either compile time, or during runtime.
 This could be achieved by using an interpreted language like JavaScript or
@@ -39,7 +41,7 @@ language, because the language a developer was writing in, had a higher level of
 abstraction. Today this notion of \textit{low} and \textit{high} level languages
 has changed. A \textit{low level} language is close to how a \gls*{cpu}
 \textit{thinks}, which has traditionally meant that C is a low level programming
-language, but some authors~\cite{cNotLowLevel} argue that this is no longer the
+language, but some~\cite{cNotLowLevel} argue that this is no longer the
 case. In any case, we will use \textit{low level} to mean a programming
 languages like C, where direct memory manipulations is a feature of the
 language.
@@ -70,7 +72,7 @@ things, type safety, memory safety, and concurrency. When programming in Rust,
 the bugs common in other languages, like null pointers, buffer overflow and data
 races are detected at compile time. Most of these are features of Rusts
 ownership rules. These rules, enforced by the compiler, ensure that values are
-safely dropped,~\footnote{Called \textit{freed} in Rust} this ensures that all
+safely dropped\footnote{Called \textit{freed} in Rust}, this ensures that all
 variables referenced in Rust have a value, and can be safely evaluated. It works
 by simply dropping values when they are out of scope. The example in listing
 \ref{lst:ownership}, the \textbf{name} variable is declared, and used as an
@@ -79,7 +81,7 @@ with \textbf{name}, since at the end of \textbf{greeting}, before it returns,
 \textbf{name} is dropped, since once we called \textbf{greeting}, the
 \textbf{main} method no longer \textit{owned} \textbf{name}, as the ownership
 was transferred to \textbf{greeting}. We could \textit{fix} this by changing the
-argument type from \textit{name: String}, to \textit{name: \&String},~\footnote{Since String is a dynamic heap string type, when we have a reference to it, it is equivalent to an \textit{\&str}, being a reference to an immutable sequence of bytes.}
+argument type from \textit{name: String}, to \textit{name: \&String}~\footnote{Since String is a dynamic heap string type, when we have a reference to it, it is equivalent to an \textit{\&str}, being a reference to an immutable sequence of bytes.}
 and adding the borrow symbol to the argument in
 the method invocation, as shown in listing \ref{lst:ownership-ref}.
 
@@ -191,7 +193,7 @@ each Tauri \gls*{api} invocation, but this is negliable\footnotemark{}
 
 \footnotetext{According to Tauri themself \url{https://v2.tauri.app/concept/inter-process-communication/isolation/\#performance-implications}}
 
-\subsubsection{Module Validation}
+\subsubsection{Module validation}
 
 Running third-party-code can dangerous. If this code is not validated or does
 not come from a trusted source, it could be an attack vector. Luckily, Tauri does
@@ -272,7 +274,7 @@ make everything modular. The only thing the \gls*{ide} can do, is to manage
 modules. All features, from the file explorer to the text editor, everything is
 a module that can be enabled or disabled.
 
-\subsection{The Elm Architecture}
+\subsection{The Elm architecture}
 
 An inspiration for the new module architecture is Elm-Lang~\cite{elmLang}. Elm
 is a functional language, aimed at frontend web development, but its
@@ -294,7 +296,7 @@ more modular.
   \label{fig:elmArchitecture}
 \end{figure}
 
-\subsection{Module Architecture}
+\subsection{Module architecture}
 
 In this application, the Elm-box is a module, while the runtime system, is the
 core itself. The core invokes all modules, all of which, should have these three
@@ -393,7 +395,7 @@ which also reacts to the same Msg, but if we know the name of the module $B$,
 we can set the name of module $C$ to be \textit{above} the order, relative to
 $B$, ensuring that $C$ always triggers before $B$.
 
-\subsection{Module v2 Cons}
+\subsection{Module v2 cons}
 
 \paragraph{Not modular} This setup is also not really modular, as a single
 module cannot invoke another module without being impure. The only way to
@@ -416,7 +418,7 @@ previous one has, we kept it. If they had the same field, the new state
 overwrote the old one. So since we only did tree comparisons, there was no way
 to encode removal of a field.
 
-\subsubsection{State Collision} \label{sec:collision}
+\subsubsection{State collision} \label{sec:collision}
 
 A state collision occurs when two or more modules updates the same field, during
 the same update-cycle. This issue also occurs when folding two states. After any
@@ -452,7 +454,7 @@ between two states:
 Since the states are ordered by the name of the module they come from, we
 have a consistent ordering of left-hand side and right-hand side. Due to the
 fact that module invocation is synchronous, and ordered. If the same modules
-give a collision on the same input,~\footnote{Given that all modules are pure} the
+give a collision on the same input\footnote{Given that all modules are pure}, the
 resulting state will be the same every time. The problem is that applying some
 function on the values could be an unwanted way to resolve collisions. The
 standard way will be to log the collision, and then drop both states. Even
@@ -465,7 +467,7 @@ for each new subtree that is added, to figure out if there occurs any collision.
 And then notifying the module developer of which field this collision occurred
 on, and which modules tried to modify that field.
 
-\section{Module V.3} \label{sec:moD3}
+\section{Module v.3} \label{sec:moD3}
 
 The third and hopefully final, plan:
 
@@ -518,6 +520,7 @@ coupled. This is an equivalent architecture to microservices. In the figures
   \label{fig:comp}
 \end{figure}
 
+
 \subsection{Vanilla TypeScript}
 
 Instead of using React as the frontend framework, TypeScript was chosen, which
@@ -532,10 +535,14 @@ turn module non-pure.
 \subsubsection{Removing abstractions}
 
 It became prudent, due to the change of architecture, to change the entire
-frontend, moving away from React, and using \textit{bare-bones} TypeScript. This
-would enable easier integration into the \gls*{jsms}.
+frontend, moving away from React, and using \textit{bare-bones} TypeScript.
+Reacts state management with \textit{useEffect} and \textit{useState} where
+needed to handle efficient re-rendering of the \gls{dom}, but since we were
+working directly on the \gls{dom}, this state management was just in the way. So
+moving to just TypeScript meant that it would enable easier to develop the
+\gls*{jsms}.
 
-\subsection{Core Modifications}
+\subsection{Core modifications}
 
 Learning from the issues outlined in section \ref{sec:collision}, instead of a
 module returning the new core, it will rather return a set of instruction on
@@ -560,10 +567,11 @@ state, and one for the \gls*{ui}.
     , caption={Core Modifications (Rust)}
     , label=lst:cm
     , firstline=12
+    , lastline=15
     ]{./libs/rust/core-std-lib/src/core_modification/mod.rs}
 \end{center}
 
-\subsection{Tree Manipulation}
+\subsection{Tree manipulation}
 
 This restructure changes the way the view is rendered. Instead of the view being
 re-rendered for each state-update, the view, or \gls*{ui}-hierarchy, is only
@@ -735,7 +743,7 @@ different users, but if the modules are \textit{pure}, this would not matter.
 Then the only issue is to ensure consistency between the state and \gls*{ui},
 which would be stored on the client side.
 
-\subsection{Making the Core evaluate modifications asynchronously}
+\subsection{Making the core evaluate modifications asynchronously}
 
 Due to Rust first class focus on concurrency, it was trivial to make the core
 modifications run asynchronously. In previous iterations, the core evaluated
@@ -787,7 +795,7 @@ instance, which we can extend to evaluate actual modifications, ensuring we can
 assert that some state or \gls*{ui} change has occurred after an Event has been
 sent.
 
-\subsection{Unit Testing}
+\subsection{Unit testing}
 
 A module developer should create unit tests for their module. This can easily be
 done, and tested many times, due to the light-weightiness of a module. This,
@@ -814,7 +822,7 @@ sends~\footnote{Since the types are specified on the backend}. Using the same
 test input, we can verify that both the Rust and JavaScript library correctly
 handle the serialization and serialization of the data.
 
-\subsubsection{UI Testing}
+\subsubsection{UI testing}
 
 We can also combine this with existing testing libraries, like \textit{Playwright}\footnote{\url{https://playwright.dev/}},
 which can enable us to create tests specifically for UI behavior. In the case of
@@ -824,7 +832,7 @@ which can enable us to create tests specifically for UI behavior. In the case of
 rendered on a webpage, or \textit{headless}, in \textit{Playwright}s case, so
 that \textit{Playwright} can assert the state of our \gls*{dom}.
 
-\subsection{Module Family Testing}
+\subsection{Module family testing}
 
 If a module changes some feature, let's say in the editor functionality, the
 module family tree encompassing this functionality needs to be tested, to ensure
@@ -834,7 +842,7 @@ the editor functionality, that after the Event \textit{open-file} is sent with
 a path to some file, that there exists a \textit{textarea}-\gls*{html}-element in
 the \gls*{dom}, with the same contents as the file.
 
-\subsubsection{Contract Testing}
+\subsubsection{Contract testing}
 
 As a module developer, on is designing some kind of \gls*{api}, but the developer
 has no say in how a consumer of the \gls*{api} consumes it. In a microservice
@@ -850,7 +858,7 @@ newer version of the \gls*{api}.
 Instead of relying on such a versioning system, module developers could use
 \textit{contract testing}.
 
-\paragraph{Contract Testing} Imagine some \gls*{api}, and several consumers,
+\paragraph{Contract testing} Imagine some \gls*{api}, and several consumers,
 $A, B, C$, The \gls*{api} developer is serving some data, in this case an
 integer number, which all the consumers use. One day, the developer finds out
 that using integers is not optimal, and want to move on to using floating point
@@ -868,7 +876,7 @@ a developer creates a \gls*{dsl} test, where they describe how the provider or
 consumer reacts to certain interactions. But since everything is a module, we
 can automate this.
 
-\subsection{Automating Contract Testing}
+\subsection{Automating contract testing}
 
 This process could be partially automated, as all modules have to register the
 event they want to handle. Furthermore, all events thrown are also explicitly
@@ -915,7 +923,7 @@ static code analysis, so this is out of scope for this tool.
 With this, we can detect possible contracts between different modules, ensuring
 we know that testing between them is needed.
 
-\subsection{End-To-End-Testing}
+\subsection{End-To-End-testing}
 
 The final step in the testing pipeline, is to test the entire application
 together. This is known as \gls*{e2e}. \gls*{e2e} is expensive, compared to the
@@ -927,7 +935,7 @@ pipeline, as all user interactions are translated into events, this ensures a
 module developer can narrow down what modules are at fault, by what modules
 \textit{subscribe} to that event.
 
-\section{Modules}
+\section{Modules} \label{sec:modules}
 
 \paragraph{Event Type} In listing \ref{lst:moduleEvent}, one can see the
 structure of an event type. This allows for modules to pattern match on specific
@@ -981,13 +989,13 @@ expensive computation on another thread, while \textit{ending} their
 invocation, ensuring a smooth \gls*{ide} experience.
 
 
-\section{Module Developer Tools}
+\section{Module developer tools} \label{sec:mdt}
 
 The module developer experience is an important aspect of a zero-core
 architecture. A good way to improve this experience, is by providing good
 tooling.
 
-\subsubsection{Module Installation}
+\subsection{Module installation}
 
 Manually adding compile-time modules can be tedious, so we automated the task.
 For \gls{jsms}, it is quite trivial, simply bundle the JavaScript code into a
@@ -1037,7 +1045,7 @@ in \gls*{json}. This is helpful, as other testing libraries, like
 in the same formatting, meaning we can simply copy-paste the Event argument we
 want to mock, into the field.
 
-\subsection{Magnolia Dependency Graph Visualizer}
+\subsection{Magnolia dependency graph visualizer}
 
 In Magnolia, as in many other languages, one cannot have a cyclic dependency.
 This means that the dependency graph of a Magnolia project should be a

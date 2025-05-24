@@ -19,7 +19,7 @@ theory, it is quite trivial to understand on a conceptual level. Developers quit
 often work with sets of operations, type declarations and axioms, namely
 \gls*{api}s.
 
-\subsection{Magnolia Concept}
+\subsection{Magnolia concept}
 
 Commonly, the term \gls*{api} is used specifically for \gls*{rest} \gls*{api}s, but
 it also covers concepts, like those in Magnolia, interfaces in Java, traits in
@@ -43,7 +43,7 @@ would be a concept for addition with natural numbers.
 
 In the listing \ref{lst:nat}, we are specifying concept called
 \textit{NaturalNumbers}, which declares a type \textbf{N}, and three methods
-that act upon the type \textbf{N}. We have the function~\footnote{Also called a constructor}
+that act upon the type \textbf{N}. We have the function\footnote{Also called a constructor}
 \textbf{zero}, which takes zero arguments, and should return something of type
 \textbf{N}. With this constructor, we can instantiate our numbers. To get new
 numbers, we have the function \textbf{succ}, which should give the
@@ -66,7 +66,7 @@ instantiate a list, and do operations on it, such as getting adding an element t
 the list, or by concatenating two lists. We can also fetch the first element of
 the list, by using \textbf{head}, note the \textit{guard} attached to the
 function statement, this guard ensures that when this method is invoked, the
-list we get the first element from, cannot be empty,~\footnote{Equal to \textbf{nil()}}
+list we get the first element from, cannot be empty~\footnote{Equal to \textbf{nil()}},
 which means that our function is not \textit{total}, but \textit{partial}. This
 means that for any argument, we might not have a corresponding result. If we did
 not have this guard, then what would happen if we \textit{took} \textbf{head} of a list
@@ -95,19 +95,19 @@ it, since there will at minimum, be one element in the list.
 
 However, this interpretation depends on our implementation of the concept.
 
-\subsection{Magnolia Implementation}
+\subsection{Magnolia implementation}
 
 As one can see in listing \ref{lst:impl}, we have implemented the concept
 specified in \ref{lst:nat}, by using concrete values for \textbf{N}. There is an
 implementation for all the functions, giving us the functionality we set out to
 specify with our concept, but there is nothing stopping us from straying away
 from the specification, by implementing it incorrectly. Since we are using
-primitive types~\footnote{Integers} we have to use external code, which is
+primitive types\footnote{In this case, integers} we have to use external code, which is
 another feature of Magnolia. In the listings \ref{lst:impl} and
 \ref{lst:impl-wrong}, we are using an external implementation of numbers, from
 C++.
 
-\begin{code}[]
+\begin{code}[H]
   \lstinputlisting
     [ language=Magnolia
     , caption={Natural numbers implementation (Magnolia)}
@@ -115,7 +115,7 @@ C++.
     ]{./code/magnolia-add.mg}
 \end{code}
 
-\begin{code}[]
+\begin{code}[H]
   \lstinputlisting
     [ language=Magnolia
     , caption={Invalid implementation (Magnolia)}
@@ -146,7 +146,7 @@ This is where the
 \textit{satisfaction} comes in, it is what ties the concept and implementation
 together, by ensuring our axiom are upheld.
 
-\subsection{Magnolia Satisfaction}
+\subsection{Magnolia satisfaction}
 
 \begin{center}
   \lstinputlisting
@@ -176,7 +176,7 @@ verification of some program is good to have, some features needed for a new
 \gls*{ide} would be to integrate it with this functionality.
 
 
-\subsection{Mathematics and Programming}
+\subsection{Mathematics and programming}
 
 Mathematics is everywhere, and useful. It's not always easy to notice this, but
 one thing that helps, is knowing the names of the concepts one encounter. One
@@ -210,7 +210,7 @@ us to read when something goes wrong. Moving on, a good feature of a text
 editor, is being able to undo and redo actions. These are the actions that a
 user should be able to do:
 
-\begin{itemize}[H]
+\begin{itemize}
   \item Insert text at a position
   \item Delete text from a position
   \item Redo an action
@@ -320,7 +320,7 @@ listing \ref{lst:meditor}, that there is some kind of relation between these
     , label=lst:meditor]{./code/editor.mg}
 \end{code}
 
-Both the logging example, and the text editor example, are some binary operation
+Both the logging example, and the text editor example, are some binary operation\footnote{Function with two arguments}
 over some set. In the first example, our set was all different log statements of
 the type \textbf{Log A}, and composing these logs, gave us another
 \textbf{Log A} type. While in the second example, we were working on the set of
@@ -329,13 +329,12 @@ had an action representing no-operation, and an \textit{inverse} operation,
 undoing an action. This is related to mathematics, specifically abstract
 algebra, the study of algebraic structures.
 
-\subsection{Abstract Algebra}
+\subsection{Abstract algebra}
 
 In the first example, we are working with a \textit{semigroup}, and in the
 second example, we are working with a \textit{group}. These are known as
-algebraic structures, which is just some set, with a function~\footnote{Also called an operation}
-that takes two inputs, and outputs one result, and some property on that
-function.~\footnote{Also called a binary operation, since it takes two inputs}
+algebraic structures, which is just some set, with a function that takes two
+inputs, and outputs one result, and some property on that function.\footnote{Also called a binary operation, since it takes two inputs}
 The trivial example, is known as \textit{magma}, and is defined by
 \ref{def:magma}. The closure \ref{def:closed} simply specifies that we only work
 with one set.
@@ -435,7 +434,7 @@ developer if they could encode these properties in something like an interface o
 a trait, however, this is not possible in either Java nor Rust. We cannot enforce
 things like the definition \ref{def:assoc} on our operators.
 
-\subsection{Java: Magma to Group}
+\subsection{Java: magma to group}
 
 This structure could \textit{technically} be implemented in something like Java,
 an Object-Oriented Language, as shown in listings \ref{lst:jmagma},
@@ -472,7 +471,7 @@ is not enforced on an external consumer of the \gls*{api}.
     , label=lst:jgroup]{./code/group.java}
 \end{center}
 
-\subsection{Rust: Magma to Group}
+\subsection{Rust: magma to group}
 
 The same issue with property enforcement exists in Rust.
 
@@ -504,7 +503,7 @@ The same issue with property enforcement exists in Rust.
     , label=lst:rgroup]{./code/group.rs}
 \end{center}
 
-\subsection{Magnolia: Magma to Group}
+\subsection{Magnolia: magma to group}
 
 However, in Magnolia this can be required on the \textit{interface}-level. The
 example code shown in listing \ref{lst:magma}, showcases a concept
@@ -561,7 +560,7 @@ batch several actions together, and evaluate them together. If the user keeps
 writing and deleting the same sentence over and over again, we could evaluate
 them as an "NoOp", and not do the expensive IO operation.
 
-\section{Reusable Software}
+\section{Reusable software}
 
 One of the most important features in any programming language, is the notion
 of \textit{reusability}. From the invention of the GO-TO-statement, with which
@@ -637,7 +636,7 @@ more generic, like \gls*{vscode}. We will use the terms generic and specialized
 An \gls*{ide} that claims to support a language, is expected to with certain
 features. So a specialized \gls*{ide} should contain the following features:
 
-\subsection{Syntax Highlighting}
+\subsection{Syntax highlighting}
 
 Highlighting important keywords, identifiers and more, makes the language easier
 to read for the developer, allowing them to spot easy to miss errors, like
@@ -662,7 +661,7 @@ using visualization to make developers notice issues.
   \label{pic:noStx}
 \end{figure}
 
-\subsection{Code Autocompletion}
+\subsection{Code autocompletion}
 
 Suggesting keywords, method names or even entire code snippets, is a powerful
 tool an \gls*{ide} can have. This is possible to achieve, in some form, without
@@ -680,14 +679,14 @@ correct method name will be suggested.
   \label{pic:completion}
 \end{figure}
 
-\subsection{Go-To-Definitions}
+\subsection{Go-to-definitions}
 
 Being able to quickly navigate to methods and read their implementation is a
 useful tool for a developer, as less time has to be spent navigating the project
 structure, to figure out where some method was implemented, and more time can be
 spent actually developing.
 
-\subsection{Formatting and Linting}
+\subsection{Formatting and linting}
 
 When developing, an important process is code review, another developer ensuring
 that the suggested improvement is up to some standard, specified by the
@@ -704,7 +703,7 @@ for example, the compiler has a built-in formatter and linter, which, during
 compilation, warns the user of these mistakes, and can re-arrange the source
 code by formatting it to fit the standard.
 
-\subsection{Boilerplate Code Generation}
+\subsection{Boilerplate code generation}
 
 An important process in development, are ensuring your code is correct. A good
 way to ensure this, is with unit testing. For object oriented programming, this
@@ -715,11 +714,11 @@ the empty tests ready to fail. An example for this can be seen in
 \ref{pic:generate}, where we are prompted with a checkbox for each method on
 the class; whether we want to include it in our unit test or not.
 
-For unit tests, getters and setters,~\footnote{Where relevant} and similar.
+For unit tests, getters and setters\footnote{Where relevant}, and similar.
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.5\textwidth]{generate.png}
+  \includegraphics[height=0.5\textwidth]{generate.png}
   \caption{
     Window for generating boilerplate code for a unit test (Kotlin in
     \gls*{intellij})
@@ -732,13 +731,13 @@ through the \gls*{ide} module architecture. A generic \gls*{ide} contains the
 features that are common among development across any programming language. But
 the following features are not exclusive to generic \gls*{ide}s.
 
-\subsection{File Explorer}
+\subsection{File explorer}
 
 Most project nowadays is larger than one file, so being able to visualize the
 project in a tree-like-structure, and navigate that, is useful. Similarly to
 syntax highlighting, it adds icons to showcase what is a file or folder, but
 also what file extension is used. In the picture \ref{pic:fileEx}, one can see
-how all the Rust files, the files ending with \textit{rs}, have a crab,~\footnote{Called \textit{Ferris}}
+how all the Rust files, the files ending with \textit{rs}, have a crab\footnote{Called \textit{Ferris}},
 visually showing the developer that this file is a Rust source file. This makes
 it easier for a developer working on a polyglot project. This feature also comes
 with the ability to manipulate the project structure, by adding files, folders,
@@ -752,7 +751,7 @@ the file. By clicking on a file, it opens up in an editor, to be edited.
   \label{pic:fileEx}
 \end{figure}
 
-\subsection{Version Control System Integration}
+\subsection{Version Control System integration}
 
 \gls*{vcs} is an integral part of development. Being able to sync ones work
 between different machines and developers is essential. It allows for
@@ -777,7 +776,7 @@ changes, marked changes, committed change).
   \label{pic:vcsViz}
 \end{figure}
 
-\subsection{Module Market \& Installation}
+\subsection{Module market \& module installation}
 
 An important part of the user experience in a modular \gls*{ide}, is being able
 to seamlessly add, install and use modules. An integral part of this is the
@@ -799,7 +798,7 @@ this in action.
   \label{pic:market}
 \end{figure}
 
-\section{Module Architecture}
+\section{Module architecture}
 
 A modular application, is an application which can be extended by other pieces
 of software. This extensibility is useful as features that the original
@@ -816,7 +815,7 @@ expect. Another method would be \textit{compile-time-extension}, in which
 modules are added before the application itself is compiled. There are some
 advantages and disadvantage in both approaches.
 
-\subsection{Compile Time Module}
+\subsection{Compile-time module}
 
 As an example, a standard user of any application will expect the application to
 come bundled with all the needed functionality. This is best achieved with the
@@ -826,7 +825,7 @@ contains all the wanted features. This also comes with the benefit of the
 compiler being able to optimize the module-core interactions, since the module
 is directly integrated into the source code of the core application.
 
-\subsection{Runtime Module}
+\subsection{Runtime module}
 
 Runtime modules are usually also interpreted, but they can still be a
 library, same as in a compile time module. The benefit with a runtime module,
@@ -835,14 +834,14 @@ application before being able to test a module is a hassle. But it comes with
 some drawbacks, like having to do extra verifications on top of the module,
 ensuring invoking the module won't crash the entire \gls*{ide}.
 
-\subsection{Module Ecosystem}
+\subsection{Module ecosystem}
 
 In modern \gls*{ide}s, with an extensive module architecture, there exists a
 vast module ecosystem. From simple modules that change the color scheme, or
 add file icons to more complex modules that add support for other languages.
 A good variety of a module ecosystem can help ensure the longevity of an
 \gls*{ide}. In the table \ref{tbl:mod}, we can see that \gls*{ide}s have an
-extensive module ecosystem. \footnotemark
+extensive module ecosystem.\footnotemark{}
 
 \footnotetext{Data found by looking at the marketplace for the modules, in order:\url{https://marketplace.eclipse.org/content/welcome-eclipse-marketplace}, \url{https://plugins.jetbrains.com/}, \url{https://marketplace.visualstudio.com/search?target=VSCode\&category=All\%20categories\&sortBy=Installs}}
 
@@ -867,7 +866,7 @@ modules for \gls*{vscode}. All of which strengthen the longevity of the
   \end{tabular}
 \end{table}
 
-\subsubsection{Module Marketplace}
+\subsubsection{Module marketplace}
 
 Having modules is all well and good, but if a user cannot easily get the
 module, it's not useful. The top \gls*{ide}s mentioned, \gls*{eclipse},
@@ -892,7 +891,7 @@ features, then it would be \textit{simpler} to modify the needed modules to
 achieve the wanted feature.
 
 
-\subsection{Module Family}
+\subsection{Module family}
 
 A module family are several modules enabling a single
 \textit{feature}. A user of the \gls*{ide} might think that being able to browse
@@ -995,15 +994,15 @@ multiple definitions, and resolving this can be complex.
 
 \subsection{Renaming}
 
-\todo{List are a free monoid}
-String concatenation is a monoid, so is list concatenation.
-Given our definition of a moniod,~\footnotemark{} one can
-trivially see that string concatenation and list concatenation falls under this
-definition, and are therefore related.
+Given our definition of a monoid,\footnotemark[13]{} one can trivially see that
+string concatenation and list concatenation falls under this definition, and are
+therefore related. It is therefore quite reasonable to reuse the monoid
+concept, within the string and list concepts. Along side their respective
+methods, like \textbf{toUpperCase} or \textbf{map}.
 
 Even though they are related, it is more useful to have specific names for each
 concept. In \ref{lst:strConc} and \ref{lst:lstConc} we are importing the
-monoid,~\footnotemark{} and renaming the \textbf{unit} and \textbf{binop}
+monoid\footnotemark{}, and renaming the \textbf{unit} and \textbf{binop}
 operation to something that are specific to the concepts, \textbf{emptyString},
 $+$ and \textbf{emptyList}, $++$ respectively.
 
@@ -1028,7 +1027,7 @@ $+$ and \textbf{emptyList}, $++$ respectively.
 Since renaming is heavily used, being able to visualize the \textit{flattened}
 and \textit{unflattened} \gls*{asr}-tree is useful.
 
-\subsection{Dependency Cycles}
+\subsection{Dependency cycles}
 
 Programming languages have different ways to avoid the problem of imports of
 modules forming a cyclic graph. The easiest, is to simply disallow such import

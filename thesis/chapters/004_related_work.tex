@@ -2,33 +2,65 @@
 
 \section{Existing module architectures in IDEs}
 
-There exists module architectures in other \gls{ide}s.
+There exists module architectures in other \gls*{ide}s.
 
-\subsection{IntelliJ \& JetBrains}
+\subsection{IntelliJ}
 
-Has a module architecture.
+The extensibility \gls*{intellij} has, is achieved by its extensions points
+architecture. This is an \gls*{api} for plugins to integrate with the
+\gls*{ide}. Plugins use this \gls*{api} to register their implementations.
 
 \subsection{NetBeans}
 
-Has a module architecture.
+An important part of NetBeans core architecture, is the NetBeans Module
+\gls*{api}. This \gls{api} is responsible for supporting the
+\textit{runtime environment}, which is the minimum amount of modules needed to
+run the NetBeans application. A module in NetBeans is a JAR file, in which a
+module can, amongst other things, list their public packages. This means that
+other modules can directly invoke methods provided by this package.
 
 \subsection{Visual Studio}
 
-Has a module architecture.
+There are two kinds of extensions in Visual Studio, \textit{VSPackage} and
+\textit{MEF} extensions. \textit{VSPackage} are mainly used to extend
+functionality like tool windows and projects, while \textit{MEF} extensions are
+used to customize the text-editor.
 
 \subsection{Visual Studio Code}
 
-Has a module architecture.
+\gls*{vscode} is an extensible \gls*{ide}. It achieves this extensibility with
+its extension \gls*{api}. This \gls*{api} allows for extensions to modify the
+look and behavior of the \gls*{ide}. In fact, many of the core \gls*{ide}
+features are possible due to built-in extensions.
 
 \subsection{Theia}
 
-Has a module architecture.
+\say{The Theia \gls*{ide} is a modern \gls*{ide} for cloud and desktop built on the Theia Platform}.~\cite{theiaIde}
+
+Eclipse Theia is a highly extensible \gls*{ide}, supporting \textit{extensions}
+from \gls*{vscode}, their own extensions and plugins, and \textit{headless}
+plugins. Theia differentiates between extensions and plugins, where a
+plugin is installed during runtime, and an extension is installed during
+compile-time.
+
+Theia reuses components from \gls*{vscode}, like their extensions \gls*{api},
+which enables them to support \gls*{vscode} extensions. Theia plugins share
+similarities with \gls*{vscode} extensions, but are not restricted to
+\textit{just} the \gls*{vscode} \gls*{api}.
+
+Theia's extensions are designed to add or remove existing core functionality in
+Theia. They also have access to the entire core \gls*{api}.
+
+An headless plugin runs without access to the frontend, meaning they are suited
+for \gls*{cli} interactions, or similar use cases where a frontend is not
+needed.
+
+Theia is both a desktop \gls*{ide} and a web \gls*{ide}. Where there is no real
+distinction between the two, both abstracting it to a frontend and backend. This
+is similar to our zero-core \gls*{ide}, as we can make this abstraction due to
+our usage of a web view for the desktop \gls*{ide}.
 
 \subsection{Eclipse}
-
-Has a module architecture.
-
-\subsubsection{Eclipse Rich Client Platform}
 
 \gls*{ide}s are one of the most common application that supports extensions by
 third-party code. \gls*{ide}s like \gls*{eclipse} and \gls*{intellij} are
@@ -37,8 +69,15 @@ with the help of modules. A module in \gls*{eclipse} for instance, could extend
 \gls*{eclipse} with functionality like syntax highlighting, code completion,
 Go-to-definitions, debugging, and more, for standard programming languages.
 A lot of this functionality, comes from module-to-module extension, as in
-\gls*{eclipse} modules can extend modules, with the use of the Eclipse Rich
-Client Platform~\cite{eclipseRcp}.
+\gls*{eclipse} modules can extend modules, with the use of the \gls*{erpc}~\cite{eclipseRcp}.
+
+\subsubsection{Eclipse Rich Client Platform}
+\*gls{erpc} is a platform for building desktop applications. \gls*{eclipse}
+being an example of this platform in action. A plug-in could for example be
+responsible for setting up the general \gls*{ui} layout, similar to our module,
+\textit{ide\_framework}, and another plug-in could then modify this \gls*{ui} by
+adding a file explorer, similar to our module \textit{ide\_explorer}.
+
 
 \section{Multi-way Dataflow Constraint System} \label{sec:mdcs}
 
@@ -96,7 +135,7 @@ renaming in a Magnolia project is a more involved process for the compiler,
 and in larger projects, could take a noticeably long time.
 
 
-\section{Automated Testing}
+\section{Automated testing}
 
 Due to the extensive modularity of the application, all modules can be tested
 individually, by \textit{mocking} the expected state and events. This means that
@@ -111,7 +150,17 @@ test. This would help a module developer to discover behavior that a user might
 not expect~\cite{leastGui}.
 
 
-\section{Abstract Algebra}
+\section{Syntactic Theory Functor}
+
+\gls*{stf} is a framework for creating, reusing and restructuring
+specifications\cite{stf:haveraaen:2020}, specifications from algebraic
+specification languages like CafeOBJ~\cite{cafeObj}. \gls*{stf}s are also used
+by the new Magnolia compiler\footnote{As of May 2025, still in development}, to
+resolve renaming in Magnolia and \textit{flattening} of the \gls*{asr} to be
+shown to the developer \cite{wiig}.
+
+
+\section{Abstract algebra}
 
 Magnolia is a kind of algebraic specification language, like CafeOBJ~\cite{cafeObj}.
 An algebraic specification language, is a language where one can develop
@@ -119,13 +168,7 @@ similarly as to how one might create an algebraic structure. As shown in the
 development of this \gls*{ide}, this can be quite useful way of thinking.
 
 
-\section{Syntactic Theory Functor}
-
-\gls*{stf} is used by the compiler~\cite{wiig} for stuff. Amongst them being
-resolving renaming, and flatting the \gls*{asr} to be shown to the developer.
-
-
-\section{Language Workbench}
+\section{Language workbenches}
 
 Language workbenches are environments for simplifying the creation and use of
 computer languages~\cite{lwb}.

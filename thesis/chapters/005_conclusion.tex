@@ -2,7 +2,7 @@
 
 The hypothesis \ref{hyp:modular} is right, source? Me.
 
-\section{Modular Development}
+\section{Modular development}
 
 In this thesis, we have shown that developing against a zero-core modular
 architecture is trivial. By utilizing separation of concerns, a module developer
@@ -47,7 +47,7 @@ which, we can manually calculate the position of the click. Implementing this
 meant adding a breaking change to the \gls*{api}, which deprecated different
 modules, so more time was spent on re-implementing them.
 
-\subsection{Language Agnosticism}
+\subsection{Language agnosticism}
 
 Not really achieved, because we cannot syntactically translate between a
 JavaScript Module and a Rust Module. This is due to the differences between the
@@ -73,7 +73,7 @@ invoke it. That is why we need the extra steps of creating a
 \textit{ModuleBuilder}, which has to implement the \textit{ModuleBuilder} trait,
 so that we can build the module.
 
-\subsection{Foreign Modules}
+\subsection{Foreign modules}
 
 Languages like Gleam and PureScript, which compile directly to JavaScript can
 be trivially added. But for languages that can target the C-\gls*{abi}, this is
