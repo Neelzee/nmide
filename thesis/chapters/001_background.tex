@@ -899,10 +899,10 @@ the project using a file explorer integrated into the \gls*{ide} as a single
 feature, in a modular system, that facilitates reuse, this would be made up of
 several different modules.
 
-\begin{figure}
+\begin{figure}[H]
   \centering
   \input{./figures/text-editor-simple}
-  \caption{Text Editor Module Family}
+  \caption{Diagram of a module family for a text editor}
   \label{fig:textEditorSimple}
 \end{figure}
 
@@ -990,7 +990,8 @@ In most programming languages, any type has a singular definition, so invoking
 the \textit{go-to-definition} endpoint implemented by an \gls*{lsp} results in a
 singular response. The actual response of the \gls*{lsp} is a list, but this is
 \textit{always} a singleton. However, in Magnolia a singular type could have
-multiple definitions, and resolving this can be complex.
+multiple definitions, and resolving this can be complex. Especially
+communicating this to a user in a helpful manner.
 
 \subsection{Renaming}
 
@@ -1042,8 +1043,9 @@ large and harder to reason about without a tool to visualize the dependency grap
 Magnolia depends on a compiler, like all compiled programming languages, but
 also an \gls*{smt} solver. While the new compiler for Magnolia, at the time of
 writing is still under development~\cite{wiig}, but once released will be quite
-stable. This is in contrast to the \gls*{smt} solver environment. Skogvik~\cite{beateVerification}
-noted the different competitions for developers of \gls*{smt} solvers, this means
-there might be a new and better \gls*{smt} solver, which means it needs to be
-easy for a user of the \gls*{ide} to change the \gls*{smt} solver they are using
-to validate their program with.
+stable. Writing modules that utilize the new compiler can be tightly coupled
+with the compiler. This is in contrast to the \gls*{smt} solver environment.
+Skogvik~\cite{beateVerification} noted the different competitions for developers
+of \gls*{smt} solvers, this means there might be a new and better \gls*{smt}
+solver, which means it needs to be easy for a user of the \gls*{ide} to change
+the \gls*{smt} solver they are using to validate their program with.

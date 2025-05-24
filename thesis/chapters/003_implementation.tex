@@ -818,9 +818,12 @@ modules, or in between modules, is in the \gls{json} format. But in a Rust
 module, this would be deserialized into a Rust equivalent struct, before being
 serialized back to \gls{json} when sent out from the module. Similarly, in
 JavaScript, we have to ensure that we can actually handle the data the \gls{ide}
-sends~\footnote{Since the types are specified on the backend}. Using the same
+sends\footnote{Since the types are specified on the backend}. Using the same
 test input, we can verify that both the Rust and JavaScript library correctly
-handle the serialization and serialization of the data.
+handle the serialization and serialization of the data. Since much of the base
+logic exists in the backend, this is where the brunt of the unit tests exist.
+Around $111$ unit tests, ensuring that the different parts of the library
+behave as intended.
 
 \subsubsection{UI testing}
 
