@@ -20,19 +20,21 @@ installModule(
     handler: async (event: Event, core: Core): Promise<void> => {
       if (isPrimAnd(event, "open-editor-area")) {
         await core.eventThrower(mkPrimEvent("add_content",
-          new HtmlBuilder()
-            .attrs(
-              { id: "editor-div" },
-              cls("editor-container")
-            )
-            .kids(
-              new HtmlBuilder()
-                .kind("textArea")
-                .attrs(
-                  { id: "editor-area" },
-                  click(mkPrimEvent("editor-click"))
-                )
-            ).build()
+          {
+            html: new HtmlBuilder()
+              .attrs(
+                { id: "editor-div" },
+                cls("editor-container")
+              )
+              .kids(
+                new HtmlBuilder()
+                  .kind("textArea")
+                  .attrs(
+                    { id: "editor-area" },
+                    click(mkPrimEvent("editor-click"))
+                  )
+              ).build()
+          }
         ));
       }
     }

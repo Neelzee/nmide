@@ -274,7 +274,7 @@ const Module = {
             tObjLookupOr<ValueStr>("event-name")(tStr("debug-event"))(form).str,
             arg === undefined
               ? undefined
-              : getValue(arg),
+              : arg
           )).catch(window.__nmideConfig__.log.error);
         }
         break;

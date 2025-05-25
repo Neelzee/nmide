@@ -24,7 +24,7 @@ installModule({
       if (txt instanceof HTMLTextAreaElement) {
         const content = tStr(txt.value);
         await core.eventThrower(
-          mkPrimEvent("fsa-write", { file_path, content })
+          mkPrimEvent("fsa-write", { obj: { file_path, content } })
         );
       }
     }
