@@ -29,16 +29,16 @@ export type ClientArgs = {
 }
 
 export const ClientDecodedType = {
-  init: t.void,
-  handler: t.void,
+  init: t.null,
+  handler: t.null,
   state: DState,
   ui: DHtml,
   modification: DCoreModification,
 }
 
 export const ClientDecoder = {
-  init: (e: unknown) => E.mapLeft(formatValidationErrors)(t.void.decode(e)),
-  handler: (e: unknown) => E.mapLeft(formatValidationErrors)(t.void.decode(e)),
+  init: (e: unknown) => E.mapLeft(formatValidationErrors)(t.null.decode(e)),
+  handler: (e: unknown) => E.mapLeft(formatValidationErrors)(t.null.decode(e)),
   state: (e: unknown) => E.mapLeft(formatValidationErrors)(DState.decode(e)),
   ui: (e: unknown) => E.mapLeft(formatValidationErrors)(DHtml.decode(e)),
   modification: (e: unknown) => E.mapLeft(formatValidationErrors)(DCoreModification.decode(e)),
