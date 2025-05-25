@@ -38,6 +38,7 @@ use toml::Value;
 mod clean_up;
 mod css_installer;
 mod js_installer;
+mod js_rt_installer;
 mod rs_installer;
 mod rs_rt_installer;
 
@@ -47,7 +48,6 @@ const MODULE_SEP: &str = "<!--MODULES-->";
 pub(crate) enum Kind {
     #[default]
     Rust,
-    RustRt,
     JavaScript,
     MJavaScript,
     TypeScript,
@@ -58,8 +58,6 @@ impl Kind {
     pub fn as_ext(&self) -> String {
         match self {
             Self::Rust => "rs".to_string(),
-            // TODO: Ensure this works across OS
-            Self::RustRt => "so".to_string(),
             Self::JavaScript => "js".to_string(),
             Self::TypeScript => "ts".to_string(),
             Self::MJavaScript => "mjs".to_string(),
@@ -82,8 +80,7 @@ impl From<String> for Kind {
             "js" => Self::JavaScript,
             "mjs" => Self::MJavaScript,
             "css" => Self::Css,
-            "rs" => Self::Rust,
-            "so" => Self::RustRt,
+            "rs" | "so" => Self::Rust,
             _ => panic!("Unknown extension: {value}"),
         }
     }
@@ -176,6 +173,8 @@ fn main() {
 
     let modules_list = get_modules(&conf, &modules);
 
+    let rt_modules = get_rt_modules(&conf, &modules);
+
     let files = get_files(&conf, &modules);
 
     if dry_run {
@@ -233,11 +232,27 @@ fn main() {
         return;
     }
     println!("\n{}\n", "=".repeat(80));
-    println!("Installing modules:");
+    println!("[modules]");
     println!(
         "{}",
         modules_list
             .iter()
+            .filter(|m| m.enabled)
+            .map(|m| format!(
+                "Module: {}, path: {:?}, kind: {:?}",
+                m.name(),
+                m.path.to_str().unwrap(),
+                m.kind
+            ))
+            .collect::<Vec<_>>()
+            .join("\n")
+    );
+    println!("[rt-modules]");
+    println!(
+        "{}",
+        rt_modules
+            .iter()
+            .filter(|m| m.enabled)
             .map(|m| format!(
                 "Module: {}, path: {:?}, kind: {:?}",
                 m.name(),
@@ -249,8 +264,9 @@ fn main() {
     );
     println!("\n{}\n", "=".repeat(80));
     rs_installer::install(modules_list.clone(), cargo, out);
-    rs_rt_installer::install(modules_list.clone(), module_folder);
+    rs_rt_installer::install(rt_modules.clone(), module_folder.clone());
     js_installer::install(dist.clone(), modules_list.clone());
+    js_rt_installer::install(rt_modules.clone(), module_folder);
     let styles = css_installer::install(dist.clone(), modules_list);
 
     if index.is_empty() {
@@ -331,6 +347,65 @@ fn get_modules(conf: &str, modules: &str) -> Vec<Module> {
     let opt_modules = module_config.get("modules").and_then(|p| p.as_table());
     if opt_modules.is_none() {
         panic!("Can't find [modules] section in {module_toml_path:?}");
+    }
+    let default_module_path = Path::new(&modules);
+    for (module, spec) in opt_modules.unwrap() {
+        let kind = spec
+            .get("kind")
+            .and_then(|v| v.as_str())
+            .map(|s| -> Kind { s.into() })
+            .unwrap_or_default();
+        mods.push(Module {
+            name: module.to_string(),
+            enabled: spec
+                .get("enabled")
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true),
+            path: spec
+                .get("path")
+                .and_then(|v| v.as_str())
+                .map(Path::new)
+                .map(|p| {
+                    p.canonicalize()
+                        .unwrap_or_else(|_| panic!("Can't canonicalize path: {p:?}"))
+                })
+                .unwrap_or(default_module_path.join(format!("{}.{}", module, kind.as_ext()))),
+            kind,
+            package_manager: spec
+                .get("package-manager")
+                .and_then(|v| v.as_str())
+                .map(|p| p.to_string()),
+            features: spec
+                .get("features")
+                .and_then(|v| v.as_array())
+                .cloned()
+                .unwrap_or(Vec::new())
+                .into_iter()
+                .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                .collect(),
+        })
+    }
+
+    mods
+}
+
+fn get_rt_modules(conf: &str, modules: &str) -> Vec<Module> {
+    let mut mods = Vec::new();
+    let module_toml_path = Path::new(&conf)
+        .canonicalize()
+        .unwrap_or_else(|err| panic!("Can't canonicalize config: {modules:?}, error: {:?}", err));
+    if !module_toml_path.exists() {
+        panic!("Can't find modules from {module_toml_path:?}");
+    }
+    let module_content = fs::read_to_string(&module_toml_path).unwrap_or_else(|_| {
+        panic!("Path should exist, and be of valid encoding: {module_toml_path:?}")
+    });
+    let module_config: Value =
+        toml::from_str(&module_content).expect("Module should be a valid TOML");
+
+    let opt_modules = module_config.get("rt-modules").and_then(|p| p.as_table());
+    if opt_modules.is_none() {
+        panic!("Can't find [rt-modules] section in {module_toml_path:?}");
     }
     let default_module_path = Path::new(&modules);
     for (module, spec) in opt_modules.unwrap() {

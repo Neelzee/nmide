@@ -2,6 +2,7 @@ use crate::{Kind, Module, run_cmd};
 use std::process::Command;
 
 pub(crate) fn install(dist: String, mods: Vec<Module>) -> Vec<String> {
+    println!("CSS installer");
     let mut styles = Vec::new();
     for m in mods {
         if !m.enabled {

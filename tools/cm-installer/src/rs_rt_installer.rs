@@ -3,11 +3,12 @@ use std::process::Command;
 use crate::{Kind, Module, run_cmd};
 
 pub(crate) fn install(modules: Vec<Module>, module_folder: String) {
+    println!("RSM runtime installer");
     for m in modules {
         if !m.enabled {
             continue;
         }
-        if m.kind != Kind::RustRt {
+        if m.kind != Kind::Rust {
             continue;
         }
 
@@ -20,11 +21,8 @@ pub(crate) fn install(modules: Vec<Module>, module_folder: String) {
         build_cmd.arg("build");
         build_cmd.arg("--release");
         run_cmd(build_cmd);
-        path = path.join(format!(
-            "target/release/lib{}.{}",
-            m.name.replace("-", "_"),
-            m.kind.as_ext()
-        ));
+        // TODO: Ensure this works for windows with "dll"
+        path = path.join(format!("target/release/lib{}.so", m.name.replace("-", "_"),));
         let mut copy_cmd = Command::new("cp");
         copy_cmd.arg("-p");
         copy_cmd.arg(&path);
@@ -34,7 +32,6 @@ pub(crate) fn install(modules: Vec<Module>, module_folder: String) {
             copy_cmd.get_program().to_str().unwrap(),
             copy_cmd
                 .get_args()
-                .into_iter()
                 .map(|a| a.to_str().unwrap())
                 .collect::<Vec<_>>()
                 .join(" ")

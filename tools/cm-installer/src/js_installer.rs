@@ -2,6 +2,7 @@ use crate::{Module, run_cmd};
 use std::{fs, process::Command};
 
 pub(crate) fn install(dist: String, mods: Vec<Module>) {
+    println!("JSM compile-time installer");
     let mut imports = Vec::new();
     for m in mods {
         if !m.enabled {

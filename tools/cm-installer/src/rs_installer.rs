@@ -8,6 +8,7 @@ use toml::Value;
 pub(crate) const MODULE_SEPARATOR: &'static str =
     "# ============================================================================ #";
 pub(crate) fn install(modules: Vec<Module>, cargo: String, out: String) {
+    println!("RSM compile-time installer");
     let mut module_imports = Vec::new();
     let mut module_reg = Vec::new();
     let cargo_path = Path::new(&cargo).canonicalize().unwrap();
