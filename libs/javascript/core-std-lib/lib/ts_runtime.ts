@@ -1,11 +1,11 @@
 import {
-  Core,
-  Event,
-  CoreModification,
+  type Core,
+  type Event,
+  type CoreModification,
   emptyState,
-  State,
+  type State,
   HtmlBuilder,
-  Html,
+  type Html,
   getEventName,
 } from "@nmide/js-utils";
 import "./app";
@@ -13,6 +13,7 @@ import client from "@nmide/js-client";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/lib/function";
 import { emit } from "@tauri-apps/api/event";
+import { DCoreModification, prettyReport } from "@nmide/js-decoder-lib";
 
 const registerHandler = async (
   module: string,
@@ -43,27 +44,55 @@ const eventThrower = async (event: Event) => {
 };
 
 const sendModification = async (modification: CoreModification) => {
-  window.__nmideConfig__.log.debug(`[Frontend] sending modification: ${JSON.stringify(modification)}`);
+  const result = DCoreModification.decode(modification);
+  if (E.isLeft(result)) {
+    const issues = prettyReport.report(result);
+    window.__nmideConfig__
+      .log
+      .debug(
+        `[frontend] invalid modification: ${JSON.stringify(modification)} `
+        + ` errors: ${issues.join("\n")}`
+      );
+    return;
+  } else {
+    window.__nmideConfig__.log.debug(`[frontend] sending modification: ${JSON.stringify(modification)}`);
+  }
   client(
     "modification",
     { modification }
-  ).catch(
-    err =>
-      window.__nmideConfig__.log.error(
-        `Modification ${JSON.stringify(modification)} resulted in error from backend: ${err} ${JSON.stringify(err)}`, err
-      )
-  );
+  ).then(err => {
+    if (E.isLeft(err)) {
+      const error = err.left;
+      window.__nmideConfig__
+        .log
+        .error(
+          `[frontend] client modification ${JSON.stringify(modification)}`
+          + ` resulted in error from backend: ${error}`
+          + ` ${JSON.stringify(error)}`
+          ,
+          error
+        )
+    }
+  })
+    .catch(
+      err =>
+        window.__nmideConfig__.log.error(
+          `[frontend] Modification ${JSON.stringify(modification)} resulted in error from backend: ${err} ${JSON.stringify(err)}`, err
+        )
+    );
 };
 
-const mkCore = async (): Promise<Core> => {
+export const mkCore = async (): Promise<Core> => {
   return {
     state: pipe(
       await client("state"),
+      // NOTE: This hides possible errors
       E.getOrElse((_) => emptyState()),
       st => () => new Promise<State>(r => r(st))
     ),
     ui: pipe(
       await client("ui"),
+      // NOTE: This hides possible errors
       E.getOrElse((_) => new HtmlBuilder().build()),
       st => () => new Promise<Html>(r => r(st))
     ),

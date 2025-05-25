@@ -5,6 +5,7 @@
       "name": "@nmide/js-core-std-lib",
       "dependencies": {
         "@nmide/js-client": "link:@nmide/js-client",
+        "@nmide/js-decoder-lib": "link:@nmide/js-decoder-lib",
         "@nmide/js-utils": "link:@nmide/js-utils",
         "@tauri-apps/api": "^2.5.0",
         "fp-ts": "^2.16.10",
@@ -19,6 +20,8 @@
   },
   "packages": {
     "@nmide/js-client": ["@nmide/js-client@link:@nmide/js-client", {}],
+
+    "@nmide/js-decoder-lib": ["@nmide/js-decoder-lib@link:@nmide/js-decoder-lib", {}],
 
     "@nmide/js-utils": ["@nmide/js-utils@link:@nmide/js-utils", {}],
 

@@ -1,9 +1,8 @@
 import type { AppConfig, NmideConfig } from "@nmide/js-utils";
 
 export interface App {
-  initialize: (config: Partial<AppConfig>) => void;
-  installModules: () => void;
-  run: () => void;
+  initialize: (config: Partial<AppConfig>) => Promise<void>;
+  run: () => Promise<void>;
 }
 
 export const defaultConfig: NmideConfig = {
@@ -26,7 +25,8 @@ export const defaultConfig: NmideConfig = {
   },
   moduleCount: 0,
   modules: new Map(),
+  rt_modules: new Map(),
   installed: false,
-  handlerRegister: { event: new Map(), module: new Map() },
+  handlerRegister: { event: new Map() },
   events: []
 };
