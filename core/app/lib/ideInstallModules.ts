@@ -25,7 +25,11 @@ export const getPaths = async (): Promise<string[]> => {
     .then(A.map<DirEntry, Promise<string>>(p => join(pluginDir, p.name)))
     .then(A.map<Promise<string>, Promise<string>>(p => p.then(convertFileSrc)))
     .then(paths => Promise.all(paths))
-    .then(A.sort(S.Ord));
+    .then(A.sort(S.Ord))
+    .then(p => {
+      window.__nmideConfig__.log.info(`[frontend] module paths: ${JSON.stringify(p)}`);
+      return p;
+    });
 };
 
 type ModuleInstaller = ((path: string) => Promise<string | undefined>);
@@ -51,9 +55,6 @@ export const ideInstallModules: T.Task<string[]> = pipe(
           return moduleInstallerWrapper(modulePaths)(mi);
         }
       ),
-      /*
-      A.append<T.Task<string | undefined>>(() => ),
-       */
       T.sequenceArray,
     ))
   ),
@@ -70,8 +71,7 @@ const moduleInstallerWrapper = (modules: string[]) =>
     A.map(m => pipe(
       TE.tryCatch(
         () => f(m).then(v => {
-          if (v !== undefined)
-            window.__nmideConfig__.moduleCount++;
+          if (v !== undefined) window.__nmideConfig__.moduleCount++;
           return v;
         }),
         (reason) => new Error(
@@ -81,7 +81,7 @@ const moduleInstallerWrapper = (modules: string[]) =>
     )),
     A.map(TE.fold(
       err => {
-        window.__nmideConfig__.log.error(`Module Installation:`, err);
+        window.__nmideConfig__.log.error(`Module Installation: ${err}, ${JSON.stringify(err)}`, err);
         return T.of(undefined);
       },
       T.of

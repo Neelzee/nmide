@@ -1,14 +1,15 @@
-import { NmideConfig } from "@nmide/js-core-std-lib";
 import {
-  Attr,
-  Event as NmideEvent,
-  Html, HtmlKind,
-  Instruction,
+  type Attr,
+  type Event as NmideEvent,
+  type Html,
+  type HtmlKind,
+  type Instruction,
   objAdd,
   tStr,
   tValueMaybeOr,
-  Value,
-  ValueObj
+  type Value,
+  type ValueObj,
+  type NmideConfig
 } from "@nmide/js-utils";
 import { emit as tauri_emit } from "@tauri-apps/api/event";
 
@@ -239,7 +240,7 @@ const formHandler = (args: ValueObj, form: HTMLFormElement): ValueObj => {
   const data = new FormData(form);
   const obj: Record<string, Value> = {};
   for (const [k, v] of data.entries()) {
-    obj[k] = tValueMaybeOr(v)(tStr(v.toString()));
+    obj[k] = tStr(v.toString());
   }
   return objAdd(args, "form", { obj });
 }
