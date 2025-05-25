@@ -1,13 +1,18 @@
 \chapter{Conclusion \& Discussion} \label{cha:conclusion}
 
-The hypothesis \ref{hyp:modular} is right, source? Me.
+We will discuss some of the issues encountered when developing this modular
+\gls*{ide}, and make a conclusion from our hypothesis \ref{hyp:modular}.
 
-\section{Modular development}
+
+\section{Modular development} \label{sec:mod-dev}
 
 In this thesis, we have shown that developing against a zero-core modular
 architecture is trivial. By utilizing separation of concerns, a module developer
 needs to only understand the feature they want to extend, or if it is an
 entirely new feature, find out what has been done before.
+
+
+\subsection{Unstable API}
 
 Developing against an unstable \gls*{api} is difficult, when developing a module
 architecture, it is like an unstable \gls*{api} when it is not \textit{mature},
@@ -23,6 +28,7 @@ architecture, it was thought that a wide range of modules should be implemented,
 to quickly iron out issues with the implementation of the architecture, and to
 figure out what functionality Tauri has, that we can expose, like the file
 selection.
+
 So not only were modules needed to cover the necessities to qualify as an
 \gls*{ide}, but they were also needed to \textit{test} the implementation. Not
 having a developer dedicated to only implement modules, meant that module
@@ -37,7 +43,11 @@ information is available in a \textit{textarea}-element, but some change to how
 Events are sent were needed. In standard JavaScript development,
 \textit{eventListeners} can be specific to the \gls*{html}-element they are
 applied to. The same is not possible in our \gls*{api}, as Events are generic.
-Instead we made Events gather information about the \gls*{dom}-Event they were
+
+
+\subsection{Module deprecation}
+
+Instead, we made Events gather information about the \gls*{dom}-Event they were
 triggered by, so in the case of \textit{click} attribute, we know the
 \gls*{dom}-event is of type \textit{MouseEvent}, which can give us some,
 information. And if the \textit{target}, (a field on \textit{MouseEvent}) is an
@@ -47,7 +57,8 @@ which, we can manually calculate the position of the click. Implementing this
 meant adding a breaking change to the \gls*{api}, which deprecated different
 modules, so more time was spent on re-implementing them.
 
-\subsection{Language agnosticism}
+
+\section{Lacking language agnosticism} \label{sec:lla}
 
 Not really achieved, because we cannot syntactically translate between a
 JavaScript Module and a Rust Module. This is due to the differences between the
@@ -73,7 +84,8 @@ invoke it. That is why we need the extra steps of creating a
 \textit{ModuleBuilder}, which has to implement the \textit{ModuleBuilder} trait,
 so that we can build the module.
 
-\subsection{Foreign modules}
+
+\section{Foreign modules} \label{sec:fm}
 
 Languages like Gleam and PureScript, which compile directly to JavaScript can
 be trivially added. But for languages that can target the C-\gls*{abi}, this is
@@ -133,7 +145,7 @@ doing in this code block is \textit{valid}.
   \lstinputlisting
     [ language=Rust
     , caption={
-      Accessing a value in the C-safe value variant is inherently unsafe
+      Accessing a value in the C-safe value variant is inherently unsafe (Rust)
     }
     , label=lst:rsValueUnsafe
     , firstline=53
@@ -143,7 +155,12 @@ doing in this code block is \textit{valid}.
     ]{./libs/rust/foreign-std-lib/src/state/rs\_state.rs}
 \end{code}
 
-\subsection{Ad-hoc solutions for lackluster API}
+But with the starting point of the runtime Rust module system, a C module system
+could be developed. One would just have to ensure that the differences between
+the modules are syntactical, and not semantics.
+
+
+\section{Ad-hoc solutions for lackluster API} \label{sec:lackluster}
 
 As mentioned, there is an issue in the current \gls*{api} on maintaining
 consistency between the \gls*{ui} in the frontend, and the \gls*{ui}
@@ -155,28 +172,22 @@ of the textarea are sent to the \gls*{ide}\_fsa module, which can save the
 contents. This is an action that bypasses the core \gls*{ide}, which was
 necessary due to the lacking \gls*{api}.
 
-\section{Making an IDE is hard}
 
-An \gls*{ide} has many features, which are needed to enhance the developer
-experience. To achieve this, the modular approach enables future users to
-enhance the application.
+\section{Conclusion} \label{sec:conclusion}
 
-\begin{figure}
-  \centering
-  \input{./figures/text-editor}
-  \caption{Text Editor Module Family}
-  \label{fig:extendedModuleFamily}
-\end{figure}
+Developing against an unstable \gls*{api}, means that modules can be
+deprecated. It also means that module language agnosticism can quickly
+disappear, since that depends on having multiple different libraries in sync
+with an unstable one. In fact, many of the issues that we have claimed to be
+innate with \gls*{ide}s, appear in this stage of our modular architecture. But,
+our \gls*{api} is bounded, we have some types, and some operation on those
+types. We have chosen to have a larger set of operations, simply due to the
+fact that this enhances the module developer experience. But to figure out what
+utility functions are necessary, we need to develop modules. Once the
+satisfactory functions are developed, our \gls*{api} is stable. Which means
+modules are no longer in danger to be deprecated. Which means that module
+language agnosticism can be corrected for. Finally, this means that future
+changes coming from the outside, being a paradigm shift on what is necessary to
+have in an \gls*{ide}, or a language, the necessary modules can quickly be
+developed and integrated into the current solution.
 
-In the figure \ref{fig:extendedModuleFamily}, the \textit{cursor} is the place
-at which text is placed when the user writes. If the user clicks someplace in
-the document, the cursor \textit{jumps} to that place. If the user uses the
-arrow-keys to move around, the cursor moves one character to left or right, or
-one line up and down, depending on which arrow-key was pressed.
-
-\section{Cons}
-
-If you are the one developing every module, it get's very complex.
-
-If you have a problem, and try to solve it with concurrency, now problems two
-have you.
