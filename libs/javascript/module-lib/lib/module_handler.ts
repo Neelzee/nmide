@@ -1,4 +1,4 @@
-import { type Core, type Module, type ModuleUnknown } from "@nmide/js-utils";
+import { type Core, type Module, type ModuleUnknown, type Event } from "@nmide/js-utils";
 import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/Either";
 import * as TE from "fp-ts/TaskEither";
@@ -16,7 +16,10 @@ const moduleWrapper = (m: ModuleUnknown): Module => {
         err => {
           window.__nmideConfig__
             .log
-            .error(`Error on Module.init from module: ${m.name}, error: ${JSON.stringify(err)}`);
+            .error(
+              `Error on Module.init from module: ${m.name}, error: ${JSON.stringify(err)}`
+              + ` ${err}`
+            );
           return;
         },
       ),
@@ -26,7 +29,10 @@ const moduleWrapper = (m: ModuleUnknown): Module => {
       TE.getOrElse(errs => {
         window.__nmideConfig__
           .log
-          .error(`Error when parsing result from Module.init from module: ${m.name}, error: ${JSON.stringify(errs)}`);
+          .error(
+            `Error when parsing result from Module.init from module: ${m.name}, error: ${JSON.stringify(errs)}`
+            + ` ${errs}`
+          );
         return T.of(((): void => { })());
       }),
       task => task(),
@@ -37,7 +43,10 @@ const moduleWrapper = (m: ModuleUnknown): Module => {
         err => {
           window.__nmideConfig__
             .log
-            .error(`Error on Module.handler from module: ${m.name}, error: ${JSON.stringify(err)}`);
+            .error(
+              `Error on Module.handler from module: ${m.name}, error: ${JSON.stringify(err)}`
+              + ` ${err}`
+            );
           return;
         },
       ),
@@ -47,7 +56,10 @@ const moduleWrapper = (m: ModuleUnknown): Module => {
       TE.getOrElse(errs => {
         window.__nmideConfig__
           .log
-          .error(`Error on decoding result from Module.handler from module: ${m.name}, error: ${JSON.stringify(errs)}`);
+          .error(
+            `Error on decoding result from Module.handler from module: ${m.name}, error: ${JSON.stringify(errs)}`
+            + ` ${errs}`
+          );
         return T.of(((): void => { })());
       }),
       task => task(),
