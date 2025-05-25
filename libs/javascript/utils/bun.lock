@@ -4,6 +4,7 @@
     "": {
       "name": "@nmide/js-utils",
       "dependencies": {
+        "@nmide/js-core-std-lib": "link:@nmide/js-core-std-lib",
         "@nmide/js-decoder-lib": "link:@nmide/js-decoder-lib",
         "@nmide/js-module-lib": "link:@nmide/js-module-lib",
         "fp-ts": "^2.16.9",
@@ -67,6 +68,8 @@
     "@esbuild/win32-x64": ["@esbuild/win32-x64@0.25.4", "", { "os": "win32", "cpu": "x64" }, "sha512-nOT2vZNw6hJ+z43oP1SPea/G/6AbN6X+bGNhNuq8NtRHy4wsMhw765IKLNmnjek7GvjWBYQ8Q5VBoYTFg9y1UQ=="],
 
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.0", "", {}, "sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ=="],
+
+    "@nmide/js-core-std-lib": ["@nmide/js-core-std-lib@link:@nmide/js-core-std-lib", {}],
 
     "@nmide/js-decoder-lib": ["@nmide/js-decoder-lib@link:@nmide/js-decoder-lib", {}],
 

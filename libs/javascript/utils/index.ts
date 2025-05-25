@@ -34,6 +34,7 @@ export type HandlerRegister = {
 export interface NmideConfig extends AppConfig {
   moduleCount: number,
   modules: Map<string, Module>,
+  rt_modules: Map<string, Module>,
   handlerRegister: HandlerRegister
   installed: boolean,
 }

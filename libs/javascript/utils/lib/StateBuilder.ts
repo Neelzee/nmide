@@ -2,40 +2,23 @@ import type { Instruction } from "./Instruction";
 import type { CoreModification } from "./CoreModification";
 import { combine, flatten, isAdd, isNoOp } from "./InstructionHelper";
 import type { Value } from "./Value";
-import { isValue, tValueMaybe, type ValuePrimitive } from "./Types";
-import * as O from "fp-ts/Option";
 import type { State } from "./State";
+import type { UiBuilder } from "./UiBuilder";
 
 export class StateBuilder {
   private state: Instruction<Value> = "noOp";
 
-  add(field: string, value: Value | ValuePrimitive): StateBuilder {
-    if (isValue(value)) {
-      this.state = combine(this.state, { add: [field, value] });
-    } else {
-      this.state = combine(
-        this.state,
-        { add: [field, O.getOrElse((): Value => "null")(tValueMaybe(value))] }
-      );
-    }
+  add(field: string, value: Value): StateBuilder {
+    this.state = combine(this.state, { add: [field, value] });
     return this;
   }
 
-  set(field: string, value: Value | ValuePrimitive): StateBuilder {
-    return this.rem(field, value).add(field, value);
+  set(field: string, value: Value): StateBuilder {
+    return this.rem(field).add(field, value);
   }
 
-  rem(field: string, value?: Value | ValuePrimitive): StateBuilder {
-    if (value === undefined) {
-      this.state = combine(this.state, { rem: [field, "null"] });
-    } else if (isValue(value)) {
-      this.state = combine(this.state, { rem: [field, value] });
-    } else {
-      this.state = combine(
-        this.state,
-        { rem: [field, O.getOrElse((): Value => "null")(tValueMaybe(value))] }
-      );
-    }
+  rem(field: string, value?: Value): StateBuilder {
+    this.state = combine(this.state, { rem: [field, value || "null"] });
     return this;
   }
 
@@ -55,10 +38,10 @@ export class StateBuilder {
     return state;
   }
 
-  build(): CoreModification {
+  build(ui?: UiBuilder): CoreModification {
     return {
       state: this.state,
-      ui: ["noOp", "noOp", "noOp"]
+      ui: ui?.build()?.ui || ["noOp", "noOp", "noOp"]
     };
   }
 }

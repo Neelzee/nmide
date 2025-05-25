@@ -2,6 +2,7 @@ import { type Html } from "./Html";
 import { type Attr } from "./Attr";
 
 export type HtmlKind = Html extends { [K: string]: any } ? keyof Html : never;
+export type HtmlContent = Html extends { [K: string]: infer T } ? T : never;
 export class HtmlBuilder {
   private _kind: HtmlKind;
   private _kids: Array<Html | HtmlBuilder>

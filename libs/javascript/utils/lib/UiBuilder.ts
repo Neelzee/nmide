@@ -56,6 +56,36 @@ export class UiBuilder {
     return this;
   }
 
+  set_text(text: string, id?: string): UiBuilder {
+    return this.rem_text(id).add_text(text, id);
+  }
+
+  add_text(text: string, id?: string): UiBuilder {
+    this.text = combine(
+      this.text,
+      {
+        add: [
+          id || "",
+          text
+        ]
+      }
+    );
+    return this;
+  }
+
+  rem_text(id?: string): UiBuilder {
+    this.text = combine(
+      this.text,
+      {
+        rem: [
+          id || "",
+          ""
+        ]
+      }
+    );
+    return this;
+  }
+
   build(builder?: StateBuilder): CoreModification {
     const supplied_state = builder?.build().state;
     const state = supplied_state === undefined ? "noOp" : supplied_state;

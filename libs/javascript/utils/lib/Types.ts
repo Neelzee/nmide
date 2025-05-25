@@ -2,15 +2,17 @@ import { pipe } from "fp-ts/lib/function";
 import { type Value } from "./Value";
 import * as O from "fp-ts/Option";
 import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
 import type { Html } from "./Html";
 import { isT } from "./Utils";
+import { DCoreModification } from "@nmide/js-decoder-lib";
 
 export type ValuePrimitive = number
   | null
   | boolean
   | string
   | ValuePrimitive[]
-  | { [key in string]?: Value }
+  | { [key in string]?: ValuePrimitive }
   | Html;
 
 export type ValueNull = "null";
@@ -21,11 +23,14 @@ export const isTInt = (x: unknown): x is ValueInt =>
   && "int" in x
   && typeof x.int === "number";
 export type ValueFloat = { float: number };
+// NOTE: This is not a good way of checking for floats
 export const isTFloat = (x: unknown): x is ValueFloat =>
   typeof x === "object"
   && x !== null
   && "float" in x
-  && typeof x.float === "number";
+  && typeof x.float === "number"
+  && isFloat(x.float);
+
 export type ValueStr = { str: string };
 export const isTStr = (x: unknown): x is ValueStr => typeof x === "object" && x !== null && "str" in x;
 export type ValueBool = { bool: boolean };
@@ -131,24 +136,14 @@ export const isInt = (x: unknown): x is number =>
   typeof x === "number" && !isFloat(x);
 export const isBool = (x: unknown): x is boolean => typeof x === "boolean";
 export const isStr = (x: unknown): x is string => typeof x === "string";
-export const isObj = (x: unknown): x is [string, ValuePrimitive][] => {
-  // is it a list?
-  if (!Array.isArray(x)) return false;
-  // has it any elements?
-  if (x.length === 0) return false;
-  // is the element a tuple?
-  if (!Array.isArray(x[0]) && x[0].length === 2) return false;
-  // is the first element of the tuple?
-  return isStr(x[0][0]);
-};
 export const isHtml = (x: unknown): x is Html => {
   if (typeof x !== "object") {
     return false;
   }
-  return true;
+  return E.isLeft(DCoreModification.decode(x));
 }
 export const isList = (x: unknown): x is ValuePrimitive[] =>
-  Array.isArray(x) && !isObj(x);
+  Array.isArray(x);
 
 export const tValueMaybeOr = <T extends Value>(t: unknown) => (fallback: T): T => pipe(
   tValueMaybe(t),
@@ -158,39 +153,46 @@ export const tValueMaybeOr = <T extends Value>(t: unknown) => (fallback: T): T =
 )
 
 export const tValueMaybe = (t: unknown): O.Option<Value> => {
-  if (t === null) {
+  if (t === null || t === undefined) return O.none;
+  if (t === "null") {
     return O.some("null")
   }
-  if (isFloat(t)) {
-    return O.some(tFloat(t));
+  if (isTFloat(t)) {
+    return O.some(tFloat(isNaN(t.float) ? 0 : t.float));
   }
-  if (isInt(t)) {
-    return O.some(tInt(t));
+  if (isTInt(t)) {
+    return O.some(tInt(isNaN(t.int) ? 0 : t.int));
   }
-  if (isBool(t)) {
-    return O.some(tBool(t));
+  if (isTBool(t)) {
+    return O.some(t);
   }
-  if (isStr(t)) {
-    return O.some(tStr(t));
+  if (isTStr(t)) {
+    return O.some(t);
   }
-  if (isList(t)) {
-    return pipe(
-      t,
-      A.filterMap<ValuePrimitive, Value>(tValueMaybe),
-      list => list.length !== t.length ? O.none : O.some({ list })
-    );
+  if (isTList(t)) {
+    return O.some(t);
   }
-  if (isObj(t)) {
-    return pipe(
-      t,
-      A.filterMap<[string, ValuePrimitive], [string, Value]>(
-        ([k, v]) => O.map<Value, [string, Value]>(_v => [k, _v])(tValueMaybe(v))
-      ),
-      obj => obj.length !== t.length ? O.none : O.some(fromEntries(obj))
-    );
+  if (isTObj(t)) {
+    return O.some(t);
   }
-  if (isHtml(t)) {
-    return O.some({ html: t });
+  if (isTHtml(t)) {
+    return O.some(t);
   }
   return O.none;
 };
+
+export const toValuePrimitive = (val: Value): ValuePrimitive => {
+  if (val === "null") return null;
+  if (isTFloat(val)) return val.float;
+  if (isTInt(val)) return val.int;
+  if (isTStr(val)) return val.str;
+  if (isTBool(val)) return val.bool;
+  if (isTList(val)) return val.list.map(toValuePrimitive);
+  if (isTObj(val)) return Object.fromEntries(
+    Object.entries(val.obj)
+      .filter((x): x is [string, Value] => x[1] !== undefined)
+      .map(([k, v]) => [k, toValuePrimitive(v)])
+  );
+  return val.html;
+}
+

@@ -4,6 +4,11 @@ import { DModule } from "@nmide/js-decoder-lib";
 import * as E from "fp-ts/Either";
 import moduleWrapper from "@nmide/js-module-lib/lib/module_handler";
 import { type Event } from "./Event";
+import {
+  NMIDE_INITIALIZED,
+  NMIDE_RT_MODULE_INSTALLED_EVENT,
+  NMIDE_RT_MODULE_PUSHED_EVENT,
+} from "@nmide/js-core-std-lib";
 
 export interface Module {
   name: string;
@@ -29,7 +34,28 @@ export const installModule = (module: Module): void => {
     return;
   }
   const m = moduleWrapper(mod.right);
-  document.addEventListener("nmide://ModulesInstalled", () => {
-    window.__nmideConfig__.modules.set(m.name, m);
-  });
+  document.addEventListener(
+    NMIDE_INITIALIZED,
+    () => {
+      window.__nmideConfig__.modules.set(m.name, m);
+    },
+    { once: true }
+  );
+  document.addEventListener(
+    NMIDE_RT_MODULE_INSTALLED_EVENT,
+    () => {
+      if (
+        window.__nmideConfig__.modules.get(m.name) === undefined &&
+        window.__nmideConfig__.rt_modules.get(m.name) === undefined
+      ) {
+        document.dispatchEvent(
+          new CustomEvent(
+            NMIDE_RT_MODULE_PUSHED_EVENT,
+            { detail: m }
+          )
+        )
+      }
+    },
+    { once: true }
+  );
 }
