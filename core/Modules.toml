@@ -18,7 +18,6 @@ ide_explorer_style = { path = "../modules/ide_explorer/", kind = "css", enabled 
 ide_explorer_expanded = { path = "../modules/ide_explorer/", package-manager = "bun", kind = "ts", enabled = true }
 ide-editor = { path = "../modules/ide-editor/", package-manager = "bun", kind = "ts", enabled = true }
 ide-editor-style = { path = "../modules/ide-editor/", kind = "css", enabled = true }
-rs-counter-plugin-example = { path = "../modules/rs-counter-plugin-example/", kind = "so", enabled = true }
 dependency-viewer = { path = "../modules/dependency-viewer", package-manager = "bun", kind = "mjs", enabled = true }
 dependency-viewer-style = { path = "../modules/dependency-viewer", kind = "css", enabled = true }
 event_sender = { path = "../modules/event_sender", kind = "ts", package-manager = "bun", enabled = true }
@@ -29,3 +28,7 @@ tab_wrapper = { path = "../modules/tab_wrapper/", enabled = true }
 module_installer = { path = "../modules/module_installer/", enabled = true }
 module_installer_style = { path = "../modules/module_installer/", kind = "css", enabled = true }
 ide_save = { path = "../modules/ide_save/", kind = "ts", package-manager = "bun", enabled = true }
+
+[rt-modules]
+jsm-counter = { path = "../modules/jsm-counter/", kind = "ts", package-manager = "bun", enabled = false }
+rs-counter-plugin-example = { path = "../modules/rs-counter-plugin-example/", enabled = true }
