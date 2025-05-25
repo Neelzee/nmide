@@ -1,23 +1,9 @@
 \chapter{Future Work} \label{cha:future}
 
-Would've, could've, should've.
+In this chapter, we will discuss improvements that can be made to this
+implementation, and similar ones.
 
-
-\section{Technical debt}
-
-It just piles and piles and piles on.
-
-\begin{enumerate}
-  \item Missing tests
-  \item Not a total mapping between \gls*{dom} stuff and the Rust counterpart
-  \item Inconsistent \gls*{ui}
-\end{enumerate}
-
-
-\subsection{Testing}
-
-No unit tests for the TypeScript side, no integration testing between the
-frontend and backend.
+\section{Testing}
 
 There should be tests made to ensure that a module behaves the same, if written
 in Rust or JavaScript. This can be an issue, because the way a module interacts
@@ -27,7 +13,23 @@ state of the \gls*{ide} is the same, when the module does the same action. But
 this would require the modules being semantically the same for the different
 test cases. In any case, difficult to ensure all edge cases have been covered.
 
-\subsection{Language agnosticism}
+\subsection{End-To-End testing}
+
+We cannot guarantee that all the utility methods in the JavaScript and Rust
+libraries work as expected. A proper test scenario that covers a wide array of
+functionalities offered by the different libraries should be implemented. An
+example scenario, is one where two modules, one in the Rust ecosystem, the other
+in the JavaScript ecosystem, sending back and forth different values, and
+modifying them, using their own implemented methods.
+
+\begin{enumerate}
+  \item Both modules receive an event with some argument
+  \item Both modules respond with an event, with some complicated argument
+\end{enumerate}
+
+We can then assert if the manipulation is like expected.
+
+\section{Language agnosticism improvements}
 
 Steps should be made to mitigate the shortfall of this solution, with regard to
 language agnosticism. The differences in installation for \gls*{rsms} and
@@ -36,7 +38,7 @@ compared to Rust modules. \gls*{jsms} should enforce a similar system of module
 building as \gls*{rsms}, not only to ensure less semantic differences, but also
 to ensure safety, as restricting the \gls*{jsms} is good.
 
-\subsection{Attribute and instructions}
+\section{Attribute and instructions}
 
 Can't remove or change eventListeners currently. This is because to remove an
 EventListener, the exact same function passed to the \textit{addEventListener}
@@ -44,7 +46,7 @@ must be used, which means a reference to this function needs to be stored, but
 having two or more of the same type? It can get confusing for a module developer
 of what should actually happen.
 
-\subsection{Keypresses}
+\section{Keypresses}
 
 A common feature of \gls*{ide}s is being able to have certain keybindings for
 different actions. For example, in \gls*{vscode}, one can hit \textit{CTRL}
@@ -53,7 +55,7 @@ possible in the \gls*{ide}, but this is due to a lack of a supporting module
 family. But, given that this is a common feature in \gls*{ide}s, this should be
 a priority.
 
-\subsection{Inconsistent UI}
+\section{Inconsistent UI representation}
 
 Difficult to keep the \gls*{ui} representation consistent with the \gls*{dom}.
 An example of this, is that the \gls*{ui} representation in the \gls*{ide} does
@@ -71,7 +73,7 @@ better solution would be to somehow keep track of \textit{all} user interactions
 to the \gls*{dom}, and somehow bubble these changes down to the backend, where
 the \gls*{ui} representation is managed.
 
-\subsection{Unify the tooling}
+\section{Unify the tooling}
 
 A \gls{cli} tool should be made for users to add compile-time modules.
 Currently, a user has to specify what kind of module they are adding, the
@@ -90,3 +92,17 @@ This will ensure that this \gls*{ide} can support more languages. This editor
 should then utilize existing technology that is already used by other
 \gls*{ide}s, like the tree-sitter\footnote{\url{https://github.com/tree-sitter/tree-sitter}}
 parsing system, which amongst other things, can help with syntax highlighting.
+
+
+\section{Improvements to the module architecture}
+
+Other popular \gls*{ide}s have a form of module architecture. For instance, in
+NetBeans, modules can directly invoke methods of other modules. This is due to
+the modules being written in the same language, and can have the same underlying
+\gls*{abi}. We circumvented this issue, by having our \gls*{ide} be the
+intermediary, but this restrictions means we can only indirectly invoke the
+methods of other modules. An improvement to this architecture, would be for
+modules to directly interact with each other, and for the \gls*{ide} itself to be
+entirely made out of modules, the only thing the \textit{core} of the zero-core
+does, is initialized modules. Letting modules be in charge of their own cycles,
+when to be invoked, who to invoke, etc.
