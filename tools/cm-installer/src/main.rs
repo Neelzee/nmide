@@ -177,6 +177,8 @@ fn main() {
 
     let files = get_files(&conf, &modules);
 
+    let rt_files = get_rt_files(&conf, &modules);
+
     if dry_run {
         if clean {
             println!(
@@ -216,6 +218,15 @@ fn main() {
             println!(
                 "{}",
                 files
+                    .iter()
+                    .map(|f| format!("File: {f} to {}", &dist))
+                    .collect::<Vec<_>>()
+                    .join("\n")
+            );
+            println!("Copying runtime files:");
+            println!(
+                "{}",
+                rt_files
                     .iter()
                     .map(|f| format!("File: {f} to {}", &dist))
                     .collect::<Vec<_>>()
@@ -298,6 +309,14 @@ fn main() {
         copy_cmd.arg(format!("{}/", &dist));
         run_cmd(copy_cmd);
     }
+    println!("Copying rt-files:");
+    for f in rt_files {
+        let mut copy_cmd = Command::new("cp");
+        copy_cmd.arg(&f);
+        copy_cmd.arg(format!("{}/", &dist));
+        println!("cp {f} {}/{f}", &dist);
+        run_cmd(copy_cmd);
+    }
 }
 
 fn get_files(conf: &str, modules: &str) -> Vec<String> {
@@ -317,6 +336,36 @@ fn get_files(conf: &str, modules: &str) -> Vec<String> {
     let opt_files = module_config.get("files");
     if opt_files.is_none() {
         panic!("Can't find [files] section in {module_toml_path:?}");
+    }
+    let of = opt_files.unwrap().as_array();
+    if of.is_none() {
+        panic!("Files is not of valid type: {:?}", opt_files);
+    }
+    let opt_files = of.unwrap().clone();
+    for file in opt_files {
+        files.push(file.as_str().unwrap_or_default().to_string());
+    }
+
+    files
+}
+
+fn get_rt_files(conf: &str, modules: &str) -> Vec<String> {
+    let mut files = Vec::new();
+    let module_toml_path = Path::new(&conf)
+        .canonicalize()
+        .unwrap_or_else(|err| panic!("Can't canonicalize config: {modules:?}, error: {:?}", err));
+    if !module_toml_path.exists() {
+        panic!("Can't find files from {module_toml_path:?}");
+    }
+    let module_content = fs::read_to_string(&module_toml_path).unwrap_or_else(|_| {
+        panic!("Path should exist, and be of valid encoding: {module_toml_path:?}")
+    });
+    let module_config: Value =
+        toml::from_str(&module_content).expect("Module should be a valid TOML");
+
+    let opt_files = module_config.get("rt-files");
+    if opt_files.is_none() {
+        panic!("Can't find [rt-files] section in {module_toml_path:?}");
     }
     let of = opt_files.unwrap().as_array();
     if of.is_none() {

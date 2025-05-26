@@ -1,4 +1,5 @@
 files = ["modules/ide_explorer/magnolia.png"]
+rt-files = []
 
 [modules]
 trivial_module = { path = "modules/trivial_module/", enabled = true }
