@@ -35,57 +35,16 @@ use core_std_lib::{
     core::Core, core_modification::CoreModification, event::Event, html::Html, state::State,
 };
 use log::info;
-use std::{collections::HashMap, path::PathBuf};
-use tokio::sync::RwLock;
+use std::path::PathBuf;
+
+pub mod event_register;
 
 #[cfg(feature = "runtime_modules")]
 pub mod runtime_core;
 
-#[derive(Default)]
-pub struct ModuleEventRegister {
-    event: RwLock<HashMap<String, Vec<String>>>,
-}
-
-impl ModuleEventRegister {
-    pub async fn get_module_names(&self, event: &Event) -> Vec<String> {
-        let mut modules = Vec::new();
-
-        modules.append(
-            &mut self
-                .event
-                .read()
-                .await
-                .get(event.event_name())
-                .cloned()
-                .unwrap_or(Vec::new()),
-        );
-
-        modules.append(
-            &mut self
-                .event
-                .read()
-                .await
-                .get("*")
-                .cloned()
-                .unwrap_or(Vec::new()),
-        );
-
-        modules
-    }
-
-    pub async fn register_module(&mut self, event: String, handler: String) {
-        info!(
-            place = "backend";
-            "register module: {}, to event {:?}",
-            handler, event
-        );
-        let mut modules = self.event.write().await;
-        let mut vec = modules.get(&event).cloned().unwrap_or(Vec::new());
-        vec.push(handler.clone());
-        modules.insert(event, vec);
-    }
-}
-
+/// Compile-time core
+///
+/// Implements the `Core` trait, for use by compile-time modules.
 pub struct NmideCore;
 
 #[async_trait]
