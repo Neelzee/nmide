@@ -1,3 +1,13 @@
+/**
+ * @package listener
+ *
+ * Wrapper around Tauris listen method. Includes runtime typechecking and
+ * TypeScript type information mapped on the given eventName. See the
+ * `client.ts` file for more information, as the listener is implemented in a
+ * similar manner.
+ *
+ */
+
 import { listen, type EventCallback, type UnlistenFn } from "@tauri-apps/api/event";
 import { type Event, type Html, type Instruction, type Attr } from "@nmide/js-utils";
 import * as E from "fp-ts/Either";

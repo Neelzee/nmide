@@ -14,6 +14,7 @@ import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/lib/function";
 import { emit } from "@tauri-apps/api/event";
 import { DCoreModification, prettyReport } from "@nmide/js-decoder-lib";
+import { STATE_INVOKER, UI_INVOKER } from "./nmideConstants";
 
 const registerHandler = async (
   module: string,
@@ -85,13 +86,13 @@ const sendModification = async (modification: CoreModification) => {
 export const mkCore = async (): Promise<Core> => {
   return {
     state: pipe(
-      await client("state"),
+      await client(STATE_INVOKER),
       // NOTE: This hides possible errors
       E.getOrElse((_) => emptyState()),
       st => () => new Promise<State>(r => r(st))
     ),
     ui: pipe(
-      await client("ui"),
+      await client(UI_INVOKER),
       // NOTE: This hides possible errors
       E.getOrElse((_) => new HtmlBuilder().build()),
       st => () => new Promise<Html>(r => r(st))
@@ -105,16 +106,22 @@ export const mkCore = async (): Promise<Core> => {
 const tsHandler = async (evt: Event) => {
   const core: Core = await mkCore();
 
-  const event_modules = window.__nmideConfig__.handlerRegister.event.get(getEventName(evt));
+  const event_modules = window.__nmideConfig__
+    .handlerRegister
+    .event.get(getEventName(evt));
   const modules = event_modules === undefined ? [] : event_modules;
-  window.__nmideConfig__.log.info(`Event: ${JSON.stringify(evt)}, Modules: ${JSON.stringify(modules)}`);
+  window.__nmideConfig__
+    .log
+    .info(`Event: ${JSON.stringify(evt)}, Modules: ${JSON.stringify(modules)}`);
   await Promise.all(
     modules
       .map(m => window.__nmideConfig__.modules.get(m))
       .filter(m => m !== undefined)
       .map(m => m.handler(evt, core))
   ).catch(err =>
-    window.__nmideConfig__.log.error(`Handler Error: ${err}, ${JSON.stringify(err)}`)
+    window.__nmideConfig__
+      .log
+      .error(`Handler Error: ${err}, ${JSON.stringify(err)}`)
   );
 }
 
@@ -125,7 +132,9 @@ const tsInit = async () => {
   await Promise.all(
     modules.map(m => m.init(core))
   ).catch(err =>
-    window.__nmideConfig__.log.error(`Init Error: ${err}, ${JSON.stringify(err)}`)
+    window.__nmideConfig__
+      .log
+      .error(`Init Error: ${err}, ${JSON.stringify(err)}`)
   );
 }
 

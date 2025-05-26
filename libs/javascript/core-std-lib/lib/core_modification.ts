@@ -1,6 +1,9 @@
 import { isTList, type Instruction, type State, type Value } from "@nmide/js-utils";
 import { pipe } from "fp-ts/lib/function";
 
+/**
+ * Parses a set of instruction, along with a starting state, into a new state.
+ */
 export const parseStateInstr = (instr: Instruction<Value>) => (state: State): State => {
   if ("noOp" === instr) {
     return state;

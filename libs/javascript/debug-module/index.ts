@@ -1,6 +1,19 @@
-import { defaultConfig, parseStateInstr } from "@nmide/js-core-std-lib";
-import { DebugCore, type Core, type Module, type Event, type CoreModification, emptyCm, mkPrimEvent, type Value, type State, type NmideConfig } from "@nmide/js-utils";
+import { defaultConfig } from "@nmide/js-core-std-lib";
+import {
+  DebugCore,
+  type Core,
+  type Module,
+  type Event,
+  type CoreModification,
+  mkPrimEvent,
+  type State,
+  type NmideConfig
+} from "@nmide/js-utils";
 
+/**
+ * Core imitation for debugging JavaScript modules in the browser.
+ * For the UI to work, a renderer needs to be passed.
+ */
 export const debug_module = (
   m: Partial<Module>,
   core?: Partial<Core>,
@@ -29,7 +42,7 @@ export const debug_module = (
     handler: async (event?: Event) => {
       await m?.handler?.(
         event === undefined
-          ? mkPrimEvent("DebugEvent", null)
+          ? mkPrimEvent("DebugEvent", "null")
           : event,
         c
       );

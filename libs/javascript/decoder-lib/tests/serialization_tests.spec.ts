@@ -1,3 +1,10 @@
+/**
+ * Tests that the decoding work as expected.
+ *
+ * There is no need to test the encoding, as then we are just testing the
+ * `io-ts` library. If decoding works, then encoding follows.
+ */
+
 import * as fs from "fs"
 import { expect, test, suite } from "vitest";
 import { DAttr } from "../lib/attr_decoder";

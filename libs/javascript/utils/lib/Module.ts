@@ -25,6 +25,10 @@ export interface ModuleUnknown {
   handler: Function;
 }
 
+/**
+ * Installs a module, also wraps it in a try-catch, ensuring the given module,
+ * if invalid, does not crash the application.
+ */
 export const installModule = (module: Module): void => {
   const mod = E.mapLeft(formatValidationErrors)(DModule.decode(module));
   if (E.isLeft(mod)) {

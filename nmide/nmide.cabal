@@ -23,7 +23,7 @@ name:               nmide
 version:            0.1.0.0
 
 -- A short (one-line) description of the package.
-synopsis:           Zero core modular IDE
+synopsis:           Zero-core modular IDE
 
 -- A longer description of the package.
 -- description:

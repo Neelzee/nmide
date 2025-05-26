@@ -7,6 +7,15 @@ import { formatValidationErrors } from "io-ts-reporters";
 import * as t from "io-ts";
 import { task } from "fp-ts";
 
+/**
+ * Ensures Modules are safe. Any module _installed_ using the `installModule`
+ * function, is wrapped using this function. Since we have no way of verying
+ * that the module is valid, except for checking that it has the specified
+ * fields, and the fields are of the expected type, (string, function and
+ * function, respectively), we cannot ensure that the functions are valid.
+ * Therefore, we wrap the module in a try-catch, ensuring that any error thrown
+ * by the module, is logged instead of crashing the application.
+ */
 const moduleWrapper = (m: ModuleUnknown): Module => {
   return {
     ...m,

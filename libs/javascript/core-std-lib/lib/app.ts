@@ -6,6 +6,12 @@ export interface App {
 }
 
 export const defaultConfig: NmideConfig = {
+  /**
+   * Logging
+   *
+   * Makes it possible for different applications to implement and inject their
+   * own logging solution.
+   */
   log: {
     error: console.error,
     debug: console.debug,
@@ -14,6 +20,9 @@ export const defaultConfig: NmideConfig = {
   moduleInstallers: [],
   root: document.body,
   runtimes: { handlers: [], initializers: [] },
+  /**
+   * Gets UI instructions, and _writes_ them to the DOM (NmideConfig.root).
+   */
   render: _ => {
     throw Error("Missing renderer");
   },
