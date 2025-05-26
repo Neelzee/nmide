@@ -1,6 +1,6 @@
 //! Contains thread safe structs for access across the application.
 
-use crate::{app::App, core::ModuleEventRegister};
+use crate::{app::App, core::event_register::ModuleEventRegister};
 use core_module_lib::{rs_module::RsModule, Module};
 use core_std_lib::{core_modification::CoreModification, html::Html, state::State};
 use once_cell::sync::{Lazy, OnceCell};
