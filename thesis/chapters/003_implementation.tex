@@ -1162,3 +1162,78 @@ the \textit{Value} to a string primitive, (line 11 to 13).
     , lastline=217
     ]{./modules/dependency-viewer/module.ts}
 \end{code}
+
+\subsection{File System Abstraction}
+
+Many of the features needed in an \gls*{ide}, and in the modules showcased thus
+far, are dependent on file system operations. The following are a list of file
+system operations that are made available to modules, with the help of the
+\textit{ide\_fsa}.
+
+\begin{itemize}
+  \item Open a file
+  \item Create a file/folder
+  \item Read from a file
+  \item Move a file/folder
+  \item Copy a file/folder
+  \item Delete a file/folder
+  \item List the contents of a folder
+\end{itemize}
+
+As shown in the picture \ref{pic:modDep}, from chapter \ref{cha:ide}, many of
+the modules developed are dependent on ide\_fsa. This was a deliberate
+choice, as not only would it mean we could rely on Rusts operative system (OS)
+abstractions, ensuring the \gls*{ide} would work on different OSes, but it also
+meant we could delegate error handling from files to this one module. As doing
+such file system operations\footnote{Also called Input/Output (IO)}, are
+inherently error-prone. This is encoded by Rust, into a \textit{Result} type,
+which we utilize to send Events, but to different modules depending on the
+result variant.
+
+Ide\_fsa listens for the following events:
+
+\begin{itemize}
+  \item fsa-read
+  \item fsa-write
+  \item fsa-dir
+\end{itemize}
+
+Which, depending on what argument the consuming module passed, maps to a
+specific IO operation, which may fail. We have decided to not handle the failure
+on the consumer side, rather the provider side. So, if a user attempts to open a
+file which does not exist, it will simply fail, and a notification will appear.
+We decided for this approach, as it allows for simpler \gls*{ui} focused
+modules. In a fully fledged implementation of the prototype modules showcased,
+proper, expected, \gls*{ui} behavior should be implemented, like showing
+explicitly to the user that the action they just did, clicking open file, caused
+an error.
+
+\begin{code}[H] 
+  \lstinputlisting
+    [ language=Rust
+    , firstline=46
+    , lastline=67
+    , label=lst:fsaRead
+    , numbers=left
+    , numberstyle=\tiny\color{gray}
+    , caption={
+      Snippet from ide\_fsa, showing how it handles events. If any of the
+      functions from lines $3$ to $5$ return an error then we create an event,
+      sending the error to the error\_module.
+    }
+    ]{./modules/ide\_fsa/src/lib.rs}
+\end{code}
+
+Looking at the fsa-read event, we can see in listing \ref{lst:fsaRead}, that the
+events are matched by their event name, and mapped to the corresponding function.
+In the case of fsa-read, it expects there to be a path argument, which we use to
+read the contents from the file, if it exists, before \textit{responding} to the
+consumer by sending an event with \textit{fsa-read-module}, where
+\textit{module} corresponds to the module name passed in the original event
+argument. This happens if there occurs no errors\footnotemark{} during the IO
+operation. If it does fail, say because the file does not exist, then an event
+is sent to the error\_module, displaying the error to the user.
+
+\footnotetext{
+  It is an Error when the method \textbf{is\_ok}, on line $9$, returns false
+}
