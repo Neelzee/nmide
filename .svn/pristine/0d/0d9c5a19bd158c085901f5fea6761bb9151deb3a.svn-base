@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+<!--MODULES-->
+<!--MODULES-->
+  <script type="module" src="./dist/external/modules.js"></script>
+  <script type="module" src="./app/index.ts"></script>
+  <script type="module" src="./app/installer/index.ts"></script>
+</head>
+
+<body></body>
+
+</html>

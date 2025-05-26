@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+  \node (module-path) [rectangle, draw, minimum height=1cm, minimum width=1cm] at (0, 1.5) {Module Path};
+  \node (config) [rectangle, draw, minimum height=1cm, minimum width=1cm] at (5, 1.5) {Module.toml};
+  \node (tool) [rectangle, draw, minimum height=1cm, minimum width=1cm] at (2.5, -0.75) {Installer Tool};
+  \node (cargo) [rectangle, draw, minimum height=1cm, minimum width=1cm] at (0, -3) {Cargo.toml};
+  \node (module-reg) [rectangle, draw, minimum height=1cm, minimum width=1cm] at (4, -3) {module\_reg.rs};
+  \node (ide) [rectangle, draw, minimum height=1cm, minimum width=1cm] at (6, -0.75) {IDE};
+
+  \draw[->] (config) to node[midway, above] {references} (module-path);
+  \draw[->] (tool) to node[midway, above] {reads} (config);
+  \draw[->] (tool) to node[midway, above] {writes} (module-reg);
+  \draw[->] (tool) to node[midway, above] {appends} (cargo);
+  \draw[->] (ide) to node[midway, above] {imports} (module-reg);
+\end{tikzpicture}

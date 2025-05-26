@@ -1,0 +1,465 @@
+{
+  "null_values": [
+    {
+      "name": "default_null",
+      "input": "null"
+    }
+  ],
+  "integer_values": [
+    {
+      "name": "positive_integer",
+      "input": {
+        "int": 42
+      }
+    },
+    {
+      "name": "negative_integer",
+      "input": {
+        "int": -123
+      }
+    },
+    {
+      "name": "zero",
+      "input": {
+        "int": 0
+      }
+    },
+    {
+      "name": "max_i32",
+      "input": {
+        "int": 2147483647
+      }
+    },
+    {
+      "name": "min_i32",
+      "input": {
+        "int": -2147483648
+      }
+    },
+    {
+      "name": "small_positive",
+      "input": {
+        "int": 1
+      }
+    },
+    {
+      "name": "small_negative",
+      "input": {
+        "int": -1
+      }
+    }
+  ],
+  "float_values": [
+    {
+      "name": "positive_float",
+      "input": {
+        "float": 3.14159
+      }
+    },
+    {
+      "name": "negative_float",
+      "input": {
+        "float": -2.71828
+      }
+    },
+    {
+      "name": "zero_float",
+      "input": {
+        "float": 0.0
+      }
+    },
+    {
+      "name": "small_decimal",
+      "input": {
+        "float": 0.001
+      }
+    },
+    {
+      "name": "large_float",
+      "input": {
+        "float": 1234567.89
+      }
+    },
+    {
+      "name": "very_small_float",
+      "input": {
+        "float": 0.0000001
+      }
+    },
+    {
+      "name": "scientific_notation_equivalent",
+      "input": {
+        "float": 1.23e-4
+      }
+    }
+  ],
+  "boolean_values": [
+    {
+      "name": "true_value",
+      "input": {
+        "bool": true
+      }
+    },
+    {
+      "name": "false_value",
+      "input": {
+        "bool": false
+      }
+    }
+  ],
+  "string_values": [
+    {
+      "name": "simple_string",
+      "input": {
+        "str": "Hello World"
+      }
+    },
+    {
+      "name": "empty_string",
+      "input": {
+        "str": ""
+      }
+    },
+    {
+      "name": "unicode_string",
+      "input": {
+        "str": "Hello 世界! 🌍 Café naïve résumé"
+      }
+    },
+    {
+      "name": "string_with_quotes",
+      "input": {
+        "str": "He said \"Hello\" and 'goodbye'"
+      }
+    },
+    {
+      "name": "string_with_escapes",
+      "input": {
+        "str": "Line 1\\nLine 2\\tTabbed\\r\\nWindows line ending"
+      }
+    },
+    {
+      "name": "long_string",
+      "input": {
+        "str": "This is a very long string that contains multiple sentences and should test the handling of longer text content in the Value type system."
+      }
+    },
+    {
+      "name": "numeric_string",
+      "input": {
+        "str": "12345"
+      }
+    },
+    {
+      "name": "json_like_string",
+      "input": {
+        "str": "{\"key\": \"value\", \"number\": 42}"
+      }
+    }
+  ],
+  "list_values": [
+    {
+      "name": "empty_list",
+      "input": {
+        "list": []
+      }
+    },
+    {
+      "name": "integer_list",
+      "input": {
+        "list": [
+          {
+            "int": 1
+          },
+          {
+            "int": 2
+          },
+          {
+            "int": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "string_list",
+      "input": {
+        "list": [
+          {
+            "str": "apple"
+          },
+          {
+            "str": "banana"
+          },
+          {
+            "str": "cherry"
+          }
+        ]
+      }
+    },
+    {
+      "name": "mixed_type_list",
+      "input": {
+        "list": [
+          {
+            "int": 42
+          },
+          {
+            "str": "mixed"
+          },
+          {
+            "bool": true
+          },
+          "null",
+          {
+            "float": 3.14
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested_list",
+      "input": {
+        "list": [
+          {
+            "list": [
+              {
+                "int": 1
+              },
+              {
+                "int": 2
+              }
+            ]
+          },
+          {
+            "list": [
+              {
+                "str": "a"
+              },
+              {
+                "str": "b"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "single_item_list",
+      "input": {
+        "list": [
+          {
+            "str": "only item"
+          }
+        ]
+      }
+    }
+  ],
+  "object_values": [
+    {
+      "name": "empty_object",
+      "input": {
+        "obj": {}
+      }
+    },
+    {
+      "name": "simple_object",
+      "input": {
+        "obj": {
+          "name": {
+            "str": "John"
+          },
+          "age": {
+            "int": 30
+          }
+        }
+      }
+    },
+    {
+      "name": "complex_object",
+      "input": {
+        "obj": {
+          "user": {
+            "obj": {
+              "id": {
+                "int": 123
+              },
+              "name": {
+                "str": "Alice"
+              },
+              "active": {
+                "bool": true
+              }
+            }
+          },
+          "scores": {
+            "list": [
+              {
+                "int": 95
+              },
+              {
+                "int": 87
+              },
+              {
+                "int": 92
+              }
+            ]
+          },
+          "metadata": "null"
+        }
+      }
+    },
+    {
+      "name": "deeply_nested_object",
+      "input": {
+        "obj": {
+          "level1": {
+            "obj": {
+              "level2": {
+                "obj": {
+                  "level3": {
+                    "obj": {
+                      "value": {
+                        "str": "deep value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "object_with_all_types",
+      "input": {
+        "obj": {
+          "null_field": "null",
+          "int_field": {
+            "int": 42
+          },
+          "float_field": {
+            "float": 3.14
+          },
+          "bool_field": {
+            "bool": true
+          },
+          "string_field": {
+            "str": "text"
+          },
+          "list_field": {
+            "list": [
+              {
+                "int": 1
+              },
+              {
+                "int": 2
+              }
+            ]
+          },
+          "object_field": {
+            "obj": {
+              "nested": {
+                "str": "value"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "html_in_value": [
+    {
+      "name": "simple_html_value",
+      "input": {
+        "html": {
+          "div": {
+            "kids": [],
+            "attrs": [],
+            "text": "HTML inside Value"
+          }
+        }
+      }
+    },
+    {
+      "name": "complex_html_value",
+      "input": {
+        "html": {
+          "form": {
+            "kids": [
+              {
+                "input": {
+                  "kids": [],
+                  "attrs": [
+                    {
+                      "custom": [
+                        "type",
+                        "text"
+                      ]
+                    },
+                    {
+                      "id": "username"
+                    }
+                  ],
+                  "text": null
+                }
+              }
+            ],
+            "attrs": [
+              {
+                "clss": "user-form"
+              }
+            ],
+            "text": null
+          }
+        }
+      }
+    }
+  ],
+  "edge_cases": [
+    {
+      "name": "object_with_empty_string_key",
+      "input": {
+        "obj": {
+          "": {
+            "str": "empty key"
+          }
+        }
+      }
+    },
+    {
+      "name": "object_with_special_char_keys",
+      "input": {
+        "obj": {
+          "key-with-dashes": {
+            "int": 1
+          },
+          "key_with_underscores": {
+            "int": 2
+          },
+          "key.with.dots": {
+            "int": 3
+          },
+          "key with spaces": {
+            "int": 4
+          }
+        }
+      }
+    },
+    {
+      "name": "list_with_nulls",
+      "input": {
+        "list": [
+          "null",
+          {
+            "int": 42
+          },
+          "null",
+          {
+            "str": "not null"
+          }
+        ]
+      }
+    }
+  ]
+}

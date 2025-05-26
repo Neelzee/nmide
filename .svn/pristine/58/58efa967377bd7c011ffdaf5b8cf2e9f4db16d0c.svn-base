@@ -1,0 +1,50 @@
+productName = "nmide-dev"
+mainBinaryName = "nmide-dev"
+version = "1.0.0"
+identifier = "no.nilsmf.uib"
+
+[build]
+beforeDevCommand = "make nmide && bun run dev"
+beforeBuildCommand = "make nmide && bun run build"
+devUrl = "http://localhost:5173"
+frontendDist = "../dist"
+
+[bundle]
+active = true
+targets = "all"
+longDescription = "A simple modular Integrated Development Environment"
+icon = [
+  "icons/32x32.png",
+  "icons/128x128.png",
+  "icons/128x128@2x.png",
+  "icons/icon.icns",
+  "icons/icon.ico",
+]
+resources = []
+category = "DeveloperTool"
+shortDescription = "A simple IDE"
+
+[plugins]
+cli.description = "Nmide CLI"
+cli.args = [
+  { short = "p", name = "primitive", description = "Value passed to the Event args are ValuePrimitives" },
+  { name = "event", short = "e", takesValue = true, multiple = true, description = "Event name" },
+  { name = "args", short = "a", takesValue = true, multiple = true, description = "Event args" },
+  { name = "module", short = "m", takesValue = true, multiple = true, description = "Module name" },
+  { name = "exit", description = "Add an Exit Event" },
+  { name = "init", short = "i", description = "Runs initialization" },
+  { name = "force", short = "f", description = "Runs each event to modules handler" },
+]
+
+[app.security]
+csp = "asset: https://asset.localhost; connect-src ipc: http://ipc.localhost"
+capabilities = ["nmide-capabilities"]
+
+[app.security.assetProtocol]
+scope = ["$APPDATA/modules/*"]
+enable = true
+
+[[app.windows]]
+title = "nmide"
+width = 800
+height = 600

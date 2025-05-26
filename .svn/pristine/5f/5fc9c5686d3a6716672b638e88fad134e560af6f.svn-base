@@ -1,0 +1,15 @@
+[package]
+name = "rs-counter-plugin-example"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "rs_counter_plugin_example"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+abi_stable = "0.11.3"
+foreign-std-lib = { git = "https://github.com/Neelzee/nmide.git" }
+core-std-lib = { git = "https://github.com/Neelzee/nmide.git" }
+core-module-lib = { git = "https://github.com/Neelzee/nmide.git" }
+async-ffi = { version = "0.5.0", features = ["abi_stable"] }

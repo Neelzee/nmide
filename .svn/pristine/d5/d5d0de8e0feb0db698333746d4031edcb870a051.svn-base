@@ -1,0 +1,13 @@
+[package]
+name = "ide_framework"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "ide_framework"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+core-std-lib = { git = "https://github.com/Neelzee/nmide.git" }
+core-module-lib = { git = "https://github.com/Neelzee/nmide.git" }
+async-trait = "0.1.88"

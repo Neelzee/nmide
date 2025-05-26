@@ -1,0 +1,398 @@
+{
+  "basic_elements": [
+    {
+      "name": "simple_div",
+      "input": {
+        "div": {
+          "kids": [],
+          "attrs": [],
+          "text": "Hello World"
+        }
+      }
+    },
+    {
+      "name": "empty_span",
+      "input": {
+        "span": {
+          "kids": [],
+          "attrs": [],
+          "text": null
+        }
+      }
+    },
+    {
+      "name": "paragraph_with_text",
+      "input": {
+        "p": {
+          "kids": [],
+          "attrs": [],
+          "text": "This is a paragraph with some text content."
+        }
+      }
+    }
+  ],
+  "nested_elements": [
+    {
+      "name": "div_with_span_child",
+      "input": {
+        "div": {
+          "kids": [
+            {
+              "span": {
+                "kids": [],
+                "attrs": [],
+                "text": "Nested content"
+              }
+            }
+          ],
+          "attrs": [],
+          "text": null
+        }
+      }
+    },
+    {
+      "name": "complex_nested_structure",
+      "input": {
+        "div": {
+          "kids": [
+            {
+              "h1": {
+                "kids": [],
+                "attrs": [],
+                "text": "Title"
+              }
+            },
+            {
+              "p": {
+                "kids": [
+                  {
+                    "strong": {
+                      "kids": [],
+                      "attrs": [],
+                      "text": "Bold text"
+                    }
+                  },
+                  {
+                    "em": {
+                      "kids": [],
+                      "attrs": [],
+                      "text": "Italic text"
+                    }
+                  }
+                ],
+                "attrs": [],
+                "text": null
+              }
+            }
+          ],
+          "attrs": [],
+          "text": null
+        }
+      }
+    }
+  ],
+  "self_closing_elements": [
+    {
+      "name": "image_element",
+      "input": {
+        "img": {
+          "kids": [],
+          "attrs": [
+            {
+              "custom": [
+                "src",
+                "image.jpg"
+              ]
+            },
+            {
+              "custom": [
+                "alt",
+                "Test image"
+              ]
+            }
+          ],
+          "text": null
+        }
+      }
+    },
+    {
+      "name": "line_break",
+      "input": {
+        "br": {
+          "kids": [],
+          "attrs": [],
+          "text": null
+        }
+      }
+    },
+    {
+      "name": "input_field",
+      "input": {
+        "input": {
+          "kids": [],
+          "attrs": [
+            {
+              "custom": [
+                "type",
+                "text"
+              ]
+            },
+            {
+              "custom": [
+                "placeholder",
+                "Enter text"
+              ]
+            }
+          ],
+          "text": null
+        }
+      }
+    }
+  ],
+  "elements_with_attributes": [
+    {
+      "name": "div_with_id",
+      "input": {
+        "div": {
+          "kids": [],
+          "attrs": [
+            {
+              "id": "unique-identifier"
+            }
+          ],
+          "text": "Content with ID"
+        }
+      }
+    },
+    {
+      "name": "span_with_classes",
+      "input": {
+        "span": {
+          "kids": [],
+          "attrs": [
+            {
+              "clss": "primary-class secondary-class"
+            }
+          ],
+          "text": "Styled content"
+        }
+      }
+    },
+    {
+      "name": "button_with_click_event",
+      "input": {
+        "button": {
+          "kids": [],
+          "attrs": [
+            {
+              "click": {
+                "event": {
+                  "event": "handleClick",
+                  "args": null
+                }
+              }
+            }
+          ],
+          "text": "Click me"
+        }
+      }
+    },
+    {
+      "name": "element_with_multiple_attrs",
+      "input": {
+        "div": {
+          "kids": [],
+          "attrs": [
+            {
+              "id": "multi-attr-element"
+            },
+            {
+              "clss": "container fluid"
+            },
+            {
+              "custom": [
+                "data-testid",
+                "test-element"
+              ]
+            },
+            {
+              "custom": [
+                "aria-label",
+                "Main container"
+              ]
+            }
+          ],
+          "text": "Element with multiple attributes"
+        }
+      }
+    }
+  ],
+  "complex_structures": [
+    {
+      "name": "form_structure",
+      "input": {
+        "form": {
+          "kids": [
+            {
+              "div": {
+                "kids": [
+                  {
+                    "label": {
+                      "kids": [],
+                      "attrs": [
+                        {
+                          "custom": [
+                            "for",
+                            "username"
+                          ]
+                        }
+                      ],
+                      "text": "Username:"
+                    }
+                  },
+                  {
+                    "input": {
+                      "kids": [],
+                      "attrs": [
+                        {
+                          "id": "username"
+                        },
+                        {
+                          "custom": [
+                            "type",
+                            "text"
+                          ]
+                        },
+                        {
+                          "custom": [
+                            "name",
+                            "username"
+                          ]
+                        }
+                      ],
+                      "text": null
+                    }
+                  }
+                ],
+                "attrs": [
+                  {
+                    "clss": "form-group"
+                  }
+                ],
+                "text": null
+              }
+            },
+            {
+              "button": {
+                "kids": [],
+                "attrs": [
+                  {
+                    "custom": [
+                      "type",
+                      "submit"
+                    ]
+                  },
+                  {
+                    "click": {
+                      "event": {
+                        "event": "submitForm",
+                        "args": {
+                          "str": "login-form"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "text": "Submit"
+              }
+            }
+          ],
+          "attrs": [
+            {
+              "id": "login-form"
+            },
+            {
+              "clss": "user-form"
+            }
+          ],
+          "text": null
+        }
+      }
+    },
+    {
+      "name": "table_structure",
+      "input": {
+        "table": {
+          "kids": [
+            {
+              "thead": {
+                "kids": [
+                  {
+                    "tr": {
+                      "kids": [
+                        {
+                          "th": {
+                            "kids": [],
+                            "attrs": [],
+                            "text": "Name"
+                          }
+                        },
+                        {
+                          "th": {
+                            "kids": [],
+                            "attrs": [],
+                            "text": "Age"
+                          }
+                        }
+                      ],
+                      "attrs": [],
+                      "text": null
+                    }
+                  }
+                ],
+                "attrs": [],
+                "text": null
+              }
+            },
+            {
+              "tbody": {
+                "kids": [
+                  {
+                    "tr": {
+                      "kids": [
+                        {
+                          "td": {
+                            "kids": [],
+                            "attrs": [],
+                            "text": "John"
+                          }
+                        },
+                        {
+                          "td": {
+                            "kids": [],
+                            "attrs": [],
+                            "text": "25"
+                          }
+                        }
+                      ],
+                      "attrs": [],
+                      "text": null
+                    }
+                  }
+                ],
+                "attrs": [],
+                "text": null
+              }
+            }
+          ],
+          "attrs": [
+            {
+              "clss": "data-table"
+            }
+          ],
+          "text": null
+        }
+      }
+    }
+  ]
+}

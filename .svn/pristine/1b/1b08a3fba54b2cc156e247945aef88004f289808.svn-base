@@ -1,0 +1,19 @@
+{
+  "name": "dependency-viewer",
+  "version": "1.0.0",
+  "description": "Dependency Graph Viewer",
+  "main": "main.ts",
+  "scripts": {
+    "build": "bun run build.js",
+    "test": "vitest"
+  },
+  "author": "neelzee",
+  "license": "Beerware",
+  "dependencies": {
+    "@nmide/js-utils": "link:@nmide/js-utils",
+    "d3": "^7.9.0"
+  },
+  "devDependencies": {
+    "@nmide/js-debug-module": "link:@nmide/js-debug-module"
+  }
+}

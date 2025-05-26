@@ -1,0 +1,61 @@
+%\makeglossaries      % alt 1
+\makenoidxglossaries  % alt 2
+
+\renewcommand*{\acronymname}{List of Acronyms and Abbreviations}
+\renewcommand{\glsnamefont}[1]{\textbf{#1}}
+
+%Create acronyms here.
+\newacronym{ide}{IDE}{Integrated Development Environment}
+\newacronym{asr}{ASR}{Abstract Semantic Representation}
+\newacronym{stf}{STF}{Syntactic Theory Functor}
+\newacronym{saas}{SaaS}{Software as a Service}
+\newacronym{vcs}{VCS}{Version Control System}
+\newacronym{html}{HTML}{HyperText Markup Language}
+\newacronym{mvc}{MVC}{Model-View-Controller}
+\newacronym{ui}{UI}{User Interface}
+\newacronym{json}{JSON}{JavaScript Object Notation}
+\newacronym{gui}{GUI}{Graphical User Interface}
+\newacronym{dom}{DOM}{Document Object Model}
+\newacronym{vdom}{VDOM}{Virtual Document Object Model}
+\newacronym{rsms}{RSMS}{Rust Module System}
+\newacronym{jsms}{JSMS}{JavaScript Module System}
+\newacronym{lsp}{LSP}{Language \gls*{ls}}
+\newacronym{ls}{LS}{Language Server}
+\newacronym{npm}{NPM}{Node Package Manager}
+\newacronym{moa}{MoA}{Mathematics of Arrays}
+\newacronym{bldl}{BLDL}{Bergen Language Design Laboratory}
+\newacronym{vim}{Vim}{Vi Improved}
+\newacronym{api}{API}{Application Programming Interface}
+\newacronym{mdcs}{MCDS}{Multi-way Dataflow Constraint System}
+\newacronym{abi}{ABI}{Application Binary Interface}
+\newacronym{e2e}{E2E}{End-To-End}
+\newacronym{dag}{DAG}{Directed Acyclic Graphs}
+\newacronym{css}{CSS}{Cascading Style Sheets}
+\newacronym{ipc}{IPC}{Inter-Process Communication}
+\newacronym{dsl}{DSL}{Domain Specific Language}
+\newacronym{vscode}{VS Code}{Visual Studio Code}
+\newacronym{rest}{REST}{Representational State Transfer}
+\newacronym{mpsc}{MPSC}{Multi Provider Single Consumer}
+\newacronym{smt}{SMT}{Satisfiability Modulo Theories}
+\newacronym{cpu}{CPU}{Central Processing Unit}
+\newacronym{ub}{UB}{Undefined Behavior}
+\newacronym{cli}{CLI}{Commandline Interface}
+\newacronym{cicd}{CI/CD}{Continuous Integration and Continuous Delivery}
+\newacronym{erpc}{Eclipse RPC}{Eclipse Rich Client Platform}
+
+\newglossaryentry{git}
+  { name={Git}
+  , description={Git is a \gls*{vcs} for tracking changes in computer files and coordinating work on those files among multiple people}
+  }
+\newglossaryentry{intellij}
+  { name={IntelliJ}
+  , description={IntelliJ is an \gls*{ide} for Java}
+  }
+\newglossaryentry{eclipse}
+  { name={Eclipse}
+  , description={Eclipse is an \gls*{ide} for Java}
+  }
+\newglossaryentry{nvim}
+  { name={Neovim}
+  , description={Fork of \gls*{vim}}
+  }
