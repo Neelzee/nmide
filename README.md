@@ -1,6 +1,6 @@
 # Nmide
 
-A zero core IDE.
+A zero-core IDE.
 
 This is repository contains my master project and thesis, under the working
 title `Creating a Modular IDE`. This project was started, because a research
@@ -8,7 +8,7 @@ group at the University of Bergen is developing an experimental research
 programming language. Being an experimental language, and having all of it's
 tooling, like the compiler is still under development, poses a unique challenge
 for developing an IDE for it, so flexibility is key. To achieve this, this IDE
-is _zero core_. The only functionality it has, is to load and manage modules.
+is _zero-core_. The only functionality it has, is to load and manage modules.
 
 Everything, from the file explorer, to editor, are features one or more modules
 has to create.
