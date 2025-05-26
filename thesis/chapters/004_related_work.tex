@@ -4,11 +4,25 @@
 
 There exists module architectures in other \gls*{ide}s.
 
-\subsection{IntelliJ}
 
-The extensibility \gls*{intellij} has, is achieved by its extensions points
-architecture. This is an \gls*{api} for plugins to integrate with the
-\gls*{ide}. Plugins use this \gls*{api} to register their implementations.
+\subsection{Eclipse}
+
+\gls*{ide}s are one of the most common application that supports extensions by
+third-party code. \gls*{ide}s like \gls*{eclipse} and \gls*{intellij} are
+specialized for working with Java, but they can still support other languages
+with the help of modules. A module in \gls*{eclipse} for instance, could extend
+\gls*{eclipse} with functionality like syntax highlighting, code completion,
+Go-to-definitions, debugging, and more, for standard programming languages.
+A lot of this functionality, comes from module-to-module extension, as in
+\gls*{eclipse} modules can extend modules, with the use of the \gls*{erpc}~\cite{eclipseRcp}.
+
+\subsubsection{Eclipse Rich Client Platform}
+\*gls{erpc} is a platform for building desktop applications. \gls*{eclipse}
+being an example of this platform in action. A plug-in could for example be
+responsible for setting up the general \gls*{ui} layout, similar to our module,
+\textit{ide\_framework}, and another plug-in could then modify this \gls*{ui} by
+adding a file explorer, similar to our module \textit{ide\_explorer}.
+
 
 \subsection{NetBeans}
 
@@ -18,6 +32,13 @@ An important part of NetBeans core architecture, is the NetBeans Module
 run the NetBeans application. A module in NetBeans is a JAR file, in which a
 module can, amongst other things, list their public packages. This means that
 other modules can directly invoke methods provided by this package.
+
+
+\subsection{IntelliJ}
+
+The extensibility \gls*{intellij} has, is achieved by its extensions points
+architecture. This is an \gls*{api} for plugins to integrate with the
+\gls*{ide}. Plugins use this \gls*{api} to register their implementations.
 
 \subsection{Visual Studio}
 
@@ -33,9 +54,21 @@ its extension \gls*{api}. This \gls*{api} allows for extensions to modify the
 look and behavior of the \gls*{ide}. In fact, many of the core \gls*{ide}
 features are possible due to built-in extensions.
 
+\subsection{Emacs}
+
+Emacs\footnote{\url{https://www.gnu.org/software/emacs/}} is an extensible text
+editor. Almost all of Emacs functionality is achieved by writing code in Emacs
+Lisp, a dialect of Lisp\footnote{\url{https://lisp-lang.org/}}. Unlike other
+\gls*{ide}s, Emacs does not restrict modules to a certain \gls*{api}, instead
+they are free to modify anything, as the functionality from the Emacs Lisp,
+\textit{sits} atop of a core written in C, which abstracts away platform
+specific code, and enables Emacs to be turned from an a \textit{simple} text
+editor, to write and send emails, multimedia management and much more.
+
+
 \subsection{Theia}
 
-\say{The Theia \gls*{ide} is a modern \gls*{ide} for cloud and desktop built on the Theia Platform}.~\cite{theiaIde}
+\say{The Theia \gls*{ide} is a modern \gls*{ide} for cloud and desktop built on the Theia Platform}\footnote{\url{https://theia-ide.org/}}.
 
 Eclipse Theia is a highly extensible \gls*{ide}, supporting \textit{extensions}
 from \gls*{vscode}, their own extensions and plugins, and \textit{headless}
@@ -59,24 +92,6 @@ Theia is both a desktop \gls*{ide} and a web \gls*{ide}. Where there is no real
 distinction between the two, both abstracting it to a frontend and backend. This
 is similar to our zero-core \gls*{ide}, as we can make this abstraction due to
 our usage of a web view for the desktop \gls*{ide}.
-
-\subsection{Eclipse}
-
-\gls*{ide}s are one of the most common application that supports extensions by
-third-party code. \gls*{ide}s like \gls*{eclipse} and \gls*{intellij} are
-specialized for working with Java, but they can still support other languages
-with the help of modules. A module in \gls*{eclipse} for instance, could extend
-\gls*{eclipse} with functionality like syntax highlighting, code completion,
-Go-to-definitions, debugging, and more, for standard programming languages.
-A lot of this functionality, comes from module-to-module extension, as in
-\gls*{eclipse} modules can extend modules, with the use of the \gls*{erpc}~\cite{eclipseRcp}.
-
-\subsubsection{Eclipse Rich Client Platform}
-\*gls{erpc} is a platform for building desktop applications. \gls*{eclipse}
-being an example of this platform in action. A plug-in could for example be
-responsible for setting up the general \gls*{ui} layout, similar to our module,
-\textit{ide\_framework}, and another plug-in could then modify this \gls*{ui} by
-adding a file explorer, similar to our module \textit{ide\_explorer}.
 
 
 \section{Multi-way Dataflow Constraint System} \label{sec:mdcs}
