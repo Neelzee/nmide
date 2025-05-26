@@ -1,8 +1,11 @@
-use crate::{
-    core::NmideCore,
-    statics::{NMIDE, NMIDE_SENDER, NMIDE_STATE, NMIDE_UI},
-};
-use core_std_lib::{core::Core, core_modification::CoreModification};
+//! Core modification handler
+//!
+//! Handles modifications sent from a Module, translating the Instruction-set
+//! into state and UI change, before writing the changes onto the state and UI.
+//! Does this independently of what `Core` is used.
+
+use crate::statics::{NMIDE, NMIDE_SENDER, NMIDE_STATE, NMIDE_UI};
+use core_std_lib::core_modification::CoreModification;
 use log::debug;
 use tokio::sync::mpsc::channel;
 
@@ -21,8 +24,8 @@ pub fn spawn_core_modification_handler() {
         async move {
             while let Some(pre_modification) = recv.recv().await {
                 let modification = pre_modification.clone().optimize();
-                let state = NmideCore.state().await;
-                let ui = NmideCore.ui().await;
+                let state = NMIDE_STATE.read().await.clone();
+                let ui = NMIDE_UI.read().await.clone();
 
                 let (new_state, ui_builder) = modification.clone().build_state(state);
                 let mut st = NMIDE_STATE.write().await;
