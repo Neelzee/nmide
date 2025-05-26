@@ -12,11 +12,15 @@ import * as E from "fp-ts/Either";
 const App = {
   initialize: async (config: Partial<AppConfig> = {}) => {
     info("[frontend] Initialized");
-    const conf = { ...defaultConfig, ...config, log: { info, debug, error }, render };
-    // @ts-expect-error This is okay
-    window.__nmideConfig__ = {}
-    // @ts-expect-error This is okay
-    Object.keys(conf).forEach(key => { window.__nmideConfig__[key] = conf[key] });
+    window.__nmideConfig__ = { ...defaultConfig, ...config, render }
+    /**
+     * NOTE: We overwrite the default `log`, so that we get the frontend
+     * log-statements in the logs managed by Tauri aswell.
+     *
+     * @see [Tauri logging](https://v2.tauri.app/plugin/logging/)
+     */
+    // @ts-expect-error This is valid
+    window.__nmideConfig__.log = { info, debug, error }
     document.dispatchEvent(new CustomEvent(NMIDE_INITIALIZED));
   },
   run: async () => {

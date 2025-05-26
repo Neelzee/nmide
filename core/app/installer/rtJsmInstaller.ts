@@ -1,6 +1,13 @@
 import { NMIDE_RT_MODULE_INSTALLED_EVENT } from "@nmide/js-core-std-lib";
 
-// TODO: Add docs
+/**
+ * Runtime JavaScript module installer.
+ *
+ * _Installs_ the module by adding a `<script>` element to the `document`, with a
+ * `src` that references the `$APPDIR/modules` folder.
+ *
+ * @see [Tauri Permissions](https://tauri.app/security/permissions/)
+ */
 export const rtJsmInstaller = async (src: string): Promise<string | undefined> => {
   if (!src.endsWith(".js") && !src.endsWith(".mjs")) return;
   const name = src.split("%2F").pop()?.split(".")[0];
