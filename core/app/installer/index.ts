@@ -32,6 +32,7 @@ import { convertFileSrc } from "@tauri-apps/api/core";
 import { rtJsmInstaller } from "./rtJsmInstaller.ts";
 import { mkCore, NMIDE_RT_MODULE_PUSHED_EVENT } from "@nmide/js-core-std-lib";
 import { Module } from "@nmide/js-utils";
+import { rtCssInstaller } from "./rtCssInstaller.ts";
 
 type ModuleInstaller = ((path: string) => Promise<string | undefined>);
 
@@ -81,7 +82,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     .then(A.sort(S.Ord));
   window.__nmideConfig__.log
     .info(`[frontend] module paths: ${JSON.stringify(paths)}`);
-  const installers = [rtJsmInstaller];
+  // NOTE: List of installers, could and probably should be configurable.
+  const installers = [rtJsmInstaller, rtCssInstaller];
   const modulesPromise = pipe(
     installers,
     A.flatMap(moduleInstallerWrapper(paths)),
