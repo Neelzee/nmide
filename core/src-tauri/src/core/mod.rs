@@ -1,3 +1,32 @@
+//! NmideCore
+//!
+//! A module can do the following things:
+//!
+//! 1. Modify the application state
+//! 2. Modify the application UI
+//! 3. Invoke modules
+//!
+//! All of which is done through the `Core`. In the following diagram, we can
+//! see an example module, and how it modifies the application in its
+//! _init_-state.
+//!
+//!         ┌─────┐
+//!         │     ▼A
+//! ┌────────┐  B┌──────┐     ┌─Application─┐
+//! │ Module │──►│ Core │────►│             │
+//! └────────┘   └──────┘     └─────────────┘
+//!         │    C▲
+//!         └─────┘
+//!
+//! A, B, and C are different actions the module can take, labelled to make it
+//! easier to visualize. The order of the actions does not matter.
+//!
+//! A. The module registers for an Event
+//! B. The module sends a modification
+//! C. The module throws an Event
+//!
+//! All the different actions pass through the `Core`.
+//!
 use crate::statics::{
     APP_DATA_DIR, MODULE_EVENT_REGISTER, NMIDE, NMIDE_SENDER, NMIDE_STATE, NMIDE_UI,
 };
