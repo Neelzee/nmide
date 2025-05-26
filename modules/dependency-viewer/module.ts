@@ -156,7 +156,7 @@ const Module = {
     const val = (await core.state())["dv-init"];
     const toggled = isTBool(val) ? val.bool : true;
 
-    let state_builder = new StateBuilder().add("dv-init", !toggled);
+    let state_builder = new StateBuilder().add("dv-init", tBool(!toggled));
     const init_val = (await core.state())["dv-init-init"];
     const inited = isTBool(init_val) ? init_val.bool : false;
     let builder = (!toggled

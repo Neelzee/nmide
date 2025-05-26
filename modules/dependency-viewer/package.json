@@ -14,6 +14,7 @@
     "d3": "^7.9.0"
   },
   "devDependencies": {
-    "@nmide/js-debug-module": "link:@nmide/js-debug-module"
+    "@nmide/js-debug-module": "link:@nmide/js-debug-module",
+    "@types/d3": "^7.4.3"
   }
 }

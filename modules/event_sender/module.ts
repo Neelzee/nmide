@@ -218,7 +218,10 @@ const Module = {
               )
           )
       )
-    await core.sendModification(new UiBuilder().add(ui).build(new StateBuilder().add("debug-toggle", false)));
+    await core.sendModification(
+      new UiBuilder().add(ui)
+        .build(new StateBuilder().add("debug-toggle", tBool(false)))
+    );
   },
   handler: async (evt: Event, core: Core): Promise<void> => {
     const state = await core.state();
