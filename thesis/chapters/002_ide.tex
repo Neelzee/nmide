@@ -13,7 +13,7 @@ base, the developers whom develop \textit{plugins} for the \gls*{ide}. Being the
 primary user base, most of the new features implemented by either \gls*{ide} are
 related to the development experience. There are still changes to that the
 \textit{plugin} developers are interested in, namely \gls*{api} changes.
-\gls*{intellij} for example, lists their \textit{incompatible \gls*{api} changes}~\cite{intellijBrokenApi}.
+\gls*{intellij} for example, lists their \textit{incompatible \gls*{api} changes}\footnote{\url{https://plugins.jetbrains.com/docs/intellij/api-changes-list-2025.html\#intellij-platform-20252}}.
 Breaking changes between \gls*{ide} versions is something normal users of the
 \gls*{ide} do not worry about. As usually when a new version is released, it
 means more features for the developer to utilize. While \textit{plugin}
@@ -44,10 +44,8 @@ all key binds to \textit{vim-motions}. In any case, a user expects certain
 functionality to already exist in an \gls*{ide}, like text editing. A maintainer
 of a zero-core \gls*{ide} could supply modules added at compile time, meaning the
 expected functionality is there out of the box, while more thematic modules
-could be supplied as runtime modules.
-
-But for more functionality based module, an \gls*{ide} user can make use of the
-following modules:
+could be supplied as runtime modules. Example of more functionality based
+modules are as follows:
 
 \begin{enumerate}
   \item \textit{ide\_framework}: Responsible for general layout
@@ -72,14 +70,14 @@ the \gls*{ide}.
 \end{figure}
 
 \paragraph{ide\_explorer} In picture \ref{pic:ideEx} we can see the
-\textit{ide\_explorer} in action, showing the Magnolia library visualized as a
-tree-like structure with collapsible folders. These folders are rendered in the
-\textit{sidebar}, on the left. When we click on the \textit{File}, a dropdown
-appears, where we can click on a button, \textit{Open Folder}, which sends an
-Event to \gls*{ide}\_fsa, the module in charge of handling file system
-operations, where we get in \textit{response}, all the folders and files in the
-path we selected. Which we transform into \gls*{html}, and along with some
-\gls*{css}, we get the collapsible folders.
+module, \textit{ide\_explorer} in action, showing the Magnolia library
+visualized as a tree-like structure with collapsible folders. These folders are
+rendered in the \textit{sidebar}, on the left. When we click on the
+\textit{File}, a dropdown appears, where we can click on a button,
+\textit{Open Folder}, which sends an Event to \gls*{ide}\_fsa, the module in
+charge of handling file system operations, where we get in \textit{response},
+all the folders and files in the path we selected. Which we transform into
+\gls*{html}, and along with some \gls*{css}, we get the collapsible folders.
 
 \begin{figure}[H]
   \centering
@@ -91,23 +89,24 @@ path we selected. Which we transform into \gls*{html}, and along with some
 \end{figure}
 
 
-\paragraph{ide\_pm} Is responsible for the menu bar at the top of the
+\paragraph{ide\_pm} Is a module responsible for the menu bar at the top of the
 \gls*{ide}. It just simplifies the creation of interactive \gls*{ui} elements
 for other modules. The Module has functionality for handling dropdown menus,
 which are common in \gls*{ide}-\gls*{ui}s.
 
-\paragraph{ide\_tabs} Handles pagination of the \gls*{ide}, where other modules
-can add their own content to different tabs, that this module can cycle through.
-By clicking on a file in the file explorer, a tab is made, where the contents
-are managed by the \textit{ide\_editor} module.
+\paragraph{ide\_tabs} This module handles pagination of the \gls*{ide}, where
+other modules can add their own content to different tabs, that this module can
+cycle through. By clicking on a file in the file explorer, a tab is made, where
+the contents are managed by the \textit{ide\_editor} module.
 
 \paragraph{ide\_editor} The editor module is coupled with the \gls*{ide}
-framework, as using the ide\_explorer module, we can open and edit files. By
-clicking a file in the tree, we can invoke the ide\_editor module, which invokes
-the ide\_tabs module, creating a tab with a text editor in. In picture
-\ref{pic:editorModule} we can see this in action, as the editor is created in
-the \textit{content} place, in the center of the \gls*{ide}, along with a
-\textit{tab}, with the name of the file being edited as the title of the tab.
+framework, and the ide\_explorer module. We can open and edit files using the
+combination of these modules. By clicking a file in the tree, we can invoke the
+ide\_editor module, which invokes the ide\_tabs module, creating a tab with a
+text editor in. In picture \ref{pic:editorModule} we can see this in action, as
+the editor is created in the \textit{content} place, in the center of the
+\gls*{ide}, along with a \textit{tab}, with the name of the file being edited as
+the title of the tab.
 
 \begin{figure}[H]
   \centering
@@ -159,26 +158,31 @@ created. With the control panel, we can zoom in and out on the graph\footnote{Th
 reset our view. This, along with the node size scale, scaling how big
 a node is depending on how many dependents it has, ensures this visualization
 tool can be used for other programming libraries, not just Magnolia.\footnote{Given a proper parser module}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.45\textwidth]{dependency-viewer-controls.png}
-  \caption{
-    Control panel, with buttons and sliders for controlling the graph view
-  }
-  \label{pic:depCont}
-\end{figure}
-
 Furthermore, we can highlight the packages we care about, using the filter
 panel the module created. In picture \ref{pic:depFil}, all the different
 Magnolia packages have been detected, and their corresponding colour has been
 added. We can then enable, or disable them.
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[height=0.5\textwidth]{dependency-viewer-filter.png}
-  \caption{List of packages in the graph, that can be toggled}
-  \label{pic:depFil}
+  \begin{subfigure}[h]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.85\textwidth]{dependency-viewer-controls.png}
+    \caption{
+      Control panel, with buttons and sliders for controlling the graph view
+    }
+  \label{pic:depCont}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[h]{0.45\textwidth}
+    \centering
+    \includegraphics[height=0.8\textwidth]{dependency-viewer-filter.png}
+    \caption{List of packages in the graph, that can be toggled}
+    \label{pic:depFil}
+  \end{subfigure}
+  \caption{
+    The control panel and package legend, created by the visualizer module.
+  }
+  \label{fig:foobarbar}
 \end{figure}
 
 In the picture \ref{pic:depDis}, we can see the graph after we have disabled all
@@ -240,13 +244,13 @@ developer experience is the most important. To achieve this, documentation is
 important. If a module developer has a question about how the core might react,
 it should be answered by the documentation. In \gls*{eclipse}, this is in the
 form of \textit{Javadoc}s, which specify, with examples how the \gls*{eclipse}
-runtime handles \textit{plugins}. \footnote{\url{https://help.eclipse.org/latest/rtopic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/runtime/Plugin.html}}
+runtime handles \textit{plugins}\footnote{\url{https://help.eclipse.org/latest/rtopic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/runtime/Plugin.html}}.
 
 The documentation for \textit{plugin} developers, in both \gls*{intellij} and
 \gls*{eclipse} has to be large, due to of how \textit{plugins} interact with the
 \gls*{ide}; it is a large \gls*{api}. In a zero-core \gls*{ide} it is smaller,
 simply due to the fact that the core \gls*{ide} offers fewer features, as features
-necessarily come from a module.
+necessarily come from modules in a zero-core architecture.
 
 \subsection{Language Agnostic Modules}
 
@@ -291,7 +295,7 @@ module from Rust to Haskell is necessary.
   \label{fig:fm}
 \end{figure}
 
-But this language agnosticism also means that translating from one language to
+But language agnosticism also means that translating from one language to
 another should be trivial. This is achieved by the models used in the core. The
 \textit{primitive} types, are the same as in JavaScript, the notion of an empty
 value, numbers, strings, lists and \textit{objects}, can be

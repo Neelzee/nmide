@@ -1,7 +1,14 @@
 \chapter{Conclusion \& Discussion} \label{cha:conclusion}
 
-We will discuss some of the issues encountered when developing this modular
-\gls*{ide}, and make a conclusion from our hypothesis \ref{hyp:modular}.
+In this chapter, we will discuss some of the issues encountered when developing
+this modular \gls*{ide}. In section \ref{sec:mod-dev}, we will discuss our
+experience developing modules for this \gls*{ide}, and how that was affected by
+the development of the architecture itself. We will continue in a similar vein,
+by discussing some of the issues with the \gls*{api}, in section
+\ref{sec:lackluser}, and how they were \textit{solved}. Section \ref{sec:lla}
+will discuss language agnosticism, while section \ref{sec:fm} will highlight the
+challenges for development of foreign modules. And finally, we will make a
+conclusion from our hypothesis \ref{hyp:modular}.
 
 
 \section{Modular development} \label{sec:mod-dev}
@@ -14,20 +21,20 @@ entirely new feature, find out what has been done before.
 
 \subsection{Unstable API}
 
-Developing against an unstable \gls*{api} is difficult, when developing a module
-architecture, it is like an unstable \gls*{api} when it is not \textit{mature},
-e.g. when it does not have settled modules to develop against. Since this is
-the case, there are a lot of issues with the existing modules, making the user
-experience less than competing \gls*{ide}s. Most of these are minors, and can be
-fixed with some minor revisions to the existing modules, for instance, when
-closing the \gls*{ide}, unsaved changes are discarded, with no information given
-to the user. Or how what project a user was working on, is not saved between
-instances, so a user has to re-open the project they worked on. This is a side
-effect of the development plan, and not the architecture. To fully test out this
-architecture, it was thought that a wide range of modules should be implemented,
-to quickly iron out issues with the implementation of the architecture, and to
-figure out what functionality Tauri has, that we can expose, like the file
-selection.
+Developing against an unstable \gls*{api} is difficult, and when developing a
+module architecture, it is like an unstable \gls*{api} when it is not
+\textit{mature}, e.g. when it does not have settled modules to develop against.
+Since this is the case, there are a lot of issues with the existing modules,
+making the user experience less than competing \gls*{ide}s. Most of these are
+minors, and can be fixed with some minor revisions to the existing modules, for
+instance, when closing the \gls*{ide}, unsaved changes are discarded, with no
+information given to the user. Or how what project a user was working on, is not
+saved between instances, so a user has to re-open the project they worked on.
+This is a side effect of the development plan, and not the architecture. To
+fully test out this architecture, it was thought that a wide range of modules
+should be implemented, to quickly iron out issues with the implementation of the
+architecture, and to figure out what functionality Tauri has, that we can
+expose, like the file selection.
 
 So not only were modules needed to cover the necessities to qualify as an
 \gls*{ide}, but they were also needed to \textit{test} the implementation. Not
@@ -56,6 +63,18 @@ instance of \textit{HtmlInputElement} or \textit{textarea}, we know that the
 which, we can manually calculate the position of the click. Implementing this
 meant adding a breaking change to the \gls*{api}, which deprecated different
 modules, so more time was spent on re-implementing them.
+
+
+\section{Inconsistent UI and ad-hoc solutions for lackluster API} \label{sec:lackluster}
+
+There is an issue in the current \gls*{api} on maintaining consistency between
+the \gls*{ui} in the frontend, and the \gls*{ui} representation the \gls*{rsms}
+has access to. This means that there is no good way to achieve saving of an
+edited file. But this is still a feature the editor module supports. The way
+saving was implemented, was to add plain JavaScript to the save button, where
+when the user presses it, the contents of the textarea are sent to the ide\_fsa
+module, which can save the contents. This is an action that bypasses the core
+\gls*{ide}, which was necessary due to the lacking \gls*{api}.
 
 
 \section{Lacking language agnosticism} \label{sec:lla}
@@ -158,19 +177,6 @@ doing in this code block is \textit{valid}.
 But with the starting point of the runtime Rust module system, a C module system
 could be developed. One would just have to ensure that the differences between
 the modules are syntactical, and not semantics.
-
-
-\section{Ad-hoc solutions for lackluster API} \label{sec:lackluster}
-
-As mentioned, there is an issue in the current \gls*{api} on maintaining
-consistency between the \gls*{ui} in the frontend, and the \gls*{ui}
-representation the \gls*{rsms} has access to. This means that there is no
-good way to achieve saving of an edited file. But this is still a feature the
-editor module supports. The way saving was implemented, was to add plain
-JavaScript to the save button, where when the user presses it, the contents
-of the textarea are sent to the \gls*{ide}\_fsa module, which can save the
-contents. This is an action that bypasses the core \gls*{ide}, which was
-necessary due to the lacking \gls*{api}.
 
 
 \section{Conclusion} \label{sec:conclusion}

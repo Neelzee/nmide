@@ -1,6 +1,13 @@
 \chapter{Optimizing instructions sets} \label{app:a}
 
-To optimize an instruction set, these are the steps taken:
+The following appendix discusses how we can optimize an instruction set. When we
+use the term \textit{optimize}, we mean to reduce the amount of instructions.
+This can be achieved in a few different steps. \textbf{Instruction} is a
+recursive data type, parameterized by \textbf{T}. Since an \textbf{Instruction}
+form a group\footnote{See section \ref{sec:moD3} in chapter \ref{cha:impl}}
+structure, we know for any \textbf{Instruction} variant, there exist an inverse,
+giving us the unit. The goal of this optimization, is to see if an
+\textbf{Instruction} tree contains any inverses.
 
 \begin{enumerate}
   \item Flatten the Instruction
@@ -12,7 +19,18 @@ To optimize an instruction set, these are the steps taken:
   \item Unflatten the Instructions
 \end{enumerate}
 
-\begin{center}
+An \textit{unnecessary} operation is one that leads to an \textbf{NoOp}, which
+is the case of inversable \textbf{Instruction}s. The optimalization function
+is not parameterized by a strict variant of \textbf{T}. In the \gls*{ide} the
+\textbf{Instruction}s are parameterized by \textbf{Value}, \textbf{Html},
+\textbf{Attr} and \textbf{String}. The last three are specific to \gls*{ui}
+modification, and the last two are modifications on specific \textbf{Html}
+instances. This means that if an \textbf{Instruction} parameterized by
+\textbf{Html}, is of the \textbf{Rem} variant, we know all other \gls*{ui}
+\textbf{Instruction}s pertaining to the removed \textbf{Html} variant are
+\textbf{NoOp}s.
+
+\begin{code}[H]
   \lstinputlisting
    [ language=Rust
    , caption={Instruction (Rust)}
@@ -20,11 +38,10 @@ To optimize an instruction set, these are the steps taken:
    , firstline=4
    , lastline=16
    ]{./libs/rust/core-std-lib/src/instruction/inst.rs}
-\end{center}
+\end{code}
 
-\textbf{Instruction} is a recursive data type, parameterized by \textbf{T}. In
-Rust we can have generic data types, as shown in listing \ref{lst:aInst}, by the
-type parameter, $T$, but we have to restrict the type $T$ to a type that
+In Rust we can have generic data types, as shown in listing \ref{lst:aInst}, by
+the type parameter, $T$, but we have to restrict the type $T$ to a type that
 implements the trait \textbf{PartialEq}, which means we can use equality on it.
 We need this restrictions, because the attribute macro \textbf{Instruction} has.
 These macros generate the needed code to implement the different traits:
@@ -44,7 +61,7 @@ We first start the optimalization step, by removing all NoOps, and then
 flattening the instructions, by using the \textbf{opt} and \textbf{flatten}
 methods, shown in listings \ref{lst:opt} and \ref{lst:flatten} respectively.
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
    [ language=Rust
    , caption={
@@ -55,24 +72,24 @@ methods, shown in listings \ref{lst:opt} and \ref{lst:flatten} respectively.
      recursively removed.
    }
    , label=lst:opt
-   , firstline=87
-   , lastline=93
+   , firstline=119
+   , lastline=151
    ]{./libs/rust/core-std-lib/src/instruction/opt.rs}
-\end{center}
+\end{code}
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
    [ language=Rust
    , caption={
-     Flatten method (Rust): Not the lack of return statements, this is because
-     the last expression in a function in Rust, is returned, if it doesn't end
-     with a semicolon.
+     Flatten method (Rust): Note the lack of return statements, this is because
+     the last expression in a function in Rust, is returned, if the expression
+     does not end with a semicolon.
    }
    , label=lst:flatten
-   , firstline=9
-   , lastline=19
+   , firstline=17
+   , lastline=26
    ]{./libs/rust/core-std-lib/src/instruction/opt.rs}
-\end{center}
+\end{code}
 
 In listing \ref{lst:count}, we then iterate over each instruction in the
 sequence, and mapping each field and value to a counter. If it's an Add
@@ -83,15 +100,15 @@ a catch-all with an \textit{unreachable} macro, which will \textit{panic} with
 the supplied message. This is commonly used to represent a state that is
 unreachable, but something the compiler can't prove.
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
    [ language=Rust
    , caption={Modification counting (Rust)}
    , label=lst:count
-   , firstline=28
-   , lastline=55
+   , firstline=50
+   , lastline=79
    ]{./libs/rust/core-std-lib/src/instruction/opt.rs}
-\end{center}
+\end{code}
 
 Finally, in the listing \ref{lst:fold}, we \textit{unflatten} the sequence of
 instructions, and check the count for each Add and Rem Instruction. If it is
@@ -104,12 +121,12 @@ we set the count to $0$, and combine the accumulated instruction, with the Rem
 instruction. Because of our \textbf{combine} implementation, we can be sure that
 the initial NoOp element is removed as soon as possible.
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
    [ language=Rust
    , caption={Instruction folding (Rust)}
    , label=lst:fold
-   , firstline=57
-   , lastline=83
+   , firstline=81
+   , lastline=112
    ]{./libs/rust/core-std-lib/src/instruction/opt.rs}
-\end{center}
+\end{code}

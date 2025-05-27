@@ -88,7 +88,10 @@ the method invocation, as shown in listing \ref{lst:ownership-ref}.
 \begin{center}
   \lstinputlisting
     [ language=Rust
-    , caption={Ownership example (Rust)}
+    , caption={
+      Ownership example, this code snippet will not compile because we are
+      violating the ownership rules. (Rust)
+    }
     , label=lst:ownership
     ]{./code/rust-ownership.rs}
 \end{center}
@@ -118,7 +121,7 @@ compatibility with future models, made in other languages, by use of the Rust
 
 \subsubsection{Rust Application Binary Interface}
 
-Rust's \gls*{abi} is not stable! Because it is not supported by their semantic
+Rust's \gls*{abi} is not stable, as it is not supported by their semantic
 versioning. This means even a bug fix in the compiler, could break the
 \gls*{abi}. So if an application, written in Rust, is compiled in version 1.8.0,
 if this application relies on a Rust library that is compiled in version 1.8.0,
@@ -137,6 +140,29 @@ runtime module using the \textit{abi\_stable}-crate, as one could design a
 module to be expanded in the future, but due to the stability of the \gls*{api},
 this was deemed unnecessary.
 
+
+\subsubsection{TypeScript}
+
+Any frontend framework that compiles to \gls*{html}, JavaScript and \gls*{css}
+can be used with Tauri\footnote{\url{https://tauri.app/}} the framework we have
+chosen, so TypeScript was chosen. TypeScript offers a lot of features over
+JavaScript, amongst them being able to \textit{type} functions, ensuring
+null/undefined-safety. Furthermore, by using crates like \textit{ts-rs}\footnote{\url{https://github.com/Aleph-Alpha/ts-rs}},
+Rust types can be annotated with attribute macros, which create a one-to-one
+mapping between the Rust type, and the serialized JSON object, to be used in
+TypeScript, allowing for even more type safety, and ensuring that the types used
+in the \gls*{ide} only have to be defined one place.
+
+Allowing for any JavaScript library to be used, enabled a low development time
+of \gls*{ui} components, since this is something that a lot of \gls*{ui} and user
+experience designers have looked into. So existing code for this already exists
+and can be used. \gls*{npm}\footnote{https://www.npmjs.com/}, for example, is a
+package registry for JavaScript. It contains around \textit{3.4 million}
+libraries, all of which are usable in this architecture. If the functionality
+that these libraries are useful for the application, is another question. This
+functionality allows for quick development time for modules, which means
+features that are standard in \gls*{ide} can be quickly and easily added.
+
 \subsection{Tauri}
 
 Tauri is a framework for Rust, which enables us to create a cross-platform
@@ -150,26 +176,14 @@ this is achieved with something called \textit{Commands}, which acts as an
 abstraction on top of the \gls*{ipc}, which turns the invocation to a
 frontend-backend architecture.
 
-\subsubsection{TypeScript}
+Tauri also comes built-in with a lot of utilities, for when it comes to
+application development, like bundling the application for different OSes,
+abstracting away file system operation, making them independent of OSes, general
+application security, and creation of dialogs. These dialogs allow for, amongst
+other things, a user to chose file paths. A user can be prompted with a file
+selection, click on a file, and click open, and this will be returned as a path
+in Tauri, which we can use to manipulate the file.
 
-Any frontend framework that compiles to \gls*{html}, JavaScript and \gls*{css} can
-be used with Tauri, so TypeScript was chosen. TypeScript offers a lot of
-features over JavaScript, amongst them being able to \textit{type} functions,
-ensuring null/undefined-safety. Furthermore, by using crates like
-\textit{ts-rs}, Rust types can be annotated with attribute macros, which create
-a one-to-one mapping between the Rust type, and the serialized JSON object, to
-be used in TypeScript, allowing for even more type safety, and ensuring that the
-types used in the \gls*{ide} only have to be defined one place.
-
-Allowing for any JavaScript library to be used, enabled a low development time
-of \gls*{ui} components, since this is something that a lot of \gls*{ui} and user
-experience designers have looked into. So existing code for this already exists
-and can be used. \gls*{npm}, for example, is a package registry for JavaScript.
-It contains around \textit{34 million} libraries, all of which are usable in
-this architecture. If the functionality that these libraries are useful for the
-application, is another question. This functionality allows for quick
-development time for modules, which means features that are standard in
-\gls*{ide} can be quickly and easily added.
 
 \subsection{Security}
 
@@ -184,7 +198,7 @@ intercept and modify all Tauri \gls*{api} calls sent from the JavaScript side,
 before they reach Tauri. We can therefore, depending on the perceived threat or
 sensitivity of a Tauri \gls*{api} call, choose to disregard the invocation of the
 \gls*{api}. We could also choose to disregard \textit{all} invocations that comes
-from the JavaScript side, effectivaly only allowing Tauri \gls*{api} invocations
+from the JavaScript side, effectively only allowing Tauri \gls*{api} invocations
 through the \gls*{ide} itself, meaning only Tauri functionality exposed by the
 \gls*{ide} itself are callable.
 
@@ -229,7 +243,7 @@ a function, and b) does it have the correct amount of arguments. In this case,
 one. Nothing about the typing of the function can be ascertained at runtime,
 without explicitly invoking the function.
 
-\section{Module V.1} \label{sec:mod1}
+\section{Module v1} \label{sec:mod1}
 
 We did not attempt at first, to create a zero-core application; this was a
 \textit{natural} conclusion to the existing problem. The first attempt was a
@@ -262,7 +276,7 @@ Furthermore, anything created this way, would be subpar to existing software,
 which would lead to the next maintainer having to fix the core application. This
 in turn, would add a lot of complexity, which the maintainers would have to deal with.
 
-\section{Module V.2} \label{sec:mod2}
+\section{Module v2} \label{sec:mod2}
 
 \begin{enumerate}
   \item Everything is a module
@@ -467,28 +481,35 @@ for each new subtree that is added, to figure out if there occurs any collision.
 And then notifying the module developer of which field this collision occurred
 on, and which modules tried to modify that field.
 
+
 \section{Module v.3} \label{sec:moD3}
 
-The third and hopefully final, plan:
+To solve the issues with the previous iteration, we decided to add another
+requirement, and the structure of a module:
 
 \begin{enumerate}
   \item Everything is a module
   \item Modules can \textit{invoke} modules
 \end{enumerate}
 
-A module only exposes two functions:
+A module now only exposes two functions:
 
 \paragraph{Init} Returns nothing
 
 \paragraph{Handler} Returns nothing
 
-In the previous architecture version, each module directly changed the state,
-which caused issues. Instead, each modification a module does, \textit{acts}, as
-a direct modification, but is in fact, translated to a DSL which can be analyzed
-for possible collisions. This was discovered to be a need, as in the new
-version, the \gls*{ui} was also restructured, to allow for less re-rendering, and
-this restructuring, made it clear that changing the state, or changing the
-\gls*{ui} is just tree manipulations, which will be discussed more later.
+But given how neither of these functions return anything, how can modules affect
+the core? A module can \textit{send} a set of instructions, which we call core
+modifications, to modify the core. These modifications are \textit{sent} using
+an \gls*{mpsc} channel, which enables communication between two different
+threads, allowing for concurrent core modifications. In the previous
+architecture version, each module directly changed the state, which caused
+issues. Instead, each modification a module does, \textit{acts}, as a direct
+modification, but is in fact, translated to a DSL which can be analyzed for
+possible collisions. This was discovered to be a need, as in the new version,
+the \gls*{ui} was also restructured, to allow for less re-rendering, and this
+restructuring, made it clear that changing the state, or changing the \gls*{ui}
+is just tree manipulations, which will be discussed more later.
 
 \subsection{Zero-core architecture and microservice architecture}
 
@@ -555,11 +576,11 @@ what the \gls*{dom} should be, it can be treated as a Virtual-\gls*{dom}, simila
 as to how React does it. This also means that there could be a collision on
 \gls*{ui}-change, as well as on a state-change. Instead of solving the equivalent
 problems twice, it was decided to try to treat the issues with collisions in
-state and \gls*{ui} as the same issue; its some form of tree-manipulation. We
-could then reduce the amount of needed methods on the module instance, to two.
-One for initializing the state, and one for handling events. In \ref{lst:cm},
-we have a \textbf{CoreModification} type, which has two fields, one for the
-state, and one for the \gls*{ui}.
+state and \gls*{ui} as the same issue; it is some form of tree-manipulation. We
+could therefore reduce the amount of needed methods on the module instance, to
+two. One for initializing the state, and one for handling events. In
+\ref{lst:cm}, we have a \textbf{CoreModification} type, which has two fields,
+one for the state, and one for the \gls*{ui}.
 
 \begin{center}
   \lstinputlisting
@@ -751,24 +772,24 @@ one event at a time, waiting until all modules had finished their computations,
 before emulating the change and allowing for the next event to be evaluated. But
 this caused a noticeable \textit{lag} if an event was long. This was solved by
 changing the core modification evaluation from a simple method to be invoked, to
-an \gls*{mpsc} channel system. Using \textit{tokio}, a Rust crate for
-asynchronous development, a channel for core modifications was created, and
-instead of the core collecting all modifications, each module is invoked and
-\textit{awaited} for in a separate thread, where in each module, if they have a
-core modification, sends the modification to the core channel, which works on
-a first come, first server basis. Here the core can evaluate the changes, also
-on a separate thread.
+an \gls*{mpsc} channel system. Using \textit{tokio}\footnote{\url{https://tokio.rs/}},
+a Rust crate for asynchronous development, a channel for core modifications was
+created, and instead of the core collecting all modifications, each module is
+invoked and \textit{awaited} for in a separate thread, where in each module, if
+they have a core modification, sends the modification to the core channel, which
+works on a first come, first server basis. Here the core can evaluate the
+changes, also on a separate thread.
 
 \subsection{Compile-time modules}
 
 In the previous iterations of the module architecture, all modules where
 \textit{runtime} modules. This of course, came with some challenges when it came
 to develop the \gls*{rsms}, as the Rust-\gls*{abi} is not stable, but this was
-mitigated by using the \textit{stable\_abi} crate, which meant that the modules
-where closer to C, when it came to ordering and alignment of fields in a struct,
-and other necessities to ensure that the \gls*{abi} is stable. But having support
-for compile time modules would allow for a more \textit{Rust-y} approach to the
-modules.
+mitigated by using the \textit{stable\_abi}\footnote{\url{https://github.com/rodrimati1992/abi\_stable\_crates/}}
+crate, which meant that the modules where closer to C, when it came to ordering
+and alignment of fields in a struct, and other necessities to ensure that the
+\gls*{abi} is stable. But having support for compile time modules would allow
+for a more \textit{Rust-y} approach to the modules.
 
 \section{Testing} \label{sec:testing}
 
@@ -861,20 +882,20 @@ newer version of the \gls*{api}.
 Instead of relying on such a versioning system, module developers could use
 \textit{contract testing}.
 
-\paragraph{Contract testing} Imagine some \gls*{api}, and several consumers,
-$A, B, C$, The \gls*{api} developer is serving some data, in this case an
-integer number, which all the consumers use. One day, the developer finds out
-that using integers is not optimal, and want to move on to using floating point
-numbers instead. Changing the \gls*{api} outright could bring issues, as the
-consumers might rely on the \gls*{api} being an integer, instead of a float. But
-the change is needed, or wanted, at least. In this scenario, it is \textit{easy}
-to inform all the consumers of the \gls*{api}, but if the consumer count
-increases tenfold, this is more difficult. A notice can still be sent, but it is
-not feasible to ensure all consumers commit time to change their ways. Contract
+\paragraph{Contract testing} Imagine some \gls*{api}, and several consumers.
+The \gls*{api} developer is serving some data, in this case an integer number,
+which all the consumers use. One day, the developer finds out that using
+integers is not optimal, and want to move on to using floating point numbers
+instead. Changing the \gls*{api} outright could bring issues, as the consumers
+might rely on the \gls*{api} being an integer, instead of a float. But the
+change is needed, or wanted, at least. In this scenario, it is \textit{easy} to
+inform all the consumers of the \gls*{api}, but if the consumer count increases
+tenfold, this is more difficult. A notice can still be sent, but it is not
+feasible to ensure all consumers commit time to change their ways. Contract
 testing ensures that, if a change like this occurs, the maintainer of the
 \gls*{api} is notified by which consumer this change breaks.
 
-The issue is to create these contracts. Using frameworks like Pact~\cite{pact},
+The issue is to create these contracts. Using frameworks like Pact\footnote{\url{https://docs.pact.io/}},
 a developer creates a \gls*{dsl} test, where they describe how the provider or
 consumer reacts to certain interactions. But since everything is a module, we
 can automate this.
@@ -992,13 +1013,7 @@ expensive computation on another thread, while \textit{ending} their
 invocation, ensuring a smooth \gls*{ide} experience.
 
 
-\section{Module developer tools} \label{sec:mdt}
-
-The module developer experience is an important aspect of a zero-core
-architecture. A good way to improve this experience, is by providing good
-tooling.
-
-\subsection{Module installation}
+\section{Module installation}
 
 Manually adding compile-time modules can be tedious, so we automated the task.
 For \gls{jsms}, it is quite trivial, simply bundle the JavaScript code into a
@@ -1027,6 +1042,47 @@ modules. With a build script, we could automate this. In the figure
   \label{fig:compMod}
 \end{figure}
 
+For runtime modules, the installation is divided into two steps. First, we have
+to add the source file to the application directory\footnote{Located in \textit{\%APPDATA} on Windows, or \textit{~/.share} on Unix},
+before actually \textit{installing} the module. Depending on what kind of file
+it is, this installation process can vary.
+
+
+\subsection{Installation of modules}
+We are using the term \textit{installation} to mean adding the module to the
+\gls*{ide}. This can be as simple as adding a script tag to the \gls*{dom}, with
+the source being a JavaScript file, or more complex, loading a library which has
+the correct bindings to be a Rust runtime module. Both of these processes are a
+part of the core, and not the external tool.
+
+
+\subsection{Rust runtime module installation}
+
+We use the term runtime here, to strictly mean post compilation. When this
+\gls*{ide} is running in user-space, we cannot use newly installed Rust
+runtime modules. This is because the \gls*{ide} only looks for Rust runtime
+modules during startup, so a restart is necessary. Given that a Rust runtime
+module is a simple library, we know what functions it exposes, and the calling
+conventions. Along with the abi\_stable crate, we can ensure no undefined
+behavior happens during runtime.
+
+\subsection{JavaScript runtime module installation}
+
+Unlike the Rust runtime modules, JavaScript runtime modules can be installed and
+used post-startup. This is because there is no difference on how a JavaScript
+module is installed, regardless if the installation happens during compile time
+or runtime. Since all a JavaScript module is, is a script element on the
+\gls*{dom}, we can add new ones whenever. The only thing that differentiates the
+two, is that for runtime modules, we have to call the \textbf{init} method after
+installing it. Since the installation happens after other modules already have
+initialized.
+
+
+\section{Module developer tools} \label{sec:mdt}
+
+The module developer experience is an important aspect of a zero-core
+architecture. A good way to improve this experience, is by providing good
+tooling.
 
 \subsection{Magnolia dependency graph visualizer}
 
@@ -1046,8 +1102,8 @@ this.
   \lstinputlisting
     [ language=Rust
     , caption={
-      Magnolia library parser Module \textit{subscribing} to an
-      \textit{get\_magnolia\_graph } Event (Rust)
+      Magnolia library parser module \textit{subscribing} to an
+      \textit{get\_magnolia\_graph } event (Rust)
     }
     , label=lst:magnoliaLibParserSub
     , firstline=33
@@ -1058,11 +1114,11 @@ this.
 In listing \ref{lst:magnoliaLibParserSub}, the module is invoking the
 \textit{add\_handler} method on an object that implements the \textit{Core} trait,
 (\ref{lst:core}), and passing \textit{get\_magnolia\_graph} and
-\textit{MODULE\_NAME}. This means that Events with the event name
+\textit{MODULE\_NAME}. This means that events with the event name
 \textit{get\_magnolia\_graph}, will trigger this module. It's \textit{this}
 module, because we have to pass the name of the module handling the event.
 
-We can therefore invoke this Module by simply triggering the subscribed Event.
+We can therefore invoke this module by simply triggering the subscribed event.
 
 Due to Rust's type safety, there is a lot of \textit{noise}, especially because
 we are working with recursive data structures, with optional values. In listing
@@ -1072,18 +1128,18 @@ handler, but this is not valid Rust code.
 \begin{code}[H]
   \lstinputlisting
     [ language=Rust
-    , caption={Simplified magnolia library parser Module (Rust)}
+    , caption={Simplified magnolia library parser module (Rust)}
     , label=lst:magLibParserSimple
     , numbers=left
     , numberstyle=\tiny\color{gray}
     ]{./code/mag\_lib\_simple.rs}
 \end{code}
 
-The above code (\ref{lst:magLibParserSimple}), we are handling Events with the name
+The above code (\ref{lst:magLibParserSimple}), we are handling events with the name
 \textit{get\_magnolia\_graph}, (line 3), and getting the path that is supplied in
-the Event argument, (line 4). In line 4 we then create a \textit{key}, which we
+the event argument, (line 4). In line 4 we then create a \textit{key}, which we
 use to check if this graph has been created yet, by checking the state (line 6).
-If this graph does exist, we \textit{respond} by throwing an Event with the
+If this graph does exist, we \textit{respond} by throwing an event with the
 existing graph (line 7 to 9). If it does not exist, we create it by calling the
 \textit{get\_graph} function, (left out for brevity), which recursively finds
 files in the supplied path, using RegEx to find the packages, and their
@@ -1154,7 +1210,11 @@ the \textit{Value} to a string primitive, (line 11 to 13).
 \begin{code}[H]
   \lstinputlisting
     [ language=TypeScript
-    , caption={Dependency visualiser module (TypeScript)}
+    , caption={
+      Snippet from the dependency visualizer module, showing how we translate
+      from our built-in representation of values, to the one expected by the D3
+      library (TypeScript).
+    }
     , label=lst:depVisMod
     , numbers=left
     , numberstyle=\tiny\color{gray}
@@ -1166,9 +1226,13 @@ the \textit{Value} to a string primitive, (line 11 to 13).
 \subsection{File System Abstraction}
 
 Many of the features needed in an \gls*{ide}, and in the modules showcased thus
-far, are dependent on file system operations. The following are a list of file
-system operations that are made available to modules, with the help of the
-\textit{ide\_fsa}.
+far, are dependent on file system operations. The module which expose such
+functionality to other modules, is called \textit{ide\_fsa}. It is written in
+Rust, as Rust abstracts away the differences between \gls*{os} paths. As the
+same path on a Windows system is represented differently on an unix system,
+since the path separator is $\\$ and $/$ respectively. The following are a list
+of file \gls*{os} system operations that are made available to modules, with the
+help of the ide\_fsa module.
 
 \begin{itemize}
   \item Open a file
@@ -1182,13 +1246,13 @@ system operations that are made available to modules, with the help of the
 
 As shown in the picture \ref{pic:modDep}, from chapter \ref{cha:ide}, many of
 the modules developed are dependent on ide\_fsa. This was a deliberate
-choice, as not only would it mean we could rely on Rusts operative system (OS)
-abstractions, ensuring the \gls*{ide} would work on different OSes, but it also
-meant we could delegate error handling from files to this one module. As doing
-such file system operations\footnote{Also called Input/Output (IO)}, are
-inherently error-prone. This is encoded by Rust, into a \textit{Result} type,
-which we utilize to send Events, but to different modules depending on the
-result variant.
+choice, as not only would it mean we could rely on Rusts \gls*{os} abstractions,
+ensuring the \gls*{ide} would work on different \gls*{os}es, but it also meant
+we could delegate error handling from files to this one module. As doing such
+file system operations\footnote{Also called Input/Output (IO)}, are inherently
+error-prone. This is encoded by Rust, into a \textit{Result} type, which we
+utilize to send Events, but to different modules depending on the result
+variant.
 
 Ide\_fsa listens for the following events:
 
@@ -1199,16 +1263,16 @@ Ide\_fsa listens for the following events:
 \end{itemize}
 
 Which, depending on what argument the consuming module passed, maps to a
-specific IO operation, which may fail. We have decided to not handle the failure
-on the consumer side, rather the provider side. So, if a user attempts to open a
-file which does not exist, it will simply fail, and a notification will appear.
-We decided for this approach, as it allows for simpler \gls*{ui} focused
-modules. In a fully fledged implementation of the prototype modules showcased,
-proper, expected, \gls*{ui} behavior should be implemented, like showing
-explicitly to the user that the action they just did, clicking open file, caused
-an error.
+specific \gls*{io} operation, which may fail. We have decided to not handle the
+failure on the consumer side, rather the provider side. So, if a user attempts
+to open a file which does not exist, it will simply fail, and a notification
+will appear. We decided for this approach, as it allows for simpler \gls*{ui}
+focused modules. In a fully fledged implementation of the prototype modules
+showcased, proper, expected, \gls*{ui} behavior should be implemented, like
+showing explicitly to the user that the action they just did, clicking open
+file, caused an error.
 
-\begin{code}[H] 
+\begin{code}[H]
   \lstinputlisting
     [ language=Rust
     , firstline=46
@@ -1217,9 +1281,9 @@ an error.
     , numbers=left
     , numberstyle=\tiny\color{gray}
     , caption={
-      Snippet from ide\_fsa, showing how it handles events. If any of the
-      functions from lines $3$ to $5$ return an error then we create an event,
-      sending the error to the error\_module.
+      Snippet from the ide\_fsa module, showing how it handles events. If any of
+      the functions from lines $3$ to $5$ return an error then we create an event,
+      sending the error to the ide\_error module.
     }
     ]{./modules/ide\_fsa/src/lib.rs}
 \end{code}
@@ -1232,8 +1296,8 @@ consumer by sending an event with \textit{fsa-read-module}, where
 \textit{module} corresponds to the module name passed in the original event
 argument. This happens if there occurs no errors\footnotemark{} during the IO
 operation. If it does fail, say because the file does not exist, then an event
-is sent to the error\_module, displaying the error to the user.
+is sent to the ide\_error module, displaying the error to the user.
 
 \footnotetext{
-  It is an Error when the method \textbf{is\_ok}, on line $9$, returns false
+  It is an error when the method \textbf{is\_ok}, on line $9$, returns false
 }

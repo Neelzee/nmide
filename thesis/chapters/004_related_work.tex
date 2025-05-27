@@ -8,18 +8,18 @@ There exists module architectures in other \gls*{ide}s.
 \subsection{Eclipse}
 
 \gls*{ide}s are one of the most common application that supports extensions by
-third-party code. \gls*{ide}s like \gls*{eclipse} and \gls*{intellij} are
-specialized for working with Java, but they can still support other languages
-with the help of modules. A module in \gls*{eclipse} for instance, could extend
-\gls*{eclipse} with functionality like syntax highlighting, code completion,
-Go-to-definitions, debugging, and more, for standard programming languages.
-A lot of this functionality, comes from module-to-module extension, as in
-\gls*{eclipse} modules can extend modules, with the use of the \gls*{erpc}~\cite{eclipseRcp}.
+third-party code. \gls*{ide}s like Eclipse and IntelliJ are specialized for
+working with Java, but they can still support other languages with the help of
+modules. A module in Eclipse for instance, could extend \gls*{eclipse} with
+functionality like syntax highlighting, code completion, Go-to-definitions,
+debugging, and more, for standard programming languages. A lot of this
+functionality, comes from module-to-module extension, as in Eclipse modules can
+extend modules, with the use of the \gls*{erpc}~\cite{eclipseRcp}.
 
 \subsubsection{Eclipse Rich Client Platform}
-\*gls{erpc} is a platform for building desktop applications. \gls*{eclipse}
-being an example of this platform in action. A plug-in could for example be
-responsible for setting up the general \gls*{ui} layout, similar to our module,
+\*gls{erpc} is a platform for building desktop applications. Eclipse being an
+example of this platform in action. A plug-in could for example be responsible
+for setting up the general \gls*{ui} layout, similar to our module,
 \textit{ide\_framework}, and another plug-in could then modify this \gls*{ui} by
 adding a file explorer, similar to our module \textit{ide\_explorer}.
 
@@ -36,9 +36,12 @@ other modules can directly invoke methods provided by this package.
 
 \subsection{IntelliJ}
 
-The extensibility \gls*{intellij} has, is achieved by its extensions points
+The extensibility IntelliJ has, is achieved by its extensions points
 architecture. This is an \gls*{api} for plugins to integrate with the
-\gls*{ide}. Plugins use this \gls*{api} to register their implementations.
+\gls*{ide}. Plugins use this \gls*{api} to register their implementations, which
+the \gls*{ide} then use. Between different versions of IntelliJ, plugins may be
+broken, due to a breaking change in their plugin \gls*{api}.
+
 
 \subsection{Visual Studio}
 
@@ -47,11 +50,11 @@ There are two kinds of extensions in Visual Studio, \textit{VSPackage} and
 functionality like tool windows and projects, while \textit{MEF} extensions are
 used to customize the text-editor.
 
-\subsection{Visual Studio Code}
+\subsection{Visual Studio Code (VS Code)}
 
-\gls*{vscode} is an extensible \gls*{ide}. It achieves this extensibility with
-its extension \gls*{api}. This \gls*{api} allows for extensions to modify the
-look and behavior of the \gls*{ide}. In fact, many of the core \gls*{ide}
+Visual Studio Code is an extensible \gls*{ide}. It achieves this extensibility
+with its extension \gls*{api}. This \gls*{api} allows for extensions to modify
+the look and behavior of the \gls*{ide}. In fact, many of the core \gls*{ide}
 features are possible due to built-in extensions.
 
 \subsection{Emacs}
@@ -63,7 +66,11 @@ Lisp, a dialect of Lisp\footnote{\url{https://lisp-lang.org/}}. Unlike other
 they are free to modify anything, as the functionality from the Emacs Lisp,
 \textit{sits} atop of a core written in C, which abstracts away platform
 specific code, and enables Emacs to be turned from an a \textit{simple} text
-editor, to write and send emails, multimedia management and much more.
+editor, to write and send emails, multimedia management and much more. Another
+interesting thing about Emacs, is that all files are in \textit{buffers},
+meaning the representation of a file shown to the user, is not necessarily the
+contents of the file, some rendering is can be done by a plugin, before the file
+contents is shown to the user.
 
 
 \subsection{Theia}
@@ -71,15 +78,14 @@ editor, to write and send emails, multimedia management and much more.
 \say{The Theia \gls*{ide} is a modern \gls*{ide} for cloud and desktop built on the Theia Platform}\footnote{\url{https://theia-ide.org/}}.
 
 Eclipse Theia is a highly extensible \gls*{ide}, supporting \textit{extensions}
-from \gls*{vscode}, their own extensions and plugins, and \textit{headless}
-plugins. Theia differentiates between extensions and plugins, where a
-plugin is installed during runtime, and an extension is installed during
-compile-time.
+from VS Code, their own extensions and plugins, and \textit{headless} plugins.
+Theia differentiates between extensions and plugins, where a plugin is installed
+during runtime, and an extension is installed during compile-time.
 
-Theia reuses components from \gls*{vscode}, like their extensions \gls*{api},
-which enables them to support \gls*{vscode} extensions. Theia plugins share
-similarities with \gls*{vscode} extensions, but are not restricted to
-\textit{just} the \gls*{vscode} \gls*{api}.
+Theia reuses components from VS Code, like their extensions \gls*{api}, which
+enables them to support VS Code extensions. Theia plugins share similarities
+with VS Code extensions, but are not restricted to \textit{just} the VS Code
+\gls*{api}.
 
 Theia's extensions are designed to add or remove existing core functionality in
 Theia. They also have access to the entire core \gls*{api}.
@@ -179,30 +185,48 @@ shown to the developer \cite{wiig}.
 
 Magnolia is a kind of algebraic specification language, like CafeOBJ~\cite{cafeObj}.
 An algebraic specification language, is a language where one can develop
-similarly as to how one might create an algebraic structure. As shown in the
-development of this \gls*{ide}, this can be quite useful way of thinking.
+similarly as to how one might create an algebraic structure. We specify some set
+and some functions that take elements from the set as inputs. Finally, we
+specify the behavior of our functions, if they are associative, if there are any
+predicates that the arguments to the functions need to fulfill, etc. As shown in
+the development of this \gls*{ide}, this can be quite useful way of thinking.
 
 
 \section{Language workbenches}
 
-Language workbenches are environments for simplifying the creation and use of
-computer languages~\cite{lwb}.
+Language workbenches are tools for creation and use of computer languages~\cite{lwb}.
+An \gls*{ide} is a kind of language workbench, as it can be used both for a
+language, as described in this thesis, but also for creating languages, as this
+too is a software project. More specific are the tools created by JetBrains,
+Meta-Programming System (MPS)\footnote{\url{https://www.jetbrains.com/mps/}},
+for creating programming languages, specifically \gls*{dsl}s. What makes tools
+like MPS different from standard \gls*{ide}s, is that in standard \gls*{ide}s we
+work on the source file of a program, while language workbenches work on the
+\gls*{ast} of the program. Programming languages were made so that we
+programmers could read closer to how we think, than how a computer thinks. So
+before a computer can run our code, it needs to be translated. Generally, this
+translation is done by parsing the source file into some tree-structure, and
+then interpreting that tree, transforming it into an \gls*{ast}.
+
+So language workbenches then, enables a developer to work on this abstract
+representation of the language one is creating.
 
 
 \section{Language Server}
 
 The most important features in a modern \gls*{ide} are possible due to the
-\gls*{lsp}. \gls*{lsp} is a protocol for a language server and editor,
-(the client), in which they communicate, allowing for many of the features
-mentioned in section \ref{sec:ide}, and explicitly mentioned in table
-\ref{tbl:ide}. \gls*{lsp} being the standard since the 2020s, is a sign of
-modularity being preferred, as now a single \gls*{lsp} can be created, and used
-across several different applications, like IntelliJ, VS Code and \gls*{vim}.
-While useful for \textit{standard} language, this is the limiting factor when it
-comes to supporting experimental languages, as not only does a new set of
-protocols need to be appended to a language server, the editor itself needs to
-be changed to actually use these protocols. This creates a lot of work, for both
-the \gls*{ide} developer and for the compiler developer. Here is where a modular
+\gls*{lsp}\footnote{\url{https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/}}.
+\gls*{lsp} is a protocol for a language server and editor, (the client), in
+which they communicate, allowing for many of the features mentioned in section
+\ref{sec:ide}, and explicitly mentioned in table \ref{tbl:ide}. \gls*{lsp} being
+the standard since the 2020s, is a sign of modularity being preferred, as now a
+single \gls*{lsp} can be created, and used across several different
+applications, like IntelliJ, VS Code and \gls*{vim}. While useful for
+\textit{standard} language, this is the limiting factor when it comes to
+supporting experimental languages, as not only does a new set of protocols need
+to be appended to a language server, the editor itself needs to be changed to
+actually use these protocols. This creates a lot of work, for both the
+\gls*{ide} developer and for the compiler developer. Here is where a modular
 approach can help both. If some new functionality or feature is added to the
 experimental language, this off course means the compiler/interpreter has to be
 expanded and/or modified, but for the \gls*{ide}, a module could be added and/or

@@ -1,7 +1,8 @@
 \chapter{Future Work} \label{cha:future}
 
 In this chapter, we will discuss improvements that can be made to this
-implementation, and similar ones.
+implementation, and improvements that similar architecture should
+consider.
 
 \section{Testing}
 
@@ -92,6 +93,36 @@ This will ensure that this \gls*{ide} can support more languages. This editor
 should then utilize existing technology that is already used by other
 \gls*{ide}s, like the tree-sitter\footnote{\url{https://github.com/tree-sitter/tree-sitter}}
 parsing system, which amongst other things, can help with syntax highlighting.
+
+\subsection{Editor buffers}
+
+One of the reasons the prototype editor module is subpar, is that it uses a
+textarea \gls*{html}-element as input and renderer of text content. This should
+be replaced by a buffer system, similar to how other \gls*{ide}s do. In the
+figure \ref{fig:editorBuffer}, we can see a diagram of a module family which
+enable a better, more modular, editor.
+
+\begin{figure}
+  \centering
+  \input{./figures/text-editor}
+  \caption{
+    Diagram of a module dependency graph for an editor module family. The
+    contents of a file are stored in a buffer, which different modules, linter,
+    syntax highlighting and text movement, can handle the text in their
+    respective format.
+  }
+  \label{fig:editorBuffer}
+\end{figure}
+
+The general idea is for a buffer to contain the contents of a file. The final
+step is for some render module to transform the text into some \gls*{html} that
+is actually rendered by the \gls*{ide} to the user. The linter and syntax
+highlighter modules add colour to keywords, depending on what language the file
+is written in, while the linter adds indications to a user if what they have
+written is incorrect, if there is a warning or error. Given that files are just
+a long string of bytes, some cursor module is needed, to keep track of where the
+user is inserting text. This also allows for other modules, like the text
+movement module to register user key presses as text movement.
 
 
 \section{Improvements to the module architecture}

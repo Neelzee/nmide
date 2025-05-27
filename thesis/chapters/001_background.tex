@@ -54,7 +54,8 @@ two arguments of type \textbf{N} and returns an \textbf{N}. Of course, this
 should be interpreted as addition, meaning \textbf{succ(zero())} $+$
 \textbf{succ(succ(zero()))} $=$ \textbf{succ(succ(succ(zero())))}, or using
 numbers: $1 + 2 = 3$. Finally, the last statement in the concept is an axiom,
-stating that given any $a$, if we add \textbf{zero()} to $a$, we should get $a$.
+stating that given any $a$, if we add \textbf{zero()} to $a$, we should get $a$,
+of type \textbf{N}.
 
 This axiom is what allows for us to put constraints on our concepts, which
 allows for improvement in our \gls*{api}. Unlike other \gls*{api}s, like traits or
@@ -75,7 +76,8 @@ exist in Magnolia. We could expand upon the list \gls*{api} by creating a
 non-empty variant of list, as shown in listing \ref{lst:nonList}, which is the
 same as list, except to instantiate it, we need to supply an element, ensuring
 when we have a \textbf{NonEmptyList} variant, we can safely get an element from
-it, since there will at minimum, be one element in the list.
+it, since there will at minimum be one element in the list, due to our
+constructor requiring one argument.
 
 \begin{center}
   \lstinputlisting
@@ -158,13 +160,25 @@ together, by ensuring our axiom are upheld.
 
 When implementing a concept in Magnolia, one could do so incorrectly. In other
 programming languages, one might still have \textit{imparted} some meaning in an
-interface, like that in the interface \textbf{Action} in listing
-\ref{lst:jeditor}, is an associative operation. To \textit{enforce} this, one
+interface, like that in Java, the interface \textbf{List} in listing \ref{lst:list}, the
+function \textbf{addAll} is an associative operation, as shown in the following
+listing, \ref{lst:listConcat}, where we expect the assertion to be true.
+
+\begin{code}
+  \lstinputlisting
+    [ language=Java
+    , caption={List concatenation that should result in the same list. (Java)}
+    , label=lst:listConcat
+    ]{./code/list-concat.java}
+\end{code}
+
+Of course, this is the case in the standard library to Java, but there is
+nothing that enforces this, excepts for unit tests. But to enforce this, one
 would have to create a unit test for each implementation of the interface, while
 in Magnolia one writes a satisfaction as shown in listing \ref{lst:sat}, which
 in turn is \textit{transpiled} to a format understandable by an \gls*{smt}
-solver. This \gls*{smt} solver can \textit{prove} that our implementation upholds
-our axioms in the implemented concept.
+solver. This \gls*{smt} solver can \textit{prove} that our implementation
+upholds our axioms in the implemented concept.
 
 \subsubsection{Satisfiability Modulo Theories solvers}
 
@@ -179,7 +193,7 @@ verification of some program is good to have, some features needed for a new
 \subsection{Mathematics and programming}
 
 Mathematics is everywhere, and useful. It's not always easy to notice this, but
-one thing that helps, is knowing the names of the concepts one encounter. One
+one thing that helps, is knowing the names of the structures one encounter. One
 can easily understand that knowing simple operations like addition,
 multiplication, etc.\ is useful but for more abstract mathematics, this is
 harder. An example of this is abstract algebra, which is the study of algebraic
@@ -189,14 +203,14 @@ will explicitly seek these structures out.
 
 An important aspect of development, is logging. Knowing what actions have taken
 place is an essential tool when hunting down bugs. A common way to structure
-logs, would be composing logs, depending on when they occurred. As a concrete
-example, let's say we are making a text editor, and are in the need of a logging
-manager, which, among other things, should compose different log statements.
-Assuming we have some type \textbf{Log(A)}, where the type \textbf{A}, is the
-result of the computation of a given function, we want to be able to compose
-different, related, computations. But, importantly, the order of composition
-of the \textbf{Log(A)}-type matters. Representing the composition of the
-\textbf{Log(A)}-type as $\odot$, doing, and letting $a, b, c$ be of type
+logs, would be composing them depending on when in the call stack they occurred.
+As a concrete example, let's say we are making a text editor, and are in the
+need of a logging manager, which, among other things, should compose different
+log statements. Assuming we have some type \textbf{Log(A)}, where the type
+\textbf{A}, is the result of the computation of a given function, we want to be
+able to compose different, related, computations. But, importantly, the order of
+composition of the \textbf{Log(A)}-type matters. Representing the composition of
+the \textbf{Log(A)}-type as $\odot$, doing, and letting $a, b, c$ be of type
 \textbf{Log A}:
 
 \begin{definition}[Log Composition] \label{def:logComp}
@@ -237,10 +251,11 @@ inserting the empty string at any position, deleting the empty string at any
 position, or redoing or undoing any of the aforementioned actions.
 
 Both of these examples are relatively easy to implement, but harder to verify,
-to satisfy our properties; that the \textit{logic} holds. In Java and Rust, to
-ensue that we have implemented something correctly, one would create a unit
-test. But there is nothing to ensure that we create this test correctly, that
-we cover all the edge cases, or if we are testing the correct thing.
+to ensure they satisfy our properties; that the \textit{logic} holds. In Java
+and Rust, to ensure that we have implemented something correctly, one would
+create a unit test. But there is nothing to ensure that we create this test
+correctly, that we cover all the edge cases, or if we are testing the correct
+thing.
 
 \subsection{Logging example in Java, Rust, and Magnolia}
 
@@ -334,10 +349,9 @@ algebra, the study of algebraic structures.
 In the first example, we are working with a \textit{semigroup}, and in the
 second example, we are working with a \textit{group}. These are known as
 algebraic structures, which is just some set, with a function that takes two
-inputs, and outputs one result, and some property on that function.\footnote{Also called a binary operation, since it takes two inputs}
-The trivial example, is known as \textit{magma}, and is defined by
-\ref{def:magma}. The closure \ref{def:closed} simply specifies that we only work
-with one set.
+inputs, and outputs one result, and some property on that function. The trivial
+example, is known as \textit{magma}, and is defined by \ref{def:magma}. The
+closure \ref{def:closed} simply specifies that we only work with one set.
 
 \begin{definition}[Closure] \label{def:closed}
   For a set $M$, with a binary operation $\oplus$,
@@ -418,12 +432,12 @@ monoid (\ref{def:monoid}), and adding the inverse law
 The definition \ref{def:group}, of course is identical to the structure we used
 to model undo-redo, in our text editor example. We have our \textit{combine}
 operator, which takes two variants of the \textit{action}-type, and return
-another variant of the same type. Its therefore a closed binary operation. We
+another variant of the same type. It is therefore a closed binary operation. We
 also specified that \textit{combine} is associative, it does not matter where one
-puts the parentheses, the resulting \textit{action}s are equivalent.
-\textit{NoOp} gives us the \textit{unit}, meaning our binary operation upholds
-the identity law. Finally, we have an inverse \textit{action} variant, that is
-unique, for all other variants.
+puts the parentheses, the resulting combination of \textit{action}s are
+equivalent. \textit{NoOp} gives us the \textit{unit}, meaning our binary
+operation upholds the identity law. Finally, we have an inverse \textit{action}
+variant, that is unique, for all other variants.
 
 This, of course, is dependent on our implementation. It is quite common to make
 mistakes when developing. These mistakes are usually tackled by developing good
@@ -436,38 +450,38 @@ things like the definition \ref{def:assoc} on our operators.
 
 \subsection{Java: magma to group}
 
-This structure could \textit{technically} be implemented in something like Java,
-an Object-Oriented Language, as shown in listings \ref{lst:jmagma},
-\ref{lst:jsemigroup}, \ref{lst:jmonoid}, and \ref{lst:jgroup}. But not
-practically. Note the empty interfaces; there is nothing that enforces the
-different laws on the properties. This can only be done by unit testing, which
-is not enforced on an external consumer of the \gls*{api}.
+This structure could \textit{technically} be implemented in something like Java
+as shown in listings \ref{lst:jmagma}, \ref{lst:jsemigroup}, \ref{lst:jmonoid},
+and \ref{lst:jgroup}. But not practically. Note the empty interfaces; there is
+nothing that enforces the different laws on the properties. This can only be
+done by unit testing, which is not enforced on an external consumer of the
+\gls*{api}.
 
 \begin{center}
   \lstinputlisting
     [ language=Java
-    , caption={Magma concept (Java)}
+    , caption={Magma interface (Java)}
     , label=lst:jmagma]{./code/magma.java}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Java
-    , caption={Semigroup concept (Java)}
+    , caption={Semigroup interface (Java)}
     , label=lst:jsemigroup]{./code/semigroup.java}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Java
-    , caption={Monoid concept (Java)}
+    , caption={Monoid interface (Java)}
     , label=lst:jmonoid]{./code/monoid.java}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Java
-    , caption={Group concept (Java)}
+    , caption={Group interface (Java)}
     , label=lst:jgroup]{./code/group.java}
 \end{center}
 
@@ -478,28 +492,28 @@ The same issue with property enforcement exists in Rust.
 \begin{center}
   \lstinputlisting
     [ language=Rust
-    , caption={Magma (Rust)}
+    , caption={Magma trait (Rust)}
     , label=lst:rmagma]{./code/magma.rs}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Rust
-    , caption={Semigroup (Rust)}
+    , caption={Semigroup trait (Rust)}
     , label=lst:rsemigroup]{./code/semigroup.rs}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Rust
-    , caption={Monoid (Rust)}
+    , caption={Monoid trait (Rust)}
     , label=lst:rmonoid]{./code/monoid.rs}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Rust
-    , caption={Group (Rust)}
+    , caption={Group trait (Rust)}
     , label=lst:rgroup]{./code/group.rs}
 \end{center}
 
@@ -523,7 +537,7 @@ and Rust.
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
-    , caption={Magma (Magnolia)}
+    , caption={Magma concept (Magnolia)}
     , label=lst:magma]{./code/magma.mg}
 \end{center}
 
@@ -534,31 +548,33 @@ with the added property of associativity.
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
-    , caption={Semigroup (Magnolia)}
+    , caption={Semigroup concept (Magnolia)}
     , label=lst:semigroup]{./code/semigroup.mg}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
-    , caption={Monoid (Magnolia)}
+    , caption={Monoid concept (Magnolia)}
     , label=lst:monoid]{./code/monoid.mg}
 \end{center}
 
 \begin{center}
   \lstinputlisting
     [ language=Magnolia
-    , caption={Group (Magnolia)}
+    , caption={Group concept (Magnolia)}
     , label=lst:group]{./code/group.mg}
 \end{center}
 
 So Magnolia facilitates reuse, and extension of logic. In Magnolia we can build
 upon existing proven algebraic structures like a group, and reuse their
-properties. For instance, with the editor example, we can do optimizations on
-the actions. Since the user of the editor reacts slower than our code, we can
-batch several actions together, and evaluate them together. If the user keeps
-writing and deleting the same sentence over and over again, we could evaluate
-them as an "NoOp", and not do the expensive IO operation.
+properties. One of the interesting properties of the group structure, is that
+certain evaluations are the same. In our editor example, the usefulness of this
+is clearer, as we can do optimizations on the editor actions. Since the user of
+the editor reacts slower than our code, we can batch several actions together,
+and evaluate them together. If the user keeps writing and deleting the same
+sentence over and over again, we could evaluate them as an "NoOp", and not do
+the expensive operation of writing and removing text from a file.
 
 \section{Reusable software}
 
@@ -927,7 +943,7 @@ providing data, and some consumer, some module using the data. If either the
 consumer or the provider is maintained by a third party, then there is some
 informal \textit{contract} between them. The consumer expects the outputs of a
 provider to be in some certain format, which in the case for \gls*{rest}
-\gls*{api}s usually is \gls*{json}, but with specification formats like OpenApi~\cite{openApi},
+\gls*{api}s usually is \gls*{json}, but with specification formats like OpenApi\footnote{https://swagger.io/docs/specification/v3\_0/about/},
 one can also specify the structure of the \gls*{json} response, with what fields
 and values it can have. One can also specify what values are valid in a request.
 But even if one does use such a format, changes in scope can require the
@@ -995,7 +1011,7 @@ communicating this to a user in a helpful manner.
 
 \subsection{Renaming}
 
-Given our definition of a monoid,\footnotemark[13]{} one can trivially see that
+Given our definition of a monoid\footnotemark[12]{}, one can trivially see that
 string concatenation and list concatenation falls under this definition, and are
 therefore related. It is therefore quite reasonable to reuse the monoid
 concept, within the string and list concepts. Along side their respective
