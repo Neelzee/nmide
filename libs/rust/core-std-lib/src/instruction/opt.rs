@@ -81,7 +81,6 @@ impl<T: PartialEq + Clone + Eq + Hash + Debug> Instruction<T> {
         sequence
             .into_iter()
             .fold(Instruction::NoOp, |acc, instr| match instr {
-                Instruction::NoOp => acc,
                 Instruction::Add(f, v) => {
                     let key = (f.clone(), v.clone());
                     let i = *fv_map
@@ -106,8 +105,8 @@ impl<T: PartialEq + Clone + Eq + Hash + Debug> Instruction<T> {
                         acc
                     }
                 }
-                Instruction::Then(..) => unreachable!(
-                    "`Then` instruction should never occur in a flattened instruction set"
+                Instruction::NoOp | Instruction::Then(..) => unreachable!(
+                    "`NoOp` or `Then` instruction should never occur in a flattened instruction set"
                 ),
             })
     }
@@ -117,20 +116,20 @@ impl<T: PartialEq + Clone + Eq + Hash + Debug> Instruction<T> {
     /// If the instruction set is empty, or is a singleton with an `NoOp`
     /// instruction, it will return an `NoOp`
     pub fn opt(xs: &[Instruction<T>]) -> Instruction<T> {
-        let ys = xs
+        let ys: Vec<Instruction<T>> = xs
             .iter()
             .filter(|i| !matches!(i, Instruction::NoOp))
-            .map(|i| i.clone())
-            .collect::<Vec<_>>();
+            .cloned()
+            .collect();
         if ys.is_empty() {
             return Self::NoOp;
         }
 
         fn _opt<T: PartialEq + Clone + Eq + Hash + Debug>(ys: &[Instruction<T>]) -> Instruction<T> {
             match ys {
-                [] => unreachable!("Inputed list in nested function is always non-empty"),
+                [] => unreachable!("Inputted list in nested function is always non-empty"),
                 [z] => z.clone(),
-                [z, zs @ ..] if matches!(z, Instruction::NoOp) => _opt(zs),
+                [Instruction::NoOp, zs @ ..] => _opt(zs),
                 [z, zs @ ..] => match z {
                     Instruction::NoOp => _opt(zs),
                     Instruction::Then(fst, snd) if matches!(*(fst).clone(), Instruction::NoOp) => {
