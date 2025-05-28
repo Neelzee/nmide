@@ -20,6 +20,10 @@ pub struct Position {
 }
 
 impl Position {
+    pub fn dec(&self) -> (usize, usize) {
+        (self.start_pos, self.end_pos)
+    }
+
     pub fn from_value(value: Value) -> Option<Self> {
         match value {
             Value::Obj(mp) => {
