@@ -1,0 +1,11 @@
+[package]
+name = "editor_buffer"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+core-std-lib = { git = "https://github.com/Neelzee/nmide.git" }
+core-module-lib = { git = "https://github.com/Neelzee/nmide.git" }
+async-trait = "0.1.88"
+editor-ar = { path = "../editor-ar" }
+anyhow = "1.0.98"
