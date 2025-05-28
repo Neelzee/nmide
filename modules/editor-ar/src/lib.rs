@@ -1,65 +1,36 @@
-use core_std_lib::state::Value;
+use std::collections::HashMap;
+
+use core_std_lib::state::{HHMap, Value};
 
 pub enum Art {
-    Token { pos: Position, char: char },
-    Line { pos: Position, line: Vec<Art> },
+    Token {
+        pos: Position,
+        char: char,
+    },
+    Group {
+        pos: Position,
+        group: Vec<Art>,
+        metadata: HashMap<String, Value>,
+    },
 }
 
 pub struct Position {
-    start_row_pos: usize,
-    end_row_pos: usize,
-    start_col_pos: usize,
-    end_col_pos: usize,
+    start_pos: usize,
+    end_pos: usize,
 }
 
 impl Position {
-    pub fn new_char_pos(line_index: usize, char_index: usize) -> Self {
-        Self {
-            start_row_pos: line_index,
-            end_row_pos: line_index + 1,
-            start_col_pos: char_index,
-            end_col_pos: char_index + 1,
-        }
-    }
-
-    pub fn new_line_pos(line_index: usize, line_len: usize) -> Self {
-        Self {
-            start_row_pos: line_index,
-            end_row_pos: line_index + 1,
-            start_col_pos: 0,
-            end_col_pos: line_len,
-        }
-    }
-
-    pub fn dec(&self) -> (usize, usize, usize, usize) {
-        (
-            self.start_row_pos,
-            self.end_row_pos,
-            self.start_col_pos,
-            self.end_col_pos,
-        )
-    }
-
     pub fn from_value(value: Value) -> Option<Self> {
         match value {
             Value::Obj(mp) => {
                 let map = mp.to_hm();
-                let start_row_pos = map.get("start_row_pos").cloned().and_then(|a| a.int())?;
-                let end_row_pos = map.get("end_row_pos").cloned().and_then(|a| a.int())?;
-                let start_col_pos = map.get("start_col_pos").cloned().and_then(|a| a.int())?;
-                let end_col_pos = map.get("end_col_pos").cloned().and_then(|a| a.int())?;
+                let start_pos = map.get("start_pos").cloned().and_then(|a| a.int())?;
+                let end_pos = map.get("end_post").cloned().and_then(|a| a.int())?;
 
-                let start_row_pos = start_row_pos.unsigned_abs() as usize;
-                let end_row_pos = end_row_pos.unsigned_abs() as usize;
-                let start_col_pos = start_col_pos.unsigned_abs() as usize;
-                let end_col_pos = end_col_pos.unsigned_abs() as usize;
+                let start_pos = start_pos.unsigned_abs() as usize;
+                let end_pos = end_pos.unsigned_abs() as usize;
 
-                Some(Self {
-                    start_row_pos,
-                    end_row_pos,
-                    start_col_pos,
-                    end_col_pos,
-                })
+                Some(Self { start_pos, end_pos })
             }
             _ => None,
         }
@@ -67,38 +38,30 @@ impl Position {
 
     pub fn to_value(self) -> Value {
         Value::new_obj()
-            .add("start_row_pos", Value::Int(self.start_row_pos as i32))
-            .add("end_row_pos", Value::Int(self.end_row_pos as i32))
-            .add("start_col_pos", Value::Int(self.start_col_pos as i32))
-            .add("end_col_pos", Value::Int(self.end_col_pos as i32))
+            .add("start_pos", Value::Int(self.start_pos as i32))
+            .add("end_pos", Value::Int(self.end_pos as i32))
     }
 }
 
 impl Art {
-    pub fn parse(s: &str) -> Vec<Self> {
-        s.lines()
-            .enumerate()
-            .map(|(line_index, line_str)| {
-                let line = line_str
-                    .chars()
-                    .enumerate()
-                    .map(|(i, c)| Art::Token {
-                        pos: Position::new_char_pos(line_index, i),
-                        char: c,
-                    })
-                    .collect::<Vec<_>>();
-
-                Art::Line {
-                    pos: Position::new_line_pos(line_index, line.len()),
-                    line,
-                }
-            })
-            .collect()
-    }
-
-    pub fn get_pos(&self) -> (usize, usize, usize, usize) {
-        match self {
-            Art::Token { pos, .. } | Art::Line { pos, .. } => pos.dec(),
+    pub fn parse(s: &str) -> Self {
+        Art::Group {
+            pos: Position {
+                start_pos: 0,
+                end_pos: s.len(),
+            },
+            group: s
+                .chars()
+                .enumerate()
+                .map(|(i, c)| Art::Token {
+                    pos: Position {
+                        start_pos: i,
+                        end_pos: i + 1,
+                    },
+                    char: c,
+                })
+                .collect::<Vec<_>>(),
+            metadata: HashMap::new(),
         }
     }
 
@@ -115,13 +78,14 @@ impl Art {
                     });
                 }
 
-                if let Some(s) = map.get("line").and_then(|v| v.list()) {
-                    return Some(Self::Line {
+                if let Some(s) = map.get("group").and_then(|v| v.list()) {
+                    return Some(Self::Group {
                         pos,
-                        line: s
+                        group: s
                             .into_iter()
                             .map(Self::from_value)
                             .collect::<Option<Vec<_>>>()?,
+                        metadata: map.get("metadata").and_then(|v| v.obj())?,
                     });
                 }
 
@@ -136,9 +100,14 @@ impl Art {
             Art::Token { pos, char } => Value::new_obj()
                 .add("pos", pos.to_value())
                 .add("char", Value::Str(char.to_string())),
-            Art::Line { pos, line } => Value::new_obj().add("pos", pos.to_value()).add(
-                "line",
-                Value::List(line.into_iter().map(Self::to_value).collect()),
+            Art::Group {
+                pos,
+                group,
+                metadata,
+            } => Value::new_obj().add("pos", pos.to_value()).add(
+                "group",
+                Value::List(group.into_iter().map(Self::to_value).collect())
+                    .add("metadata", Value::Obj(HHMap::from(metadata))),
             ),
         }
     }
