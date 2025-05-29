@@ -12,10 +12,13 @@ async fn main() -> Result<()> {
 
     match matches.subcommand() {
         Some(("install", _)) => {
-            if cfg!(not(feature = "module-installer")) {
+            #[cfg(not(feature = "module-installer"))]
+            {
                 eprintln!("Need feature `module-installer` to be enabled");
                 process::exit(1);
-            } else {
+            }
+            #[cfg(feature = "module-installer")]
+            {
                 #[cfg(debug_assertions)]
                 env_logger::init();
                 match core_lib::installer::install_modules().await {
@@ -34,10 +37,13 @@ async fn main() -> Result<()> {
             }
         }
         Some(("clean", _)) => {
-            if cfg!(not(feature = "module-installer")) {
+            #[cfg(not(feature = "module-installer"))]
+            {
                 eprintln!("Need feature `module-installer` to be enabled");
                 process::exit(1);
-            } else {
+            }
+            #[cfg(feature = "module-installer")]
+            {
                 #[cfg(debug_assertions)]
                 env_logger::init();
                 match core_lib::installer::clean_modules().await {
