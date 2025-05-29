@@ -32,4 +32,4 @@ ide_save = { path = "modules/ide_save/", kind = "ts", package-manager = "bun", e
 
 [rt-modules]
 jsm-counter = { path = "modules/jsm-counter/", kind = "ts", package-manager = "bun", enabled = false }
-rs-counter-plugin-example = { path = "modules/rs-counter-plugin-example/", enabled = true }
+rs-counter-plugin-example = { path = "modules/rs-counter-plugin-example/", enabled = false }
