@@ -531,7 +531,9 @@ coupled. This is an equivalent architecture to microservices. In the figures
   \hfill
   \begin{subfigure}[h]{0.49\linewidth}
     \input{./figures/moduleservice}
-    \caption{Diagram showing communication between modules}
+    \caption{
+      Diagram showing communication between modules.
+    }
     \label{sfig:mod}
   \end{subfigure}
   \caption{
@@ -592,7 +594,7 @@ one for the state, and one for the \gls*{ui}.
     ]{./libs/rust/core-std-lib/src/core_modification/mod.rs}
 \end{center}
 
-\subsection{Tree manipulation}
+\subsection{Instruction based tree manipulation}
 
 This restructure changes the way the view is rendered. Instead of the view being
 re-rendered for each state-update, the view, or \gls*{ui}-hierarchy, is only
@@ -613,100 +615,76 @@ of what to do with the core.
    ]{./libs/rust/core-std-lib/src/instruction/inst.rs}
 \end{code}
 
-In the listing \ref{lst:inst}, it is clear how the \textbf{Instruction}-set makes the
-modification of the core, a kind of group, as given by the definition
-\ref{def:group}. Intuitively, for any \textbf{Instruction}, there exists
-an \textit{inverse} one, such that the definition \ref{def:inv} is upheld. If we
-add some value to the state, we can find an remove instruction that removes
-that field from the state, as shown in listing \ref{lst:inst}, in the
-\textbf{combine} method.
+In the listing \ref{lst:inst} we can see the Rust implementation of our
+instructions. Given how this is a recursive data-type, it is a safe assumption
+to make that this forms some kind of algebraic structure. As we have a kind of
+set, where the elements are variants of our instructions. This algebraic
+structure of the instruction-set comes more clear, if we remove the syntax, and
+just focus on the semantics.
 
-\begin{remark}
-  The \textbf{combine} method does not recursively check the \textbf{Then}
-  instruction for \textbf{Instruction}s that lead to a \textbf{NoOp}, but in the
-  core \gls*{ide}, there is an optimization step that does this.
-\end{remark}
+We have three instructions, $NoOp$, $Add_T$, and $Rem_T$. Those are our variants
+in our set, where the subscript $T$ indicates which type our instruction are
+parameterized by. If $Then$ is our binary operation, combining our instructions,
+it is clear that our operator makes a tree structure out of our instructions. We
+want this to be associative, which means the equation \ref{eq:instrAssoc} should
+hold.
 
-To formalize this, that the \textbf{Instruction}-set is a group, we can look at
-a subset, since \textbf{Instruction} is parameterized by some type \textbf{T},
-we will look at it when \textbf{T} is \textbf{Value}, noted by the subscript
-\textbf{val}.
+\begin{equation} \label{eq:instrAssoc}
+  Then'(Then(Rem_T, Add_T), Add_T') = Then'(Rem_T, Then(Add_T, Add_T'))
+\end{equation}
 
-\begin{lemma}[Instruction Group] \label{lem:intr}
-  Let $\Sigma$ be the set of all strings, $Val$ be the set of all
-  \textbf{Values}, and
-  $Inst_{val}$ be the set of all \textbf{Instruction} defined as:
-  $$
-    NoOp \in Inst_{val}
-  $$
-  $$
-    Add_{val} = \left \{ (x, y) \vert x \in \Sigma, y \in Val \right \}
-  $$
-  $$
-    Add_{val} \subset Inst_{val}
-  $$
-  $$
-    Rem_{val} = \left \{ (x, y) \vert x \in \Sigma, y \in Val \right \}
-  $$
-  $$
-    Rem_{val} \subset Inst_{val}
-  $$
-  $$
-    Then_{val} = \left \{ (x, y) \vert x, y \in Inst_{val} \right \}
-  $$
-  $$
-    Then_{val} \subset Inst_{val}
-  $$
-  Let $\circledast$ be a binary operation such that:
-  $$
-  a, b, c \in Inst_{val}, a \circledast b = c
-  $$
-  $$
-  a, b, c \in Inst_{val}, \left ( a \circledast b \right ) \circledast c = a \circledast \left ( b \circledast c \right )
-  $$
-  $$
-  \forall a, \exists U \in Inst_{val}, a \circledast U = a
-  $$
-  And $U$ is unique.
-  $$
-  \forall a, \exists b, U \in Inst_{val}, a \circledast b = U
-  $$
-  And for all $a$, $b$ is unique
-\end{lemma}
+In the figure \ref{fig:instrTree}, we can see diagrams of two trees,
+in figures \ref{sfig:instrTree1} and \ref{sfig:instrTree2}, which are a
+representation of the different trees from the left and right side of the
+equation \ref{eq:instrAssoc}.
 
-\begin{proof}
-  The set $Inst_{val}$, with the binary operation: $\circledast$, and the
-  identity element as $NoOp$ is a group since
-  the following requirements are met:
-  \begin{enumerate}
-    \item $\circledast$ is closed. (Definition \ref{def:closed})
-    \item $\circledast$ is associative. (Definition \ref{def:assoc})
-    \item $NoOp$ is the \textit{identity}. (Definition \ref{def:ident})
-    \item $\circledast$ is invertible. (Definition \ref{def:inv})
-  \end{enumerate}
-  $Instr_{val}$ is closed by definition. It is also associative, since
-  regardless of where we place  the parenthesis, it will be evaluated the same.
-  Finally, it is also invertible. Trivially, for element $Add_{val}$ there
-  exists an element from $Rem_{val}$, such as the first element of each pair,
-  being the \textit{key} are the same, and therefore correspond to the same
-  field being modified, and therefore are inverses. Plainly written, for any
-  $a \in Instr_{val}$, we can find a corresponding, unique, $b \in Instr_{val}$,
-  such as $a \circledast b = NoOp$. This is trivial to prove for
-  $a, b \in Add_{val}$, or $a, b \in Rem_{val}$, as we just need the pairs from
-  each set to be \textit{equal}. By letting the order of operations matter,
-  meaning adding and then removing an element, is different from adding and then
-  removing, we can similarly say that $a, b \in Then_{val}$ are equal if they
-  are the of the same \textit{tree structure}. Or, if we flatten it into a
-  list of elements in $Add_{val}$, or $Rem_{val}$, that they have the same
-  order.
-\end{proof}
+\begin{figure}[H]
+  \begin{subfigure}[h]{0.49\linewidth}
+    \centering
+    \input{./figures/instr-tree-1}
+    \caption{
+      Diagram of the resulting tree from $Then'(Then(Add_T, Add_T'), Rem_T)$
+    }
+    \label{sfig:instrTree1}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[h]{0.49\linewidth}
+    \centering
+    \input{./figures/instr-tree-2}
+    \caption{
+      Diagram of the resulting tree from $Then'(Add_T, Then(Add_T', Rem_T))$
+    }
+    \label{sfig:instrTree2}
+  \end{subfigure}
+  \caption{
+    Diagram of the tress from right and left sides of the equation
+    \ref{eq:instrAssoc}.
+  }
+  \label{fig:instrTree}
+\end{figure}
 
-The lemma \ref{lem:intr}, unfortunately, cannot be encoded in Rusts type
-system, but when implementing $combine$, we can map the variants along with the
-specific fields being added ($Add$), modified ($Mod$), or removed ($Rem$), to get
-a more optimized instruction set. If we are modifying a value on field $foobar$,
-but in the same instruction set, remove it, then the modifying instruction is an
+It is clear that these are two different trees, but when we evaluate the tree,
+we can see that the order of operations are the same. If we evaluate right side
+first, we get this order: $Add_T, Add_T', Rem_T$, and if we evaluate the left
+side first, we get this order: $Rem_T, Add_T', Add_T$. They are different
+orders, but both sides are equal. Furthermore, it is clear that $NoOp$ is our
+neutral element, giving us a monoid, as defined in \ref{def:monoid}. But we
+also have \textit{idempotency} on our instructions, if we apply the same $Add_T$
+several times, it is the same as applying it just once.
+
+It is very useful to think about what kinds of properties our structures have,
+as with this knowledge, we utilize existing theories to improve our software.
+Since this instruction structure is used for \gls*{ui} rendering, it is useful
+to minimize the amount of needless renders, which we can do by applying the idea
+that our instruction set is an algebraic structure with properties. But these
+properties are not possible to encode in Rusts type system, but when
+implementing $combine$, we can map the variants along with the specific fields
+being added ($Add$), modified ($Mod$), or removed ($Rem$), to get a more
+optimized instruction set. If we are modifying a value on field $foobar$, but in
+the same instruction set, remove it, then the modifying instruction is an
 $NoOp$. This optimization can be found in appendix \ref{app:a}.
+
+\subsubsection{Instruction utility functions}
 
 Like writing direct binary to develop a program, writing \textbf{instruction}s to
 change the core is quite abstract for most developers so to facilitate development
@@ -741,6 +719,7 @@ the builder, eventually building a \textbf{CoreModification}, to be sent.
 This allows for an ergonomic way for module developer to create modifications on
 the core, without having to understand the syntax of the
 \textbf{Instruction}-set.
+
 
 \subsection{Backend agnostic frontend}
 

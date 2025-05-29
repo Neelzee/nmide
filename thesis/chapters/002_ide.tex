@@ -53,6 +53,7 @@ modules are as follows:
   \item \textit{ide\_pm}: Responsible for the menu bar
   \item \textit{ide\_tabs}: Responsible for the tabbing system
   \item \textit{ide\_editor}: Responsible for the editor
+  \item \textit{ide\_fsa}: Responsible for file system operations
 \end{enumerate}
 
 \paragraph{ide\_framework} This module sets up the general \gls*{ui} layout,
@@ -74,7 +75,7 @@ module, \textit{ide\_explorer} in action, showing the Magnolia library
 visualized as a tree-like structure with collapsible folders. These folders are
 rendered in the \textit{sidebar}, on the left. When we click on the
 \textit{File}, a dropdown appears, where we can click on a button,
-\textit{Open Folder}, which sends an Event to \gls*{ide}\_fsa, the module in
+\textit{Open Folder}, which sends an Event to ide\_fsa, the module in
 charge of handling file system operations, where we get in \textit{response},
 all the folders and files in the path we selected. Which we transform into
 \gls*{html}, and along with some \gls*{css}, we get the collapsible folders.
@@ -116,6 +117,11 @@ the title of the tab.
   }
   \label{pic:editorModule}
 \end{figure}
+
+\paragraph{ide\_fsa} Since this \gls*{ide} can target different \gls*{os}es, we
+need some form of \gls*{fsa}. This is achieved by our module, ide\_fsa, which
+enables other modules to do file system operations without having to worry about
+what \gls*{os} they are on.
 
 
 \subsection{Magnolia Dependency Graph Visualizer}
