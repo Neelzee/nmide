@@ -1,9 +1,6 @@
-const esbuild = require('esbuild');
-
-esbuild.build({
-  entryPoints: ['./main.ts'],
-  bundle: true,
-  outfile: "./build/index.js",
-  minify: false,
+await Bun.build({
+  entryPoints: ['./index.ts'],
+  outdir: "./build/",
+  minify: true,
 }).catch(() => process.exit(1));
 
