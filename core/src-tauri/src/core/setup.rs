@@ -1,8 +1,7 @@
 //! The [setup](crate::setup) module, for initializing the statics from
 //! [static](crate::static), used by [ide](crate::ide)
 
-use crate::statics::APP_DATA_DIR;
-use crate::statics::{RUNTIME_MODULES, RUNTIME_MODULE_DIR};
+use crate::core::statics::{APP_DATA_DIR, RUNTIME_MODULES, RUNTIME_MODULE_DIR};
 use core_module_lib::rs_module::RsModule;
 use log::{info, warn};
 use std::fs;

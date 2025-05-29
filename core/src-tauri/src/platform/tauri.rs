@@ -1,4 +1,3 @@
-use crate::app::App;
 use core_std_lib::{
     core_modification::UIInstr,
     event::{
@@ -12,18 +11,15 @@ use log::info;
 use tauri::{AppHandle, Emitter};
 use tauri_plugin_dialog::{DialogExt as _, MessageDialogButtons, MessageDialogKind};
 
-pub struct NmideApp {
+use super::Platform;
+
+#[derive(Debug)]
+pub struct TauriPlatform {
     handle: AppHandle,
 }
 
-impl NmideApp {
-    pub fn new(handle: AppHandle) -> Self {
-        Self { handle }
-    }
-}
-
 #[async_trait::async_trait]
-impl App for NmideApp {
+impl Platform for TauriPlatform {
     async fn rerender(&self, instr: UIInstr) {
         info!("[backend] re-render: {:?}", instr);
         self.handle
@@ -150,5 +146,11 @@ impl App for NmideApp {
 
     async fn exit(&self) {
         self.handle.exit(0);
+    }
+}
+
+impl TauriPlatform {
+    pub fn new(handle: AppHandle) -> Self {
+        Self { handle }
     }
 }

@@ -1,9 +1,11 @@
 use crate::{
-    core::NmideCore,
-    core_modification_handler::spawn_core_modification_handler,
-    ide::app::NmideApp,
-    setup::setup,
-    statics::{NMIDE, NMIDE_STATE, NMIDE_UI},
+    context::compile_time::NmideCore,
+    core::{
+        modification_handler::spawn_core_modification_handler,
+        setup::setup,
+        statics::{NMIDE, NMIDE_STATE, NMIDE_UI},
+    },
+    platform::tauri::TauriPlatform,
 };
 use anyhow::{Context, Result};
 use core_std_lib::{
@@ -12,22 +14,17 @@ use core_std_lib::{
 use log::info;
 use std::{collections::HashMap, path::PathBuf};
 use tauri::{Emitter, Manager, RunEvent};
-use tauri_plugin_cli::CliExt;
-
-pub mod app;
-pub mod cli;
-pub mod setup;
 
 #[tauri::command]
 async fn init() {
     info!("[Backend] init");
-    crate::handlers::init().await
+    crate::core::handlers::init().await
 }
 
 #[tauri::command]
 async fn handler(event: Event) {
     info!("[Backend] handler, {:?}", event);
-    crate::handlers::handler(event).await
+    crate::core::handlers::handler(event).await
 }
 
 #[tauri::command]
@@ -48,11 +45,7 @@ async fn modification(modification: CoreModification) {
 }
 
 /// Runs the Tauri application
-pub async fn run() -> Result<()> {
-    setup::setup_compile_time_modules()
-        .await
-        .context("Compile time module setup should always succeed")?;
-
+pub async fn run() -> Result<usize> {
     let app = tauri::Builder::default()
         .plugin(
             tauri_plugin_log::Builder::new()
@@ -69,9 +62,9 @@ pub async fn run() -> Result<()> {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
-            setup(setup::ide_setup(app).expect("IDE-setup should always succeed"));
+            setup(super::setup::ide_setup(app).expect("IDE-setup should always succeed"));
             NMIDE
-                .set(Box::new(NmideApp::new(app.handle().clone())))
+                .set(Box::new(TauriPlatform::new(app.handle().clone())))
                 .unwrap_or_else(|_| panic!("AppHandle setup should always succeed"));
             Ok(())
         })
@@ -102,25 +95,8 @@ pub async fn run() -> Result<()> {
                 .expect("Emit should succeed");
             api.prevent_close();
         }
-        RunEvent::Ready => match app_handle.cli().matches() {
-            Ok(matches) => {
-                tokio::spawn({
-                    async move {
-                        cli::run(matches).await;
-                    }
-                });
-            }
-            Err(err) => {
-                eprintln!("Error: {err:?}");
-                app_handle.exit(0);
-            }
-        },
         _ => (),
     });
 
-    if exitcode != 0 {
-        eprintln!("Non-zero return code: {exitcode}");
-    }
-
-    Ok(())
+    Ok(exitcode as usize)
 }

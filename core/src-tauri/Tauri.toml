@@ -24,17 +24,23 @@ resources = []
 category = "DeveloperTool"
 shortDescription = "A simple IDE"
 
+# TODO: REMOVE
 [plugins]
 cli.description = "Nmide CLI"
 cli.args = [
+  { name = "headless", description = "Starts the application without a visible window" },
+]
+[plugins.cli.subcommands]
+cli = { description = "Starts the application in CLI mode", args = [
   { short = "p", name = "primitive", description = "Value passed to the Event args are ValuePrimitives" },
   { name = "event", short = "e", takesValue = true, multiple = true, description = "Event name" },
   { name = "args", short = "a", takesValue = true, multiple = true, description = "Event args" },
   { name = "module", short = "m", takesValue = true, multiple = true, description = "Module name" },
-  { name = "exit", description = "Add an Exit Event" },
   { name = "init", short = "i", description = "Runs initialization" },
   { name = "force", short = "f", description = "Runs each event to modules handler" },
-]
+] }
+install = { description = "Installs modules specified in the Module.toml" }
+add = { description = "Adds a module to the Module.toml configuration" }
 
 [app.security]
 csp = "asset: https://asset.localhost; connect-src ipc: http://ipc.localhost"

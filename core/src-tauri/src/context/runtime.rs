@@ -1,3 +1,7 @@
+use crate::{
+    context::compile_time::NmideCore,
+    core::statics::{NMIDE_SENDER, NMIDE_STATE, NMIDE_UI},
+};
 use abi_stable::std_types::RString;
 use async_ffi::{FfiFuture, FutureExt};
 use core_module_lib::rs_module::RCore;
@@ -6,10 +10,6 @@ use foreign_std_lib::{
     core::rs_core_modification::RCoreModification, event::rs_event::REvent, html::rs_html::RHtml,
     state::rs_state::RState,
 };
-
-use crate::statics::{NMIDE_SENDER, NMIDE_STATE, NMIDE_UI};
-
-use super::NmideCore;
 
 pub struct RuntimeCore;
 

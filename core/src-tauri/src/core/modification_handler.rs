@@ -4,7 +4,7 @@
 //! into state and UI change, before writing the changes onto the state and UI.
 //! Does this independently of what `Core` is used.
 
-use crate::statics::{NMIDE, NMIDE_SENDER, NMIDE_STATE, NMIDE_UI};
+use crate::core::statics::{NMIDE, NMIDE_SENDER, NMIDE_STATE, NMIDE_UI};
 use core_std_lib::core_modification::CoreModification;
 use log::debug;
 use tokio::sync::mpsc::channel;

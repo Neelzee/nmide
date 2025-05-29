@@ -1,6 +1,6 @@
 //! Contains thread safe structs for access across the application.
 
-use crate::{app::App, core::event_register::ModuleEventRegister};
+use crate::{context::event_register::ModuleEventRegister, platform::Platform};
 use core_module_lib::{rs_module::RsModule, Module};
 use core_std_lib::{core_modification::CoreModification, html::Html, state::State};
 use once_cell::sync::{Lazy, OnceCell};
@@ -52,4 +52,4 @@ pub static NMIDE_SENDER: tokio::sync::OnceCell<Sender<CoreModification>> =
 
 /// Thread safe AppHandle. Used because some processes need to `emit` events,
 /// which is a one-way method for the backend to communicate with the frontend.
-pub static NMIDE: tokio::sync::OnceCell<Box<dyn App>> = tokio::sync::OnceCell::const_new();
+pub static NMIDE: tokio::sync::OnceCell<Box<dyn Platform>> = tokio::sync::OnceCell::const_new();

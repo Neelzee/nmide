@@ -1,0 +1,6 @@
+[env]
+MODULE_CONFIG = "../Modules.toml"
+DIST_DIR = "../dist"
+INDEX_PATH = "../index.html"
+RUST_LOG = "debug"
+CARGO_PATH = "./Cargo.toml"
