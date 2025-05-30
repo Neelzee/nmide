@@ -1,6 +1,17 @@
 \chapter{Background} \label{cha:background}
 
-\section{Magnolia}
+In this chapter, we will introduce Magnoila \ref{sec:magnolia}, some of the
+interesting aspects the language introduces, and examples of how we can use it.
+We will then discuss \gls*{ide}s in the following section \ref{sec:ide}, and
+mention some specific functionality they have that make them great tools for
+developers. Then, in section \ref{sec:architecture}, we will discuss our
+approach, and how it differs from standard modularity in other \gls*{ide}s. We
+will also discuss the current Magnolia \gls*{ide}. Finally, in the last section
+\ref{sec:challenges} we will discuss the challenges that exist due to the
+uniqueness of the Magnolia language.
+
+
+\section{Magnolia} \label{sec:magnolia}
 
 Magnolia is designed to support a high level of abstraction and ease of
 reasoning. It was created with the purpose of being highly extensible,
@@ -589,7 +600,8 @@ sentence over and over again, we could evaluate them as a
 \textit{no-operation}, and not do the expensive operation of writing and
 removing text from a file.
 
-\section{Reusable software}
+
+\subsection{Reuse in Magnolia}
 
 One of the most important features in any programming language, is the notion
 of \textit{reusability}. From the invention of the GO-TO-statement, with which
@@ -600,8 +612,6 @@ programmer. It avoids \textit{re-inventing the wheel}, as common functionality
 can be externalized and reused in several different places. This ensures
 fewer points of failure. Instead of having to test several different places in
 a project, we can test the function being used different places.
-
-\subsection{Reuse in Magnolia}
 
 Reusability is also an important feature in Magnolia, but this reusability is in
 the entire language. In libraries in other languages, functions are reused, in
@@ -824,7 +834,8 @@ this in action.
   \label{pic:market}
 \end{figure}
 
-\section{Module architecture}
+
+\section{Zero-core module architecture} \label{sec:architecture}
 
 A modular application, is an application which can be extended by other pieces
 of software. This extensibility is useful as features that the original
@@ -859,6 +870,49 @@ is that a user can easily test out different modules, as compiling the entire
 application before being able to test a module is a hassle. But it comes with
 some drawbacks, like having to do extra verifications on top of the module,
 ensuring invoking the module won't crash the entire \gls*{ide}.
+
+
+\subsection{Zero-core IDE}
+
+A zero-core \gls*{ide} takes the modular architecture that is standard
+\gls*{ide}s and takes it to its extreme. When all features are modules, and
+modules interact by invoking each other, it can mimic a microservice
+architecture. A module invocation is some \textit{request}, which the invoked
+module \textit{responds} to. There is a provider-consumer dynamic. There is a
+provider, some module providing data, and some consumer, some module using the
+data. If either the consumer or the provider is maintained by a third party,
+then there is some informal \textit{contract} between them. The consumer
+expects the outputs of a provider to be in some certain format, which in the
+case for \gls*{rest} \gls*{api}s usually is \gls*{json}, but with
+specification formats like OpenApi\footnote{https://swagger.io/docs
+specification/v3\_0/about/}, one can also specify the structure of the
+\gls*{json} response, with what fields and values it can have. One can also
+specify what values are valid in a request. But even if one does use such a
+format, changes in scope can require the provider to change the \gls*{api},
+which could affect the consumer, because the consumer assumed something about
+their informal contract, that all numbers provided are integers. And if
+suddenly the provider changes, and returns floating point numbers, the
+consumer could crash trying to parse a string as an integer. 
+
+The same concept applies to a zero-core \gls*{ide}. Modules have an implicit, and
+informal contract between them. So the same measures, used in microservice
+architecture, to mitigate these issues, can be used in this zero-core \gls*{ide}.
+Unit testing of code is essential in software development, especially when
+developing against third party systems. Instead, invoking these third party
+systems at test time, mocking is used. This mocking is part of how a consumer
+assumes a provider should act. Mocking of modules is trivial, as all one needs
+to mock is the state, the \gls*{ui}, or that some event happens, triggering a
+module. At a larger scale we test the module family, to see if its change has
+affected the other modules. This can be done with contract testing, as discussed
+by Gross and Mayer~\cite{GROSS200322}. They propose a module architecture, where
+each module exposes some testing interface. However, in the architecture propose
+by us, all modules composing the \gls*{ide} can be loaded in a test environment,
+where all interactions are recorded, and used to generate a dependency graph,
+showing what modules depend on whom. This can show that certain modules are more
+tightly connected than assumed, meaning they are in the same module family, it
+can also show what module families communicate with other module families,
+showing module communities.
+
 
 \subsection{Module ecosystem}
 
@@ -932,47 +986,7 @@ as a singular module by an external module developer, depending on what they
 want to extend.
 
 
-\section{Zero-core IDE}
-
-A zero-core \gls*{ide} takes the modular architecturethat is standard \gls*{ide}s
-and takes it to its extreme. When all features are modules, and modules interact
-by invoking eachother, it can mimic a microservice architecture. A module
-invocation is some \textit{request}, which the invoked module \textit{responds}
-to. There is a provider-consumer dynamic. There is a provider, some module
-providing data, and some consumer, some module using the data. If either the
-consumer or the provider is maintained by a third party, then there is some
-informal \textit{contract} between them. The consumer expects the outputs of a
-provider to be in some certain format, which in the case for \gls*{rest}
-\gls*{api}s usually is \gls*{json}, but with specification formats like OpenApi\footnote{https://swagger.io/docs/specification/v3\_0/about/},
-one can also specify the structure of the \gls*{json} response, with what fields
-and values it can have. One can also specify what values are valid in a request.
-But even if one does use such a format, changes in scope can require the
-provider to change the \gls*{api}, which could affect the consumer, because the
-consumer assumed something about their informal contract, that all numbers
-provided are integers. And if suddenly the provider changes, and returns
-floating point numbers, the consumer could crash trying to parse a string as an
-integer.
-
-The same concept applies to a zero-core \gls*{ide}. Modules have an implicit, and
-informal contract between them. So the same measures, used in microservice
-architecture, to mitigate these issues, can be used in this zero-core \gls*{ide}.
-Unit testing of code is essential in software development, especially when
-developing against third party systems. Instead, invoking these third party
-systems at test time, mocking is used. This mocking is part of how a consumer
-assumes a provider should act. Mocking of modules is trivial, as all one needs
-to mock is the state, the \gls*{ui}, or that some event happens, triggering a
-module. At a larger scale we test the module family, to see if its change has
-affected the other modules. This can be done with contract testing, as discussed
-by Gross and Mayer~\cite{GROSS200322}. They propose a module architecture, where
-each module exposes some testing interface. However, in the architecture propose
-by us, all modules composing the \gls*{ide} can be loaded in a test environment,
-where all interactions are recorded, and used to generate a dependency graph,
-showing what modules depend on whom. This can show that certain modules are more
-tightly connected than assumed, meaning they are in the same module family, it
-can also show what module families communicate with other module families,
-showing module communities.
-
-\section{Existing Magnolia IDE}
+\subsection{Existing Magnolia IDE}
 
 The current \gls*{ide} for Magnolia~\cite{baggeIde}, is a many-years-old version
 of Eclipse, using modules and functionality from the core Eclipse application,
@@ -1001,7 +1015,7 @@ Currently, in INF220, a course at the university, two weeks are set aside for
 students to be able to install the current Magnolia \gls*{ide}.
 
 
-\section{Challenges imposed by Magnolia}
+\section{Challenges imposed by Magnolia} \label{sec:challenges}
 
 In most programming languages, any type has a singular definition, retrieving
 the file and position in the file, where a type is implemented, is trivial, as
@@ -1026,24 +1040,27 @@ $+$ and \textbf{emptyList}, $++$ respectively.
 
 \footnotetext{Definition \ref{def:monoid}}
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
     [ language=Magnolia
     , caption={String concatenation (Magnolia)}
     , label=lst:strConc
     ]{./code/string-conc.mg}
-\end{center}
+\end{code}
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
     [ language=Magnolia
     , caption={String concatenation (Magnolia)}
     , label=lst:lstConc
     ]{./code/list-conc.mg}
-\end{center}
+\end{code}
 
-Since renaming is heavily used, being able to visualize the \textit{flattened}
-and \textit{unflattened} \gls*{asr}-tree is useful.
+In Magnolia, it is useful for a developer to visualize and follow the effect of
+renaming, that the compiler does. This visualization would enable a developer
+to know where a renaming happens. The structure of this is tree-like, and not
+functionality that is typically included in an \gls*{ide}.
+
 
 \subsection{Dependency cycles}
 

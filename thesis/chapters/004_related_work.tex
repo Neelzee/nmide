@@ -241,10 +241,17 @@ work on the source file of a program, while language workbenches work on the
 programmers could read closer to how we think, than how a computer thinks. So
 before a computer can run our code, it needs to be translated. Generally, this
 translation is done by parsing the source file into some tree-structure, and
-then interpreting that tree, transforming it into an \gls*{ast}.
+then interpreting that tree, transforming it into an \gls*{ast}. As a concrete
+example, in figure \ref{fig:instrTree} we have a visualization of an \gls*{ast},
+for our \textbf{Instruction}-set.
 
 So language workbenches then, enables a developer to work on this abstract
 representation of the language one is creating.
+
+Similarly, in Magnolia, it is useful for a developer to visualize the effect of
+the compiler flattening the \gls*{asr}-tree, especially in regard to renaming.
+An \gls*{asr}-tree is similar to an \gls*{ast}, except it has extra information
+on each node.
 
 
 \section{Language Server}
