@@ -29,36 +29,96 @@ This repository is also maintained in a subversion repository, ~~hence the
 so the repository can be accessed [here](https://github.com/Neelzee/nmide).
 
 
-## Installation
+# Installation
 
-### Prerequisites
+You can either build the IDE from source, or by using the released binaries.
+In either case, there are two different instances of the IDE.
+
+**Empty core**: Without any of the modules
+**IDE**: With all of modules
+
+The different modules can be found in [modules](https://github.com/Neelzee/nmide/tree/main/modules),
+and are added by changing the `Modules.toml` file, and running `make modules`.
+
+## Prerequisites
 
 - [Rust](https://www.rust-lang.org/)
 - [Tauri](https://tauri.app/start/prerequisites/)
 - [NodeJS](https://nodejs.org/en)
 - [Bun](https://bun.sh/)
-- [Make](https://www.gnu.org/software/make/)
+- [Make (Optional)](https://www.gnu.org/software/make/)
+
+`make` is optional, but it is recommended for building the IDE.
+
+
+## Building empty core from source
 
 After installing all the prerequisites:
 
-1. Install the js-library: in `libs/js-utils`
+1. Install the JavaScript libraries: in `libs/javascript/*` by using make:
   ```shell
-  bun i
+make install-deps
   ```
+
+  1. If you don't have `make`, you have to go each library in `libs/javascript`,
+  and run `bun i` and `bun link`. See [this](https://bun.sh/docs/cli/link) for
+  more information.
 
 2. Install the node dependencies in `core`:
   ```shell
   bun i
   ```
 
-3. Add the wanted modules in the `core/Modules.toml` file
+If you want to run a development build, simply run the following in `core`:
+```shell
+bun run tauri dev
+```
+
+If you want to build it, instead run this, in `core`:
+```shell
+bun run tauri build
+```
+
+This will build the application specific to your OS, and the resulting binary
+can be found in `core/src-tauri/target/release/bundle`
+
+
+## Building IDE from source
+
+1. Install the JavaScript libraries: in `libs/javascript/*` by using make:
+  ```shell
+make install-deps
+  ```
+
+  1. If you don't have `make`, you have to go each library in `libs/javascript`,
+  and run `bun i` and `bun link`. See [this](https://bun.sh/docs/cli/link) for
+  more information.
+
+2. Install the node dependencies in `core`:
+  ```shell
+  bun i
+  ```
+
+3. Add the wanted modules in the `Modules.toml` file, by default, all
+modules are enabled.
 
 4. Install the modules
   ```shell
   make modules
   ```
 
-5. Build the project:
+  5. If you don't have `make`, you have to add each Rust module as a dependency
+  in `core/src-tauri/Cargo.toml`, and import it, and add it in
+  `core/src-tauri/target/module_reg.rs`. For the JavaScript modules, you have
+  to build them using `bun run build`, and add the `build/index.js` file to
+  `build/modules.js`.
+
+If you want to run a development build, simply run the following in `core`:
+```shell
+bun run tauri dev
+```
+
+If you want to build it, instead run this, in `core`:
 ```shell
 bun run tauri build
 ```
@@ -66,18 +126,8 @@ bun run tauri build
 You'll find the executable in a folder pertaining to your OS in:
 `core/src-tauri/target/release/bundle/`
 
-## Development
 
-If you want to develop, debug or test different modules, you can do step `1` to
-`4`, and just run the development build by using the following command:
-
-```shell
-bun run tauri dev
-```
-
-This will run a development instance of the application.
-
-## Module Development
+# Module Development
 
 A module is either compile time or runtime module. Either way, it
 follows the same architecture. A module exposes an `init` and `handler` method.
@@ -86,9 +136,10 @@ Modules are considered to be pure, so should not have their own internal state,
 any guarantees the IDE gives, hinges on this.
 
 
-### Module Examples
+## Module Examples
 
-#### JavaScript
+
+### JavaScript
 
 Minimal JavaScript Module
 ```JavaScript
@@ -102,7 +153,7 @@ installModule({
 For a more thorough example, see [core/modules](https://github.com/Neelzee/nmide/tree/main/modules).
 
 
-#### Rust
+### Rust
 
 Minimal Compile time Rust Module
 ```rust
