@@ -20,13 +20,7 @@ modules : clean
 		--dist=$(dist)/external \
 		--index=$(index) \
 		--module-dist=$(appdir)/modules && \
-	cd core && bun run build.ts && cd .. && \
-	cargo run \
-		--manifest-path=$(manifest-path) -- \
-		--out=$(tool-out) \
-		--conf=$(conf) \
-		--cargo=$(tool-cargo) \
-		--dist=$(tool-dist)
+	cd core && bun run build.ts && cd -
 
 install-module-deps :
 	@( cd modules && ./js-modules.sh )
@@ -47,7 +41,7 @@ install-deps:
 			fi; \
 		done \
 	) && \
-	cd core && echo "Installing Core JS dependencies" && bun i
+	cd core && echo "Installing Core JS dependencies" && bun i && cd -
 
 clean :
 	rm -rf $(out)/debug/build/core-* && \
