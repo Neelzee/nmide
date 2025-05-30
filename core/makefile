@@ -38,7 +38,7 @@ clean :
 	echo "pub fn register_modules(modules: &mut HashMap<String, Box<dyn Module>>) {}" \
 		> $(out)/module_reg.rs && \
 	mkdir -p $(appdir)/modules && \
-	awk '/^# =+ #/ { exit } { print }' $(manifest-path) > tmp && mv tmp $(manifest-path) && \
+	awk '{ print } /^# =+ #/ { exit }' $(cargo) > tmp && mv tmp $(cargo) && \
 	cargo run \
 		--features "module-installer" \
 		--manifest-path=$(manifest-path) \

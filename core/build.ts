@@ -1,5 +1,5 @@
 await Bun.build({
-  entrypoints: ["./dist/external/modules.js"],
-  outdir: "./dist/external/",
+  entrypoints: ["./build/external/modules.js"],
+  outdir: "./build/",
   minify: true,
 })
