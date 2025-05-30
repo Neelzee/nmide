@@ -1,10 +1,10 @@
-appdir := /home/nmf/.local/share/no.nilsmf.uib
+appdir := ~/.local/share/no.nilsmf.uib
 manifest-path :=  tools/cm-installer/Cargo.toml
 out := core/src-tauri/target
 conf := Modules.toml
 modules := core/modules
 cargo := core/src-tauri/Cargo.toml
-dist := core/dist
+dist := core/build
 index := core/index.html
 tool-out := tools/module-tester/rsm-grapher/target
 tool-cargo := tools/module-tester/rsm-grapher/Cargo.toml
@@ -50,12 +50,6 @@ install-deps:
 	cd core && echo "Installing Core JS dependencies" && bun i
 
 clean :
-	rm -rf $(tool-out)/debug/build/core-* && \
-	mkdir -p $(tool-out) && \
-	rm -rf $(tool-dist) && \
-	mkdir -p $(tool-dist) && \
-	touch $(tool-dist)/result.json && \
-	touch $(tool-dist)/index.html && \
 	rm -rf $(out)/debug/build/core-* && \
 	rm -rf $(dist)/external && \
 	rm -rf $(appdir) && \
@@ -66,38 +60,8 @@ clean :
 	echo "pub fn register_modules(modules: &mut HashMap<String, Box<dyn Module>>) {}" \
 		> $(out)/module_reg.rs && \
 	mkdir -p $(appdir)/modules && \
-	cargo run \
-		--manifest-path=$(manifest-path) -- \
-		--out=$(out) \
-		--clean \
-		--conf=$(conf) \
-		--modules=$(modules) \
-		--cargo=$(cargo) \
-		--dist=$(dist)/external \
-		--index=$(index)
-	cargo run \
-		--manifest-path=$(manifest-path) -- \
-		--clean \
-		--out=$(tool-out) \
-		--conf=$(conf) \
-		--cargo=$(tool-cargo) \
-		--dist=$(tool-dist) \
-		--index=$(tool-dist)/index.html
+	awk '{ print } /^# =+ #/ { exit }' $(cargo) > tmp && mv tmp $(cargo) && \
+	awk '/<!--MODULES-->/ { print; in_block = !in_block; next; } !in_block' $(index) > tmp && mv tmp $(index)
 
-dry :
-	cargo run \
-		--manifest-path=$(manifest-path) -- \
-		--out=$(out) \
-		--conf=$(conf) \
-		--modules=$(modules) \
-		--cargo=$(cargo) \
-		--dist=$(dist)/external \
-		--index=$(index) \
-		--module-dist=$(appdir)/modules \
-		--dry-run
-
-build : modules
+ide : install-deps install-module-deps modules
 	@( cd core && bun run tauri build )
-
-run : modules
-	@( cd core && bun run tauri dev )
