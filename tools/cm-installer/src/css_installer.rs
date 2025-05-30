@@ -1,5 +1,5 @@
 use crate::{Kind, Module, run_cmd};
-use std::process::Command;
+use std::{path::PathBuf, process::Command};
 
 pub(crate) fn install(dist: String, mods: Vec<Module>) -> Vec<String> {
     println!("CSS installer");
@@ -19,7 +19,12 @@ pub(crate) fn install(dist: String, mods: Vec<Module>) -> Vec<String> {
         copy_cmd.arg(format!("{}/{}.{}", &dist, m.name, m.kind.as_ext()));
         run_cmd(copy_cmd);
         let script = format!(
-            r#"<link rel="stylesheet" href="./dist/external/{}.{}" type="text/css"/>"#,
+            r#"<link rel="stylesheet" href="{}/{}.{}" type="text/css"/>"#,
+            (PathBuf::from(&dist)
+                .canonicalize()
+                .unwrap()
+                .to_str()
+                .unwrap_or_default()),
             m.name,
             m.kind.as_ext(),
         );
