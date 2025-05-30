@@ -22,6 +22,7 @@ achieves this by using the [Tauri](https://tauri.app/) framework. Wherein one of
 the features is being able to implement the frontend using JavaScript. This
 makes it very easy to implement a system for JavaScript Modules.
 
+
 ## Subversion
 
 This repository is also maintained in a subversion repository, ~~hence the
@@ -83,32 +84,29 @@ This will build the application specific to your OS, and the resulting binary
 can be found in `core/src-tauri/target/release/bundle`
 
 
+## Building IDE from source using make
+
+```shell
+make ide
+```
+
+You'll find the executable in a folder pertaining to your OS in:
+`core/src-tauri/target/release/bundle/`
+
+
 ## Building IDE from source
 
-1. Install the JavaScript libraries: in `libs/javascript/*` by using make:
-  ```shell
-make install-deps
-  ```
-
-  1. If you don't have `make`, you have to go each library in `libs/javascript`,
-  and run `bun i` and `bun link`. See [this](https://bun.sh/docs/cli/link) for
-  more information.
+1. Install the JavaScript libraries: in `libs/javascript/*`, by going into each
+  folder and running `bun i` and `bun link`. See
+  [this](https://bun.sh/docs/cli/link) for more information.
 
 2. Install the node dependencies in `core`:
   ```shell
   bun i
   ```
 
-3. Add the wanted modules in the `Modules.toml` file, by default, all
-modules are enabled.
-
-4. Install the modules
-  ```shell
-  make modules
-  ```
-
-  5. If you don't have `make`, you have to add each Rust module as a dependency
-  in `core/src-tauri/Cargo.toml`, and import it, and add it in
+3. You have to add each Rust module as a dependency in
+  `core/src-tauri/Cargo.toml`, and import it, and add it in
   `core/src-tauri/target/module_reg.rs`. For the JavaScript modules, you have
   to build them using `bun run build`, and add the `build/index.js` file to
   `build/modules.js`.
