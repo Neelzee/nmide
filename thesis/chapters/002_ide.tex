@@ -7,22 +7,22 @@ developing the application.
 \section{User Perspectives}
 
 This application has to consider different users. In \gls*{ide}'s like
-\gls*{eclipse} or \gls*{intellij}, there is the primary user base, the developers
+Eclipse or IntelliJ, there is the primary user base, the developers
 who are using the \gls*{ide} to develop, and then there are the secondary user
-base, the developers whom develop \textit{plugins} for the \gls*{ide}. Being the
+base, the developers whom develop modules for the \gls*{ide}. Being the
 primary user base, most of the new features implemented by either \gls*{ide} are
 related to the development experience. There are still changes to that the
-\textit{plugin} developers are interested in, namely \gls*{api} changes.
-\gls*{intellij} for example, lists their \textit{incompatible \gls*{api} changes}\footnote{\url{https://plugins.jetbrains.com/docs/intellij/api-changes-list-2025.html\#intellij-platform-20252}}.
+module developers are interested in, namely \gls*{api} changes.
+IntelliJ for example, lists their \textit{incompatible \gls*{api} changes}\footnote{\url{https://plugins.jetbrains.com/docs/intellij/api-changes-list-2025.html\#intellij-platform-20252}}.
 Breaking changes between \gls*{ide} versions is something normal users of the
 \gls*{ide} do not worry about. As usually when a new version is released, it
-means more features for the developer to utilize. While \textit{plugin}
-developers have to ensure their \textit{plugins} still work. One of the reasons
-behind \gls*{ide} version changes can break a \textit{plugin}, is due to how
-they interact with their \gls*{ide}. In \gls*{intellij} a \textit{plugin} is
+means more features for the developer to utilize. While module
+developers have to ensure their modules still work. One of the reasons
+behind \gls*{ide} version changes can break a module, is due to how
+they interact with their \gls*{ide}. In IntelliJ a module is
 created by implementing a Java interface for the functionality one wants.
 
-If one wanted \gls*{intellij} to recognize that a file with the extension "rs",
+If one wanted IntelliJ to recognize that a file with the extension "rs",
 is a Rust source file, and give it a certain icon, one would have to implement
 the \textbf{Language} interface and override the \textbf{getIcon} method to
 return the wanted icon.
@@ -74,8 +74,8 @@ the \gls*{ide}.
 module, \textit{ide\_explorer} in action, showing the Magnolia library
 visualized as a tree-like structure with collapsible folders. These folders are
 rendered in the \textit{sidebar}, on the left. When we click on the
-\textit{File}, a dropdown appears, where we can click on a button,
-\textit{Open Folder}, which sends an Event to ide\_fsa, the module in
+\textit{File} button in the menu, a dropdown appears, where we can click on a
+button, \textit{Open Folder}, which sends an Event to ide\_fsa, the module in
 charge of handling file system operations, where we get in \textit{response},
 all the folders and files in the path we selected. Which we transform into
 \gls*{html}, and along with some \gls*{css}, we get the collapsible folders.
@@ -84,7 +84,7 @@ all the folders and files in the path we selected. Which we transform into
   \centering
   \includegraphics[height=0.5\textwidth]{ide-explorer.png}
   \caption{
-    \gls*{ide}-explorer module, showing the Magnolia library.
+    ide\_explorer module, showing the Magnolia library.
   }
   \label{pic:ideEx}
 \end{figure}
@@ -158,10 +158,10 @@ dependencies.
   \label{pic:magLib}
 \end{figure}
 
-Luckily, with \textit{D3}, we can mitigate some of the noise. In the picture
-\ref{pic:depCont}, we can see the control-panel that our graph module has
-created. With the control panel, we can zoom in and out on the graph\footnote{This can also be done with the mouse},
-reset our view. This, along with the node size scale, scaling how big
+Luckily, with D3 and \gls*{css}, we can mitigate some of the noise. In the
+picture \ref{pic:depCont}, we can see the control-panel that our graph module
+has created. With the control panel, we can zoom in and out on the graph\footnote{This can also be done with the mouse},
+and reset our view. This, along with the node size scale, scaling how big
 a node is depending on how many dependents it has, ensures this visualization
 tool can be used for other programming libraries, not just Magnolia.\footnote{Given a proper parser module}
 Furthermore, we can highlight the packages we care about, using the filter
@@ -223,8 +223,8 @@ digression.
 
 Module markets are an important part of the \gls*{ide} user experience. Being
 able to install a module with the click of a button essential. Not having a
-dedicated module market like \gls*{vscode}, has not been detrimental for
-\gls*{vim}, as with a \textit{plugin manager}, a user can install a module by
+dedicated module market like VS Code, has not been detrimental for
+Vim, as with a \textit{plugin manager}, a user can install a module by
 simply supplying a URL to a GitHub repository. Similarly, we allow users to
 either install modules from disk, or by supplying a URL to a GitHub repository.
 In the picture \ref{pic:moduleInstaller}, we can see such a form. A user can
@@ -248,12 +248,12 @@ copy this binary instead.
 Being a zero-core application; all functionality comes from modules, the module
 developer experience is the most important. To achieve this, documentation is
 important. If a module developer has a question about how the core might react,
-it should be answered by the documentation. In \gls*{eclipse}, this is in the
-form of \textit{Javadoc}s, which specify, with examples how the \gls*{eclipse}
+it should be answered by the documentation. In Eclipse, this is in the
+form of \textit{Javadoc}s, which specify, with examples how the Eclipse
 runtime handles \textit{plugins}\footnote{\url{https://help.eclipse.org/latest/rtopic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/runtime/Plugin.html}}.
 
-The documentation for \textit{plugin} developers, in both \gls*{intellij} and
-\gls*{eclipse} has to be large, due to of how \textit{plugins} interact with the
+The documentation for \textit{plugin} developers, in both IntelliJ and
+Eclipse has to be large, due to of how \textit{plugins} interact with the
 \gls*{ide}; it is a large \gls*{api}. In a zero-core \gls*{ide} it is smaller,
 simply due to the fact that the core \gls*{ide} offers fewer features, as features
 necessarily come from modules in a zero-core architecture.
@@ -261,81 +261,27 @@ necessarily come from modules in a zero-core architecture.
 \subsection{Language Agnostic Modules}
 
 The largest limiting factor in module oriented applications, is the
-\textit{language barrier} Most applications limit what language one can extend
-an application with, like in \gls*{vscode}, where its JavaScript/HTML/CSS. Or
-\gls*{intellij}, where one can use Java or Kotlin. But what does language agnostic
-mean in the context of programming languages? It is, and always will be C. Rust,
-the language chosen to implement this \gls*{ide}, also has bindings to C. This
-means that Rust can invoke C libraries. This is important for language
-agnosticism, as any language that has bindings to C, has then, through C,
-bindings to Rust. This is called an \gls*{abi}, specifically the C-\gls*{abi}.
+\textit{language barrier}. Most applications limit what language one can extend
+an application with, like in VS Code, where its JavaScript/HTML/CSS. Or
+IntelliJ, where one can use Java or Kotlin. But what does language agnostic
+mean in the context of our modular architecture? Semantically alike modules.
 
-This module could be a singular one, acting as a translator, translating the
-data flowing between the core and foreign-modules as shown in figure
-\ref{fig:fm1}, or each foreign-module could have their own translator as shown
-in figure \ref{fig:fm2}. For some languages such a setup would be necessary.
-A Haskell module, for example, would require some translation module, either a
-unique translator for each module, where the Rust module would start the
-required Haskell runtime~\cite{ghcRts}, when invoking the Haskell module, and
-exit before returning, avoiding \gls*{ub}. The reason Haskell is of interest,
-is that the new compiler is written in Haskell~\cite{wiig}, and as such, if one
-where to develop \gls*{lsp} capable modules for the \gls*{ide}, a translation
-module from Rust to Haskell is necessary.
+Translating a module from one programming language to another should be trivial.
+This is achieved by the models used in the core. The \textit{primitive} types,
+are the same as in JavaScript, the notion of an empty value, numbers, strings,
+lists and \textit{objects}, can be serialized/deserialized to/from any language.
+So the manipulation on these types can be extracted and rewritten in another
+preferred language. Therefore, to be fully language agnostic, modules should be
+syntactically translatable between each other. The same two modules, one
+implemented in JavaScript, the other in Rust, should be semantically the same.
 
-\begin{figure}[H]
-  \begin{subfigure}[h]{0.49\linewidth}
-    \input{./figures/foreign-module-1}
-    \caption{Foreign modules being invoked by a singular translation-module}
-    \label{fig:fm1}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[h]{0.49\linewidth}
-    \input{./figures/foreign-module-2}
-    \caption{Foreign modules being invoked by an individual translation-module}
-    \label{fig:fm2}
-  \end{subfigure}
-  \caption{
-    Two diagrams showing the different methods for implementing a translation
-    module
-  }
-  \label{fig:fm}
-\end{figure}
+Of course, this language agnosticism also extends to our libraries. Utility
+functions, for manipulation the \gls*{ui} or the primitive types in our state,
+should be equivalent, par for naming conventions, as this is a syntactical
+difference, not semantically different.
 
-But language agnosticism also means that translating from one language to
-another should be trivial. This is achieved by the models used in the core. The
-\textit{primitive} types, are the same as in JavaScript, the notion of an empty
-value, numbers, strings, lists and \textit{objects}, can be
-serialized/deserialized to/from any language. So the manipulation on these types
-can be extracted and rewritten in another preferred language. Therefore, to be
-fully language agnostic, modules should be syntactically translatable between
-each other. The same two modules, one implemented in JavaScript, the other in
-Rust, should be semantically the same.
 
-\subsection{Existing Third Party Libraries}
-
-Since the core can support different languages, one can use the libraries
-written for these languages to make an \gls*{ide}. This could be achieved by
-creating a module, acting as a wrapper around the library. For example, by
-using JavaScript and since the core application is designed to be an \gls*{ide},
-one could use existing JavaScript libraries, like \textit{Monaco}, which is the
-text editor used by Visual Studio Code. It comes with an integrated
-\gls*{lsp}-client, which would enable the application to easily support existing
-popular languages.
-
-However, being zero-core, this application could be anything, from an audio
-editing program, to a game emulator. Simply using the \textit{JS-DOS} library,
-would allow the application to run video games like Doom.
-
-\subsection{Module Development Experience}
-
-A module developer can invoke the module-developer-\gls*{cli}-tool to create
-boilerplate modules for JavaScript, TypeScript or Rust. After they have
-implemented a module, they can test it out, again by invoking the
-\gls*{cli}-tool. When they are satisfied with their implementation, they can add
-it to the compile time configuration for the \gls*{ide}, and compile it. They
-can now use the module in the \gls*{ide}.
-
-\subsection{Module Tools}
+\subsection{Module developer tools}
 
 When developing against a module architecture, having tools to help debug issues
 is useful. Common issues when developing in a modular architecture, where

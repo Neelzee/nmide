@@ -4,7 +4,7 @@ The following appendix discusses how we can optimize an instruction set. When we
 use the term \textit{optimize}, we mean to reduce the amount of instructions.
 This can be achieved in a few different steps. \textbf{Instruction} is a
 recursive data type, parameterized by \textbf{T}. Since an \textbf{Instruction}
-form a group\footnote{See section \ref{sec:moD3} in chapter \ref{cha:impl}}
+form a monoid\footnote{See section \ref{sec:moD3} in chapter \ref{cha:impl}}
 structure, we know for any \textbf{Instruction} variant, there exist an inverse,
 giving us the unit. The goal of this optimization, is to see if an
 \textbf{Instruction} tree contains any inverses.

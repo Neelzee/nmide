@@ -50,11 +50,12 @@ of what should actually happen.
 \section{Keypresses}
 
 A common feature of \gls*{ide}s is being able to have certain keybindings for
-different actions. For example, in \gls*{vscode}, one can hit \textit{CTRL}
+different actions. For example, in VS Code, one can hit \textit{CTRL}
 $+$ \textit{n} to open up a new tab, with a new file. This system is not yet
 possible in the \gls*{ide}, but this is due to a lack of a supporting module
 family. But, given that this is a common feature in \gls*{ide}s, this should be
 a priority.
+
 
 \section{Inconsistent UI representation}
 
@@ -74,16 +75,22 @@ better solution would be to somehow keep track of \textit{all} user interactions
 to the \gls*{dom}, and somehow bubble these changes down to the backend, where
 the \gls*{ui} representation is managed.
 
+
 \section{Unify the tooling}
 
-A \gls{cli} tool should be made for users to add compile-time modules.
-Currently, a user has to specify what kind of module they are adding, the
-language and package manager if it is a JavaScript module. This is trivial to
-detect by a program. A user should be able to simply invoke the tool with
-either a URL or a path to the module, and then the tool can infer what kind of
-module it is, and add it to the configuration file correctly. The same tool
-should also include the other tooling, like generating the module dependency
-graph.
+A user has to specify what kind of module they are adding, the language and
+package manager if it is a JavaScript module. This is trivial to detect by a
+program. A user should be able to simply invoke the tool with either a URL or a
+path to the module, and then the tool can infer what kind of module it is, and
+add it to the configuration file correctly. This should be integrated into the
+\gls*{ide}, but in a manner where the different installers are modules
+themselves, which would enable other module developers or maintainers to
+extend this functionality. Similarly, other tooling, like generating the module
+dependency graph should be integrated into the core. By using the Rust
+conditional compilation system, we can conditionally include or exclude
+functionality, like these \gls*{cli} tools, into the \gls*{ide}, allowing us to
+serve the \gls*{ide} without this functionality if wanted.
+
 
 \section{Modular editor}
 

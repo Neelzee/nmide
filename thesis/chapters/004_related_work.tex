@@ -57,6 +57,28 @@ with its extension \gls*{api}. This \gls*{api} allows for extensions to modify
 the look and behavior of the \gls*{ide}. In fact, many of the core \gls*{ide}
 features are possible due to built-in extensions.
 
+
+\subsection{Vim}
+
+In Vim, plugins are written using VimScript. All plugins located in Vims plugin
+folder are loaded when Vim starts. This is where a user of Vim would place their
+configuration plugins, adding custom commands, key binds, themes, and more. In
+the ftplugin folder, plugins that are specific to file extensions are stored.
+Assuming we have a \textit{python.vim} file in ftplugin, that file would be
+loaded when we open a python file.
+
+\subsubsection{Plugin management}
+
+Most users use Vim with a plugin manager, a plugin, which manages other plugins.
+These plugins can do mundane tasks like:
+
+\begin{itemize}
+  \item Download and install plugins from repositories
+  \item Configure plugins
+  \item Handle updates
+  \item Handle enabling and disabling of plugins
+\end{itemize}
+
 \subsection{Emacs}
 
 Emacs\footnote{\url{https://www.gnu.org/software/emacs/}} is an extensible text
@@ -234,7 +256,7 @@ which they communicate, allowing for many of the features mentioned in section
 \ref{sec:ide}, and explicitly mentioned in table \ref{tbl:ide}. \gls*{lsp} being
 the standard since the 2020s, is a sign of modularity being preferred, as now a
 single \gls*{lsp} can be created, and used across several different
-applications, like IntelliJ, VS Code and \gls*{vim}. While useful for
+applications, like IntelliJ, VS Code and Vim. While useful for
 \textit{standard} language, this is the limiting factor when it comes to
 supporting experimental languages, as not only does a new set of protocols need
 to be appended to a language server, the editor itself needs to be changed to

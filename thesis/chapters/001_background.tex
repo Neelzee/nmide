@@ -4,9 +4,10 @@
 
 Magnolia is designed to support a high level of abstraction and ease of
 reasoning. It was created with the purpose of being highly extensible,
-allowing for experimental language features, like functionalization,
-mutification, generated types and type partitions. With Bagge~\cite{baggeThesis},
-we can summarize a Magnolia program to three fundamental ideas.
+allowing for experimentation of language features, like functionalization,
+mutification, generated types and type partitions. With
+Bagge~\cite{baggeThesis}, we can summarize a Magnolia program to three
+fundamental ideas.
 
 \begin{itemize}
   \item \textit{Concept}: A set of operations, type declarations and axioms.
@@ -23,15 +24,15 @@ often work with sets of operations, type declarations and axioms, namely
 
 Commonly, the term \gls*{api} is used specifically for \gls*{rest} \gls*{api}s, but
 it also covers concepts, like those in Magnolia, interfaces in Java, traits in
-Rust, or type-classes in Haskell. What all of these variations have in common, 
-is that they specify a method for two different procedures to communicate with 
+Rust, or type-classes in Haskell. What all of these variations have in common,
+is that they specify a method for two different procedures to communicate with
 each other. In a \gls*{rest} \gls*{api} this could be a microservice architecture,
-where several servers send and receive requests and responses, or in a 
-programming project, it could be the \textbf{List} interface in Java, which 
+where several servers send and receive requests and responses, or in a
+programming project, it could be the \textbf{List} interface in Java, which
 informs consumers of that interface, which methods are needed to qualify as a
-\textbf{List}. In Magnolia a concept concepts declare types, functions and 
-properties which those functions need to uphold. A simple example of this 
-would be a concept for addition with natural numbers.
+\textbf{List}. In Magnolia a concept declare types, functions and properties
+which those functions need to uphold. A simple example of this would be a
+concept for addition with natural numbers.
 
 \begin{center}
   \lstinputlisting
@@ -67,7 +68,7 @@ instantiate a list, and do operations on it, such as getting adding an element t
 the list, or by concatenating two lists. We can also fetch the first element of
 the list, by using \textbf{head}, note the \textit{guard} attached to the
 function statement, this guard ensures that when this method is invoked, the
-list we get the first element from, cannot be empty~\footnote{Equal to \textbf{nil()}},
+list we get the first element from, cannot be empty\footnote{Equal to \textbf{nil()}},
 which means that our function is not \textit{total}, but \textit{partial}. This
 means that for any argument, we might not have a corresponding result. If we did
 not have this guard, then what would happen if we \textit{took} \textbf{head} of a list
@@ -95,19 +96,20 @@ constructor requiring one argument.
     ]{./code/magnolia-non-list.mg}
 \end{center}
 
-However, this interpretation depends on our implementation of the concept.
+However, the interpretation we have assigned to the \textit{NaturalNumbers},
+\textit{List}, and \textit{NonEmptyList} concept, depends on our implementation.
 
 \subsection{Magnolia implementation}
 
 As one can see in listing \ref{lst:impl}, we have implemented the concept
-specified in \ref{lst:nat}, by using concrete values for \textbf{N}. There is an
-implementation for all the functions, giving us the functionality we set out to
-specify with our concept, but there is nothing stopping us from straying away
-from the specification, by implementing it incorrectly. Since we are using
-primitive types\footnote{In this case, integers} we have to use external code, which is
-another feature of Magnolia. In the listings \ref{lst:impl} and
-\ref{lst:impl-wrong}, we are using an external implementation of numbers, from
-C++.
+specified in listing \ref{lst:nat}, by using concrete values for \textbf{N}.
+There is an implementation for all the functions, giving us the functionality we
+set out to specify with our concept, but there is nothing stopping us from
+straying away from the specification, by implementing it incorrectly. Since we
+are using primitive types\footnote{In this case, integers} we have to use
+external code, which is another feature of Magnolia. In the listings
+\ref{lst:impl} and \ref{lst:impl-wrong}, we are using an external implementation
+of numbers, from C++.
 
 \begin{code}[H]
   \lstinputlisting
@@ -160,9 +162,10 @@ together, by ensuring our axiom are upheld.
 
 When implementing a concept in Magnolia, one could do so incorrectly. In other
 programming languages, one might still have \textit{imparted} some meaning in an
-interface, like that in Java, the interface \textbf{List} in listing \ref{lst:list}, the
-function \textbf{addAll} is an associative operation, as shown in the following
-listing, \ref{lst:listConcat}, where we expect the assertion to be true.
+interface, like that in Java, the interface \textbf{List} in the standard
+library, the method \textbf{addAll} is an associative operation, as shown in
+the following listing, \ref{lst:listConcat}, where we expect the assertion to be
+true.
 
 \begin{code}
   \lstinputlisting
@@ -173,21 +176,27 @@ listing, \ref{lst:listConcat}, where we expect the assertion to be true.
 \end{code}
 
 Of course, this is the case in the standard library to Java, but there is
-nothing that enforces this, excepts for unit tests. But to enforce this, one
-would have to create a unit test for each implementation of the interface, while
-in Magnolia one writes a satisfaction as shown in listing \ref{lst:sat}, which
-in turn is \textit{transpiled} to a format understandable by an \gls*{smt}
-solver. This \gls*{smt} solver can \textit{prove} that our implementation
-upholds our axioms in the implemented concept.
+nothing that enforces this property on other implementers of the interface.
+Usually, programmers who want such a property on their interfaces, create unit
+tests, testing that it is the case that \textbf{addAll} is associative. But to
+enforce this, one would have to create a unit test for each implementation of
+the interface, while in Magnolia one writes a satisfaction as shown in listing
+\ref{lst:sat}, which in turn is \textit{transpiled} to a format understandable
+by an \gls*{smt} solver. This \gls*{smt} solver can \textit{prove} that our
+implementation upholds our axioms in the implemented concept. Importantly, this
+can be done for any consumer of the \gls*{api}.
+
 
 \subsubsection{Satisfiability Modulo Theories solvers}
 
-A \gls*{smt} solver is a program that takes our implementation, and say whether
-our implementations satisfies our concept. In~\cite{beateVerification}, Skogvik
-lays out different \gls*{smt} solvers and compare them against each other, with
-the Magnolia library as input. One of Skogviks conclusions are that while
-verification of some program is good to have, some features needed for a new
-\gls*{ide} would be to integrate it with this functionality.
+A \gls*{smt} solvers are programs that \textit{prove} first-order formulas.
+Skogvik~\cite{beateVerification} showcases how Magnolia concepts can be
+translated into such first-order formulas, and be used by \gls*{smt} solvers to
+verify them. Skogvik also lays out different \gls*{smt} solvers and compare them
+against each other, with the Magnolia library as input. One of Skogviks
+conclusions are that while verification of some program is good to have, some
+features needed for a new \gls*{ide} would be to integrate it with this
+functionality.
 
 
 \subsection{Mathematics and programming}
@@ -210,7 +219,7 @@ log statements. Assuming we have some type \textbf{Log(A)}, where the type
 \textbf{A}, is the result of the computation of a given function, we want to be
 able to compose different, related, computations. But, importantly, the order of
 composition of the \textbf{Log(A)}-type matters. Representing the composition of
-the \textbf{Log(A)}-type as $\odot$, doing, and letting $a, b, c$ be of type
+the \textbf{Log(A)}-type as $\odot$, and letting $a, b, c$ be of type
 \textbf{Log A}:
 
 \begin{definition}[Log Composition] \label{def:logComp}
@@ -236,13 +245,12 @@ and should result in another action. Similarly, the order matters; deleting text
 and then inserting, is not the same as inserting and then deleting. But what is
 different between the logging and editor example, is that we also want the
 \textit{inverse} of an action, so for every action we want an opposite action
-that undos an action. Then our composition of actions has an edge case. Say, $a$
-is some action, and $c$ is some opposite action, then our composition looks like
-this:
+that undos an action. Say, $a$ is some action, and $b$ is some opposite action,
+then our composition looks like this:
 
 \begin{definition}[Action Composition] \label{def:actComp}
   \begin{equation}
-    a \odot c = U
+    a \odot b = U
   \end{equation}
 \end{definition}
 
@@ -260,11 +268,11 @@ thing.
 \subsection{Logging example in Java, Rust, and Magnolia}
 
 In the Java listing (\ref{lst:jlogging}) and Rust listing (\ref{lst:rlogging})
-we have implementations which might not uphold our constraints. We can add unit
-tests, that ensure the implementations satisfy the definition \ref{def:logComp},
-but this safeguard only exists in our project, and once our \gls*{api} can be
-implemented by third-party developers, we have no guarantee they will follow our
-constraints.
+we have implementations of logging which might not uphold our constraints. We
+can add unit tests, that ensure the implementations satisfy the definition
+\ref{def:logComp}, but this safeguard only exists in our project, and once our
+\gls*{api} can be implemented by third-party developers, we have no guarantee
+they will follow our constraints.
 
 \begin{center}
   \lstinputlisting
@@ -280,14 +288,14 @@ constraints.
     , label=lst:rlogging]{./code/logging.rs}
 \end{center}
 
-In Magnolia, however, it is possible to constraint a consumer of out \gls*{api}.
-In the \ref{lst:mlogging} listing, we can add an axiom, which is the same as our
+In Magnolia, however, it is possible to constrain a consumer of our \gls*{api}.
+In the listing \ref{lst:mlogging}, we can add an axiom, which is the same as our
 requirement definition \ref{def:actComp}. For implementers, \textit{consumers}
 of our \gls*{api}, we can now ensure they implement correctly, as long as they
 add the simple declaration showed in listing \ref{lst:mlogSat}. This will be
 ensured, because in a standard Magnolia work routine, a developer will invoke an
-\gls*{smt} solver, which will ensure the concepts, that the implementations
-implementing concepts are sound; that they are satisfiable.
+\gls*{smt} solver, which will ensure the concepts, that are implemented are
+sound; that they are satisfiable.
 
 \begin{center}
   \lstinputlisting
@@ -350,8 +358,9 @@ In the first example, we are working with a \textit{semigroup}, and in the
 second example, we are working with a \textit{group}. These are known as
 algebraic structures, which is just some set, with a function that takes two
 inputs, and outputs one result, and some property on that function. The trivial
-example, is known as \textit{magma}, and is defined by \ref{def:magma}. The
-closure \ref{def:closed} simply specifies that we only work with one set.
+example, is known as \textit{magma}, and is defined in \ref{def:magma}. The
+closure definition \ref{def:closed} simply specifies that we only work with one
+set.
 
 \begin{definition}[Closure] \label{def:closed}
   For a set $M$, with a binary operation $\oplus$,
@@ -361,8 +370,8 @@ closure \ref{def:closed} simply specifies that we only work with one set.
 
 \paragraph{Closure} Addition with the integers is a kind of closure, as per the
 definition \ref{def:closed}, since no matter what integer you put into the
-equation, you will still get a positive integer. And since this is the only
-requirement a magma has, this example is also a magma.
+equation, you will still get an integer. And since this is the only requirement a
+magma has, this example is also a magma.
 
 \begin{definition}[Magma] \label{def:magma}
   A magma is a set $M$, with a binary operation $\oplus$, which is
@@ -370,8 +379,18 @@ requirement a magma has, this example is also a magma.
 \end{definition}
 
 We can \textit{extend} the definition of magma, by adding associativity on the
-binary operation. The definition \ref{def:assoc}, as shown in the examples,
+binary operation. The definition \ref{def:assoc}, as shown in the example
+\ref{exmp:assoc},
 simply specifies that the order we evaluate our composition matters.
+
+\begin{exmp} \label{exmp:assoc}
+  Multiplication with the positive integers is associative, since no matter
+  where we put parentheses; what order we evaluate this equation:
+  $2 \times 3 \times 4$, we will get the same answer.
+  $$
+  (2 \times 3) \times 4 = 2 \times (3 \times 4)
+  $$
+\end{exmp}
 
 \begin{definition}[Associativity Law] \label{def:assoc}
   For any binary operation $\oplus$, on a set $M$, $a, b, c \in M$.
@@ -386,12 +405,6 @@ This associativity gives us a semigroup, as shown in the definition
   A semigroup is a set $M$, with a binary operation $\oplus$, and $\oplus$ must
   uphold the definitions \ref{def:closed} and \ref{def:assoc}.
 \end{definition}
-
-\begin{exmp}
-  Multiplication with the positive integers is associative, since no matter
-  where we put parentheses; what order we evaluate this equation: $2 * 3 * 4$,
-  we will get the same answer.
-\end{exmp}
 
 By simply requiring the identity law (\ref{def:ident}), we get a
 monoid (\ref{def:monoid}), and adding the inverse law
@@ -434,7 +447,7 @@ operator, which takes two variants of the \textit{action}-type, and return
 another variant of the same type. It is therefore a closed binary operation. We
 also specified that \textit{combine} is associative, it does not matter where one
 puts the parentheses, the resulting combination of \textit{action}s are
-equivalent. \textit{NoOp} gives us the \textit{unit}, meaning our binary
+equivalent. \textit{no-operation} gives us the \textit{unit}, meaning our binary
 operation upholds the identity law. Finally, we have an inverse \textit{action}
 variant, that is unique, for all other variants.
 
@@ -452,9 +465,9 @@ things like the definition \ref{def:assoc} on our operators.
 This structure could \textit{technically} be implemented in something like Java
 as shown in listings \ref{lst:jmagma}, \ref{lst:jsemigroup}, \ref{lst:jmonoid},
 and \ref{lst:jgroup}. But not practically. Note the empty interfaces; there is
-nothing that enforces the different laws on the properties. This can only be
-done by unit testing, which is not enforced on an external consumer of the
-\gls*{api}.
+nothing that enforces the different laws; properties, on our method. This can
+only be done by unit testing, which is not enforced on an external consumer of
+the \gls*{api}.
 
 \begin{center}
   \lstinputlisting
@@ -572,8 +585,9 @@ certain evaluations are the same. In our editor example, the usefulness of this
 is clearer, as we can do optimizations on the editor actions. Since the user of
 the editor reacts slower than our code, we can batch several actions together,
 and evaluate them together. If the user keeps writing and deleting the same
-sentence over and over again, we could evaluate them as an "NoOp", and not do
-the expensive operation of writing and removing text from a file.
+sentence over and over again, we could evaluate them as a
+\textit{no-operation}, and not do the expensive operation of writing and
+removing text from a file.
 
 \section{Reusable software}
 
@@ -644,12 +658,10 @@ a single application.
 
 An \gls*{ide}, aids a developer, as all the needed tools for development are
 integrated into one application. Some are more specialized than others,
-targeting specific language, like \gls*{eclipse} and \gls*{intellij}. Others are
-more generic, like \gls*{vscode}. We will use the terms generic and specialized
+targeting specific language, like Eclipse and IntelliJ. Others are
+more generic, like VS Code. We will use the terms generic and specialized
 \gls*{ide}s to differentiate the two variants.
 
-An \gls*{ide} that claims to support a language, is expected to with certain
-features. So a specialized \gls*{ide} should contain the following features:
 
 \subsection{Syntax highlighting}
 
@@ -665,14 +677,14 @@ using visualization to make developers notice issues.
 \begin{figure}
   \centering
   \includegraphics[width=0.5\textwidth]{syntax-highlighting.png}
-  \caption{Syntax Highlighting (\LaTeX\ in \gls*{nvim})}
+  \caption{Syntax Highlighting (\LaTeX\ in Vim)}
   \label{pic:stx}
 \end{figure}
 
 \begin{figure}
   \centering
   \includegraphics[width=0.5\textwidth]{no-syntax-highlighting.png}
-  \caption{No Syntax Highlighting (\LaTeX\ in \gls*{nvim})}
+  \caption{No Syntax Highlighting (\LaTeX\ in Vim)}
   \label{pic:noStx}
 \end{figure}
 
@@ -690,7 +702,7 @@ correct method name will be suggested.
 \begin{figure}
   \centering
   \includegraphics[width=0.5\textwidth]{context-completion.png}
-  \caption{\gls*{vscode} suggesting appropriate methods (Rust)}
+  \caption{VS Code suggesting appropriate methods (Rust)}
   \label{pic:completion}
 \end{figure}
 
@@ -708,7 +720,7 @@ that the suggested improvement is up to some standard, specified by the
 language and/or development team. Things like naming conventions, code style,
 unused variables, dangling doc-strings, bad variable names and commented out
 code, have no effect on the resulting program. Unused variables and comments
-are optimized away by the compiler, while variable names are mangled.~\footnote{Unless they are constants}
+are optimized away by the compiler, while variable names are mangled.\footnote{Unless they are constants}
 But for developers reading the source code, these issues can hide bugs because
 there is a lot of \textit{noise}. Luckily, \gls*{ide}s can detect these common
 issues, by the help of a \textit{linter}, which can, on the invocation of the
@@ -723,20 +735,18 @@ code by formatting it to fit the standard.
 An important process in development, are ensuring your code is correct. A good
 way to ensure this, is with unit testing. For object oriented programming, this
 is done by testing the methods on a class, and creating the necessary unit tests
-for this can be tedious. Luckily, \gls*{ide}s like \gls*{intellij} come with
+for this can be tedious. Luckily, \gls*{ide}s like IntelliJ come with
 boilerplate code generation, creating a \textit{skeleton} unit test, containing
 the empty tests ready to fail. An example for this can be seen in
 \ref{pic:generate}, where we are prompted with a checkbox for each method on
 the class; whether we want to include it in our unit test or not.
-
-For unit tests, getters and setters\footnote{Where relevant}, and similar.
 
 \begin{figure}
   \centering
   \includegraphics[height=0.5\textwidth]{generate.png}
   \caption{
     Window for generating boilerplate code for a unit test (Kotlin in
-    \gls*{intellij})
+    IntelliJ)
   }
   \label{pic:generate}
 \end{figure}
@@ -754,36 +764,37 @@ syntax highlighting, it adds icons to showcase what is a file or folder, but
 also what file extension is used. In the picture \ref{pic:fileEx}, one can see
 how all the Rust files, the files ending with \textit{rs}, have a crab\footnote{Called \textit{Ferris}},
 visually showing the developer that this file is a Rust source file. This makes
-it easier for a developer working on a polyglot project. This feature also comes
-with the ability to manipulate the project structure, by adding files, folders,
-moving files around, and deleting them, but most importantly, being able to open
-the file. By clicking on a file, it opens up in an editor, to be edited.
+it easier for a developer working on a polyglot project, as they can quickly
+find source files by language. This feature also comes with the ability to
+manipulate the project structure, by adding files, folders, moving files around,
+and deleting them, but most importantly, being able to open the file. By
+clicking on a file, it opens up in an editor, to be edited.
 
 \begin{figure}
   \centering
   \includegraphics[width=0.25\textwidth]{file-explorer.png}
-  \caption{File explorer in \gls*{vscode} showing the Nmide source code}
+  \caption{File explorer in VS Code showing the Nmide source code}
   \label{pic:fileEx}
 \end{figure}
 
 \subsection{Version Control System integration}
 
-\gls*{vcs} is an integral part of development. Being able to sync ones work
-between different machines and developers is essential. It allows for
+Version Control System is an integral part of development. Being able to sync
+ones work between different machines and developers is essential. It allows for
 cooperation between different programmers.
 
 In the picture \ref{pic:vcsViz}, we can see an example of this in action. There,
-we are using \gls*{git} to version control our project, (this \gls*{ide}).
-\gls*{nvim} can detect changes made to the project, with the help of \gls*{git},
-adding colours to our files based on their state, (not controlled, uncommitted
-changes, marked changes, committed change).
+we are using Git to version control our project, (this \gls*{ide}). Vim
+can detect changes made to the project, with the help of Git, adding colours to
+our files based on their state, not controlled, uncommitted changes, marked
+changes, committed change.
 
 \begin{figure}
   \centering
   \includegraphics[width=0.5\textwidth]{vcs-viz.png}
   \caption{
-    File explorer in \gls*{nvim} showing that the \textit{result} folder is
-    not \gls*{vcs}-controlled (grey), and that the thesis folder have uncommitted
+    File explorer in Vim showing that the \textit{result} folder is not
+    controlled by Git (grey), and that the thesis folder have uncommitted
     changes, (purple), the files who have changes are marked (yellow), and there
     is one file which has a committed, but a non-pushed change, (green checked
     checkbox).
@@ -791,7 +802,7 @@ changes, marked changes, committed change).
   \label{pic:vcsViz}
 \end{figure}
 
-\subsection{Module market \& module installation}
+\subsection{Module market and module installation}
 
 An important part of the user experience in a modular \gls*{ide}, is being able
 to seamlessly add, install and use modules. An integral part of this is the
@@ -806,7 +817,7 @@ this in action.
   \centering
   \includegraphics[width=0.5\textwidth]{module-market.png}
   \caption{
-    Module market window in \gls*{intellij} showing popular modules that the user can
+    Module market window in IntelliJ showing popular modules that the user can
     install by clicking on the \textit{install} button. Also seen in the window is
     that the user can disable already installed modules, or uninstall them.
   }
@@ -824,11 +835,11 @@ the core application.
 There are different ways an application can be extended. The most common one
 uses so-called \textit{live-reload}, in which, if a module drastic changes the
 functionality of an application, the application has to be restarted, or if it
-is a \textit{minor} change, the module is simply loaded. This method is
-extending the application during runtime, which is the method most users
-expect. Another method would be \textit{compile-time-extension}, in which
-modules are added before the application itself is compiled. There are some
-advantages and disadvantage in both approaches.
+is a \textit{minor} change, the module is simply loaded. Commonly, \gls*{ide}s
+are extended during runtime. Another method would be
+\textit{compile-time-extension}, in which modules are added before the
+application itself is compiled. There are some advantages and disadvantage in
+both approaches.
 
 \subsection{Compile-time module}
 
@@ -843,7 +854,7 @@ is directly integrated into the source code of the core application.
 \subsection{Runtime module}
 
 Runtime modules are usually also interpreted, but they can still be a
-library, same as in a compile time module. The benefit with a runtime module,
+library that is loaded during runtime. The benefit with a runtime module,
 is that a user can easily test out different modules, as compiling the entire
 application before being able to test a module is a hassle. But it comes with
 some drawbacks, like having to do extra verifications on top of the module,
@@ -860,12 +871,12 @@ extensive module ecosystem.\footnotemark{}
 
 \footnotetext{Data found by looking at the marketplace for the modules, in order:\url{https://marketplace.eclipse.org/content/welcome-eclipse-marketplace}, \url{https://plugins.jetbrains.com/}, \url{https://marketplace.visualstudio.com/search?target=VSCode\&category=All\%20categories\&sortBy=Installs}}
 
-\gls*{vscode} is a popular \gls*{ide}~\cite{topIde}, and this could be due to
+VS Code is a popular \gls*{ide}~\cite{topIde}, and this could be due to
 the amount of modules it has to offer. The amount of modules attributed to
-\gls*{vscode} could be the cause of a positive feedback loop. \gls*{vscode} is
+VS Code could be the cause of a positive feedback loop. VS Code is
 popular because it has many modules to extend the functionality, making it able
-to cover many use cases. Since \gls*{vscode} is popular, developers use, and make
-modules for \gls*{vscode}. All of which strengthen the longevity of the
+to cover many use cases. Since VS Code is popular, developers use, and make
+modules for VS Code. All of which strengthen the longevity of the
 \gls*{ide}.
 
 \begin{table}[]
@@ -881,16 +892,6 @@ modules for \gls*{vscode}. All of which strengthen the longevity of the
   \end{tabular}
 \end{table}
 
-\subsubsection{Module marketplace}
-
-Having modules is all well and good, but if a user cannot easily get the
-module, it's not useful. The top \gls*{ide}s mentioned, \gls*{eclipse},
-\gls*{intellij}, and \gls*{vscode} all have access to their respective
-\textit{module marketplace}, a dedicated webpage to find modules, integrated
-into the application. This is the most user-friendly method for a user to search
-for and find modules, as they can simply do a keyword search for the language
-they are wanting support for, say Haskell, and get the necessary modules
-available to use with a simple click of a button.
 
 \subsection{Granularity}
 
@@ -911,8 +912,8 @@ achieve the wanted feature.
 A module family are several modules enabling a single
 \textit{feature}. A user of the \gls*{ide} might think that being able to browse
 the project using a file explorer integrated into the \gls*{ide} as a single
-feature, in a modular system, that facilitates reuse, this would be made up of
-several different modules.
+feature but, in a modular system that facilitates reuse, this would be made up
+of several different modules.
 
 \begin{figure}[H]
   \centering
@@ -925,7 +926,7 @@ In figure \ref{fig:textEditorSimple}, an input file is parsed to some structure
 which is used to translate user actions, into cursor movements. The cursor being
 the place in the file where text is written to by the user.
 
-This is a feature that naturally shows up in a \textit{true} modular system. If
+Module families naturally shows up in a \textit{true} modular system. If
 several modules together enable some feature, then those modules can be treated
 as a singular module by an external module developer, depending on what they
 want to extend.
@@ -936,8 +937,8 @@ want to extend.
 A zero-core \gls*{ide} takes the modular architecturethat is standard \gls*{ide}s
 and takes it to its extreme. When all features are modules, and modules interact
 by invoking eachother, it can mimic a microservice architecture. A module
-invocation is some \textit{request}, which the invoced module \textit{responds}
-to. There is a provider-consumer dynamic. There is also a provider, some module
+invocation is some \textit{request}, which the invoked module \textit{responds}
+to. There is a provider-consumer dynamic. There is a provider, some module
 providing data, and some consumer, some module using the data. If either the
 consumer or the provider is maintained by a third party, then there is some
 informal \textit{contract} between them. The consumer expects the outputs of a
@@ -959,17 +960,17 @@ Unit testing of code is essential in software development, especially when
 developing against third party systems. Instead, invoking these third party
 systems at test time, mocking is used. This mocking is part of how a consumer
 assumes a provider should act. Mocking of modules is trivial, as all one needs
-to mock is the state, the \gls*{ui}, or that some event happens. At a larger
-scale we test the module family, to see if its change has affected the other
-modules. This can be done with contract testing, as discussed by Gross and Mayer~\cite{GROSS200322}.
-They propose a module architecture, where each module exposes some testing
-interface. However, in the architecture propose by us, all modules composing the
-\gls*{ide} can be loaded in a test environment, where all interactions are
-recorded, and used to generate a dependency graph, showing what modules depend
-on whom. This can show that certain modules are more tightly connected than
-assumed, meaning they are in the same module family, it can also show what
-module families communicate with other module families, showing module
-communities.
+to mock is the state, the \gls*{ui}, or that some event happens, triggering a
+module. At a larger scale we test the module family, to see if its change has
+affected the other modules. This can be done with contract testing, as discussed
+by Gross and Mayer~\cite{GROSS200322}. They propose a module architecture, where
+each module exposes some testing interface. However, in the architecture propose
+by us, all modules composing the \gls*{ide} can be loaded in a test environment,
+where all interactions are recorded, and used to generate a dependency graph,
+showing what modules depend on whom. This can show that certain modules are more
+tightly connected than assumed, meaning they are in the same module family, it
+can also show what module families communicate with other module families,
+showing module communities.
 
 \section{Existing Magnolia IDE}
 
@@ -996,17 +997,18 @@ implementation used, have been deprecated in later version of Eclipse. This
 means the Magnolia \gls*{ide} is locked to an old version of Eclipse, which, as
 time passes, increases the complexity of installation, as the surrounding
 tooling and libraries needed by this version of Eclipse also becomes deprecated.
-Currently, in INF220, at the university, two weeks are set aside for students to
-be able to install it.
+Currently, in INF220, a course at the university, two weeks are set aside for
+students to be able to install the current Magnolia \gls*{ide}.
+
 
 \section{Challenges imposed by Magnolia}
 
-In most programming languages, any type has a singular definition, so invoking
-the \textit{go-to-definition} endpoint implemented by an \gls*{lsp} results in a
-singular response. The actual response of the \gls*{lsp} is a list, but this is
-\textit{always} a singleton. However, in Magnolia a singular type could have
-multiple definitions, and resolving this can be complex. Especially
-communicating this to a user in a helpful manner.
+In most programming languages, any type has a singular definition, retrieving
+the file and position in the file, where a type is implemented, is trivial, as
+there is only one position to show or go to. However, in Magnolia a singular
+type could have multiple definitions, and resolving this can be complex.
+Especially communicating this to a user in a helpful manner.
+
 
 \subsection{Renaming}
 

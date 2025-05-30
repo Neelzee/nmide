@@ -4,8 +4,8 @@ Standard \gls*{ide}s are indispensable tools in modern software development,
 offering features like early bug reporting, project outline visualization, code
 highlighting, and code completion, however, these \gls*{ide}s may not adequately
 support the unique demands of experimental programming languages. Experimental
-languages could introduce new concepts like \gls*{asr} Transformation, Term
-Algebras, \gls*{moa}, \gls*{stf}~\cite{stf:haveraaen:2020}, or other novel
+languages could introduce new concepts like \gls*{asr} transformations, term
+algebras, mathematics of arrays, \gls*{stf}~\cite{stf:haveraaen:2020}, or other novel
 programming features. These are concepts from the academic community, and are
 not common in \textit{mainstream} languages, and as such, have little to no
 support in modern \gls*{ide}s. To solve this, researchers need ad hoc solutions
@@ -28,11 +28,11 @@ application. This way of adding functionality to an application is commonly used
 in \gls*{ide}s.
 
 
-\section{Modular Architecture}
+\section{Modular architecture}
 
-A modular \gls*{ide} would assist in these ad hoc solutions. Even if a new
-feature from an experimental language is introduced, it is unlikely that this
-feature has no relation to existing features, and as such, it is easier to
+A zero-core, modular \gls*{ide} would assist in these ad hoc solutions. Even if
+a new feature from an experimental language is introduced, it is unlikely that
+this feature has no relation to existing features, and as such, it is easier to
 extend the application in such a manner to facilitate this new feature, with help of
 existing modules. However, if it is the case that this feature is
 paradigm-shifting, then there will still be existing functionality that can be
@@ -46,7 +46,7 @@ used, re-used or extended to facilitate this.
   \gls*{ide}.
 \end{hyp}
 
-\section{Zero-core Application}
+\section{Zero-core architecture}
 
 Taking the modular architecture design to the extreme, the core application has
 no base features, everything is enabled by an external module. We call such a
@@ -56,7 +56,7 @@ everything is acquired by modules. Such a design facilitates a modular approach,
 enabling a module-developer to only focus on the functionality they want to
 extend, not the entire core.
 
-\section{Thesis Outline}
+\section{Thesis outline}
 
 Traditional \gls*{ide}s encompass essential features such as syntax highlighting,
 code navigation, and hover-help, all of which play a crucial role in the
@@ -67,18 +67,17 @@ the operational lifespan of software by allowing for ease-of adoption to new
 paradigms and tools. The discussion revolves around Magnolia, an experimental
 research programming language developed by \gls*{bldl} at the University of
 Bergen. Magnolia is a way to experiment with novel language features. It will
-therefore be a case study illustrating the need for a specialized \gls*{ide}. To
-achieve this in a sufficient manner, a more specialized \gls*{ide} is required.
+therefore be a case study illustrating the need for a specialized \gls*{ide}.
 
 The focus point of this paper is to design a zero-core architecture, to develop
 and implement a modular \gls*{ide}, where the target language will be Magnolia.
 
 In chapter \ref{cha:background}, we will introduce Magonlia, and features this
 language introduces that are difficult to encompass using standard \gls*{ide}s.
-In chapter \ref{cha:ide} we will explore the use case of the aforementioned
-\gls*{ide}, focusing on the different users of such an application. Chapter
-\ref{cha:impl} the design and implementation of the \gls*{ide}, mentioning
-different designs that were considered, some challenges that were
+In chapter \ref{cha:ide} we will explore the use case of the zero-core, modular
+\gls*{ide}, focusing on the different users of this application. Chapter
+\ref{cha:impl} will discuss the design and implementation of the \gls*{ide},
+mentioning different designs that were considered, some challenges that were
 encountered, and the modules developed to add the necessary functionality to
 qualify as an \gls*{ide}. In chapter \ref{cha:related}, we will discuss related
 works, amongst them how different \gls*{ide}-vendors allow for extending of
