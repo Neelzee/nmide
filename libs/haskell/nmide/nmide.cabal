@@ -1,0 +1,29 @@
+cabal-version:      3.0
+name:               nmide
+version:            0.1.0.0
+license:            MIT
+license-file:       ../../../LICENSE
+author:             Nils Michael Fitjar
+maintainer:         nilsien2001@gmail.com
+-- copyright:
+category:           Development
+build-type:         Simple
+extra-doc-files:    ../../../README.md
+-- extra-source-files:
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import:           warnings
+    exposed-modules:  Core
+                    , Event
+                    , Html
+                    , Instr
+                    , Module
+                    , Utils
+                    , Value
+    -- other-extensions:
+    build-depends:    base ^>=4.17.2.1
+    hs-source-dirs:   lib
+    default-language: Haskell2010

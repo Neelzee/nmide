@@ -1,15 +1,15 @@
 module Core where
 
-import Mod (Mod)
-import Html (Html)
-import Value (State)
 import Event (Event)
+import Html (Attr, Html)
+import Instr (Instr (NoOp))
+import Value (State, Value)
 
 type EventHandler = Event -> Core -> CoreModification
 
 data CoreModification = CoreModification
-  { uiMod :: [Mod Html Core]
-  , stateMod :: [Mod State Core]
+  { _ui :: (Instr Html, Instr Attr, Instr String)
+  , _state :: Instr Value
   }
 
 data Core = Core
@@ -19,7 +19,8 @@ data Core = Core
   }
 
 emptyCoreModification :: CoreModification
-emptyCoreModification = CoreModification
-  { uiMod = []
-  , stateMod = []
-  }
+emptyCoreModification =
+  CoreModification
+    { _ui = (NoOp, NoOp, NoOp)
+    , _state = NoOp
+    }
