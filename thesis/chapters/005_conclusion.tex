@@ -25,13 +25,16 @@ Developing against an unstable \gls*{api} is difficult, and when developing a
 module architecture, it is like an unstable \gls*{api} when it is not
 \textit{mature}, e.g. when it does not have settled modules to develop against.
 Since this is the case, there are a lot of issues with the existing modules,
-making the user experience less than competing \gls*{ide}s. Most of these are
-minors, and can be fixed with some minor revisions to the existing modules, for
-instance, when closing the \gls*{ide}, unsaved changes are discarded, with no
-information given to the user. Or how what project a user was working on, is not
-saved between instances, so a user has to re-open the project they worked on.
-This is a side effect of the development plan, and not the architecture. To
-fully test out this architecture, it was thought that a wide range of modules
+making the user experience less than competing \gls*{ide}s.
+
+Most of these issues are minor, and can be fixed with some minor revisions to
+the existing modules, for instance, when closing the \gls*{ide}, unsaved changes
+are discarded, with no information given to the user. Or how what project a user
+was working on, is not saved between instances, so a user has to re-open the
+project they worked on. This is a side effect of the development plan, and not
+the architecture.
+
+To fully test out this architecture, it was thought that a wide range of modules
 should be implemented, to quickly iron out issues with the implementation of the
 architecture, and to figure out what functionality Tauri has, that we can
 expose, like the file selection.
@@ -43,18 +46,14 @@ development was usually dropped for other things. As every time a module where
 worked on, it would eventually lead to a discovery, that the current \gls*{api}
 needed some change, which would enable the module feature to be easier
 implemented. A concrete example of this, is the editor module.
+
 An essential part of an editor, in an \gls*{ide} at least, is being able to
 utilize a \gls*{lsp}. Most of the communication between a client and \gls*{ls},
 require information about \textit{where} the user is in the text. This
-information is available in a \textit{textarea}-element, but some change to how
-Events are sent were needed. In standard JavaScript development,
-\textit{eventListeners} can be specific to the \gls*{html}-element they are
-applied to. The same is not possible in our \gls*{api}, as Events are generic.
+information is available in a \textit{textarea}-element, but to get this
+information, we needed to change how events were being sent.
 
-
-\subsection{Module deprecation}
-
-Instead, we made Events gather information about the \gls*{dom}-Event they were
+We made events gather information about the \gls*{dom}-event they were
 triggered by, so in the case of \textit{click} attribute, we know the
 \gls*{dom}-event is of type \textit{MouseEvent}, which can give us some,
 information. And if the \textit{target}, (a field on \textit{MouseEvent}) is an
@@ -80,7 +79,7 @@ module, which can save the contents. This is an action that bypasses the core
 \section{Lacking language agnosticism} \label{sec:lla}
 
 Not really achieved, because we cannot syntactically translate between a
-JavaScript Module and a Rust Module. This is due to the differences between the
+JavaScript module and a Rust module. This is due to the differences between the
 utility libraries created for \gls*{jsms} and \gls*{rsms}. When \gls*{jsms} modules
 where created, they were primarily made for using existing JavaScript libraries,
 to showcase this interoperability. So, much of the \gls*{html} elements were

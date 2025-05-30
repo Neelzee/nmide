@@ -91,21 +91,21 @@ when we have a \textbf{NonEmptyList} variant, we can safely get an element from
 it, since there will at minimum be one element in the list, due to our
 constructor requiring one argument.
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
     [ language=Magnolia
     , caption={List concept (Magnolia)}
     , label=lst:list
     ]{./code/magnolia-list.mg}
-\end{center}
+\end{code}
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
     [ language=Magnolia
     , caption={NonEmptyList concept (Magnolia)}
     , label=lst:nonList
     ]{./code/magnolia-non-list.mg}
-\end{center}
+\end{code}
 
 However, the interpretation we have assigned to the \textit{NaturalNumbers},
 \textit{List}, and \textit{NonEmptyList} concept, depends on our implementation.
@@ -622,19 +622,19 @@ as shown in listing \ref{lst:logging} and \ref{lst:editor} respectively, by
 reusing the concepts we created for semigroup in listing \ref{lst:semigroup} and group
 in listing \ref{lst:group}.
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
     [ language=Magnolia
     , caption={Logging example (Magnolia)}
     , label=lst:logging]{./code/logging-solution.mg}
-\end{center}
+\end{code}
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
     [ language=Magnolia
     , caption={Editor example (Magnolia)}
     , label=lst:editor]{./code/editor-solution.mg}
-\end{center}
+\end{code}
 
 Indeed, reuse is so useful, that in Magnolia one can rename concepts one use.
 In the listings \ref{lst:logging} and \ref{lst:editor}, we have renamed the type
@@ -645,6 +645,7 @@ If a consumer of the logging \gls*{api} read that logs where used everywhere in
 the project with \textbf{binop(log\_a, log\_b)}, it would be confusing, but when
 using context specific names, as renaming allows us to do, we could rename
 \textbf{binop} to \textbf{combine}, which makes the code easier to read.
+
 
 \section{Integrated Development Environment} \label{sec:ide}
 
@@ -904,14 +905,16 @@ assumes a provider should act. Mocking of modules is trivial, as all one needs
 to mock is the state, the \gls*{ui}, or that some event happens, triggering a
 module. At a larger scale we test the module family, to see if its change has
 affected the other modules. This can be done with contract testing, as discussed
-by Gross and Mayer~\cite{GROSS200322}. They propose a module architecture, where
-each module exposes some testing interface. However, in the architecture propose
-by us, all modules composing the \gls*{ide} can be loaded in a test environment,
-where all interactions are recorded, and used to generate a dependency graph,
-showing what modules depend on whom. This can show that certain modules are more
-tightly connected than assumed, meaning they are in the same module family, it
-can also show what module families communicate with other module families,
-showing module communities.
+by Gross and Mayer~\cite{GROSS200322}. They propose a component architecture,
+where each module exposes some testing interface. The same principals they
+discussed, while for a different, but similar architecture, can be applied to
+ours. But instead of having each module have a testing interface, we can instead
+load all modules composing the \gls*{ide} in a test environment, where all
+interactions are recorded, and used to generate a dependency graph, showing what
+modules depend on whom. This can show that certain modules are more tightly
+connected than assumed, meaning they are in the same module family, it can also
+show what module families communicate with other module families, showing module
+communities.
 
 
 \subsection{Module ecosystem}

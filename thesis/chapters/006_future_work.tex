@@ -41,13 +41,21 @@ to ensure safety, as restricting the \gls*{jsms} is good.
 
 \section{Attribute and instructions}
 
-Can't remove or change eventListeners currently. This is because to remove an
-EventListener, the exact same function passed to the \textit{addEventListener}
-must be used, which means a reference to this function needs to be stored, but
-having two or more of the same type? It can get confusing for a module developer
-of what should actually happen.
+It is not possible to remove \textit{eventListener}s. The reason for this is due
+to how event listeners are created. Since they send an event when they are
+triggered, they need to have the event to send as an argument, and to remove
+them from the \gls*{dom}, we need the same reference to the function. If we
+want to remove them, we would have to require the module developer to pass the
+exact same event they used to create the event listener, which could be
+complicated.
 
-\section{Keypresses}
+A solution could be to store the created function, by mapping it to the event
+name used in the creation, but what if the user has two events to send on a
+button click, with the same name, but different arguments? How would that be
+solved in a meaningful manner?
+
+
+\section{Key presses}
 
 A common feature of \gls*{ide}s is being able to have certain keybindings for
 different actions. For example, in VS Code, one can hit \textit{CTRL}
@@ -68,7 +76,7 @@ the module to \textit{query} the \gls*{ui} for information about the form it
 presents the user, seeing what values are in the fields. A workaround to this
 was used, where depending on what element an \textit{eventListener} was added
 to, the sent event would be \textit{sticky}, meaning it would add extra
-arguments to the \textit{args} field of the Event, like attribute information,
+arguments to the \textit{args} field of the event, like attribute information,
 id, value, etc. But this would not update the \gls*{ui} stored in the
 \gls*{ide}, but rather give modules a peek at the current \gls*{ui} state. A
 better solution would be to somehow keep track of \textit{all} user interactions

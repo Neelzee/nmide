@@ -1,15 +1,16 @@
 \chapter{Implementation} \label{cha:impl}
 
-This section will focus on the implementation of the zero-core \gls*{ide}. In
+This chapter will focus on the implementation of the zero-core \gls*{ide}. In
 section \ref{sec:stack}, we will mention technologies used, and why they were
 chosen. In section \ref{sec:mod1} and \ref{sec:mod2}, we will discuss the
 different iterations the application architecture had, and why they were subpar,
 compared to section \ref{sec:moD3}, which is the implementation of the zero-core
 \gls*{ide}. Section \ref{sec:testing} will explain the necessity of testing when
 using such a modular design, and explore the ease of which functionality can be
-tested in a modular architecture. Section \ref{sec:modules} and \ref{sec:mdt}
-will discuss the implementation of \gls{ide} specific functionality, and
-module development tools, using modules, respectively.
+tested in such a modular architecture. Section \ref{sec:modules} and
+\ref{sec:module-installation}, will discuss the implementation of \gls{ide}
+specific functionality, how modules are installed, and module development tools,
+respectively.
 
 \section{Tech stack} \label{sec:stack}
 
@@ -39,13 +40,14 @@ instructions specific to the computers' \gls*{cpu} architecture, this meant a
 single program, written in C, could be compiled to many different computers. So,
 at the time C came out, it was considered a \textit{high level} programming
 language, because the language a developer was writing in, had a higher level of
-abstraction. Today this notion of \textit{low} and \textit{high} level languages
-has changed. A \textit{low level} language is close to how a \gls*{cpu}
-\textit{thinks}, which has traditionally meant that C is a low level programming
-language, but some~\cite{cNotLowLevel} argue that this is no longer the
-case. In any case, we will use \textit{low level} to mean a programming
-languages like C, where direct memory manipulations is a feature of the
-language.
+abstraction.
+
+Today this notion of \textit{low} and \textit{high} level languages has changed.
+A \textit{low level} language is close to how a \gls*{cpu} \textit{thinks},
+which has traditionally meant that C is a low level programming language, but
+some~\cite{cNotLowLevel} argue that this is no longer the case. In any case, we
+will use \textit{low level} to mean a programming languages like C, where direct
+memory manipulations is a feature of the language.
 
 \subsection{Application Binary Interface (ABI)}
 
@@ -75,18 +77,20 @@ races are detected at compile time. Most of these are features of Rusts
 ownership rules. These rules, enforced by the compiler, ensure that values are
 safely dropped\footnote{Called \textit{freed} in Rust}, this ensures that all
 variables referenced in Rust have a value, and can be safely evaluated. It works
-by simply dropping values when they are out of scope. The example in listing
-\ref{lst:ownership}, the \textbf{name} variable is declared, and used as an
-argument in the \textbf{greeting} function. We cannot call the function again
-with \textbf{name}, since at the end of \textbf{greeting}, before it returns,
+by simply dropping values when they are out of scope.
+
+The example in listing \ref{lst:ownership} showcases the ownership. The
+\textbf{name} variable is declared, and used as an argument in the
+\textbf{greeting} function. We cannot call the function again with
+\textbf{name}, since at the end of \textbf{greeting}, before it returns,
 \textbf{name} is dropped, since once we called \textbf{greeting}, the
 \textbf{main} method no longer \textit{owned} \textbf{name}, as the ownership
 was transferred to \textbf{greeting}. We could \textit{fix} this by changing the
-argument type from \textit{name: String}, to \textit{name: \&String}~\footnote{Since String is a dynamic heap string type, when we have a reference to it, it is equivalent to an \textit{\&str}, being a reference to an immutable sequence of bytes.}
+argument type from \textit{name: String}, to \textit{name: \&String}\footnote{Since String is a dynamic heap string type, when we have a reference to it, it is equivalent to an \textit{\&str}, being a reference to an immutable sequence of bytes.}
 and adding the borrow symbol to the argument in
 the method invocation, as shown in listing \ref{lst:ownership-ref}.
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
     [ language=Rust
     , caption={
@@ -95,23 +99,22 @@ the method invocation, as shown in listing \ref{lst:ownership-ref}.
     }
     , label=lst:ownership
     ]{./code/rust-ownership.rs}
-\end{center}
+\end{code}
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
     [ language=Rust
     , caption={Ownership example with reference (Rust)}
     , label=lst:ownership-ref
     ]{./code/rust-ownership-ref.rs}
-\end{center}
+\end{code}
 
 Now, the \textit{greeting} function is borrowing the variable, which means
 restrictions are placed by the compiler, on what the function can do. It cannot
 mutate the variable, which means that several different functions can read the
 same data concurrently. We can also only mutate the variable if there are no one
 borrowing it. This principle ensures the other mentioned features of the
-language, including performance, as with the borrow checker, there is no need
-for a garbage collector.
+language, including performance, can be guaranteed by the compiler.
 
 Another Rust feature are so-called \textit{macros}. A macro is some code that is
 evaluated and executed at compile time, that may change the source code. An
@@ -123,10 +126,10 @@ therefore how to print it to the terminal. Macros are helpful because redundant
 work can be automated.
 
 Furthermore, Rust has good cross-platform support, ensuring
-we can write OS-agnostic code, and compile it to specific targets, without much
-hassle. Since Rust is low-level, it has good bindings to C, ensuring
-compatibility with future models, made in other languages, by use of the Rust
-\gls*{abi}.
+we can write \gls*{os} agnostic code, and compile it to specific targets,
+without much hassle. Since Rust is low-level, it has good bindings to C,
+ensuring compatibility with future models, made in other languages, by use of
+the Rust \gls*{abi}.
 
 \subsubsection{Rust Application Binary Interface}
 
@@ -135,21 +138,18 @@ versioning. This means even a bug fix in the compiler, could break the
 \gls*{abi}. So if an application, written in Rust, is compiled in version 1.8.0,
 if this application relies on a Rust library that is compiled in version 1.8.0,
 everything is okay. But if the application is later recompiled with a compiler
-in version 1.8.1, then \gls*{ub} could occur. One of the ways undefined behavior
-was avoided, was using the \textit{abi\_stable} crate\footnote{\url{https://github.com/rodrimati1992/abi\_stable\_crates/}},
+in version 1.8.1, then \gls*{ub} could occur. One of the ways \gls*{ub} was
+avoided, was using the \textit{abi\_stable} crate\footnote{\url{https://github.com/rodrimati1992/abi\_stable\_crates/}},
 which enables \textit{safe} loading of external libraries.
 
-In our zero-core, modular architecture, this means that this issue only exists
-for runtime modules, which means they need to be handled differently than
-compile-time modules. But with the abi\_stable crate, if the types in the
-\gls*{ide} change, either by expansion or renaming or such, the crate would
-crash the application during startup, because the existing module would have a
-different expectation of what types existed, which again, could lead to
-\gls*{ub}. But, this due to the implementation of a runtime module using the
-\textit{abi\_stable} crate, as one could design a module to be expanded in the
-future, safely. This would mean we could only add new functionality to the
-module, not change the old ones. But due to the stability of the \gls*{api},
-this was deemed unnecessary.
+With the abi\_stable crate, if the types in the \gls*{ide} change, either by
+expansion or renaming or such, the crate would crash the application during
+startup, because the existing module would have a different expectation of what
+types existed, which again, could lead to \gls*{ub}. But, this due to the
+implementation of a runtime module using the \textit{abi\_stable} crate, as one
+could design a module to be expanded in the future, safely. This would mean we
+could only add new functionality to the module, not change the old ones. But due
+to the stability of the \gls*{api}, this was deemed unnecessary.
 
 An interesting side effect of using the abi\_stable crate, is that the crate
 \textit{forces} the types and functions to be implemented in a certain way, and
@@ -190,8 +190,9 @@ unique translator for each module, where the Rust module would start the
 required Haskell runtime\footnote{https://ghc.gitlab.haskell.org/ghc/doc/users\_guide/runtime\_control.html},
 when invoking the Haskell module, and exit before returning, avoiding \gls*{ub}.
 The reason Haskell is of interest, is that the new compiler is written in
-Haskell~\cite{wiig}, and as such, if one where to develop \gls*{lsp} capable
-modules for the \gls*{ide}, a translation module from Rust to Haskell is necessary.
+Haskell~\cite{wiig}, and as such, if one where to develop modules capable of
+features like error reporting, go-to-definitions, and similar for the
+\gls*{ide}, a translation module from Rust to Haskell could be necessary.
 
 
 \subsection{Tauri}
@@ -223,8 +224,9 @@ application which runs third party code. An example of this, would be the
 so-called \textit{isolation pattern} that Tauri supports. Since we allow for
 evaluation of JavaScript code in the \gls*{ide}, we allow for third-party-code to
 access all of Tauris \gls*{api}. This \gls*{api} is quite powerful, allowing for
-features such as access to the system shell, the file system, etc. Being
-powerful, it is dangerous to expose this to third-parties, but we can
+features such as access to the system shell, the file system, etc.
+
+Being powerful, it is dangerous to expose this to third-parties, but we can
 intercept and modify all Tauri \gls*{api} calls sent from the JavaScript side,
 before they reach Tauri. We can therefore, depending on the perceived threat or
 sensitivity of a Tauri \gls*{api} call, choose to disregard the invocation of the
@@ -250,13 +252,14 @@ mapping between the Rust type, and the serialized JSON object, to be used in
 TypeScript, allowing for even more type safety, and ensuring that the types used
 in the \gls*{ide} only have to be defined one place.
 
-Allowing for any JavaScript library to be used, enabled a low development time
-of \gls*{ui} components, since this is something that a lot of \gls*{ui} and user
-experience designers have looked into. So existing code for this already exists
-and can be used. Npm\footnote{https://www.npmjs.com/}, for example, is a
-package registry for JavaScript. It contains around \textit{3.4 million}
-libraries, all of which are usable in this architecture. If the functionality
-that these libraries are useful for the application, is another question. This
+Since the \gls*{ui} is managed by JavaScript, it means any JavaScript library
+can be used in our \gls*{ide}. Allowing for any JavaScript library to be used,
+enabled a low development time of \gls*{ui} components. Since \gls*{ui} is a
+well explored field, there exists a lot of existing \gls*{ui} libraries,
+especially for JavaScript. Npm\footnote{https://www.npmjs.com/}, for example, is
+a package registry for JavaScript. It contains around $3.4$ million libraries,
+all of which are usable in this architecture. If the functionality that these
+libraries are useful for the application, is another question. This
 functionality allows for quick development time for modules, which means
 features that are standard in \gls*{ide} can be quickly and easily added. But
 this also means we have to validate modules written in JavaScript, as we can
@@ -447,19 +450,18 @@ function on line two.
     , label=lst:pluginCounterExample]{./code/plugin-counter-example.hs}
 \end{center}
 
-The \textit{update} function the module exposes, on line five, matches on a
-\textbf{"counter"} msg, with a \textbf{VInt i} value. If the given Msg matches
-this, then the module adds to the \textbf{"counter"}-field, the value from the
-Msg, which is $1$. The module is invoked for all \textbf{Msg}s being sent, so it
-is up to the module developer to ensure the match on the correct
-\textbf{Msg}. We can see that we have a \textit{catch-all} for all \textbf{Msg}
-that we do not care about, on line ten. Here we just return the input state,
-with no changes.
+The \textit{update} function the module exposes, on line five, pattern matches
+on a \say{counter} msg, with a \textbf{VInt i} value. If the given msg matches
+this, then the module adds to the \say{counter}-field, the value from the msg,
+which is $1$. The module is invoked for all msgs being sent, so it is up to the
+module developer to ensure the match on the correct msg. We can see that we
+have a \textit{catch-all} for all Msg that we do not care about, on line ten.
+Here we just return the input state, with no changes.
 
 Finally, the \textit{view} function, on line 12, renders a button, which when pushed by a
-user, sends the \textit{counter-Msg}, which we pattern match. This is done by
+user, sends the \textit{counter-msg}, which we pattern match. This is done by
 adding an \textit{eventListener}, to the \gls*{html} button, where we emit the
-passed \textbf{Msg} on every click.
+passed msg on every click.
 
 
 \subsubsection{Module purity}
@@ -473,9 +475,9 @@ invoked. It also lowers the complexity for module developers, as it is easier to
 reason about modules if \textit{all} they do is read or write to some state.
 
 If we have the modules $A$ and $B$, where their relationship is $A \to B$,
-meaning $A$ \textit{invokes} $B$ by sending some Msg, which $B$ reacts too, and
+meaning $A$ \textit{invokes} $B$ by sending some msg, which $B$ reacts too, and
 we want something to happen before $B$ reacts, we can add a new module, $C$,
-which also reacts to the same Msg, but if we know the name of the module $B$,
+which also reacts to the same msg, but if we know the name of the module $B$,
 we can set the name of module $C$ to be \textit{above} the order, relative to
 $B$, ensuring that $C$ always triggers before $B$.
 
@@ -487,12 +489,12 @@ issues, some of which could not be solved with this approach.
 
 \paragraph{Not modular} This setup is also not really modular, as a single
 module cannot invoke another module without being impure. The only way to
-invoke/trigger another module, is to throw a \textit{Msg}, which would trigger
-an update $\to$ view $\to$ cycle. So a module cannot \textit{listen} for a single
-message, all modules are triggered by the same \textit{Msg}, and handled
-accordingly, synchronously. This is clearer if we visualize the architecture. In
-the figure \ref{fig:modulev2}, we can see a diagram of the architecture. Note
-the arrows, signaling how they interact with each other.
+invoke/trigger another module, is to throw a msg, which would trigger an update
+$\to$ view $\to$ cycle. So a module cannot \textit{listen} for a single message,
+all modules are triggered by the same msg, and handled accordingly,
+synchronously. This is clearer if we visualize the architecture. In the figure
+\ref{fig:modulev2}, we can see a diagram of the architecture. Note the arrows,
+signaling how they interact with each other.
 
 \begin{figure}[H]
   \centering
@@ -507,13 +509,13 @@ the arrows, signaling how they interact with each other.
 They all go through the core, there is no way for $module_0$ to invoke just
 $module_1$.
 
-\paragraph{Synchronous Module Invocation} If a Msg triggers a computational
+\paragraph{Synchronous module invocation} If a msg triggers a computational
 heavy method, the \gls*{ide} will \textit{hang}, and act \textit{sluggish} until
 the computation has finished. This would also affect \textit{all} modules,
 since they are invoked in order, regardless of if they actually change the
 state or view.
 
-\paragraph{Ever-growing State} There was no way to remove a field on the state,
+\paragraph{Ever-growing state} There was no way to remove a field on the state,
 the state is appending/overwriting -only, which was a side effect of the
 coalescing of states, as we looked at the differences between the previous
 state, and the new state, and if the new state did not have a field that the
@@ -558,20 +560,23 @@ Since the states are ordered by the name of the module they come from, we
 have a consistent ordering of left-hand side and right-hand side. Due to the
 fact that module invocation is synchronous, and ordered. If the same modules
 give a collision on the same input\footnote{Given that all modules are pure}, the
-resulting state will be the same every time. The problem is that applying some
-semigroup operator on the values could be an unwanted way to resolve collisions.
-It is clear for some of the types what the operation is, like for the number
-types, it could be addition, but that would be a choice we are taking away from
-the module developer, and not a behavior they could change. Therefore, the
-standard way will be to log the collision, and then drop both states. Even
-if two states have $A$ and $B$ amount of fields, and just one collision, we will
-drop $A + B$ amount of fields.
+resulting state will be the same every time.
+
+The problem is that applying some semigroup operator on the values could be an
+unwanted way to resolve collisions. It is clear for some of the types what the
+operation is, like for the number types, it could be addition, but that would be
+a choice we are taking away from the module developer, and not a behavior they
+could change.
+
+Therefore, the standard way will be to log the collision, and then drop both
+states. Even if two states have $A$ and $B$ amount of fields, and just one
+collision, we would drop $A + B$ amount of fields.
 
 This problem of resolving state collision only occurs because each module
-returns a subtree of the state. We then have to analyze the new coalesced tree
-for each new subtree that is added, to figure out if there occurs any collision.
-And then notifying the module developer of which field this collision occurred
-on, and which modules tried to modify that field.
+returns a subtree of the state. We then have to analyze the new tree coalesced
+from all modules, to figure out if there occurs any collision. And then
+notifying the module developer of which field this collision occurred on, and
+which modules tried to modify that field.
 
 
 \section{Module v.3} \label{sec:moD3}
@@ -594,14 +599,16 @@ But given how neither of these functions return anything, how can modules affect
 the core? A module can \textit{send} a set of instructions, which we call core
 modifications, to modify the core. These modifications are \textit{sent} using
 an \gls*{mpsc} channel, which enables communication between two different
-threads, allowing for concurrent core modifications. In the previous
-architecture version, each module directly changed the state, which caused
-issues. Instead, each modification a module does, \textit{acts}, as a direct
-modification, but is in fact, translated to a \gls*{dsl} which can be analyzed
-for possible collisions. This was discovered to be a need, as in the new
-version, the \gls*{ui} was also restructured, to allow for less re-rendering,
-and this restructuring, made it clear that changing the state, or changing the
-\gls*{ui} is just tree manipulations, which will be discussed more later.
+threads, allowing for concurrent core modifications.
+
+In the previous architecture version, each module directly changed the state,
+which caused issues. Instead, each modification a module does, \textit{acts}, as
+a direct modification, but is in fact, translated to a \gls*{dsl} which can be
+analyzed for possible collisions. This was discovered to be a need, as in the
+new version, the \gls*{ui} was also restructured, to allow for less
+re-rendering, and this restructuring, made it clear that changing the state, or
+changing the \gls*{ui} is just tree manipulations, which will be discussed more
+later.
 
 
 \subsection{Zero-core architecture and microservice architecture}
@@ -612,8 +619,12 @@ then tightly coupled parts, the \textit{frontend} and \textit{backend}. As
 mentioned, having two different languages could allow for easier support of
 modules written in different programming languages, but for this to work in an
 optimal way, both the \textit{frontend} and \textit{backend} should be loosely
-coupled. This is an equivalent architecture to microservices. In the figures
-\ref{sfig:mic} and \ref{sfig:mod}, we can see the equivalence side-by-side.
+coupled.
+
+Furthermore, modules themselves should also be loosely coupled, where they
+invoke or are invoked by other modules. This is an equivalent architecture to
+microservices. In the figures \ref{sfig:mic} and \ref{sfig:mod}, we can see the
+equivalence side-by-side.
 
 \begin{figure}[H]
   \begin{subfigure}[h]{0.49\linewidth}
@@ -645,12 +656,12 @@ of React's state management could be avoided, along with React's hydration.
 Given the rendering was now more \textit{hands-on}, the core could expose a lot
 of the functionality for rendering, which modules could change. This would
 increase the difference between the \gls*{jsms} and \gls*{rsms}, as the backend
-was not privy to this API, but this was not seen as an issue, as this API would
-turn module non-pure. Reacts state management with \textit{useEffect} and
-\textit{useState} where needed to handle efficient re-rendering of the
-\gls{dom}, but since we were working directly on the \gls{dom}, this state
-management was just in the way. So moving to just TypeScript meant that it would
-enable easier to develop the \gls*{jsms}.
+was not privy to this \gls*{api}, but this was not seen as an issue, as this
+\gls*{api} would turn module non-pure. Reacts state management with
+\textit{useEffect} and \textit{useState} where needed to handle efficient
+re-rendering of the \gls{dom}, but since we were working directly on the
+\gls{dom}, this state management was just in the way. So moving to just
+TypeScript meant that it would enable easier to develop the \gls*{jsms}.
 
 
 \subsection{Core modifications}
@@ -677,7 +688,7 @@ one for the state, and one for the \gls*{ui}.
     [ language=Rust
     , caption={
       Core Modification struct, it contains two fields, state and ui. Using a
-      instruction type, parameterized on Value, we represent state. The ui field
+      instruction type, parameterized on value, we represent state. The ui field
       contains a type alias for a triple, containing the instruction type, but
       parameterized on a \textit{html}, \textit{attribute} and string variants.
       (Rust)
@@ -687,6 +698,7 @@ one for the state, and one for the \gls*{ui}.
     , lastline=15
     ]{./libs/rust/core-std-lib/src/core_modification/mod.rs}
 \end{center}
+
 
 \subsection{Instruction based tree manipulation}
 
@@ -761,11 +773,11 @@ It is clear that these are two different trees, but when we evaluate the tree,
 we can see that the order of operations are the same. If we evaluate right side
 first, we get this order: $Add_T, Add_T', Rem_T$, and if we evaluate the left
 side first, we get this order: $Rem_T, Add_T', Add_T$. They are different
-orders, but both sides are equal. Furthermore, it is clear that $NoOp$ is our
-neutral element, giving us a monoid, as defined in \ref{def:monoid}. But we
-also have \textit{idempotency} on our instructions, if we apply the same
-$Add_T$, or the same $Rem_T$, several times, it is the same as applying it just
-once.
+orders, but regardless of which order we choose, both sides are equal.
+Furthermore, it is clear that $NoOp$ is our neutral element, giving us a monoid,
+as defined in \ref{def:monoid}. But we also have \textit{idempotency} on our
+instructions, if we apply the same $Add_T$, or the same $Rem_T$, several times,
+it is the same as applying it just once.
 
 It is very useful to think about what kinds of properties our structures have,
 as with this knowledge, we utilize existing theories to improve our software.
@@ -924,12 +936,12 @@ behave as intended.
 \subsubsection{UI testing}
 
 We can also combine this with existing testing libraries, like Playwright\footnote{\url{https://playwright.dev/}},
-which can enable us to create tests specifically for UI behavior. In the case of
-Playwright, our \gls*{ui} testing is dependent on that our \textit{mock-core}
-has the necessary functionality to transform the \textbf{Html} type we have
-implemented, to actual \gls*{html}, which can be rendered on a webpage, or
-\textit{headless}, in Playwrights case, so that Playwright can assert the state
-of our \gls*{dom}.
+which can enable us to create tests specifically for \gls*{ui} behavior. In the
+case of Playwright, our \gls*{ui} testing is dependent on that our
+\textit{mock-core} has the necessary functionality to transform the
+\textbf{Html} type we have implemented, to actual \gls*{html}, which can be
+rendered on a webpage, or \textit{headless}, in Playwrights case, so that
+Playwright can assert the state of our \gls*{dom}.
 
 
 \subsection{Module family testing}
@@ -938,7 +950,7 @@ If a module changes some feature, let's say in the editor functionality, the
 module family tree encompassing this functionality needs to be tested, to ensure
 nothing breaks. This means creating tests that use all the modules in a family,
 and asserting that the state and \gls*{ui} behave as expected. In the case of
-the editor functionality, that after the Event \textit{open-file} is sent with
+the editor functionality, that after the event \textit{open-file} is sent with
 a path to some file, that there exists a \textit{textarea}-\gls*{html}-element in
 the \gls*{dom}, with the same contents as the file.
 
@@ -984,46 +996,47 @@ done through the core instance, meaning a \textit{test-core} could be created,
 which registers which event is thrown from what module, and all dependencies
 between modules can be noted. This has been partially achieved. By loading all
 specified modules, we can note their dependencies, by looking at the different
-consumer and providers. A Module has two different states, initialization, and
-handling. During initialization, a Module cant have any dependency on other
-Modules, but it can register for an Event, meaning the Module will be invoked
-once the specified Event is triggered, or it can throw an Event. Registration
-for an Event can always be directly analyzed, as it happens on the Core
-instance. The way a registration occurs, is that a Module supplies a string for
-a specific Event name to trigger on, meaning after the first initialization, the
-consumer graph looks like this: $Module \to Event$.
+consumer and providers. A module has two different states, initialization, and
+handling. During initialization, a module cant have any dependency on other
+Modules, but it can register for an Event, meaning the module will be invoked
+once the specified event is triggered, or it can throw an event. Registration
+for an event can always be directly analyzed, as it happens on the core
+instance. The way a registration occurs, is that a module supplies a string for
+a specific event name to trigger on, meaning after the first initialization, the
+consumer graph looks like this: $module \to event$.
 
-To find the providers, we can initialize a Module, and see what possible
-Events, if any are thrown. If an Event is thrown, then that Module is a
-provider of that Event. The mapping between Event and Module is not unique,
-as several Modules can provide the same Event. Another way a Module can
-provide an Event, is through user interaction. A Module can create some
-\gls*{ui}, which a user can interact with, which would trigger an Event. The
-\gls*{ui} can be analyzed for such triggers, and a mapping between that Event and
-Module would be created.
+To find the providers, we can initialize a module, and see what possible
+events, if any are thrown. If an event is thrown, then that module is a
+provider of that event. The mapping between event and module is not unique,
+as several modules can provide the same event. Another way a module can
+provide an event, is through user interaction. A module can create some
+\gls*{ui}, which a user can interact with, which would trigger an event. The
+\gls*{ui} can be analyzed for such triggers, and a mapping between that event and
+module would be created.
 
-During a handling of a triggered Event, a Module could register for new
-Events, trigger another Event, or do nothing. To find more dependencies, a
-Module is triggered with the Events it subscribed to, and analyzed for new
-registrations or triggers. If the list all subscribed Events have been
-exhausted, and no new registration or trigger has occurred, that Module is
+During a handling of a triggered event, a module could register for new
+events, trigger another event, or do nothing. To find more dependencies, a
+module is triggered with the events it subscribed to, and analyzed for new
+registrations or triggers. If the list all subscribed events have been
+exhausted, and no new registration or trigger has occurred, that module is
 considered \textit{exhausted}, and won't be analyzed anymore.
 
-Since Modules are asynchronous, and can possibly spawn their own threads, there
+Since modules are asynchronous, and can possibly spawn their own threads, there
 is a possibility for deadlocks to occur. There is no way to avoid this, without
-restricting Module developers, which is not wanted. Therefore, it is up to
+restricting module developers, which is not wanted. Therefore, it is up to
 the user of the module dependency graphing tool to avoid this, by supplying a
 timeout value, ensuring that if, after some time $N$, the analyzation of a
-Module is still occurring, the analyzation is killed.
+module is still occurring, the analyzation is killed.
 
 Modules could be depending on a certain state, before triggering or
-subscribing to an Event, this is not really possible to know without doing
+subscribing to an event, this is not really possible to know without doing
 static code analysis, so this is out of scope for this tool.
 
 With this, we can detect possible contracts between different modules, ensuring
 we know that testing between them is needed.
 
-\subsection{End-To-End-testing}
+
+\subsection{End-To-End testing}
 
 The final step in the testing pipeline, is to test the entire application
 together. This is known as \gls*{e2e}. \gls*{e2e} is expensive, compared to the
@@ -1037,22 +1050,24 @@ module developer can narrow down what modules are at fault, by what modules
 
 \section{Modules} \label{sec:modules}
 
-\paragraph{Event Type} In listing \ref{lst:moduleEvent}, one can see the
+In this section, we will discuss the different modules and tools implemented.
+
+\paragraph{Event type} In listing \ref{lst:moduleEvent}, one can see the
 structure of an event type. This allows for modules to pattern match on specific
 events, and unlike, as in the previous version, modules can \textit{subscribe}
 to specific events to react to. This changes the structure of the module
 architecture to go from one wherein the core is a terminal object, to a more
 \textit{complicated} one, in which module families can form.
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
     [ language=Rust
-    , caption={Module Event (Rust)}
+    , caption={Module event (Rust)}
     , label=lst:moduleEvent
     , firstline=14
     , lastline=41
     ]{./libs/rust/core-std-lib/src/event/mod.rs}
-\end{center}
+\end{code}
 
 This forms our \textit{request} and \textit{response} type, making the
 equivalence with a \gls*{rest} \gls*{api} obvious. The clients and consumers
@@ -1089,9 +1104,14 @@ expensive computation on another thread, while \textit{ending} their
 invocation, ensuring a smooth \gls*{ide} experience.
 
 
-\section{Module installation}
+\section{Module installation} \label{sec:module-installation}
 
-Manually adding compile-time modules can be tedious, so we automated the task.
+Manually installing compile-time modules can be tedious, so we automated the
+task. We are using the term \textit{installation} to mean adding the module to
+the \gls*{ide}. This can be as simple as adding a script tag to the \gls*{dom},
+with the source being a JavaScript file, or more complex, loading a library
+which has the correct bindings to be a Rust runtime module.
+
 For \gls*{jsms}, it is quite trivial, simply bundle the JavaScript code into a
 single script, and import it into one file, and, as a final step, bundle this
 file. This ensures that all JavaScript modules are included, and loaded after
@@ -1101,7 +1121,7 @@ For the \gls*{rsms}, it is less trivial. A compile-time Rust module is a Rust
 crate, and since we are using Cargo\footnote{Build tool for Rust} we need to
 specify all our imported crates in a \textit{Cargo.toml} file. We then also
 need to explicitly import and add the module into a list of all compile-time
-modules. With a build script, we could automate this. In the figure
+modules. With a build script, we have automated this. In the figure
 \ref{fig:compMod}, we can see a diagram of this process.
 
 \begin{figure}
@@ -1124,14 +1144,6 @@ before actually \textit{installing} the module. Depending on what kind of file
 it is, this installation process can vary.
 
 
-\subsection{Installation of modules}
-We are using the term \textit{installation} to mean adding the module to the
-\gls*{ide}. This can be as simple as adding a script tag to the \gls*{dom}, with
-the source being a JavaScript file, or more complex, loading a library which has
-the correct bindings to be a Rust runtime module. Both of these processes are a
-part of the core, and not the external tool.
-
-
 \subsection{Rust runtime module installation}
 
 We use the term runtime here, to strictly mean post compilation. When this
@@ -1142,6 +1154,7 @@ module is a simple library, we know what functions it exposes, and the calling
 conventions. Along with the abi\_stable crate, we can ensure no undefined
 behavior happens during runtime.
 
+
 \subsection{JavaScript runtime module installation}
 
 Unlike the Rust runtime modules, JavaScript runtime modules can be installed and
@@ -1150,15 +1163,9 @@ module is installed, regardless if the installation happens during compile time
 or runtime. Since all a JavaScript module is, is a script element on the
 \gls*{dom}, we can add new ones whenever. The only thing that differentiates the
 two, is that for runtime modules, we have to call the \textbf{init} method after
-installing it. Since the installation happens after other modules already have
-initialized.
+installing it, instead of during compile-time, when all modules are invoked
+after every module has been installed.
 
-
-\section{Module developer tools} \label{sec:mdt}
-
-The module developer experience is an important aspect of a zero-core
-architecture. A good way to improve this experience, is by providing good
-tooling.
 
 \subsection{Magnolia dependency graph visualizer}
 
@@ -1174,7 +1181,7 @@ in Magnolia. Using two modules, one for \textit{parsing} the Magnolia library,
 finding all packages, and their dependencies, and another for visualizing
 this.
 
-\begin{center}
+\begin{code}[H]
   \lstinputlisting
     [ language=Rust
     , caption={
@@ -1185,7 +1192,7 @@ this.
     , firstline=33
     , lastline=36
     ]{./modules/magnolia\_dependency/src/lib.rs}
-\end{center}
+\end{code}
 
 In listing \ref{lst:magnoliaLibParserSub}, the module is invoking the
 \textit{add\_handler} method on an object that implements the \textit{Core} trait,

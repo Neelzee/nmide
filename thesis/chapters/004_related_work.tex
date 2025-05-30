@@ -1,22 +1,37 @@
 \chapter{Related Work} \label{cha:related}
 
+In this chapter, we will first address the module architectures in other
+\gls*{ide}s. We will then, in section \ref{sec:lsp} discuss how much of the
+functionality that an \gls*{ide} has, comes from the Language Server Protocols.
+In section \ref{sec:guid}, we will look at the complexity which arises from
+\gls*{gui} development, and some other works which help mitigate some of this
+complexity. We will then look into ways to automate testing of \gls*{gui}s, in
+section \ref{sec:auto-test}. In sections \ref{sec:algebra}, and \ref{sec:stf},
+we will cover \gls*{stf} and abstracts algebra, respectively. Finally, in
+section \ref{sec:lwb} we will discuss language workbenches.
+
+
 \section{Existing module architectures in IDEs}
 
-There exists module architectures in other \gls*{ide}s.
+In this section, we will cover how other \gls*{ide}s have designed their
+module architecture. We will also highlight instances which are similar to our
+architecture.
 
 
 \subsection{Eclipse}
 
 \gls*{ide}s are one of the most common application that supports extensions by
-third-party code. \gls*{ide}s like Eclipse and IntelliJ are specialized for
-working with Java, but they can still support other languages with the help of
-modules. A module in Eclipse for instance, could extend Eclipse with
-functionality like syntax highlighting, code completion, Go-to-definitions,
-debugging, and more, for standard programming languages. A lot of this
-functionality, comes from module-to-module extension, as in Eclipse modules can
-extend modules, with the use of the \gls*{erpc}~\cite{eclipseRcp}.
+third-party code. \gls*{ide}s like Eclipse are specialized for working with
+Java, but they can still support other languages with the help of modules. A
+module in Eclipse for instance, could extend Eclipse with functionality like
+syntax highlighting, code completion, Go-to-definitions, debugging, and more,
+for standard programming languages. A lot of this functionality, comes from
+module-to-module extension, as in Eclipse modules can extend modules, with the
+use of the \gls*{erpc}~\cite{eclipseRcp}.
+
 
 \subsubsection{Eclipse Rich Client Platform}
+
 \gls*{erpc} is a platform for building desktop applications. Eclipse being an
 example of this platform in action. A plug-in could for example be responsible
 for setting up the general \gls*{ui} layout, similar to our module,
@@ -50,6 +65,7 @@ There are two kinds of extensions in Visual Studio, \textit{VSPackage} and
 functionality like tool windows and projects, while \textit{MEF} extensions are
 used to customize the text-editor.
 
+
 \subsection{Visual Studio Code (VS Code)}
 
 Visual Studio Code is an extensible \gls*{ide}. It achieves this extensibility
@@ -67,6 +83,7 @@ the ftplugin folder, plugins that are specific to file extensions are stored.
 Assuming we have a \textit{python.vim} file in ftplugin, that file would be
 loaded when we open a python file.
 
+
 \subsubsection{Plugin management}
 
 Most users use Vim with a plugin manager, a plugin, which manages other plugins.
@@ -78,6 +95,7 @@ These plugins can do mundane tasks like:
   \item Handle updates
   \item Handle enabling and disabling of plugins
 \end{itemize}
+
 
 \subsection{Emacs}
 
@@ -120,6 +138,56 @@ Theia is both a desktop \gls*{ide} and a web \gls*{ide}. Where there is no real
 distinction between the two, both abstracting it to a frontend and backend. This
 is similar to our zero-core \gls*{ide}, as we can make this abstraction due to
 our usage of a web view for the desktop \gls*{ide}.
+
+
+\section{Language Server} \label{sec:lsp}
+
+The most important features in a modern \gls*{ide} are possible due to the
+\gls*{lsp}\footnote{\url{https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/}}.
+\gls*{lsp} is a protocol for a language server and editor, (the client), in
+which they communicate, allowing for many of the features mentioned in section
+\ref{sec:ide}, and explicitly mentioned in table \ref{tbl:ide}. \gls*{lsp} being
+the standard since the 2020s, is a sign of modularity being preferred, as now a
+single \gls*{lsp} can be created, and used across several different
+applications, like IntelliJ, VS Code and Vim. While useful for
+\textit{standard} language, this is the limiting factor when it comes to
+supporting experimental languages, as not only does a new set of protocols need
+to be appended to a language server, the editor itself needs to be changed to
+actually use these protocols. This creates a lot of work, for both the
+\gls*{ide} developer and for the compiler developer. Here is where a modular
+approach can help both. If some new functionality or feature is added to the
+experimental language, this off course means the compiler/interpreter has to be
+expanded and/or modified, but for the \gls*{ide}, a module could be added and/or
+modified to utilize this change, instead of having to change the entire
+application.
+
+\begin{table}[]
+  \centering
+  \caption{\gls*{ide} features enabled by \gls*{lsp}}
+  \label{tbl:ide}
+  \begin{tabular}{|l|l|}
+    \hline
+    IDE Feature & \gls*{lsp}-method \\ \hline
+    Go to Declaration & textDocument/definition \\ \hline
+    Go to Implementation & textDocument/implementation \\ \hline
+    Auto-completion & textDocument/completion \\ \hline
+    Hover & textDocument/hover \\ \hline
+    Warnings & textDocument/publishDiagnostics \\ \hline
+    Rename & textDocument/rename \\ \hline
+  \end{tabular}
+\end{table}
+
+An example of this in action, say a developer is working on a file
+\textit{main.ts}, in their Typescript project. They hover over a type imported
+from, and defined in \textit{types.ts}. This is what happens:
+
+\begin{enumerate}
+  \item The editor detects the user is hovering over a \textit{special} word
+  \item The editor sends a request to the Typescript \gls*{ls}
+  \item The \gls*{ls} responds
+  \item The editor formats the response into a small window showcasing the
+    documentation and implementation of the type
+\end{enumerate}
 
 
 \section{Graphical User Interface development} \label{sec:guid}
@@ -191,7 +259,8 @@ specifically for a \gls*{mdcs} could be implemented for JavaScript modules.
 Furthermore, there also exists a Rust implementation of this framework, which
 means a similar system can be created for Rust modules.
 
-\section{Automated testing}
+
+\section{Automated testing} \label{sec:auto-test}
 
 Due to the extensive modularity of the application, all modules can be tested
 individually, by \textit{mocking} the expected state and events. This means that
@@ -206,17 +275,7 @@ test. This would help a module developer to discover behavior that a user might
 not expect~\cite{leastGui}.
 
 
-\section{Syntactic Theory Functor}
-
-\gls*{stf} is a framework for creating, reusing and restructuring
-specifications\cite{stf:haveraaen:2020}, specifications from algebraic
-specification languages like CafeOBJ~\cite{cafeObj}. \gls*{stf}s are also used
-by the new Magnolia compiler\footnote{As of May 2025, still in development}, to
-resolve renaming in Magnolia and \textit{flattening} of the \gls*{asr} to be
-shown to the developer \cite{wiig}.
-
-
-\section{Abstract algebra}
+\section{Abstract algebra} \label{sec:algebra}
 
 Magnolia is a kind of algebraic specification language, like CafeOBJ~\cite{cafeObj}.
 An algebraic specification language, is a language where one can develop
@@ -227,7 +286,17 @@ predicates that the arguments to the functions need to fulfill, etc. As shown in
 the development of this \gls*{ide}, this can be quite useful way of thinking.
 
 
-\section{Language workbenches}
+\section{Syntactic Theory Functor} \label{sec:stf}
+
+\gls*{stf} is a framework for creating, reusing and restructuring
+specifications\cite{stf:haveraaen:2020}, specifications from algebraic
+specification languages like CafeOBJ~\cite{cafeObj}. \gls*{stf}s are also used
+by the new Magnolia compiler\footnote{As of May 2025, still in development}, to
+resolve renaming in Magnolia and \textit{flattening} of the \gls*{asr} to be
+shown to the developer \cite{wiig}.
+
+
+\section{Language workbenches} \label{sec:lwb}
 
 Language workbenches are tools for creation and use of computer languages~\cite{lwb}.
 An \gls*{ide} is a kind of language workbench, as it can be used both for a
@@ -253,52 +322,3 @@ the compiler flattening the \gls*{asr}-tree, especially in regard to renaming.
 An \gls*{asr}-tree is similar to an \gls*{ast}, except it has extra information
 on each node.
 
-
-\section{Language Server}
-
-The most important features in a modern \gls*{ide} are possible due to the
-\gls*{lsp}\footnote{\url{https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/}}.
-\gls*{lsp} is a protocol for a language server and editor, (the client), in
-which they communicate, allowing for many of the features mentioned in section
-\ref{sec:ide}, and explicitly mentioned in table \ref{tbl:ide}. \gls*{lsp} being
-the standard since the 2020s, is a sign of modularity being preferred, as now a
-single \gls*{lsp} can be created, and used across several different
-applications, like IntelliJ, VS Code and Vim. While useful for
-\textit{standard} language, this is the limiting factor when it comes to
-supporting experimental languages, as not only does a new set of protocols need
-to be appended to a language server, the editor itself needs to be changed to
-actually use these protocols. This creates a lot of work, for both the
-\gls*{ide} developer and for the compiler developer. Here is where a modular
-approach can help both. If some new functionality or feature is added to the
-experimental language, this off course means the compiler/interpreter has to be
-expanded and/or modified, but for the \gls*{ide}, a module could be added and/or
-modified to utilize this change, instead of having to change the entire
-application.
-
-\begin{table}[]
-  \centering
-  \caption{\gls*{ide} features enabled by \gls*{lsp}}
-  \label{tbl:ide}
-  \begin{tabular}{|l|l|}
-    \hline
-    IDE Feature & \gls*{lsp}-method \\ \hline
-    Go to Declaration & textDocument/definition \\ \hline
-    Go to Implementation & textDocument/implementation \\ \hline
-    Auto-completion & textDocument/completion \\ \hline
-    Hover & textDocument/hover \\ \hline
-    Warnings & textDocument/publishDiagnostics \\ \hline
-    Rename & textDocument/rename \\ \hline
-  \end{tabular}
-\end{table}
-
-An example of this in action, say a developer is working on a file
-\textit{main.ts}, in their Typescript project. They hover over a type imported
-from, and defined in \textit{types.ts}. This is what happens:
-
-\begin{enumerate}
-  \item The editor detects the user is hovering over a \textit{special} word
-  \item The editor sends a request to the Typescript \gls*{ls}
-  \item The \gls*{ls} responds
-  \item The editor formats the response into a small window showcasing the
-    documentation and implementation of the type
-\end{enumerate}

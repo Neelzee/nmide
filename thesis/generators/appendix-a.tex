@@ -5,30 +5,54 @@ use the term \textit{optimize}, we mean to reduce the amount of instructions.
 This can be achieved in a few different steps. \textbf{Instruction} is a
 recursive data type, parameterized by \textbf{T}. Since an \textbf{Instruction}
 form a monoid\footnote{See section \ref{sec:moD3} in chapter \ref{cha:impl}}
-structure, we know for any \textbf{Instruction} variant, there exist an inverse,
-giving us the unit. The goal of this optimization, is to see if an
-\textbf{Instruction} tree contains any inverses.
+structure, we can apply some of the theory from algebraic structures on our
+\textbf{Instruction} variant, optimizing it. The goal of this optimization, is
+to see if an \textbf{Instruction} tree contains any no-operations, and prune it.
 
-\begin{enumerate}
-  \item Flatten the Instruction
-  \item Register how many times a field is modified
-    \begin{enumerate}
-      \item Turn unnecessary Instructions into NoOps
-    \end{enumerate}
-  \item Filter out NoOps
-  \item Unflatten the Instructions
-\end{enumerate}
+
+\section{Pruning the instruction tree}
 
 An \textit{unnecessary} operation is one that leads to an \textbf{NoOp}, which
-is the case of inversable \textbf{Instruction}s. The optimalization function
-is not parameterized by a strict variant of \textbf{T}. In the \gls*{ide} the
-\textbf{Instruction}s are parameterized by \textbf{Value}, \textbf{Html},
-\textbf{Attr} and \textbf{String}. The last three are specific to \gls*{ui}
-modification, and the last two are modifications on specific \textbf{Html}
-instances. This means that if an \textbf{Instruction} parameterized by
-\textbf{Html}, is of the \textbf{Rem} variant, we know all other \gls*{ui}
-\textbf{Instruction}s pertaining to the removed \textbf{Html} variant are
-\textbf{NoOp}s.
+is the case of inversable \textbf{Instruction}s. This inversability does not
+occur on all \textbf{Instruction}, hence it forming a monoid and not a group,
+but there are cases where we have inverses, meaning we get \textbf{NoOp}s. If we
+do a remove instruction, and then an add, the remove instruction is an
+\textbf{NoOp}. If, however, we do the opposite, first add, then remove, we get
+an \textbf{NoOp} for both instructions.
+
+Furthermore, since we have the idempotency property on add and remove,
+regardless of how many times we repeat the same instruction, it is the same as
+doing it just once, meaning we can reduce a series of the same instructions into
+a series of no-operations, and a singular instruction.
+
+This gives us four rules which we can apply to our instruction tree:
+
+\begin{equation} \label{eq:apx1}
+  Rem_T \odot Add_T \implies NoOp \odot Add_T \implies Add_T
+\end{equation}
+
+\begin{equation} \label{eq:apx2}
+  Add_T \odot Rem_T \implies NoOp
+\end{equation}
+
+\begin{equation} \label{eq:apx3}
+  Add_T^1 \odot Add_T^2 \odot \dots \odot Add_T^N \implies Add_T^1 \odot NoOp^1 \odot \dots \odot NoOp^{N - 1} \implies Add_T^1
+\end{equation}
+
+
+\begin{equation} \label{eq:apx4}
+  Rem_T^1 \odot Rem_T^2 \odot \dots \odot Rem_T^N \implies Rem_T^1 \odot NoOp^1 \odot \dots \odot NoOp^{N - 1} \implies Rem_T^1
+\end{equation}
+
+The optimalization function is not parameterized by a strict variant of
+\textbf{T}, meaning it works the same regardless of \textbf{T}. In the
+\gls*{ide} the \textbf{Instruction}s are parameterized by \textbf{Value},
+\textbf{Html}, \textbf{Attr} and \textbf{String}. The last three are specific to
+\gls*{ui} modification, and the last two are modifications on specific
+\textbf{Html} instances. This means that if an \textbf{Instruction}
+parameterized by \textbf{Html}, is of the \textbf{Rem} variant, we know all
+other \gls*{ui} \textbf{Instruction}s pertaining to the removed \textbf{Html}
+variant are \textbf{NoOp}s.
 
 \begin{code}[H]
   \lstinputlisting
@@ -56,6 +80,9 @@ These macros generate the needed code to implement the different traits:
     and decoding a variant to a \gls{json} representation
   \item TS: Enables automatic TypeScript type generation of the variant
 \end{itemize}
+
+
+\section{Implementation}
 
 We first start the optimalization step, by removing all NoOps, and then
 flattening the instructions, by using the \textbf{opt} and \textbf{flatten}
