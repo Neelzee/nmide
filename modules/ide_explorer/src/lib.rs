@@ -18,7 +18,7 @@ impl core_module_lib::ModuleBuilder for ModuleBuilder {
 
 pub struct Module;
 
-const MODULE_NAME: &'static str = "ide_explorer";
+const MODULE_NAME: &str = "ide_explorer";
 
 #[async_trait::async_trait]
 impl core_module_lib::Module for Module {
@@ -48,16 +48,31 @@ impl core_module_lib::Module for Module {
                         .await;
                     return;
                 }
+                let root = args
+                    .unwrap()
+                    .obj()
+                    .unwrap()
+                    .get("folder")
+                    .cloned()
+                    .or_else(|| args.and_then(|o| o.obj()).unwrap().get("file").cloned())
+                    .and_then(|v| v.obj())
+                    .unwrap();
+                let path = root.get("path").and_then(|v| v.str()).unwrap();
                 let html = render(files.unwrap());
                 core.send_modification(
-                    CoreModification::default().set_ui(
-                        UIInstructionBuilder::default().add_node(
-                            Html::Div()
-                                .adopt(html)
-                                .add_attr(Attr::Class("file-explorer".to_string())),
-                            Some("sidebar"),
+                    CoreModification::default()
+                        .set_ui(
+                            UIInstructionBuilder::default().add_node(
+                                Html::Div()
+                                    .adopt(html)
+                                    .add_attr(Attr::Class("file-explorer".to_string())),
+                                Some("sidebar"),
+                            ),
+                        )
+                        .set_state(
+                            StateInstructionBuilder::default()
+                                .add("ide-cache.project", Value::Str(path)),
                         ),
-                    ),
                 )
                 .await;
                 core.throw_event(Event::new("open-project-post", None))
@@ -172,7 +187,7 @@ fn get_args(value: Value) -> Result<Fo> {
                     content
                         .clone()
                         .into_iter()
-                        .map(|v| get_args(v))
+                        .map(get_args)
                         .collect::<Result<Vec<_>>>()?,
                 ))
             } else {
