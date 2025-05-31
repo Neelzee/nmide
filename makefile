@@ -10,7 +10,10 @@ tool-out := tools/module-tester/rsm-grapher/target
 tool-cargo := tools/module-tester/rsm-grapher/Cargo.toml
 tool-dist := tools/module-tester/build
 
-modules : clean
+build-modules:
+	$(MAKE) -C modules module-build
+
+modules : clean init
 	cargo run \
 		--manifest-path=$(manifest-path) -- \
 		--out=$(out) \
@@ -21,9 +24,6 @@ modules : clean
 		--index=$(index) \
 		--module-dist=$(appdir)/modules && \
 	cd core && bun run build.ts && cd -
-
-install-module-deps :
-	@( cd modules && ./js-modules.sh )
 
 install-deps:
 	@( \
@@ -47,15 +47,17 @@ clean :
 	rm -rf $(out)/debug/build/core-* && \
 	rm -rf $(dist)/external && \
 	rm -rf $(appdir) && \
+	awk '{ print } /^# =+ #/ { exit }' $(cargo) > tmp && mv tmp $(cargo) && \
+	awk '/<!--MODULES-->/ { print; in_block = !in_block; next; } !in_block' $(index) > tmp && mv tmp $(index)
+
+init :
 	mkdir -p $(dist)/external && \
 	touch $(dist)/external/modules.js && \
 	mkdir -p $(out) && \
 	touch $(out)/module_reg.rs && \
 	echo "pub fn register_modules(modules: &mut HashMap<String, Box<dyn Module>>) {}" \
 		> $(out)/module_reg.rs && \
-	mkdir -p $(appdir)/modules && \
-	awk '{ print } /^# =+ #/ { exit }' $(cargo) > tmp && mv tmp $(cargo) && \
-	awk '/<!--MODULES-->/ { print; in_block = !in_block; next; } !in_block' $(index) > tmp && mv tmp $(index)
+	mkdir -p $(appdir)/modules
 
-ide : install-deps install-module-deps modules
+ide : init install-deps build-modules modules
 	@( cd core && bun run tauri build )
