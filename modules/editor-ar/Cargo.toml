@@ -4,4 +4,4 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-core-std-lib = { git = "https://github.com/Neelzee/nmide.git" }
+core-std-lib = { workspace = true }

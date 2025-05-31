@@ -4,7 +4,7 @@ use core_std_lib::{
     core::Core,
     core_modification::CoreModification,
     event::Event,
-    html::{Html, UIInstructionBuilder},
+    html::{Html, UIBuilder},
     state::Value,
 };
 use editor_ar::{Art, Position};
@@ -69,7 +69,7 @@ async fn render_buffer(core: &Box<dyn Core>) -> Result<()> {
 
     core.send_modification(
         CoreModification::default()
-            .set_ui(UIInstructionBuilder::default().add_node(render(art), Option::<String>::None)),
+            .set_ui(UIBuilder::default().add_node(render(art), Option::<String>::None)),
     )
     .await;
     Ok(())

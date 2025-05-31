@@ -2,7 +2,7 @@ use core_module_lib::Module;
 use core_std_lib::core::Core;
 use core_std_lib::core_modification::CoreModification;
 use core_std_lib::event::Event;
-use core_std_lib::state::{HHMap, StateInstructionBuilder, Value};
+use core_std_lib::state::{HHMap, Value, state_builder::StateBuilder};
 use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
@@ -31,7 +31,7 @@ impl Module for ProjectManagerModule {
     async fn init(&self, core: Box<dyn Core>) {
         core.send_modification(
             CoreModification::default()
-                .set_state(StateInstructionBuilder::default().add(STATE_FIELD, Value::new_obj())),
+                .set_state(StateBuilder::default().add(STATE_FIELD, Value::new_obj())),
         )
         .await;
         core.add_handler(Event::PreExit.to_string(), MODULE_NAME.to_string())
@@ -68,8 +68,7 @@ impl Module for ProjectManagerModule {
                 }
                 let obj = obj.unwrap();
                 let mods = CoreModification::default().set_state(
-                    StateInstructionBuilder::default()
-                        .add(STATE_FIELD, Value::Obj(HHMap::from(obj))),
+                    StateBuilder::default().add(STATE_FIELD, Value::Obj(HHMap::from(obj))),
                 );
                 core.send_modification(mods).await;
             }

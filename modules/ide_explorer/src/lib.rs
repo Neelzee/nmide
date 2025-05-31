@@ -4,8 +4,8 @@ use core_std_lib::{
     core::Core,
     core_modification::CoreModification,
     event::Event,
-    html::{Html, UIInstructionBuilder},
-    state::{StateInstructionBuilder, Value},
+    html::{Html, UIBuilder},
+    state::{Value, state_builder::StateBuilder},
 };
 
 pub struct ModuleBuilder;
@@ -62,7 +62,7 @@ impl core_module_lib::Module for Module {
                 core.send_modification(
                     CoreModification::default()
                         .set_ui(
-                            UIInstructionBuilder::default().add_node(
+                            UIBuilder::default().add_node(
                                 Html::Div()
                                     .adopt(html)
                                     .add_attr(Attr::Class("file-explorer".to_string())),
@@ -70,8 +70,7 @@ impl core_module_lib::Module for Module {
                             ),
                         )
                         .set_state(
-                            StateInstructionBuilder::default()
-                                .add("ide-cache.project", Value::Str(path)),
+                            StateBuilder::default().add("ide-cache.project", Value::Str(path)),
                         ),
                 )
                 .await;
@@ -91,13 +90,13 @@ impl core_module_lib::Module for Module {
                 let collapsed = state.get(&id).and_then(|v| v.bool()).unwrap_or(true);
 
                 let state_builder =
-                    StateInstructionBuilder::default().add(id.clone(), Value::Bool(!collapsed));
+                    StateBuilder::default().add(id.clone(), Value::Bool(!collapsed));
 
                 if collapsed {
                     core.send_modification(
                         CoreModification::default()
                             .set_ui(
-                                UIInstructionBuilder::default()
+                                UIBuilder::default()
                                     .rem_attr(Attr::Class("collapsed".to_string()), id),
                             )
                             .set_state(state_builder),
@@ -107,7 +106,7 @@ impl core_module_lib::Module for Module {
                     core.send_modification(
                         CoreModification::default()
                             .set_ui(
-                                UIInstructionBuilder::default()
+                                UIBuilder::default()
                                     .add_attr(id, Attr::Class("collapsed".to_string())),
                             )
                             .set_state(state_builder),

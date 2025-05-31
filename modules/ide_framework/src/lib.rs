@@ -4,7 +4,7 @@ use core_std_lib::attrs::Attr;
 use core_std_lib::core::Core;
 use core_std_lib::core_modification::CoreModification;
 use core_std_lib::event::Event;
-use core_std_lib::html::{Html, UIInstructionBuilder};
+use core_std_lib::html::{Html, UIBuilder};
 
 pub struct ModuleBuilder;
 
@@ -26,7 +26,7 @@ impl Module for FrameworkModule {
 
     async fn init(&self, core: Box<dyn Core>) {
         let mods = CoreModification::default().set_ui(
-            UIInstructionBuilder::default().add_node(
+            UIBuilder::default().add_node(
                 Html::Main()
                     .add_attr(Attr::Id("root".to_string()))
                     .adopt(Html::Div().add_attr(Attr::Id("navbar".to_string())))

@@ -2,8 +2,8 @@ use core_std_lib::{
     attrs::Attr,
     core::Core,
     core_modification::CoreModification,
-    html::{Html, UIInstructionBuilder},
-    state::{StateInstructionBuilder, Value},
+    html::{Html, UIBuilder},
+    state::{Value, state_builder::StateBuilder},
 };
 
 use crate::{
@@ -12,7 +12,7 @@ use crate::{
 };
 
 pub async fn handler(core: Box<dyn Core>) {
-    let builder = UIInstructionBuilder::default().add_node(
+    let builder = UIBuilder::default().add_node(
         Html::Div()
             .add_attr(Attr::Id(ID_TAB_CONTAINER.to_string()))
             .adopt(
@@ -34,7 +34,7 @@ pub async fn handler(core: Box<dyn Core>) {
         builder
     };
     let mods = CoreModification::default();
-    let state = StateInstructionBuilder::default()
+    let state = StateBuilder::default()
         .add(
             STATE_TABS,
             Value::List(vec![Value::new_obj().obj_add("id", Value::Int(0))]),
@@ -46,7 +46,7 @@ pub async fn handler(core: Box<dyn Core>) {
         .await;
 }
 
-pub fn build_from_storage(xs: Vec<Value>, builder: UIInstructionBuilder) -> UIInstructionBuilder {
+pub fn build_from_storage(xs: Vec<Value>, builder: UIBuilder) -> UIBuilder {
     xs.into_iter()
         .filter_map(|v| v.obj())
         .filter_map(|o| {

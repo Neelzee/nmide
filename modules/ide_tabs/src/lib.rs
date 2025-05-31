@@ -2,8 +2,8 @@ use core_std_lib::{
     core::Core,
     core_modification::CoreModification,
     event::Event,
-    html::UIInstructionBuilder,
-    state::{StateInstructionBuilder, Value},
+    html::UIBuilder,
+    state::{Value, state_builder::StateBuilder},
 };
 use post_init::build_from_storage;
 
@@ -57,9 +57,10 @@ impl core_module_lib::Module for Module {
     }
 
     async fn init(&self, core: Box<dyn Core>) {
-        core.send_modification(CoreModification::default().set_state(
-            StateInstructionBuilder::default().add(STATE_TAB_STORAGE, Value::List(Vec::new())),
-        ))
+        core.send_modification(
+            CoreModification::default()
+                .set_state(StateBuilder::default().add(STATE_TAB_STORAGE, Value::List(Vec::new()))),
+        )
         .await;
         core.add_handler("post-ide-pm".to_string(), MODULE_NAME.to_string())
             .await;
@@ -101,9 +102,9 @@ impl core_module_lib::Module for Module {
                 }
                 core.send_modification(
                     CoreModification::default()
-                        .set_ui(build_from_storage(xs, UIInstructionBuilder::default()))
+                        .set_ui(build_from_storage(xs, UIBuilder::default()))
                         .set_state(
-                            StateInstructionBuilder::default()
+                            StateBuilder::default()
                                 .set(STATE_CURRENT_TAB_KEY, Value::List(Vec::new())),
                         ),
                 )

@@ -8,16 +8,16 @@ use core_std_lib::{
     core::Core,
     core_modification::CoreModification,
     event::Event,
-    html::{Html, UIInstructionBuilder},
-    state::{StateInstructionBuilder, Value},
+    html::{Html, UIBuilder},
+    state::{Value, state_builder::StateBuilder},
 };
 
 /// Adds the supplied content (Html) to the current tab.
 ///
 /// It expects the given `Event` to contain an `Html`, either directly, or in an
 /// _object_ at field `eventArgs`. If the module has not been _initialized_,
-/// meaning it has not recieved a `PostInit` event, it will store the Html in
-/// the state, and add it during the intialization stage.
+/// meaning it has not received a `PostInit` event, it will store the Html in
+/// the state, and add it during the initialization stage.
 pub async fn add_content_handler(event: Event, core: Box<dyn Core>) {
     if event.args().is_none() {
         return;
@@ -44,13 +44,13 @@ pub async fn add_content_handler(event: Event, core: Box<dyn Core>) {
     {
         core.send_modification(
             CoreModification::default()
-                .set_ui(UIInstructionBuilder::default().add_node(content, Some(content_id))),
+                .set_ui(UIBuilder::default().add_node(content, Some(content_id))),
         )
         .await;
     } else {
         core.send_modification(
             CoreModification::default().set_state(
-                StateInstructionBuilder::default().add(
+                StateBuilder::default().add(
                     STATE_TAB_STORAGE,
                     Value::new_obj()
                         .obj_add("content", Value::Html(content))
@@ -67,8 +67,8 @@ pub async fn add_content_handler(event: Event, core: Box<dyn Core>) {
 /// It expects the given `Event` to contain an `Int`, either directly, or in an
 /// _object_ at field `eventArgs`.
 ///
-/// Achives the _toggling_ by removing and adding `Attr::Class("show-tab")` from
-/// the current and new tab respectivly.
+/// Achieves the _toggling_ by removing and adding `Attr::Class("show-tab")` from
+/// the current and new tab respectively.
 pub async fn change_handler(event: Event, core: Box<dyn Core>) {
     if event.args().is_none() {
         return;
@@ -94,11 +94,9 @@ pub async fn change_handler(event: Event, core: Box<dyn Core>) {
     }
     core.send_modification(
         CoreModification::default()
-            .set_state(
-                StateInstructionBuilder::default().set(STATE_CURRENT_TAB_KEY, Value::Int(id)),
-            )
+            .set_state(StateBuilder::default().set(STATE_CURRENT_TAB_KEY, Value::Int(id)))
             .set_ui(
-                UIInstructionBuilder::default()
+                UIBuilder::default()
                     .rem_attr(
                         Attr::Class(SHOW_TAB_CLASS.to_string()),
                         format!("tab-id-{}", tab_id),
@@ -164,7 +162,7 @@ pub async fn tab_add_handler(event: Event, core: Box<dyn Core>) {
     let (id, title) = tabs.iter().max_by(|(a, _), (b, _)| a.cmp(b)).unwrap();
     let id = *id;
     let title = title.to_string();
-    let state = StateInstructionBuilder::default().set(
+    let state = StateBuilder::default().set(
         STATE_TABS,
         Value::List(
             tabs.into_iter()
@@ -176,7 +174,7 @@ pub async fn tab_add_handler(event: Event, core: Box<dyn Core>) {
                 .collect(),
         ),
     );
-    let ui = UIInstructionBuilder::default()
+    let ui = UIBuilder::default()
         .add_node(create_tab_btn(id, title), Some(ID_TAB_BTN_CONTAINER))
         .add_node(create_tab_content(id), Some(ID_TAB_CONTAINER.to_string()));
     core.send_modification(CoreModification::default().set_state(state).set_ui(ui))

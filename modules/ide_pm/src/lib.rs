@@ -5,8 +5,8 @@ use core_std_lib::attrs::Attr;
 use core_std_lib::core::Core;
 use core_std_lib::core_modification::CoreModification;
 use core_std_lib::event::{DialogFileKind, Event};
-use core_std_lib::html::{Html, UIInstructionBuilder};
-use core_std_lib::state::{HHMap, StateInstructionBuilder, Value};
+use core_std_lib::html::{Html, UIBuilder};
+use core_std_lib::state::{HHMap, Value, state_builder::StateBuilder};
 
 pub struct ModuleBuilder;
 
@@ -90,7 +90,7 @@ impl Module for ProjectManagerModule {
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
         match event.event_name() {
             "nmide://post-init" => {
-                let mods = UIInstructionBuilder::default().add_nodes(
+                let mods = UIBuilder::default().add_nodes(
                     navbar(vec![
                         (
                             "File",
@@ -131,15 +131,13 @@ impl Module for ProjectManagerModule {
                 let id = format!("{id}-content");
                 let toggle = !state.get(&id).and_then(|v| v.bool()).is_some_and(|v| v);
                 let mods = if toggle {
-                    UIInstructionBuilder::default()
-                        .add_attr(id.clone(), Attr::Class("show".to_string()))
+                    UIBuilder::default().add_attr(id.clone(), Attr::Class("show".to_string()))
                 } else {
-                    UIInstructionBuilder::default()
-                        .rem_attr(Attr::Class("show".to_string()), id.clone())
+                    UIBuilder::default().rem_attr(Attr::Class("show".to_string()), id.clone())
                 };
                 core.send_modification(
                     CoreModification::ui(mods)
-                        .set_state(StateInstructionBuilder::default().set(id, Value::Bool(toggle))),
+                        .set_state(StateBuilder::default().set(id, Value::Bool(toggle))),
                 )
                 .await;
             }

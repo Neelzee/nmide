@@ -3,8 +3,8 @@ use core_std_lib::{
     core::Core,
     core_modification::CoreModification,
     event::Event,
-    html::{Html, UIInstructionBuilder},
-    state::{State, StateInstructionBuilder, Value},
+    html::Html,
+    state::{Value, state_builder::StateBuilder},
 };
 
 pub struct ModuleBuilder;
@@ -54,9 +54,10 @@ impl core_module_lib::Module for Module {
                 let pth = path.clone();
                 let file_name = path.split("/").last().unwrap_or_default();
 
-                core.send_modification(CoreModification::default().set_state(
-                    StateInstructionBuilder::default().add("tab_wrapper", Value::Str(pth)),
-                ))
+                core.send_modification(
+                    CoreModification::default()
+                        .set_state(StateBuilder::default().add("tab_wrapper", Value::Str(pth))),
+                )
                 .await;
 
                 core.throw_event(Event::new(
@@ -77,7 +78,7 @@ impl core_module_lib::Module for Module {
                 }
                 core.send_modification(
                     CoreModification::default()
-                        .set_state(StateInstructionBuilder::default().remove("tab_wrapper")),
+                        .set_state(StateBuilder::default().remove("tab_wrapper")),
                 )
                 .await;
                 core.throw_event(Event::new(

@@ -3,7 +3,7 @@ use core_std_lib::{
     core::Core,
     core_modification::CoreModification,
     event::Event,
-    state::{StateInstructionBuilder, Value},
+    state::{Value, state_builder::StateBuilder},
 };
 use editor_ar::Art;
 
@@ -43,7 +43,7 @@ impl core_module_lib::Module for Module {
         };
 
         if res.is_ok() {
-            return ();
+            return;
         }
 
         let obj = Value::new_obj()
@@ -57,9 +57,11 @@ impl core_module_lib::Module for Module {
 
 async fn open_buffer(args: Option<Value>, core: &Box<dyn Core>) -> Result<()> {
     let buff = parse_args(args)?;
-    core.send_modification(CoreModification::default().add_state(
-        StateInstructionBuilder::default().add(BUFFER_STATE_FIELD, Art::parse(&buff).to_value()),
-    ))
+    core.send_modification(
+        CoreModification::default().add_state(
+            StateBuilder::default().add(BUFFER_STATE_FIELD, Art::parse(&buff).to_value()),
+        ),
+    )
     .await;
     Ok(())
 }

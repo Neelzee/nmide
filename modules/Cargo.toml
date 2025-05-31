@@ -1,0 +1,22 @@
+[workspace]
+members = [
+  "dummy_module",
+  "editor-ar",
+  "editor_buffer",
+  "editor_render",
+  "ide_cache",
+  "ide_explorer",
+  "ide_framework",
+  "ide_fsa",
+  "ide_pm",
+  "ide_tabs",
+  "magnolia_dependency",
+  "module_installer",
+  "tab_wrapper",
+  "trivial_module",
+]
+
+[workspace.dependencies]
+core-std-lib = { path = "../libs/rust/core-std-lib/" }
+core-module-lib = { path = "../libs/rust/core-module-lib/" }
+foreign-std-lib = { path = "../libs/rust/foreign-std-lib/" }

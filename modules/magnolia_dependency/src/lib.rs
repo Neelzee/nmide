@@ -3,9 +3,8 @@ use core_std_lib::{
     core::Core,
     core_modification::CoreModification,
     event::Event,
-    state::{StateInstructionBuilder, Value},
+    state::{Value, state_builder::StateBuilder},
 };
-use dirs::home_dir;
 use regex::Regex;
 use std::fs;
 use std::fs::File;
@@ -56,7 +55,7 @@ impl core_module_lib::Module for Module {
                     core.throw_event(Event::new("graph", Some(graph.clone())))
                         .await;
                     let mods = CoreModification::default()
-                        .set_state(StateInstructionBuilder::default().add(field, graph));
+                        .set_state(StateBuilder::default().add(field, graph));
                     core.send_modification(mods).await;
                 }
             }

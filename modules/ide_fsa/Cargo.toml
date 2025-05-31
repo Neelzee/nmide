@@ -8,12 +8,12 @@ name = "ide_fsa"
 crate-type = ["cdylib", "rlib"]
 
 [dev-dependencies]
-debug-core = { git = "https://github.com/Neelzee/nmide.git" }
+debug-core = { path = "../../tools/debug-core" }
 
 [dependencies]
 anyhow = "1.0.97"
-core-std-lib = { git = "https://github.com/Neelzee/nmide.git" }
-core-module-lib = { git = "https://github.com/Neelzee/nmide.git" }
+core-std-lib = { workspace = true }
+core-module-lib = { workspace = true }
 once_cell = "1.21.3"
 regex = { version = "1.11.1", features = ["std"] }
 serde = { version = "1.0.216", features = ["derive"] }

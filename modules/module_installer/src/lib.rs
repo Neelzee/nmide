@@ -4,8 +4,8 @@ use core_std_lib::{
     core::Core,
     core_modification::CoreModification,
     event::Event,
-    html::{Html, UIInstructionBuilder},
-    state::{StateInstructionBuilder, Value},
+    html::{Html, UIBuilder},
+    state::{Value, state_builder::StateBuilder},
 };
 use module_installer::ModuleInstaller;
 use std::fs;
@@ -78,7 +78,7 @@ impl core_module_lib::Module for Module {
                         ),
                 );
         core.send_modification(CoreModification::ui(
-            UIInstructionBuilder::default().add_node(ui, Option::<String>::None),
+            UIBuilder::default().add_node(ui, Option::<String>::None),
         ))
         .await;
     }
@@ -94,19 +94,18 @@ impl core_module_lib::Module for Module {
                     .unwrap_or(true);
                 core.send_modification(
                     CoreModification::ui(if toggle {
-                        UIInstructionBuilder::default().add_attr(
+                        UIBuilder::default().add_attr(
                             "add-module-container".to_string(),
                             Attr::Class("add-module-show".to_string()),
                         )
                     } else {
-                        UIInstructionBuilder::default().rem_attr(
+                        UIBuilder::default().rem_attr(
                             Attr::Class("add-module-show".to_string()),
                             "add-module-container".to_string(),
                         )
                     })
                     .set_state(
-                        StateInstructionBuilder::default()
-                            .add("add-content-toggle", Value::Bool(!toggle)),
+                        StateBuilder::default().add("add-content-toggle", Value::Bool(!toggle)),
                     ),
                 )
                 .await;
