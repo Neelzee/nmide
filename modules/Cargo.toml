@@ -15,6 +15,7 @@ members = [
   "tab_wrapper",
   "trivial_module",
 ]
+exclude = ["rs-counter-plugin-example"]
 
 [workspace.dependencies]
 core-std-lib = { path = "../libs/rust/core-std-lib/" }

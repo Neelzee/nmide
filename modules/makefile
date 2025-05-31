@@ -33,7 +33,7 @@ module-build:
 		find . -maxdepth 1 -type d ! -path . | while read p; do \
 			if [ -f "$$p/Cargo.toml" ]; then \
 				printf "Building $$p... "; \
-				if (cd "$$p" && bun i && bun run build) >/dev/null 2>&1; then \
+				if (cd "$$p" && cargo build >/dev/null 2>&1); then \
 					echo "✓"; \
 				else \
 					echo "✗"; \
@@ -44,7 +44,7 @@ module-build:
 		find . -maxdepth 1 -type d ! -path . | while read p; do \
 			if [ -f "$$p/package.json" ]; then \
 				printf "Building $$p... "; \
-				if (cd "$$p" && bun i && bun run build >/dev/null 2>&1); then \
+				if (cd "$$p" && bun i && bun run build) >/dev/null 2>&1; then \
 					echo "✓"; \
 				else \
 					echo "✗"; \
