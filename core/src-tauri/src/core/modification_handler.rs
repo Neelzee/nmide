@@ -35,7 +35,7 @@ pub fn spawn_core_modification_handler() {
                 let mut current_ui = NMIDE_UI.write().await;
                 *current_ui = ui_builder.build(ui);
                 let ui = current_ui.clone();
-                let app = NMIDE.get().expect("App should be initialized");
+                let platform = NMIDE.get().expect("Platform should be initialized");
                 debug!(
                     place = "backend",
                     state:serde,
@@ -49,7 +49,7 @@ pub fn spawn_core_modification_handler() {
                     ui,
                     modification
                 );
-                app.rerender(inst).await;
+                platform.rerender(inst).await;
             }
         }
     });
