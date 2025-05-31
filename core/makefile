@@ -39,8 +39,4 @@ clean :
 		> $(out)/module_reg.rs && \
 	mkdir -p $(appdir)/modules && \
 	awk '{ print } /^# =+ #/ { exit }' $(cargo) > tmp && mv tmp $(cargo) && \
-	cargo run \
-		--features "module-installer" \
-		--manifest-path=$(manifest-path) \
-		-- \
-		clean
+	awk '/<!--MODULES-->/ { print; in_block = !in_block; next; } !in_block' $(index) > tmp && mv tmp $(index)
