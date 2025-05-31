@@ -1,8 +1,9 @@
+use crate::state::Value;
+use ordered_float::NotNan;
 use std::cmp::Ordering;
 
-use ordered_float::NotNan;
-
-use crate::state::Value;
+pub mod hhmap_impls;
+pub mod state_impls;
 
 impl Value {
     pub fn map<F, T, R, G>(self, f: F) -> Result<Self, ValueMapError>
@@ -16,7 +17,7 @@ impl Value {
 
 #[derive(Debug, Clone)]
 pub enum ValueMapError {
-    CannotCast(Value, Value),
+    CannotCast(Box<Value>, Box<Value>),
     FloatIsNan(f32),
     UnimplementedMapping(Value),
 }
@@ -38,7 +39,10 @@ where
             Value::Float(not_nan) => {
                 let cmp = not_nan.total_cmp(&(i32::MAX as f32));
                 if not_nan.is_infinite() || cmp == Ordering::Greater || cmp == Ordering::Equal {
-                    return Err(ValueMapError::CannotCast(value, Value::Int(0)));
+                    return Err(ValueMapError::CannotCast(
+                        Box::new(value),
+                        Box::new(Value::Int(0)),
+                    ));
                 }
                 let new_value: i32 = unsafe { not_nan.to_int_unchecked() };
                 Ok(Value::Int(self(new_value)))
@@ -47,8 +51,11 @@ where
                 .into_iter()
                 .map(|v| self.map_value(v))
                 .collect::<Result<Vec<Value>, _>>()
-                .map(|zs| Value::List(zs)),
-            _ => Err(ValueMapError::CannotCast(value, Value::Int(0))),
+                .map(Value::List),
+            _ => Err(ValueMapError::CannotCast(
+                Box::new(value),
+                Box::new(Value::Int(0)),
+            )),
         }
     }
 }
@@ -65,8 +72,11 @@ where
                 .into_iter()
                 .map(|v| self.map_value(v))
                 .collect::<Result<Vec<Value>, _>>()
-                .map(|zs| Value::List(zs)),
-            _ => Err(ValueMapError::CannotCast(value, Value::Int(0))),
+                .map(Value::List),
+            _ => Err(ValueMapError::CannotCast(
+                Box::new(value),
+                Box::new(Value::Int(0)),
+            )),
         }
     }
 }
@@ -95,8 +105,11 @@ where
                 .into_iter()
                 .map(|v| self.map_value(v))
                 .collect::<Result<Vec<Value>, _>>()
-                .map(|zs| Value::List(zs)),
-            _ => Err(ValueMapError::CannotCast(value, Value::Int(0))),
+                .map(Value::List),
+            _ => Err(ValueMapError::CannotCast(
+                Box::new(value),
+                Box::new(Value::Int(0)),
+            )),
         }
     }
 }

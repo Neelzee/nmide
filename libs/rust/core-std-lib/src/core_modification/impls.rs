@@ -3,8 +3,8 @@ use crate::instruction::inst::Instruction;
 use crate::state::Value;
 use crate::{
     core_modification::CoreModification,
-    html::{Html, UIInstructionBuilder},
-    state::{State, StateInstructionBuilder},
+    html::{Html, UIBuilder},
+    state::{state_builder::StateBuilder, State},
 };
 
 use super::UIInstr;
@@ -49,7 +49,7 @@ impl CoreModification {
             + self.ui.2.clone().flatten().len()
     }
 
-    pub fn add_ui(self, ui: UIInstructionBuilder) -> Self {
+    pub fn add_ui(self, ui: UIBuilder) -> Self {
         Self {
             ui: UIInstrWrapper::from(self.ui)
                 .combine(ui.instruction().into())
@@ -58,7 +58,7 @@ impl CoreModification {
         }
     }
 
-    pub fn add_state(self, state: StateInstructionBuilder) -> Self {
+    pub fn add_state(self, state: StateBuilder) -> Self {
         Self {
             state: self.state.combine(state.instruction()),
             ..self
@@ -72,7 +72,7 @@ impl CoreModification {
         Self { state, ui }
     }
 
-    pub fn ui(ui: UIInstructionBuilder) -> Self {
+    pub fn ui(ui: UIBuilder) -> Self {
         CoreModification {
             state: Instruction::NoOp,
             ui: ui.instruction(),
@@ -83,14 +83,14 @@ impl CoreModification {
         a.combine(b)
     }
 
-    pub fn set_state(self, builder: StateInstructionBuilder) -> Self {
+    pub fn set_state(self, builder: StateBuilder) -> Self {
         Self {
             state: builder.instruction(),
             ..self
         }
     }
 
-    pub fn set_ui(self, builder: UIInstructionBuilder) -> Self {
+    pub fn set_ui(self, builder: UIBuilder) -> Self {
         Self {
             ui: builder.instruction(),
             ..self
@@ -108,15 +108,15 @@ impl CoreModification {
 
     pub fn build(self, state: State, ui: Html) -> (State, Html) {
         (
-            StateInstructionBuilder::new(self.state).build(state),
-            UIInstructionBuilder::new(self.ui).build(ui),
+            StateBuilder::new(self.state).build(state),
+            UIBuilder::new(self.ui).build(ui),
         )
     }
 
-    pub fn build_state(self, state: State) -> (State, UIInstructionBuilder) {
+    pub fn build_state(self, state: State) -> (State, UIBuilder) {
         (
-            StateInstructionBuilder::new(self.state).build(state),
-            UIInstructionBuilder::new(self.ui),
+            StateBuilder::new(self.state).build(state),
+            UIBuilder::new(self.ui),
         )
     }
 
@@ -131,7 +131,7 @@ impl CoreModification {
     /// Optimizes the modification
     ///
     /// Since an `Instruction<T>` is a group, we can reduce any `Instruction<T>`
-    /// where T implements `Eq`, by removing reduntant instructions. A
+    /// where T implements `Eq`, by removing redundant instructions. A
     /// redundant instruction is an instruction, that when `combine`-ed results
     /// in a `NoOp`, one that results in no change, or a `NoOp`.
     ///
@@ -145,7 +145,7 @@ impl CoreModification {
     /// assert_eq!(combined, Instruction::NoOp);
     /// ```
     ///
-    /// This combination does not recursivly check for `NoOp`s:
+    /// This combination does not recursively check for `NoOp`s:
     ///
     /// ```rust
     /// use core_std_lib::instruction::inst::Instruction;
@@ -157,7 +157,7 @@ impl CoreModification {
     /// assert_ne!(combined, Instruction::NoOp);
     /// ```
     ///
-    /// This is "fixed" by using the `Instruction::optimize`, which recursivly
+    /// This is "fixed" by using the `Instruction::optimize`, which recursively
     /// optimizes for this:
     ///
     /// ```rust

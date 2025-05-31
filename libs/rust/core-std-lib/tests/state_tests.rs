@@ -25,7 +25,7 @@ mod state_modification_test {
                 .obj_add("field", Value::Null)
                 .obj_add("field2", Value::Null),
         );
-        let state = state.rem("nested.obj.field2");
+        let state = state.remove("nested.obj.field2");
         assert!(state.get("nested.obj.field").is_some());
         assert!(state.get("nested.obj.field2").is_none());
     }

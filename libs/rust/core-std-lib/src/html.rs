@@ -153,13 +153,13 @@ impl Html {
     }
 }
 
-pub struct UIInstructionBuilder {
+pub struct UIBuilder {
     node: Instruction<Html>,
     text: Instruction<String>,
     attr: Instruction<Attr>,
 }
 
-impl Default for UIInstructionBuilder {
+impl Default for UIBuilder {
     fn default() -> Self {
         Self {
             node: Instruction::NoOp,
@@ -169,7 +169,7 @@ impl Default for UIInstructionBuilder {
     }
 }
 
-impl UIInstructionBuilder {
+impl UIBuilder {
     pub(crate) fn new(inst: (Instruction<Html>, Instruction<String>, Instruction<Attr>)) -> Self {
         let (node, text, attr) = inst;
         Self { node, text, attr }
@@ -236,7 +236,7 @@ impl UIInstructionBuilder {
         match inst {
             Instruction::NoOp => node,
             // ADD
-            Instruction::Add(id, child) if id == "" => node.adopt(child),
+            Instruction::Add(id, child) if id.is_empty() => node.adopt(child),
             Instruction::Add(id, child) => {
                 node.modify(|n| n.adopt(child.clone()), |n| n.cmp_id(&id))
             }

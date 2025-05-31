@@ -3,10 +3,12 @@ use dialog_builder::{DialogBuilder, DialogFileBuilder};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-mod dialog_builder;
+pub mod dialog_builder;
 
 #[cfg(feature = "core")]
-mod core_events;
+pub mod core_events;
+
+pub mod utils;
 
 #[derive(Debug, Clone, PartialEq, PartialOrd, Ord, Serialize, Deserialize, TS, Hash, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -110,8 +112,8 @@ impl Event {
     }
 }
 
-impl ToString for Event {
-    fn to_string(&self) -> String {
-        self.event_name().to_string()
+impl std::fmt::Display for Event {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.event_name())
     }
 }

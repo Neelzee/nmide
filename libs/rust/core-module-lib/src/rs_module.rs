@@ -2,7 +2,7 @@ use abi_stable::{
     library::{LibraryError, LibraryPath, RootModule},
     package_version_strings, sabi_trait,
     sabi_types::VersionStrings,
-    std_types::{ROption, RString},
+    std_types::RString,
     StableAbi,
 };
 use async_ffi::FfiFuture;
@@ -65,7 +65,7 @@ impl RsModule {
 
     pub fn name(&self) -> String {
         let pth = self.path();
-        pth.to_string().split("/").last().unwrap_or(pth).to_string()
+        pth.split("/").last().unwrap_or(pth).to_string()
     }
 
     pub async fn init<F>(&self, f: F)

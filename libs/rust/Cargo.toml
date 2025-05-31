@@ -1,0 +1,3 @@
+[workspace]
+members = ["core-macros", "core-module-lib", "core-std-lib", "foreign-std-lib"]
+resolver = "3"
