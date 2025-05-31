@@ -1,5 +1,5 @@
 use crate::{Module, run_cmd};
-use std::{fs, process::Command};
+use std::{fs, path::PathBuf, process::Command};
 
 pub(crate) fn install(dist: String, mods: Vec<Module>) {
     println!("JSM compile-time installer");
@@ -14,13 +14,7 @@ pub(crate) fn install(dist: String, mods: Vec<Module>) {
 
         let mut path = m.path.clone();
 
-        println!("Installing module: {:?}", &path);
-
         if let Some(pm) = m.package_manager {
-            let mut install_cmd = Command::new(pm.clone());
-            install_cmd.current_dir(&path);
-            install_cmd.arg("i");
-            run_cmd(install_cmd);
             let mut build_cmd = Command::new(pm);
             build_cmd.current_dir(&path);
             build_cmd.arg("run");
@@ -34,5 +28,11 @@ pub(crate) fn install(dist: String, mods: Vec<Module>) {
 
     let s: String = imports.join("\n");
 
-    fs::write(format!("{dist}/modules.js"), s).unwrap();
+    let pth: PathBuf = format!("{dist}/modules.js").into();
+    if !pth.exists() {
+        fs::create_dir_all(dist).expect("Dir creation should succeed");
+    }
+    fs::write(&pth, s)
+        .inspect_err(|err| panic!("Could not write to file: {pth:?}, due to error: {err:?}"))
+        .unwrap();
 }

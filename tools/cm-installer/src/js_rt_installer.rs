@@ -18,10 +18,6 @@ pub(crate) fn install(modules: Vec<Module>, module_folder: String) {
 
         if let Some(pm) = m.package_manager {
             println!("Building module: {:?}", &path);
-            let mut install_cmd = Command::new(pm.clone());
-            install_cmd.current_dir(&path);
-            install_cmd.arg("i");
-            run_cmd(install_cmd);
             let mut build_cmd = Command::new(pm);
             build_cmd.current_dir(&path);
             build_cmd.arg("run");
