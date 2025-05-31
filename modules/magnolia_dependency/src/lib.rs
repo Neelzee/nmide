@@ -5,12 +5,13 @@ use core_std_lib::{
     event::Event,
     state::{StateInstructionBuilder, Value},
 };
+use dirs::home_dir;
 use regex::Regex;
-use std::collections::HashMap;
 use std::fs;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
+use std::{collections::HashMap, path::PathBuf};
 
 pub struct ModuleBuilder;
 
@@ -22,7 +23,7 @@ impl core_module_lib::ModuleBuilder for ModuleBuilder {
 
 pub struct Module;
 
-const MODULE_NAME: &'static str = "magnolia_dependency";
+const MODULE_NAME: &str = "magnolia_dependency";
 
 #[async_trait]
 impl core_module_lib::Module for Module {
@@ -36,48 +37,29 @@ impl core_module_lib::Module for Module {
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
-        match event.event_name() {
-            "get_magnolia_graph" => {
-                let path = if event.args().is_some_and(|v| v.is_str()) {
-                    event.args().unwrap().str().unwrap()
-                } else if event.args().is_none()
-                    || event
-                        .args()
-                        .unwrap()
-                        .obj()
-                        .is_some_and(|o| !o.contains_key("eventArgs"))
-                {
-                    "/home/nmf/magnolia-basic-library/src".to_string()
-                } else {
-                    let p = event
-                        .args()
-                        .unwrap()
-                        .obj()
-                        .unwrap()
-                        .get("eventArgs")
-                        .unwrap()
-                        .str();
-                    if p.is_none() {
-                        return;
-                    }
-                    p.unwrap()
-                };
-                let field = format!("graph:{path}");
-                match core.state().await.get(&field) {
-                    Some(g) => {
-                        core.throw_event(Event::new("graph", Some(g.clone()))).await;
-                    }
-                    None => {
-                        let graph = get_graph(&path);
-                        core.throw_event(Event::new("graph", Some(graph.clone())))
-                            .await;
-                        let mods = CoreModification::default()
-                            .set_state(StateInstructionBuilder::default().add(field, graph));
-                        core.send_modification(mods).await;
-                    }
+        if event.event_name() == "get_magnolia_graph" {
+            let path: PathBuf = core
+                .state()
+                .await
+                .get("ide-cache.project")
+                .and_then(|v| v.str())
+                .unwrap_or_default()
+                .into();
+
+            let field = format!("graph:{path:?}");
+            match core.state().await.get(&field) {
+                Some(g) => {
+                    core.throw_event(Event::new("graph", Some(g.clone()))).await;
+                }
+                None => {
+                    let graph = get_graph(&path);
+                    core.throw_event(Event::new("graph", Some(graph.clone())))
+                        .await;
+                    let mods = CoreModification::default()
+                        .set_state(StateInstructionBuilder::default().add(field, graph));
+                    core.send_modification(mods).await;
                 }
             }
-            _ => (),
         }
     }
 }
@@ -143,7 +125,7 @@ impl MagnoliaModule {
     }
 }
 
-pub(crate) fn get_graph(path: &str) -> Value {
+pub(crate) fn get_graph(path: &PathBuf) -> Value {
     Value::List(
         get_modules(Path::new(path))
             .into_iter()
@@ -153,17 +135,20 @@ pub(crate) fn get_graph(path: &str) -> Value {
 }
 
 pub(crate) fn get_modules(path: &Path) -> Vec<MagnoliaModule> {
-    fs::read_dir(path)
-        .unwrap()
-        .filter_map(|e| e.ok())
-        .flat_map(|d| match d.file_type() {
-            Ok(df)
-                if df.is_file() && d.file_name().to_str().is_some_and(|p| p.ends_with(".mg")) =>
-            {
-                vec![MagnoliaModule::new(&d.path())]
-            }
-            Ok(df) if df.is_dir() => get_modules(&d.path()),
-            _ => Vec::new(),
-        })
-        .collect()
+    fs::read_dir(
+        path.canonicalize()
+            .inspect_err(|err| panic!("Error when canonicalizing path: {path:?}, error: {err:?}"))
+            .unwrap(),
+    )
+    .inspect_err(|err| panic!("Error when reading path: {path:?}, error: {err:?}"))
+    .unwrap()
+    .filter_map(|e| e.ok())
+    .flat_map(|d| match d.file_type() {
+        Ok(df) if df.is_file() && d.file_name().to_str().is_some_and(|p| p.ends_with(".mg")) => {
+            vec![MagnoliaModule::new(&d.path())]
+        }
+        Ok(df) if df.is_dir() => get_modules(&d.path()),
+        _ => Vec::new(),
+    })
+    .collect()
 }
