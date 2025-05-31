@@ -756,10 +756,10 @@ dependencies = [
  "async-ffi",
  "async-trait",
  "clap",
- "core-module-lib 1.0.1 (git+https://github.com/Neelzee/nmide.git)",
- "core-std-lib 2.0.2 (git+https://github.com/Neelzee/nmide.git)",
+ "core-module-lib",
+ "core-std-lib",
  "env_logger",
- "foreign-std-lib 0.1.0 (git+https://github.com/Neelzee/nmide.git)",
+ "foreign-std-lib",
  "futures",
  "ide_cache",
  "ide_explorer",
@@ -846,15 +846,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "core-macros"
-version = "1.0.1"
-source = "git+https://github.com/Neelzee/nmide.git#682eb9d3374d6900e474ac22b9c0ccb1d861a497"
-dependencies = [
- "serde",
- "ts-rs",
-]
-
-[[package]]
 name = "core-module-lib"
 version = "1.0.1"
 dependencies = [
@@ -862,23 +853,8 @@ dependencies = [
  "anyhow",
  "async-ffi",
  "async-trait",
- "core-std-lib 2.0.2",
- "foreign-std-lib 0.1.0",
- "log",
- "serialize-to-javascript",
-]
-
-[[package]]
-name = "core-module-lib"
-version = "1.0.1"
-source = "git+https://github.com/Neelzee/nmide.git#682eb9d3374d6900e474ac22b9c0ccb1d861a497"
-dependencies = [
- "abi_stable",
- "anyhow",
- "async-ffi",
- "async-trait",
- "core-std-lib 2.0.2 (git+https://github.com/Neelzee/nmide.git)",
- "foreign-std-lib 0.1.0 (git+https://github.com/Neelzee/nmide.git)",
+ "core-std-lib",
+ "foreign-std-lib",
  "log",
  "serialize-to-javascript",
 ]
@@ -888,21 +864,7 @@ name = "core-std-lib"
 version = "2.0.2"
 dependencies = [
  "async-trait",
- "core-macros 1.0.1",
- "hashable",
- "ordered-float 5.0.0",
- "rstest",
- "serde",
- "ts-rs",
-]
-
-[[package]]
-name = "core-std-lib"
-version = "2.0.2"
-source = "git+https://github.com/Neelzee/nmide.git#682eb9d3374d6900e474ac22b9c0ccb1d861a497"
-dependencies = [
- "async-trait",
- "core-macros 1.0.1 (git+https://github.com/Neelzee/nmide.git)",
+ "core-macros",
  "hashable",
  "ordered-float 5.0.0",
  "rstest",
@@ -1503,21 +1465,7 @@ name = "foreign-std-lib"
 version = "0.1.0"
 dependencies = [
  "abi_stable",
- "core-std-lib 2.0.2",
- "ordered-float 5.0.0",
- "rstest",
- "serde",
- "stabby",
- "ts-rs",
-]
-
-[[package]]
-name = "foreign-std-lib"
-version = "0.1.0"
-source = "git+https://github.com/Neelzee/nmide.git#682eb9d3374d6900e474ac22b9c0ccb1d861a497"
-dependencies = [
- "abi_stable",
- "core-std-lib 2.0.2 (git+https://github.com/Neelzee/nmide.git)",
+ "core-std-lib",
  "ordered-float 5.0.0",
  "rstest",
  "serde",
@@ -2381,8 +2329,8 @@ name = "ide_cache"
 version = "0.1.0"
 dependencies = [
  "async-trait",
- "core-module-lib 1.0.1",
- "core-std-lib 2.0.2",
+ "core-module-lib",
+ "core-std-lib",
  "serde_json",
 ]
 
@@ -2392,8 +2340,8 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-trait",
- "core-module-lib 1.0.1",
- "core-std-lib 2.0.2",
+ "core-module-lib",
+ "core-std-lib",
  "once_cell",
  "regex",
  "serde",
@@ -2406,8 +2354,8 @@ name = "ide_framework"
 version = "0.1.0"
 dependencies = [
  "async-trait",
- "core-module-lib 1.0.1",
- "core-std-lib 2.0.2",
+ "core-module-lib",
+ "core-std-lib",
 ]
 
 [[package]]
@@ -2416,8 +2364,8 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-trait",
- "core-module-lib 1.0.1",
- "core-std-lib 2.0.2",
+ "core-module-lib",
+ "core-std-lib",
  "once_cell",
  "regex",
  "serde",
@@ -2430,8 +2378,8 @@ name = "ide_pm"
 version = "0.1.0"
 dependencies = [
  "async-trait",
- "core-module-lib 1.0.1",
- "core-std-lib 2.0.2",
+ "core-module-lib",
+ "core-std-lib",
  "serde_json",
  "tokio",
 ]
@@ -2441,8 +2389,8 @@ name = "ide_tabs"
 version = "0.1.0"
 dependencies = [
  "async-trait",
- "core-module-lib 1.0.1",
- "core-std-lib 2.0.2",
+ "core-module-lib",
+ "core-std-lib",
 ]
 
 [[package]]
@@ -2826,8 +2774,8 @@ name = "magnolia_dependency"
 version = "0.1.0"
 dependencies = [
  "async-trait",
- "core-module-lib 1.0.1",
- "core-std-lib 2.0.2",
+ "core-module-lib",
+ "core-std-lib",
  "regex",
 ]
 
@@ -2899,8 +2847,8 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-trait",
- "core-module-lib 1.0.1",
- "core-std-lib 2.0.2",
+ "core-module-lib",
+ "core-std-lib",
  "reqwest",
  "serde",
  "serde_json",
@@ -5107,8 +5055,8 @@ name = "tab_wrapper"
 version = "0.1.0"
 dependencies = [
  "async-trait",
- "core-module-lib 1.0.1",
- "core-std-lib 2.0.2",
+ "core-module-lib",
+ "core-std-lib",
 ]
 
 [[package]]
@@ -5896,8 +5844,8 @@ name = "trivial_module"
 version = "0.1.0"
 dependencies = [
  "async-trait",
- "core-module-lib 1.0.1",
- "core-std-lib 2.0.2",
+ "core-module-lib",
+ "core-std-lib",
 ]
 
 [[package]]
