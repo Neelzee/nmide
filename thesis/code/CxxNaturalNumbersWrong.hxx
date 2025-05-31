@@ -1,17 +1,15 @@
-struct CxxNaturalNumbers {
-  struct CxxNaturalNumbers_impl {
-    typedef int N;
+struct CxxNaturalNumbers_impl {
+  typedef int N;
 
-    N zero() {
-      return 1;
-    }
+  N zero() {
+    return 1;
+  }
 
-    N succ(const& N number) {
-      return number + 1;
-    }
+  N succ(const& N number) {
+    return number + 1;
+  }
 
-    N plus(const& N a, const &N b) {
-      return a + b;
-    }
-  };
+  N plus(const& N a, const &N b) {
+    return a + b;
+  }
 };

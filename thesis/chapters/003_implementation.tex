@@ -291,12 +291,14 @@ Since third party code is being run, nothing can be trusted. All module
 invocations and outputs needs to be sanitized before it can be used in the core
 application. This is achieved by wrapping all invocations in a
 \textit{try-catch}, and using the \textit{io-ts}\footnote{\url{https://github.com/gcanti/io-ts}}
-library to decode types during runtime. This enables us to safely invoke
-modules, as we can translate all computations into a product type, where it is
-either a success, giving us the wanted computation from the module, or an error.
-But even with types, we cannot verify functions. Since during runtime, we are in
-the JavaScript environment, we can only validate if something is a function,
-using the \lstinline[language=JavaScript]{typeof} operator. It is possible to do
+library to decode types during runtime.
+
+This enables us to safely invoke modules, as we can translate all computations
+into a product type, where it is either a success, giving us the wanted
+computation from the module, or an error. But even with types, we cannot verify
+functions. Since during runtime, we are in the JavaScript environment, we can
+only validate if something is a function, using the
+\lstinline[language=JavaScript]{typeof} operator. It is possible to do
 \textit{some} verification on functions in JavaScript, but this can only tell us
 that it is a function. Nothing about the typing of the function can be
 ascertained at runtime, without explicitly invoking the function.
@@ -783,8 +785,9 @@ It is very useful to think about what kinds of properties our structures have,
 as with this knowledge, we utilize existing theories to improve our software.
 Since this instruction structure is used for \gls*{ui} rendering, it is useful
 to minimize the amount of needless renders, which we can do by applying the idea
-that our instruction set is an algebraic structure with properties. But these
-properties are not possible to encode in Rusts type system, but when
+that our instruction set is an algebraic structure with properties.
+
+But these properties are not possible to encode in Rusts type system, but when
 implementing $combine$, we can map the variants along with the specific fields
 being added ($Add$), modified ($Mod$), or removed ($Rem$), to get a more
 optimized instruction set. If we are modifying a value on field $foobar$, but in
@@ -859,17 +862,20 @@ Due to Rust first class focus on concurrency, it was trivial to make the core
 modifications run asynchronously. In previous iterations, the core evaluated
 one event at a time, waiting until all modules had finished their computations,
 before emulating the change and allowing for the next event to be evaluated. But
-this caused a noticeable \textit{lag} if an event was long. This was solved by
-changing the core modification evaluation from a simple method to be invoked, to
-an \gls*{mpsc} channel system. Using \textit{tokio}\footnote{\url{https://tokio.rs/}},
+this caused a noticeable \textit{lag} if an event was long.
+
+This was solved by changing the core modification evaluation from a simple
+method to be invoked, to an \gls*{mpsc} channel system. Using \textit{tokio}\footnote{\url{https://tokio.rs/}},
 a Rust crate for asynchronous development, a channel for core modifications was
 created, and instead of the core collecting all modifications, each module is
 invoked and \textit{awaited} for in a separate thread, where in each module, if
 they have a core modification, sends the modification to the core channel, which
 works on a first come, first server basis. Here the core can evaluate the
-changes, also on a separate thread. This restructure was trivial to add, as due
-to Rusts borrow-checker, we know that there are no race conditions and other
-similar concurrency issues in our application.
+changes, also on a separate thread.
+
+This restructure was trivial to add, as due to Rusts borrow-checker, we know
+that there are no race conditions and other similar concurrency issues in our
+application.
 
 
 \section{Testing} \label{sec:testing}
@@ -879,11 +885,12 @@ use the similar lessons learned in microservice architecture, when developing
 ours. In a microservice architecture testing is important to ensure changes in
 one service does not inadvertently affect another. This is commonly achieved by
 using \textit{pipelines}, a part of the \gls*{cicd} process, where we run
-several \textit{jobs} whenever we make a change to our microservices. In our
-case, with modules, if we are bundling different modules together, and serving
-that as an \gls*{ide}, we want to ensure that a change to a module does not
-negatively affect the other. This is where \textit{pipeline jobs} come in, as
-each \textit{job} test some part of our \gls*{ide}. While it is cheaper to
+several \textit{jobs} whenever we make a change to our microservices.
+
+In our case, with modules, if we are bundling different modules together, and
+serving that as an \gls*{ide}, we want to ensure that a change to a module does
+not negatively affect the other. This is where \textit{pipeline jobs} come in,
+as each \textit{job} test some part of our \gls*{ide}. While it is cheaper to
 \textit{spin} up an instance of the \gls*{ide} in a pipeline, than an
 application dedicated to serve millions of users, we still want to avoid doing
 this unnecessarily. This is why we split up our testing into different stages.
@@ -923,14 +930,76 @@ designed test data, that the different libraries use when testing. For instance,
 when developing with foreign languages, the data sent between the \gls{ide} and
 modules, or in between modules, is in the \gls{json} format. But in a Rust
 module, this would be deserialized into a Rust equivalent struct, before being
-serialized back to \gls{json} when sent out from the module. Similarly, in
-JavaScript, we have to ensure that we can actually handle the data the \gls{ide}
-sends\footnote{Since the types are specified on the backend}. Using the same
-test input, we can verify that both the Rust and JavaScript library correctly
-handle the serialization and serialization of the data. Since much of the base
-logic exists in the backend, this is where the brunt of the unit tests exist.
-Around $111$ unit tests, ensuring that the different parts of the library
-behave as intended.
+serialized back to \gls{json} when sent out from the module.
+
+Similarly, in JavaScript, we have to ensure that we can actually handle the data
+the \gls{ide} sends\footnote{Since the types are specified on the backend}.
+Using the same test input, we can verify that both the Rust and JavaScript
+library correctly handle the serialization and serialization of the data. Since
+much of the base logic exists in the backend, this is where the brunt of the unit
+tests exist.
+
+
+\subsection{Library testing}
+
+We also need to ensure that the libraries we serve to our module developers
+are correct. The easiest way for a maintainer to achieve this, is to test in
+production; letting module developers report issues. This is not a good
+experience for module developers. But the second-easiest way is to create unit
+tests that ensure edge cases are handled correctly. We have designed test data
+for serializing and deserializing data between the different languages supported
+by the \gls*{ide}, ensuring that any library developed can be verified to work
+correctly. The test data is modular, meaning we can easily create new edge
+cases. In the picture \ref{pic:libTest}, we can see that there are $135$
+different test cases for the JavaScript library. In picture \ref{pic:libRsTest},
+we can see that there are $5$ serializations tests, which is because we cannot
+create a parameterized test from a file, like we can with the JavaScript testing
+framework, Vitest\footnote{\url{https://vitest.dev/}}. But they both use the
+same test data as input.
+
+\begin{figure}[H]
+  \begin{subfigure}[h]{0.49\linewidth}
+    \centering
+    \includegraphics[width=0.75\textwidth]{libtest.png}
+    \caption{
+      Picture showing the output of running the JavaScript library with the test
+      data as input.
+    }
+    \label{pic:libTest}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[h]{0.49\linewidth}
+    \centering
+    \includegraphics[width=0.75\textwidth]{librstest.png}
+    \caption{
+      Picture showing the output of running the Rust library with the test
+      data as input.
+    }
+    \label{pic:libRsTest}
+  \end{subfigure}
+\end{figure}
+
+
+\subsubsection{Documentation testing}
+
+In Rust any function annotated with a doc string, can contain code examples. If
+these code examples are written as Rust code, and use assert statements, then
+this code is run, during testing, as if it was an actual test. Meaning the
+saying \textit{code is documentation}, can be \textit{documentation is code} in
+Rust. In picture \ref{pic:libDocTest}, we can see some \textit{doc-tests} being
+run on the library for runtime Rust modules.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.50\textwidth]{libdoctest.png}
+  \caption{
+    Picture showing the output of running the JavaScript library with the test
+    data as input.
+  }
+  \label{pic:libTest}
+\end{figure}
+
+
 
 
 \subsubsection{UI testing}
@@ -996,14 +1065,16 @@ done through the core instance, meaning a \textit{test-core} could be created,
 which registers which event is thrown from what module, and all dependencies
 between modules can be noted. This has been partially achieved. By loading all
 specified modules, we can note their dependencies, by looking at the different
-consumer and providers. A module has two different states, initialization, and
-handling. During initialization, a module cant have any dependency on other
-Modules, but it can register for an Event, meaning the module will be invoked
-once the specified event is triggered, or it can throw an event. Registration
-for an event can always be directly analyzed, as it happens on the core
-instance. The way a registration occurs, is that a module supplies a string for
-a specific event name to trigger on, meaning after the first initialization, the
-consumer graph looks like this: $module \to event$.
+consumer and providers.
+
+A module has two different states, initialization, and handling. During
+initialization, a module cant have any dependency on other Modules, but it can
+register for an event, meaning the module will be invoked once the specified
+event is triggered, or it can throw an event. Registration for an event can
+always be directly analyzed, as it happens on the core instance. The way a
+registration occurs, is that a module supplies a string for a specific event
+name to trigger on, meaning after the first initialization, the consumer graph
+looks like this: $module \to event$.
 
 To find the providers, we can initialize a module, and see what possible
 events, if any are thrown. If an event is thrown, then that module is a
@@ -1050,24 +1121,11 @@ module developer can narrow down what modules are at fault, by what modules
 
 \section{Modules} \label{sec:modules}
 
-In this section, we will discuss the different modules and tools implemented.
-
-\paragraph{Event type} In listing \ref{lst:moduleEvent}, one can see the
-structure of an event type. This allows for modules to pattern match on specific
-events, and unlike, as in the previous version, modules can \textit{subscribe}
-to specific events to react to. This changes the structure of the module
-architecture to go from one wherein the core is a terminal object, to a more
-\textit{complicated} one, in which module families can form.
-
-\begin{code}[H]
-  \lstinputlisting
-    [ language=Rust
-    , caption={Module event (Rust)}
-    , label=lst:moduleEvent
-    , firstline=14
-    , lastline=41
-    ]{./libs/rust/core-std-lib/src/event/mod.rs}
-\end{code}
+\paragraph{Event type} The event type allows for modules to pattern match on
+specific events, and unlike, as in the previous version, modules can
+\textit{subscribe} to specific events to react to. This changes the structure of
+the module architecture to go from one wherein the core is a terminal object, to
+a more \textit{complicated} one, in which module families can form.
 
 This forms our \textit{request} and \textit{response} type, making the
 equivalence with a \gls*{rest} \gls*{api} obvious. The clients and consumers
@@ -1102,69 +1160,6 @@ Since a module updates the core by \textit{choosing} to send a
 \textbf{CoreModification}, through a \gls*{mpsc}-channel, a module can run an
 expensive computation on another thread, while \textit{ending} their
 invocation, ensuring a smooth \gls*{ide} experience.
-
-
-\section{Module installation} \label{sec:module-installation}
-
-Manually installing compile-time modules can be tedious, so we automated the
-task. We are using the term \textit{installation} to mean adding the module to
-the \gls*{ide}. This can be as simple as adding a script tag to the \gls*{dom},
-with the source being a JavaScript file, or more complex, loading a library
-which has the correct bindings to be a Rust runtime module.
-
-For \gls*{jsms}, it is quite trivial, simply bundle the JavaScript code into a
-single script, and import it into one file, and, as a final step, bundle this
-file. This ensures that all JavaScript modules are included, and loaded after
-the core system.
-
-For the \gls*{rsms}, it is less trivial. A compile-time Rust module is a Rust
-crate, and since we are using Cargo\footnote{Build tool for Rust} we need to
-specify all our imported crates in a \textit{Cargo.toml} file. We then also
-need to explicitly import and add the module into a list of all compile-time
-modules. With a build script, we have automated this. In the figure
-\ref{fig:compMod}, we can see a diagram of this process.
-
-\begin{figure}
-  \centering
-  \input{./figures/compile-time-module}
-  \caption{
-    Diagram of compile time module integration, we can see that when we invoke
-    the installer tool, it reads the Modules.toml config, gets the necessary
-    module paths, and \textit{installs} them by writing them onto a file,
-    \textit{module\_reg.rs}, which is imported by the \gls*{ide}. All imports
-    need to be specified in \textit{Cargo.toml}, which is also handled by the
-    installer tool.
-  }
-  \label{fig:compMod}
-\end{figure}
-
-For runtime modules, the installation is divided into two steps. First, we have
-to add the source file to the application directory\footnote{Located in \textit{\%APPDATA} on Windows, or \textit{~/.share} on Unix},
-before actually \textit{installing} the module. Depending on what kind of file
-it is, this installation process can vary.
-
-
-\subsection{Rust runtime module installation}
-
-We use the term runtime here, to strictly mean post compilation. When this
-\gls*{ide} is running in user-space, we cannot use newly installed Rust
-runtime modules. This is because the \gls*{ide} only looks for Rust runtime
-modules during startup, so a restart is necessary. Given that a Rust runtime
-module is a simple library, we know what functions it exposes, and the calling
-conventions. Along with the abi\_stable crate, we can ensure no undefined
-behavior happens during runtime.
-
-
-\subsection{JavaScript runtime module installation}
-
-Unlike the Rust runtime modules, JavaScript runtime modules can be installed and
-used post-startup. This is because there is no difference on how a JavaScript
-module is installed, regardless if the installation happens during compile time
-or runtime. Since all a JavaScript module is, is a script element on the
-\gls*{dom}, we can add new ones whenever. The only thing that differentiates the
-two, is that for runtime modules, we have to call the \textbf{init} method after
-installing it, instead of during compile-time, when all modules are invoked
-after every module has been installed.
 
 
 \subsection{Magnolia dependency graph visualizer}
@@ -1383,3 +1378,67 @@ is sent to the ide\_error module, displaying the error to the user.
 \footnotetext{
   It is an error when the method \textbf{is\_ok}, on line $9$, returns false
 }
+
+
+\section{Module installation} \label{sec:module-installation}
+
+Manually installing compile-time modules can be tedious, so we automated the
+task. We are using the term \textit{installation} to mean adding the module to
+the \gls*{ide}. This can be as simple as adding a script tag to the \gls*{dom},
+with the source being a JavaScript file, or more complex, loading a library
+which has the correct bindings to be a Rust runtime module.
+
+For \gls*{jsms}, it is quite trivial, simply bundle the JavaScript code into a
+single script, and import it into one file, and, as a final step, bundle this
+file. This ensures that all JavaScript modules are included, and loaded after
+the core system.
+
+For the \gls*{rsms}, it is less trivial. A compile-time Rust module is a Rust
+crate, and since we are using Cargo\footnote{Build tool for Rust} we need to
+specify all our imported crates in a \textit{Cargo.toml} file. We then also
+need to explicitly import and add the module into a list of all compile-time
+modules. With a build script, we have automated this. In the figure
+\ref{fig:compMod}, we can see a diagram of this process.
+
+\begin{figure}
+  \centering
+  \input{./figures/compile-time-module}
+  \caption{
+    Diagram of compile time module integration, we can see that when we invoke
+    the installer tool, it reads the Modules.toml config, gets the necessary
+    module paths, and \textit{installs} them by writing them onto a file,
+    \textit{module\_reg.rs}, which is imported by the \gls*{ide}. All imports
+    need to be specified in \textit{Cargo.toml}, which is also handled by the
+    installer tool.
+  }
+  \label{fig:compMod}
+\end{figure}
+
+For runtime modules, the installation is divided into two steps. First, we have
+to add the source file to the application directory\footnote{Located in \textit{\%APPDATA} on Windows, or \textit{~/.share} on Unix},
+before actually \textit{installing} the module. Depending on what kind of file
+it is, this installation process can vary.
+
+
+\subsection{Rust runtime module installation}
+
+We use the term runtime here, to strictly mean post compilation. When this
+\gls*{ide} is running in user-space, we cannot use newly installed Rust
+runtime modules. This is because the \gls*{ide} only looks for Rust runtime
+modules during startup, so a restart is necessary. Given that a Rust runtime
+module is a simple library, we know what functions it exposes, and the calling
+conventions. Along with the abi\_stable crate, we can ensure no undefined
+behavior happens during runtime.
+
+
+\subsection{JavaScript runtime module installation}
+
+Unlike the Rust runtime modules, JavaScript runtime modules can be installed and
+used post-startup. This is because there is no difference on how a JavaScript
+module is installed, regardless if the installation happens during compile time
+or runtime. Since all a JavaScript module is, is a script element on the
+\gls*{dom}, we can add new ones whenever. The only thing that differentiates the
+two, is that for runtime modules, we have to call the \textbf{init} method after
+installing it, instead of during compile-time, when all modules are invoked
+after every module has been installed.
+

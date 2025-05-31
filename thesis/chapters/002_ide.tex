@@ -2,32 +2,38 @@
 
 This chapter will discuss the new Magnolia \gls*{ide}, the different users of the
 \gls*{ide}, and their possible experiences which was under consideration when
-developing the application.
+developing the application. We will start with section \ref{sec:up} by covering
+the different users that exist in \gls*{ide}s today, and how our architecture
+changes this user dynamic. In sections \ref{sec:user}, and \ref{sec:module-dev},
+we will cover the \gls*{ide} users and module developers of our architecture,
+respectively. Specifically, we will address what the different users expect from
+an \gls*{ide} in general, and what they might expect from ours. We will also
+cover how some of the different modules and tools we have implemented can be
+used to improve the user experience.
 
-\section{User Perspectives}
+
+\section{User Perspectives} \label{sec:up}
 
 This application has to consider different users. In \gls*{ide}'s like
 Eclipse or IntelliJ, there is the primary user base, the developers
 who are using the \gls*{ide} to develop, and then there are the secondary user
-base, the developers whom develop modules for the \gls*{ide}. Being the
-primary user base, most of the new features implemented by either \gls*{ide} are
-related to the development experience. There are still changes to that the
-module developers are interested in, namely \gls*{api} changes.
+base, the developers whom develop modules for the \gls*{ide}.
+
+Being the primary user base, most of the new features implemented by either
+\gls*{ide} are related to the development experience. There are still changes to
+that the module developers are interested in, namely \gls*{api} changes.
 IntelliJ for example, lists their \textit{incompatible \gls*{api} changes}\footnote{\url{https://plugins.jetbrains.com/docs/intellij/api-changes-list-2025.html\#intellij-platform-20252}}.
+
 Breaking changes between \gls*{ide} versions is something normal users of the
 \gls*{ide} do not worry about. As usually when a new version is released, it
 means more features for the developer to utilize. While module
 developers have to ensure their modules still work. One of the reasons
 behind \gls*{ide} version changes can break a module, is due to how
 they interact with their \gls*{ide}. In IntelliJ a module is
-created by implementing a Java interface for the functionality one wants.
+created by implementing a Java interface for the functionality one wants. This
+means a change in the interface can break the module.
 
-If one wanted IntelliJ to recognize that a file with the extension "rs",
-is a Rust source file, and give it a certain icon, one would have to implement
-the \textbf{Language} interface and override the \textbf{getIcon} method to
-return the wanted icon.
-
-So a change in the \gls*{ide} architecture could break a \textit{plugin} for the
+A change in the \gls*{ide} architecture could break a \textit{plugin} for the
 newer version of the \gls*{ide}, as with Bagge's Magnolia \gls*{ide}~\cite{baggeIde}.
 While in this zero-core \gls*{ide} module developers are quite important, as they
 are the ones who add the functionality to the \gls*{ide}. Therefore, the core
@@ -35,7 +41,7 @@ are the ones who add the functionality to the \gls*{ide}. Therefore, the core
 functionality.
 
 
-\section{IDE Users}
+\section{IDE users} \label{sec:user}
 
 As mentioned in chapter \ref{cha:background}, modern \gls*{ide}s come with an
 integrated module architecture. Which is used to extend/change the \gls*{ide},
@@ -44,17 +50,32 @@ all key binds to \textit{vim-motions}. In any case, a user expects certain
 functionality to already exist in an \gls*{ide}, like text editing. A maintainer
 of a zero-core \gls*{ide} could supply modules added at compile time, meaning the
 expected functionality is there out of the box, while more thematic modules
-could be supplied as runtime modules. Example of more functionality based
-modules are as follows:
+could be supplied as runtime modules. Furthermore, a maintainer can supply more
+framework-like modules, which enable other modules to easier implement their
+functionality.
 
-\begin{enumerate}
-  \item \textit{ide\_framework}: Responsible for general layout
-  \item \textit{ide\_explorer}: Responsible for the file explorer
-  \item \textit{ide\_pm}: Responsible for the menu bar
-  \item \textit{ide\_tabs}: Responsible for the tabbing system
-  \item \textit{ide\_editor}: Responsible for the editor
-  \item \textit{ide\_fsa}: Responsible for file system operations
-\end{enumerate}
+We have implemented a few modules, some more functionality based, other more
+framework-like. In the table \ref{tab:modules}, we can see these modules, their
+names, and the functionality they supply.
+
+\begin{table}[H]
+  \caption{Table of modules}\label{tab:modules}
+  \begin{center}
+    \begin{tabular}[c]{l|l}
+      \hline
+      \multicolumn{1}{c|}{\textbf{Module name}} &
+      \multicolumn{1}{c}{\textbf{Functionality}} \\
+      \hline
+      ide\_framework & Creates a UI framework other modules can use \\
+      ide\_explorer & File explorer functionality \\
+      ide\_pm & Adds the menu bar, with buttons and dropdown \\
+      ide\_tabs & Responsible for the tabbing system \\
+      ide\_editor & Editor \\
+      ide\_fsa & Exposes File System Operations (FSA) to other modules \\
+      \hline
+    \end{tabular}
+  \end{center}
+\end{table}
 
 \paragraph{ide\_framework} This module sets up the general \gls*{ui} layout,
 which other modules depend on. In the figure \ref{fig:ideLayout}, we have laid
@@ -124,7 +145,7 @@ enables other modules to do file system operations without having to worry about
 what \gls*{os} they are on.
 
 
-\subsection{Magnolia Dependency Graph Visualizer}
+\subsection{Magnolia dependency graph visualizer}
 
 In Magnolia, as in many other languages, one cannot have a cyclic dependency.
 This means that the dependency graph of a Magnolia project should be a
@@ -163,7 +184,7 @@ picture \ref{pic:depCont}, we can see the control-panel that our graph module
 has created. With the control panel, we can zoom in and out on the graph\footnote{This can also be done with the mouse},
 and reset our view. This, along with the node size scale, scaling how big
 a node is depending on how many dependents it has, ensures this visualization
-tool can be used for other programming libraries, not just Magnolia.\footnote{Given a proper parser module}
+tool can be used for other programming libraries, not just Magnolia.\footnote{Given a proper parser module, for the target programming language}
 Furthermore, we can highlight the packages we care about, using the filter
 panel the module created. In picture \ref{pic:depFil}, all the different
 Magnolia packages have been detected, and their corresponding colour has been
@@ -219,7 +240,7 @@ fully fledged \gls*{ide}. And then this \gls*{ide} can be distributed to the
 students, who can still extend the \gls*{ide} with runtime modules at their own
 digression.
 
-\subsection{Module Installer}
+\subsection{Module installer}
 
 Module markets are an important part of the \gls*{ide} user experience. Being
 able to install a module with the click of a button essential. Not having a
@@ -243,7 +264,7 @@ copy this binary instead.
   \label{pic:moduleInstaller}
 \end{figure}
 
-\section{Module Developer}
+\section{Module developer} \label{sec:module-dev}
 
 Being a zero-core application; all functionality comes from modules, the module
 developer experience is the most important. To achieve this, documentation is
@@ -258,9 +279,10 @@ Eclipse has to be large, due to of how \textit{plugins} interact with the
 simply due to the fact that the core \gls*{ide} offers fewer features, as features
 necessarily come from modules in a zero-core architecture.
 
-\subsection{Language Agnostic Modules}
 
-The largest limiting factor in module oriented applications, is the
+\subsection{Language agnosticism and foreign modules}
+
+A limiting factor in module oriented applications, is the
 \textit{language barrier}. Most applications limit what language one can extend
 an application with, like in VS Code, where its JavaScript/HTML/CSS. Or
 IntelliJ, where one can use Java or Kotlin. But what does language agnostic
@@ -294,8 +316,7 @@ prototype module where module developers can manually invoke other modules.
   \centering
   \includegraphics[width=0.5\textwidth]{event-mocking.png}
   \caption{
-    Module that adds a simple pop-up menu for manually invoking other modules,
-    by using the event system, discussed more in chapter \ref{cha:impl}.
+    Module that adds a simple pop-up menu for manually invoking other modules
   }
   \label{pic:eventMock}
 \end{figure}
@@ -321,7 +342,7 @@ state of the \gls*{ide}.
 \end{figure}
 
 
-\subsection{Module Dependency Visualization}
+\subsection{Module dependency visualization}
 
 When developing against a modular architecture, it is useful to be able to see
 what different module families appear, and what the different dependencies
@@ -338,35 +359,3 @@ graph of the \gls*{ide} modules.
   \label{pic:modDep}
 \end{figure}
 
-
-\section{Maintainer}
-
-To make the maintainer of the core application most comfortable, good
-documentation is needed. The same documentation a module developer wants, so
-it's important for them and the maintainer that the documentation is up-to-date.
-But how good is documentation if it is not updated when the code being
-documented is changed? This is where Rust's doc-test system comes into play. Any
-function annotated with a doc string, can contain code examples. If these code
-examples are written as Rust code, and use assert statements, then this code is
-run, during testing, as if it was an actual test. Meaning the saying
-\textit{code is documentation}, is \textit{documentation is code} in Rust.
-
-\subsection{Testing}
-
-Ensuring the core library used by module developers is correct, is an essential
-part of a maintainers job. The easiest way for a maintainer to achieve this, is
-to test in production; letting module developers report issues. This is not a
-good experience for module developers. But the second-easiest way is to create
-unit tests that ensure edge cases are handled correctly. We have designed test
-data for serializing and deserializing data between the different languages
-supported by the \gls*{ide}, ensuring that any library developed can be
-verified to work correctly. The test data is modular, meaning we can easily
-create new edge cases. In the picture \ref{pic:libTest}, we can see that there
-are $135$ different test cases.
-
-\begin{figure}
-  \centering
-  \includegraphics[width=0.50\textwidth]{libtest.png}
-  \caption{Picture showing the output of running the test data}
-  \label{pic:libTest}
-\end{figure}

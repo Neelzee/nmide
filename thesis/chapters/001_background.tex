@@ -1,12 +1,12 @@
 \chapter{Background} \label{cha:background}
 
-In this chapter, we will introduce Magnoila \ref{sec:magnolia}, some of the
-interesting aspects the language introduces, and examples of how we can use it.
-We will then discuss \gls*{ide}s in the following section \ref{sec:ide}, and
-mention some specific functionality they have that make them great tools for
-developers. Then, in section \ref{sec:architecture}, we will discuss our
+In this chapter, we will introduce Magnolia in section \ref{sec:magnolia}, some
+of the interesting aspects the language introduces, and examples of how we can
+use it. We will then discuss \gls*{ide}s in the following section \ref{sec:ide},
+and mention some specific functionality they have that make them great tools for
+developers. Then, in section \ref{sec:architecture}, we will cover our
 approach, and how it differs from standard modularity in other \gls*{ide}s. We
-will also discuss the current Magnolia \gls*{ide}. Finally, in the last section
+will also address the current Magnolia \gls*{ide}. Finally, in the last section
 \ref{sec:challenges} we will discuss the challenges that exist due to the
 uniqueness of the Magnolia language.
 
@@ -79,7 +79,7 @@ instantiate a list, and do operations on it, such as getting adding an element t
 the list, or by concatenating two lists. We can also fetch the first element of
 the list, by using \textbf{head}, note the \textit{guard} attached to the
 function statement, this guard ensures that when this method is invoked, the
-list we get the first element from, cannot be empty\footnote{Equal to \textbf{nil()}},
+list we get the first element from, cannot be empty\footnote{Meaning it is equal to \textbf{nil()}},
 which means that our function is not \textit{total}, but \textit{partial}. This
 means that for any argument, we might not have a corresponding result. If we did
 not have this guard, then what would happen if we \textit{took} \textbf{head} of a list
@@ -117,10 +117,10 @@ specified in listing \ref{lst:nat}, by using concrete values for \textbf{N}.
 There is an implementation for all the functions, giving us the functionality we
 set out to specify with our concept, but there is nothing stopping us from
 straying away from the specification, by implementing it incorrectly. Since we
-are using primitive types\footnote{In this case, integers} we have to use
-external code, which is another feature of Magnolia. In the listings
-\ref{lst:impl} and \ref{lst:impl-wrong}, we are using an external implementation
-of numbers, from C++.
+are using primitive types\footnote{In this case, integers, specifically 32-bit}
+we have to use external code, which is another feature of Magnolia. In the\
+listings \ref{lst:impl} and \ref{lst:impl-wrong}, we are using an external
+implementation of numbers, from C++.
 
 \begin{code}[H]
   \lstinputlisting
@@ -138,14 +138,18 @@ of numbers, from C++.
     ]{./code/magnolia-add-wrong.mg}
 \end{code}
 
-We have defined zero correctly in listing \ref{lst:implCpp}, and incorrectly in
-\ref{lst:implCppWrong}, here it returns $1$ instead of $0$.
+We have defined the function \textbf{zero} correctly in listing
+\ref{lst:implCpp}. On line five, we return $0$, which is what we expect, based
+on our axiom. However, on line 5, in listing \ref{lst:implCppWrong}, we instead
+return $1$, which breaks our axiom, as $1 + 1 \neq 1$.
 
 \begin{code}[H]
   \lstinputlisting
     [ language=C++
     , caption={Natural numbers implementation (C++)}
     , label=lst:implCpp
+    , numbers=left
+    , numberstyle=\tiny\color{gray}
     ]{./code/CxxNaturalNumbers.hxx}
 \end{code}
 
@@ -154,6 +158,8 @@ We have defined zero correctly in listing \ref{lst:implCpp}, and incorrectly in
     [ language=C++
     , caption={Invalid implementation (C++)}
     , label=lst:implCppWrong
+    , numbers=left
+    , numberstyle=\tiny\color{gray}
     ]{./code/CxxNaturalNumbersWrong.hxx}
 \end{code}
 
@@ -626,6 +632,8 @@ in listing \ref{lst:group}.
   \lstinputlisting
     [ language=Magnolia
     , caption={Logging example (Magnolia)}
+    , numbers=left
+    , numberstyle=\tiny\color{gray}
     , label=lst:logging]{./code/logging-solution.mg}
 \end{code}
 
@@ -633,12 +641,17 @@ in listing \ref{lst:group}.
   \lstinputlisting
     [ language=Magnolia
     , caption={Editor example (Magnolia)}
+    , numbers=left
+    , numberstyle=\tiny\color{gray}
     , label=lst:editor]{./code/editor-solution.mg}
 \end{code}
 
 Indeed, reuse is so useful, that in Magnolia one can rename concepts one use.
 In the listings \ref{lst:logging} and \ref{lst:editor}, we have renamed the type
-and function into something that makes more sense in the specific use case.
+and function into something that makes more sense in the specific use case. On
+line four, in \ref{lst:logging}, we have renamed \textbf{binop} and \textbf{T}
+to \textbf{combine} and \textbf{Log}, respectively.
+
 While it is useful for us developing the concept, to know that our logging
 concept is a semigroup, when using an implementation, this is less relevant.
 If a consumer of the logging \gls*{api} read that logs where used everywhere in
@@ -660,12 +673,14 @@ build, test and package the project. So instead of manually adding each new C
 file to the compiler argument list, or manually compiling and zipping Java class
 files, an external program was used. But for C/C++ or Java/Kotlin, external
 libraries are used, which meant that among different developers, the environment
-could vary. This meant that onboarding new developers took time, to ensure they
-had all the necessary dependencies to develop the project. Which could be as
-simple as downloading some library or program, to ensuring specific environment
-variables existed during compile time. Eventually all of these different
-dependencies, programs, environment variables and such where all integrated into
-a single application.
+could vary.
+
+This meant that onboarding new developers took time, to ensure they had all the
+necessary dependencies to develop the project. Which could be as simple as
+downloading some library or program, to ensuring specific environment variables
+existed during compile time. Eventually all of these different dependencies,
+programs, environment variables and such where all integrated into a single
+application.
 
 An \gls*{ide}, aids a developer, as all the needed tools for development are
 integrated into one application. Some are more specialized than others,
@@ -881,19 +896,22 @@ modules interact by invoking each other, it can mimic a microservice
 architecture. A module invocation is some \textit{request}, which the invoked
 module \textit{responds} to. There is a provider-consumer dynamic. There is a
 provider, some module providing data, and some consumer, some module using the
-data. If either the consumer or the provider is maintained by a third party,
-then there is some informal \textit{contract} between them. The consumer
-expects the outputs of a provider to be in some certain format, which in the
-case for \gls*{rest} \gls*{api}s usually is \gls*{json}, but with
-specification formats like OpenApi\footnote{https://swagger.io/docs
-specification/v3\_0/about/}, one can also specify the structure of the
-\gls*{json} response, with what fields and values it can have. One can also
-specify what values are valid in a request. But even if one does use such a
-format, changes in scope can require the provider to change the \gls*{api},
-which could affect the consumer, because the consumer assumed something about
-their informal contract, that all numbers provided are integers. And if
-suddenly the provider changes, and returns floating point numbers, the
-consumer could crash trying to parse a string as an integer. 
+data.
+
+If either the consumer or the provider is maintained by a third party, then
+there is some informal \textit{contract} between them. The consumer expects the
+outputs of a provider to be in some certain format, which in the case for
+\gls*{rest} \gls*{api}s usually is \gls*{json}, and with specification formats
+like OpenApi\footnote{https://swagger.io/docs specification/v3\_0/about/}, one
+can also specify the structure of the \gls*{json} response, with what fields and
+values it can have. One can also specify what values are valid in a request.
+
+But even if one does use such a format, changes in scope can require the
+provider to change the \gls*{api}, which could affect the consumer, because the
+consumer assumed something about their informal contract, that all numbers
+provided are integers. And if suddenly the provider changes, and returns
+floating point numbers, the consumer could crash trying to parse a string as an
+integer.
 
 The same concept applies to a zero-core \gls*{ide}. Modules have an implicit, and
 informal contract between them. So the same measures, used in microservice
@@ -904,16 +922,18 @@ systems at test time, mocking is used. This mocking is part of how a consumer
 assumes a provider should act. Mocking of modules is trivial, as all one needs
 to mock is the state, the \gls*{ui}, or that some event happens, triggering a
 module. At a larger scale we test the module family, to see if its change has
-affected the other modules. This can be done with contract testing, as discussed
-by Gross and Mayer~\cite{GROSS200322}. They propose a component architecture,
-where each module exposes some testing interface. The same principals they
-discussed, while for a different, but similar architecture, can be applied to
-ours. But instead of having each module have a testing interface, we can instead
-load all modules composing the \gls*{ide} in a test environment, where all
-interactions are recorded, and used to generate a dependency graph, showing what
-modules depend on whom. This can show that certain modules are more tightly
-connected than assumed, meaning they are in the same module family, it can also
-show what module families communicate with other module families, showing module
+affected the other modules.
+
+This can be done with contract testing, as discussed by Gross and
+Mayer~\cite{GROSS200322}. They propose a component architecture, where each
+module exposes some testing interface. The same principals they discussed, while
+for a different, but similar architecture, can be applied to ours. But instead
+of having each module have a testing interface, we can instead load all modules
+composing the \gls*{ide} in a test environment, where all interactions are
+recorded, and used to generate a dependency graph, showing what modules depend
+on whom. This can show that certain modules are more tightly connected than
+assumed, meaning they are in the same module family, it can also show what
+module families communicate with other module families, showing module
 communities.
 
 

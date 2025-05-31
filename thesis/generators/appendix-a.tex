@@ -1,58 +1,22 @@
 \chapter{Optimizing instructions sets} \label{app:a}
 
 The following appendix discusses how we can optimize an instruction set. When we
-use the term \textit{optimize}, we mean to reduce the amount of instructions.
-This can be achieved in a few different steps. \textbf{Instruction} is a
-recursive data type, parameterized by \textbf{T}. Since an \textbf{Instruction}
-form a monoid\footnote{See section \ref{sec:moD3} in chapter \ref{cha:impl}}
-structure, we can apply some of the theory from algebraic structures on our
+use the term \textit{optimize}, we mean to reduce the amount of instructions, by
+pruning the instruction tree.
+
+
+\section{Semantics of the instruction data type}
+
+\textbf{Instruction} is a recursive data type, parameterized by \textbf{T}.
+Since the \textbf{Instruction} data type, semantically forms a
+monoid\footnote{See section \ref{sec:moD3} in chapter \ref{cha:impl}} structure,
+we can apply some of the theory from algebraic structures on our 
 \textbf{Instruction} variant, optimizing it. The goal of this optimization, is
 to see if an \textbf{Instruction} tree contains any no-operations, and prune it.
 
+As a recap, in listing \ref{lst:aInst}, we can see the \textbf{Instruction}
+implementation in Rust.
 
-\section{Pruning the instruction tree}
-
-An \textit{unnecessary} operation is one that leads to an \textbf{NoOp}, which
-is the case of inversable \textbf{Instruction}s. This inversability does not
-occur on all \textbf{Instruction}, hence it forming a monoid and not a group,
-but there are cases where we have inverses, meaning we get \textbf{NoOp}s. If we
-do a remove instruction, and then an add, the remove instruction is an
-\textbf{NoOp}. If, however, we do the opposite, first add, then remove, we get
-an \textbf{NoOp} for both instructions.
-
-Furthermore, since we have the idempotency property on add and remove,
-regardless of how many times we repeat the same instruction, it is the same as
-doing it just once, meaning we can reduce a series of the same instructions into
-a series of no-operations, and a singular instruction.
-
-This gives us four rules which we can apply to our instruction tree:
-
-\begin{equation} \label{eq:apx1}
-  Rem_T \odot Add_T \implies NoOp \odot Add_T \implies Add_T
-\end{equation}
-
-\begin{equation} \label{eq:apx2}
-  Add_T \odot Rem_T \implies NoOp
-\end{equation}
-
-\begin{equation} \label{eq:apx3}
-  Add_T^1 \odot Add_T^2 \odot \dots \odot Add_T^N \implies Add_T^1 \odot NoOp^1 \odot \dots \odot NoOp^{N - 1} \implies Add_T^1
-\end{equation}
-
-
-\begin{equation} \label{eq:apx4}
-  Rem_T^1 \odot Rem_T^2 \odot \dots \odot Rem_T^N \implies Rem_T^1 \odot NoOp^1 \odot \dots \odot NoOp^{N - 1} \implies Rem_T^1
-\end{equation}
-
-The optimalization function is not parameterized by a strict variant of
-\textbf{T}, meaning it works the same regardless of \textbf{T}. In the
-\gls*{ide} the \textbf{Instruction}s are parameterized by \textbf{Value},
-\textbf{Html}, \textbf{Attr} and \textbf{String}. The last three are specific to
-\gls*{ui} modification, and the last two are modifications on specific
-\textbf{Html} instances. This means that if an \textbf{Instruction}
-parameterized by \textbf{Html}, is of the \textbf{Rem} variant, we know all
-other \gls*{ui} \textbf{Instruction}s pertaining to the removed \textbf{Html}
-variant are \textbf{NoOp}s.
 
 \begin{code}[H]
   \lstinputlisting
@@ -63,6 +27,19 @@ variant are \textbf{NoOp}s.
    , lastline=16
    ]{./libs/rust/core-std-lib/src/instruction/inst.rs}
 \end{code}
+
+
+\subsection{$T$ agnostic function}
+
+The optimalization function is not parameterized by a strict variant of
+$T$, meaning it works the same regardless of $T$. In the \gls*{ide} the
+\textbf{Instruction}s are parameterized by \textbf{Value}, \textbf{Html},
+\textbf{Attr} and \textbf{String}. The last three are specific to \gls*{ui}
+modification, and the last two are modifications on specific \textbf{Html}
+instances. This means that if an \textbf{Instruction} parameterized by
+\textbf{Html}, is of the \textbf{Rem} variant, we know all other \gls*{ui}
+\textbf{Instruction}s pertaining to the removed \textbf{Html} variant are
+\textbf{NoOp}s.
 
 In Rust we can have generic data types, as shown in listing \ref{lst:aInst}, by
 the type parameter, $T$, but we have to restrict the type $T$ to a type that
@@ -82,11 +59,50 @@ These macros generate the needed code to implement the different traits:
 \end{itemize}
 
 
+\section{Pruning the instruction tree}
+
+An \textit{unnecessary} operation is one that leads to an \textbf{NoOp}, which
+is the case of inversable \textbf{Instruction}s. This inversability does not
+occur on all \textbf{Instruction}, hence it forming a monoid and not a group,
+but there are cases where we have inverses, meaning we get \textbf{NoOp}s. If we
+do a remove instruction, and then an add, the remove instruction is an
+\textbf{NoOp}. If, however, we do the opposite, first add, then remove, we get
+an \textbf{NoOp} for both instructions.
+
+Furthermore, since we have the idempotency property on add and remove,
+regardless of how many times we repeat the same instruction, it is the same as
+doing it just once, meaning we can reduce a series of the same instructions into
+a series of no-operations, and a singular instruction.
+
+
+\subsection{Optimization rules}
+
+This gives us four rules which we can apply to our instruction tree, where
+$\circledast$ is our binary function.
+
+\begin{equation} \label{eq:apx1}
+  Rem_T \circledast Add_T \implies NoOp \circledast Add_T \implies Add_T
+\end{equation}
+
+\begin{equation} \label{eq:apx2}
+  Add_T \circledast Rem_T \implies NoOp
+\end{equation}
+
+\begin{equation} \label{eq:apx3}
+  Add_T^1 \circledast Add_T^2 \circledast \dots \circledast Add_T^N \implies Add_T^1 \circledast NoOp^1 \circledast \dots \circledast NoOp^{N - 1} \implies Add_T^1
+\end{equation}
+
+
+\begin{equation} \label{eq:apx4}
+  Rem_T^1 \circledast Rem_T^2 \circledast \dots \circledast Rem_T^N \implies Rem_T^1 \circledast NoOp^1 \circledast \dots \circledast NoOp^{N - 1} \implies Rem_T^1
+\end{equation}
+
+
 \section{Implementation}
 
-We first start the optimalization step, by removing all NoOps, and then
-flattening the instructions, by using the \textbf{opt} and \textbf{flatten}
-methods, shown in listings \ref{lst:opt} and \ref{lst:flatten} respectively.
+We first start the pruning, by removing all NoOps, and then flattening the
+instructions, by using the \textbf{opt} and \textbf{flatten} methods, shown in
+listings \ref{lst:opt} and \ref{lst:flatten} respectively.
 
 \begin{code}[H]
   \lstinputlisting
@@ -119,13 +135,14 @@ methods, shown in listings \ref{lst:opt} and \ref{lst:flatten} respectively.
 \end{code}
 
 In listing \ref{lst:count}, we then iterate over each instruction in the
-sequence, and mapping each field and value to a counter. If it's an Add
+sequence, and map each field and value to a counter. If it's an Add
 instruction, the counter is incremented, if it's a Rem instruction, the counter
 is decremented. We don't have a way to inform the compiler that we have removed
 all NoOp and Then instructions, and we need complete match-statements, so we add
 a catch-all with an \textit{unreachable} macro, which will \textit{panic} with
-the supplied message. This is commonly used to represent a state that is
-unreachable, but something the compiler can't prove.
+the supplied message. When a Rust program \textit{panic}s, it exits the program
+with the supplied panic message, if any.
+
 
 \begin{code}[H]
   \lstinputlisting
