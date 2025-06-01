@@ -15,6 +15,12 @@ pub struct RAttr {
     pub(crate) val: RAttrUnion,
 }
 
+impl std::fmt::Debug for RAttr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("RAttr").field("kind", &self.kind).finish()
+    }
+}
+
 impl Clone for RAttr {
     fn clone(&self) -> Self {
         match self.kind {
@@ -29,7 +35,14 @@ impl Clone for RAttr {
             RAttrKind::Style => todo!(),
             RAttrKind::Type => todo!(),
             RAttrKind::Checked => todo!(),
-            RAttrKind::OnClick => todo!(),
+            RAttrKind::OnClick => Self {
+                kind: self.kind.clone(),
+                val: unsafe {
+                    RAttrUnion {
+                        _msg: self.val._msg.clone(),
+                    }
+                },
+            },
             RAttrKind::OnInput => todo!(),
             RAttrKind::EmitInput => todo!(),
         }
@@ -57,7 +70,7 @@ impl RAttr {
     /// This will only be [`Some`] if the RAttr is of type `Checked`.
     pub fn bool(&self) -> Option<bool> {
         match self.kind {
-            RAttrKind::Checked => Some(unsafe { self.val._bool.clone() }),
+            RAttrKind::Checked => Some(unsafe { self.val._bool }),
             _ => None,
         }
     }
@@ -67,7 +80,7 @@ impl RAttr {
     /// This will only be [`Some`] if the RAttr is of type `OnClick` or `OnInput`
     ///
     /// [`REvent`]: ../msg/rmsg.rs
-    pub fn msg(&self) -> Option<ManuallyDrop<REvent>> {
+    pub fn event(&self) -> Option<ManuallyDrop<REvent>> {
         match self.kind {
             RAttrKind::OnClick => Some(unsafe { self.val._msg.clone() }),
             _ => None,
@@ -87,11 +100,11 @@ impl RAttr {
 
     // TODO: Add doc-test
     /// Creates a new `ID` RAttr
-    pub fn new_id(id: RString) -> Self {
+    pub fn new_id<S: ToString>(id: S) -> Self {
         Self {
             kind: RAttrKind::Id,
             val: RAttrUnion {
-                _str: ManuallyDrop::new(id),
+                _str: ManuallyDrop::new(RString::from(id.to_string())),
             },
         }
     }
@@ -142,7 +155,7 @@ impl RAttr {
 }
 
 #[repr(u8)]
-#[derive(StableAbi, Clone)]
+#[derive(StableAbi, Clone, Debug)]
 pub enum RAttrKind {
     Id,
     Class,
@@ -183,11 +196,8 @@ impl RAttr {
             RAttrKind::Type => todo!(),
             RAttrKind::Checked => todo!(),
             RAttrKind::OnClick => {
-                let mut evt = self.msg().unwrap();
+                let evt = self.event().unwrap();
                 let event = evt.to_event();
-                unsafe {
-                    ManuallyDrop::drop(&mut evt);
-                }
                 Attr::Click(event)
             }
             RAttrKind::OnInput => todo!(),

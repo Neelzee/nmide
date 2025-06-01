@@ -28,6 +28,10 @@ impl From<Event> for REvent {
 }
 
 impl REvent {
+    pub fn event_name(&self) -> &RString {
+        &self.event_name
+    }
+
     pub fn to_event(&self) -> Event {
         Event::new(
             self.event_name.as_str(),

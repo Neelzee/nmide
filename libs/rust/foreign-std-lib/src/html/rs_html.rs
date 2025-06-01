@@ -14,7 +14,7 @@ use core_std_lib::html::Html;
 macro_rules! rhtmlkind {
     ( $( $name:ident ),* ) => {
         #[repr(u8)]
-        #[derive(StableAbi, Clone, Copy)]
+        #[derive(StableAbi, Clone, Copy, Debug)]
         pub enum RHtmlKind {
             $(
                 $name,
@@ -44,18 +44,18 @@ macro_rules! rhtmlkind {
             }
             )*
 
-            pub fn to_html(self) -> Html {
+            pub fn to_html(&self) -> Html {
                 match &self.kind {
                     $(
                         RHtmlKind::$name => {
                             let mut html = Html::$name();
-                            let kids = self.kids.into_iter().map(|k| k.to_html()).collect();
+                            let kids = self.kids.clone().into_iter().map(|k| k.to_html()).collect();
                             html = html.replace_kids(kids);
-                            for a in self.attrs {
+                            for a in self.attrs.clone() {
                                 let attr = a.to_attr();
                                 html = html.add_attr(attr);
                             }
-                            if let ROption::RSome(txt) = self.text {
+                            if let ROption::RSome(txt) = self.text.clone() {
                                 html = html.set_text(txt.as_str().to_string());
                             }
                             html
@@ -74,7 +74,7 @@ rhtmlkind!(
 );
 
 #[repr(C)]
-#[derive(StableAbi, Clone)]
+#[derive(StableAbi, Clone, Debug)]
 pub struct RHtml {
     pub(crate) kind: RHtmlKind,
     pub(crate) kids: RVec<RHtml>,
@@ -103,6 +103,13 @@ impl RHtml {
             kids: RVec::new(),
             text: ROption::RNone,
             attrs: RVec::new(),
+        }
+    }
+
+    pub fn set_text<S: ToString>(self, text: S) -> Self {
+        Self {
+            text: ROption::RSome(RString::from(text.to_string())),
+            ..self
         }
     }
 }

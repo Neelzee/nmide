@@ -105,27 +105,41 @@ impl RValue {
 
     pub fn to_value(self) -> Value {
         match &self.kind {
-            RValKind::Int => Value::Int(self.int().unwrap()),
-            RValKind::Float => Value::Float(NotNan::new(self.float().unwrap()).unwrap_or_default()),
+            RValKind::Int => Value::Int(self.int().unwrap_or_default()),
+            RValKind::Float => {
+                Value::Float(NotNan::new(self.float().unwrap_or_default()).unwrap_or_default())
+            }
             RValKind::Bool => Value::Bool(self.bool().unwrap()),
             RValKind::Str => {
                 // TODO: Is this dropped?
-                let mn = self.str().unwrap();
+                let mn = self
+                    .str()
+                    .cloned()
+                    .unwrap_or(ManuallyDrop::new(RString::new()));
                 let s = mn.as_str().to_string();
                 Value::Str(s)
             }
             RValKind::List => Value::List(
                 self.lst()
-                    .unwrap()
+                    .cloned()
+                    .unwrap_or(ManuallyDrop::new(Default::default()))
                     .iter()
                     .map(|v| v.clone().to_value())
                     .collect(),
             ),
             RValKind::Obj => {
-                let xs = self.obj().unwrap();
+                let xs = self
+                    .obj()
+                    .cloned()
+                    .unwrap_or(ManuallyDrop::new(Default::default()));
                 let ys: HashMap<String, Value> =
                     xs.clone().iter().map(|y| y.clone().to_tuple()).collect();
                 Value::Obj(ys.into())
+            }
+            RValKind::Null => Value::Null,
+            RValKind::Html => {
+                let html = unsafe { self.val._html };
+                Value::Html(html.clone().to_html())
             }
         }
     }
@@ -134,6 +148,7 @@ impl RValue {
 #[repr(C)]
 #[derive(StableAbi)]
 pub union RValueUnion {
+    pub(crate) _null: bool,
     pub(crate) _int: i32,
     pub(crate) _float: f32,
     pub(crate) _bool: bool,
@@ -297,12 +312,14 @@ fn rkey_pair_cmp_key_failure_test<K, V>(
 #[repr(u8)]
 #[derive(StableAbi, Clone, PartialEq, Eq, Debug)]
 pub enum RValKind {
+    Null,
     Int,
     Float,
     Bool,
     Str,
     List,
     Obj,
+    Html,
 }
 
 #[repr(C)]

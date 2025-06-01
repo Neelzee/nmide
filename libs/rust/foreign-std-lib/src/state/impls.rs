@@ -6,6 +6,7 @@ use super::rs_state::{RKeyPair, RState, RValKind, RValue, RValueUnion};
 use abi_stable::std_types::{RString, RVec};
 use core_std_lib::state::{State, Value};
 use std::mem::ManuallyDrop;
+
 impl std::fmt::Debug for RValue {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("RValue")
@@ -19,6 +20,8 @@ impl std::fmt::Debug for RValue {
                     RValKind::Str => unsafe { &self.val._str },
                     RValKind::List => unsafe { &self.val._lst },
                     RValKind::Obj => unsafe { &self.val._obj },
+                    RValKind::Null => unsafe { &self.val._null },
+                    RValKind::Html => unsafe { &self.val._html },
                 },
             )
             .finish()
@@ -55,6 +58,18 @@ impl Clone for RValue {
                 kind: RValKind::Obj,
                 val: RValueUnion {
                     _obj: self.obj().unwrap().clone(),
+                },
+            },
+            RValKind::Null => Self {
+                kind: self.kind.clone(),
+                val: RValueUnion { _null: true },
+            },
+            RValKind::Html => Self {
+                kind: self.kind.clone(),
+                val: unsafe {
+                    RValueUnion {
+                        _html: self.val._html.clone(),
+                    }
                 },
             },
         }
@@ -187,7 +202,7 @@ impl Default for RState {
 impl From<State> for RState {
     fn from(value: State) -> Self {
         Self {
-            pairs: value.inner().into_iter().map(|v| v.into()).collect(),
+            pairs: value.inner().into_iter().map(RKeyPair::from).collect(),
         }
     }
 }

@@ -27,6 +27,16 @@ impl RCoreModification {
         }
     }
 
+    pub fn add_node<S: ToString>(self, field: S, ui: RHtml) -> Self {
+        Self {
+            ui_html: self.ui_html.combine(RInstr::Add(
+                RString::from_str(&field.to_string()).unwrap_or_default(),
+                ui,
+            )),
+            ..self
+        }
+    }
+
     pub fn to_mod(self) -> CoreModification {
         CoreModification::from_instr(
             self.state.map(|v| v.to_value()).to_instr(),
