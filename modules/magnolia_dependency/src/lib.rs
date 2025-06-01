@@ -45,6 +45,10 @@ impl core_module_lib::Module for Module {
                 .unwrap_or_default()
                 .into();
 
+            if !is_magnolia_project(Path::new(&path)) {
+                return;
+            }
+
             let field = format!("graph:{path:?}");
             match core.state().await.get(&field) {
                 Some(g) => {
@@ -150,4 +154,22 @@ pub(crate) fn get_modules(path: &Path) -> Vec<MagnoliaModule> {
         _ => Vec::new(),
     })
     .collect()
+}
+
+fn is_magnolia_project(path: &Path) -> bool {
+    fs::read_dir(
+        path.canonicalize()
+            .inspect_err(|err| panic!("Error when canonicalizing path: {path:?}, error: {err:?}"))
+            .unwrap(),
+    )
+    .inspect_err(|err| panic!("Error when reading path: {path:?}, error: {err:?}"))
+    .unwrap()
+    .filter_map(|e| e.ok())
+    .any(|d| match d.file_type() {
+        Ok(df) if df.is_file() && d.file_name().to_str().is_some_and(|p| p.ends_with(".mg")) => {
+            true
+        }
+        Ok(df) if df.is_dir() => is_magnolia_project(&d.path()),
+        _ => false,
+    })
 }
