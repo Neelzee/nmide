@@ -74,6 +74,8 @@ body {
   border-radius: 5px;
   border: 1px solid #ddd;
   color: black;
+  max-height: 75vh;
+  overflow-y: auto;
 }
 
 .legend-item {
