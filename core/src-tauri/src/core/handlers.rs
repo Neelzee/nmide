@@ -2,12 +2,12 @@ use crate::{
     context::{compile_time::NmideCore, runtime::RuntimeCore},
     core::statics::{COMPILE_TIME_MODULES, MODULE_EVENT_REGISTER, NMIDE, RUNTIME_MODULES},
 };
-use abi_stable::sabi_trait::TD_CanDowncast;
+use abi_stable::sabi_trait::TD_Opaque;
 use core_module_lib::rs_module::RCore_CTO;
 use core_std_lib::{core::Core, event::Event};
 use foreign_std_lib::event::rs_event::REvent;
-use futures;
-use log::info;
+use futures::{self, FutureExt};
+use log::{error, info};
 
 pub async fn init() {
     let rt_modules = RUNTIME_MODULES
@@ -17,12 +17,18 @@ pub async fn init() {
         .await;
     let rt_module_futures = rt_modules
         .values()
-        .map(|m| m.init(|| RCore_CTO::from_const(&RuntimeCore, TD_CanDowncast)))
+        .map(|m| m.init(RCore_CTO::from_const(&RuntimeCore, TD_Opaque)))
         .collect::<Vec<_>>();
     let modules = COMPILE_TIME_MODULES.read().await;
     let module_futures = modules.values().map(|m| m.init(Box::new(NmideCore)));
     futures::future::join_all(module_futures).await;
-    futures::future::join_all(rt_module_futures).await;
+
+    for f in rt_module_futures {
+        match f.catch_unwind().await {
+            Ok(_) => (),
+            Err(err) => error!("[backend] panic: {err:?}"),
+        }
+    }
 
     NmideCore.throw_event(Event::PostInit).await;
 }
@@ -56,13 +62,19 @@ pub async fn handler(event: Event) {
                     if revt.is_none() {
                         revt = Some(REvent::from(evt.clone()));
                     }
-                    rt_modules.push(m.handler(revt.clone().unwrap(), || {
-                        RCore_CTO::from_const(&RuntimeCore, TD_CanDowncast)
-                    }));
+                    rt_modules.push(m.handler(
+                        revt.clone().unwrap(),
+                        RCore_CTO::from_const(&RuntimeCore, TD_Opaque),
+                    ));
                 }
             }
             futures::future::join_all(modules).await;
-            futures::future::join_all(rt_modules).await;
+            for f in rt_modules {
+                match f.catch_unwind().await {
+                    Ok(_) => (),
+                    Err(err) => error!("[backend] panic: {err:?}"),
+                }
+            }
         }
     });
 

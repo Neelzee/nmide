@@ -48,18 +48,16 @@ pub fn setup(paths: (PathBuf, PathBuf)) {
                     e.to_string_lossy() == "so" || e.to_string_lossy() == "dll"
                 }) =>
                 {
-                    info!("{:?}", d.path());
+                    info!("RT-Module: {:?}", d.path());
                     Some(d.path())
                 }
                 Err(err) => {
-                    warn!("Failed to get plugin path: `{err:?}`");
+                    warn!("Failed to get module path: `{err:?}`");
                     None
                 }
                 _ => None,
             })
             .filter_map(|pth| {
-                // TODO: This should print to stderr, and not panic, but is useful for
-                // development
                 match RsModule::new(pth.as_path()) {
                     Ok(rm) => Some(rm),
                     Err(err) => {
@@ -68,7 +66,10 @@ pub fn setup(paths: (PathBuf, PathBuf)) {
                     },
                 }
             })
-            .map(|m| (m.name(), m))
+            .map(|m| {
+                info!("[backend] RT-Module: {}", m.name());
+                (m.name(), m)
+            })
             .collect()
     )).expect("Reading from the plugin directory should not fail");
 }
