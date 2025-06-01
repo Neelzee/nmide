@@ -277,7 +277,7 @@ fn main() {
     rs_installer::install(modules_list.clone(), cargo, out);
     rs_rt_installer::install(rt_modules.clone(), module_folder.clone());
     js_installer::install(dist.clone(), modules_list.clone());
-    js_rt_installer::install(rt_modules.clone(), module_folder);
+    js_rt_installer::install(rt_modules.clone(), module_folder.clone());
     let styles = css_installer::install(dist.clone(), modules_list);
 
     if index.is_empty() {
@@ -303,18 +303,18 @@ fn main() {
 
     println!("Copying files:");
     for f in files {
-        println!("{f}");
         let mut copy_cmd = Command::new("cp");
-        copy_cmd.arg(f);
+        copy_cmd.arg(&f);
         copy_cmd.arg(format!("{}/", &dist));
+        println!("cp {f} {}/", &dist);
         run_cmd(copy_cmd);
     }
     println!("Copying rt-files:");
     for f in rt_files {
         let mut copy_cmd = Command::new("cp");
         copy_cmd.arg(&f);
-        copy_cmd.arg(format!("{}/", &dist));
-        println!("cp {f} {}/{f}", &dist);
+        copy_cmd.arg(&module_folder);
+        println!("cp {f} {module_folder}");
         run_cmd(copy_cmd);
     }
 }

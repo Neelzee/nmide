@@ -24,7 +24,6 @@ pub(crate) fn install(modules: Vec<Module>, module_folder: String) {
         // TODO: Ensure this works for windows with "dll"
         path = path.join(format!("target/release/lib{}.so", m.name.replace("-", "_"),));
         let mut copy_cmd = Command::new("cp");
-        copy_cmd.arg("-p");
         copy_cmd.arg(&path);
         copy_cmd.arg(&module_folder);
         println!(
