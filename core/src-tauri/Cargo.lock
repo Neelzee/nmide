@@ -772,6 +772,7 @@ dependencies = [
  "magnolia_dependency",
  "module_installer",
  "once_cell",
+ "rust_dependency",
  "serde",
  "serde_json",
  "tab_wrapper",
@@ -4128,6 +4129,16 @@ dependencies = [
  "rkyv",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "rust_dependency"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "core-module-lib",
+ "core-std-lib",
+ "regex",
 ]
 
 [[package]]
