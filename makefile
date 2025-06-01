@@ -1,4 +1,4 @@
-APPDIR := ~/.local/share/no.nilsmf.uib
+APPDIR := $(shell echo ~/.local/share/no.nilsmf.uib)
 MANIFEST-PATH := tools/cm-installer/Cargo.toml
 OUT := core/src-tauri/target
 CONF := Modules.toml
@@ -16,7 +16,7 @@ SRC_FOLDERS := \
 	modules \
 	tools
 
-.PHONY: build-modules modules install-deps clean init ide help
+.PHONY: build-modules modules install-deps clean init ide help prod
 
 help:
 	@echo "Available targets:"
