@@ -1,15 +1,20 @@
-appdir := ~/.local/share/no.nilsmf.uib
-manifest-path := tools/cm-installer/Cargo.toml
-out := core/src-tauri/target
-conf := Modules.toml
-modules := core/modules
-cargo := core/src-tauri/Cargo.toml
-dist := core/build
-index := core/index.html
-tool-out := tools/module-tester/rsm-grapher/target
-tool-cargo := tools/module-tester/rsm-grapher/Cargo.toml
-tool-dist := tools/module-tester/build
+APPDIR := ~/.local/share/no.nilsmf.uib
+MANIFEST-PATH := tools/cm-installer/Cargo.toml
+OUT := core/src-tauri/target
+CONF := Modules.toml
+MODULES := core/modules
+CARGO := core/src-tauri/Cargo.toml
+DIST := core/build
+INDEX := core/index.html
+TOOL-OUT := tools/module-tester/rsm-grapher/target
+TOOL-CARGO := tools/module-tester/rsm-grapher/Cargo.toml
+TOOL-DIST := tools/module-tester/build
 DEV_MODE := $(if $(DEVELOPMENT),true,false)
+SRC_FOLDERS := \
+	core \
+	libs \
+	modules \
+	tools
 
 .PHONY: build-modules modules install-deps clean init ide help
 
@@ -31,14 +36,14 @@ build-modules:
 modules: clean init
 	@printf "Processing modules configuration...\n"
 	@cargo run \
-		--manifest-path=$(manifest-path) -- \
-		--out=$(out) \
-		--conf=$(conf) \
-		--modules=$(modules) \
-		--cargo=$(cargo) \
-		--dist=$(dist)/external \
-		--index=$(index) \
-		--module-dist=$(appdir)/modules >/dev/null 2>&1
+		--manifest-path=$(MANIFEST-PATH) -- \
+		--out=$(OUT) \
+		--conf=$(CONF) \
+		--modules=$(MODULES) \
+		--cargo=$(CARGO) \
+		--dist=$(DIST)/external \
+		--index=$(INDEX) \
+		--module-dist=$(APPDIR)/modules >/dev/null 2>&1
 	@printf "✓ Module configuration processed\n"
 	@printf "Building core TypeScript...\n"
 	@cd core && bun run build.ts >/dev/null 2>&1
@@ -54,7 +59,7 @@ install-deps:
 				if (cd "$$p" && bun link >/dev/null 2>&1); then \
 					printf "✓\n"; \
 				else \
-					printf "$(RED)✗\n"; \
+					printf "✗\n"; \
 				fi; \
 			fi; \
 		done && \
@@ -64,7 +69,7 @@ install-deps:
 				if (cd "$$p" && bun i >/dev/null 2>&1); then \
 					printf "✓\n"; \
 				else \
-					printf "$(RED)✗\n"; \
+					printf "✗\n"; \
 				fi; \
 			fi; \
 		done \
@@ -75,42 +80,60 @@ install-deps:
 
 clean:
 	@printf "Removing build artifacts...\n"
-	@rm -rf $(out)/debug/build/core-* 2>/dev/null || true
-	@rm -rf $(dist)/external 2>/dev/null || true
-	@if [ "$(DEV_MODE)" = "false" ] && [ -d "$(appdir)" ]; then \
-		printf "WARNING: About to delete application directory: $(appdir)\n"; \
+	@rm -rf $(OUT)/debug/build/core-* 2>/dev/null || true
+	@rm -rf $(DIST)/external 2>/dev/null || true
+	@if [ "$(DEV_MODE)" = "false" ] && [ -d "$(APPDIR)" ]; then \
+		printf "WARNING: About to delete application directory: $(APPDIR)\n"; \
 		printf "Continue? [y/N] "; \
 		read -r confirm; \
 		if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
 			printf "	Removing application directory...\n"; \
-			rm -rf $(appdir); \
+			rm -rf $(APPDIR); \
 			printf "	✓ Application directory removed\n"; \
 		else \
 			printf "Skipping application directory removal\n"; \
 		fi; \
 	else \
 		printf "Removing application directory...\n"; \
-		rm -rf $(appdir) 2>/dev/null || true; \
+		rm -rf $(APPDIR) 2>/dev/null || true; \
 		printf "	✓ Application directory removed\n"; \
 	fi
-	@awk '{ print } /^# =+ #/ { exit }' $(cargo) > tmp && mv tmp $(cargo)
-	@awk '/<!--MODULES-->/ { print; in_block = !in_block; next; } !in_block' $(index) > tmp && mv tmp $(index)
+	@awk '{ print } /^# =+ #/ { exit }' $(CARGO) > tmp && mv tmp $(CARGO)
+	@awk '/<!--MODULES-->/ { print; in_block = !in_block; next; } !in_block' $(INDEX) > tmp && mv tmp $(INDEX)
 	@printf "✓ Build artifacts removed\n"
 
 init:
 	@printf "Initializing project structure...\n"
-	@mkdir -p $(dist)/external
-	@touch $(dist)/external/modules.js
-	@mkdir -p $(out)
-	@echo "pub fn register_modules(modules: &mut HashMap<String, Box<dyn Module>>) {}" > $(out)/module_reg.rs
-	@mkdir -p $(appdir)/modules
+	@mkdir -p $(DIST)/external
+	@touch $(DIST)/external/modules.js
+	@mkdir -p $(OUT)
+	@echo "pub fn register_modules(modules: &mut HashMap<String, Box<dyn Module>>) {}" > $(OUT)/module_reg.rs
+	@mkdir -p $(APPDIR)/modules
+	@( cd core && bun run build.ts && cd .. )
 	@printf "✓ Project structure initialized\n"
 
 ide: init install-deps build-modules modules
-	@printf "Building application for IDE/production...\n"
+	@printf "Building IDE...\n"
 	@cd core && bun run tauri build >/dev/null 2>&1
 	@printf "✅ IDE build completed successfully!\n"
 	@printf "	Binaries can be found at "
-	@(cd $(out)/release/bundle && pwd)
+	@(cd $(OUT)/release/bundle && pwd)
 	@printf "	in the following folders: "
-	@ls $(out)/release/bundle
+	@ls $(OUT)/release/bundle
+
+prod: init install-deps build-modules
+	@rm -r ./build
+	@mkdir -p ./build
+	@printf "Building application for production...\n"
+	@printf "  Building Empty Core..."
+	@$(MAKE) clean >/dev/null 2>&1
+	@$(MAKE) init >/dev/null 2>&1
+	@cd core/src-tauri && cargo clean >/dev/null 2>&1
+	@cd core && bun run tauri build >/dev/null 2>&1
+	@printf "✅\n  Empty Core build completed successfully!\n"
+	@cp -r $(OUT)/release/bundle/ build/
+	@$(MAKE) modules
+	@printf "  Building IDE..."
+	@cd core && bun run tauri build >/dev/null 2>&1
+	@cp -r $(OUT)/release/bundle/ build/
+	@printf "✅\n  IDE build completed successfully!\n"
