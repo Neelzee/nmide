@@ -112,7 +112,7 @@ impl From<Html> for RHtml {
         Self {
             kind: RHtmlKind::from_html(&value),
             kids: value.kids().into_iter().map(|v| v.into()).collect(),
-            text: if value.text().len() == 0 {
+            text: if value.text().is_empty() {
                 ROption::RNone
             } else {
                 ROption::RSome(RString::from_str(&value.text()).unwrap_or_default())

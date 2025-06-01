@@ -4,9 +4,6 @@
 //!
 //! When this is completed, it would allow for more Plugins in different languages.
 
-use abi_stable::std_types::{ROption, RString, RVec, string::FromUtf8Error};
-use core::slice;
-
 macro_rules! chtmlkind {
     ( $( $name:ident ),* ) => {
         #[stabby::stabby]
@@ -55,32 +52,4 @@ pub struct CHtml {
     kids_len: usize,
     text: *const u8,
     text_len: usize,
-}
-
-impl CHtml {
-    /*
-    pub fn to_rhtml(&self) -> Result<RHtml, FromUtf8Error> {
-            let kids = if self.kids.is_null() {
-                RVec::new()
-            } else {
-                RVec::from_iter(
-                    unsafe { slice::from_raw_parts(self.kids, self.kids_len) }
-                        .into_iter()
-                        .filter_map(|r| r.to_rhtml().ok()),
-                )
-            };
-            Ok(RHtml {
-                kind: self.kind.to_rhtml(),
-                kids,
-                text: if !self.text.is_null() {
-                    ROption::RSome(RString::from_utf8(unsafe {
-                        slice::from_raw_parts(self.text, self.text_len)
-                    })?)
-                } else {
-                    ROption::RNone
-                },
-                attrs: RVec::new(),
-            })
-        }
-    */
 }

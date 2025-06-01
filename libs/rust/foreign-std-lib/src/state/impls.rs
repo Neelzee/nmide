@@ -160,8 +160,8 @@ impl From<Value> for RValue {
                 kind: RValKind::Obj,
                 val: RValueUnion::obj(o.to_hm().into_iter().collect()),
             },
-            Value::Null => todo!(),
-            Value::Html(html) => todo!(),
+            Value::Null => unimplemented!(),
+            Value::Html(_html) => unimplemented!(),
         }
     }
 }
