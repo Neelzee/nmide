@@ -115,25 +115,45 @@ init:
 ide: init install-deps build-modules modules
 	@printf "Building IDE...\n"
 	@cd core && bun run tauri build >/dev/null 2>&1
-	@printf "✅ IDE build completed successfully!\n"
+	@printf "✓  IDE build completed successfully!\n"
 	@printf "	Binaries can be found at "
 	@(cd $(OUT)/release/bundle && pwd)
 	@printf "	in the following folders: "
 	@ls $(OUT)/release/bundle
 
 prod: init install-deps build-modules
-	@rm -r ./build
-	@mkdir -p ./build
+	@rm -rf ./build
+	@rm -rf build.zip
+	@mkdir -p ./build/source
+	@mkdir -p ./build/ide-bundle
+	@mkdir -p ./build/empty-bundle
 	@printf "Building application for production...\n"
 	@printf "  Building Empty Core..."
 	@$(MAKE) clean >/dev/null 2>&1
 	@$(MAKE) init >/dev/null 2>&1
 	@cd core/src-tauri && cargo clean >/dev/null 2>&1
 	@cd core && bun run tauri build >/dev/null 2>&1
-	@printf "✅\n  Empty Core build completed successfully!\n"
-	@cp -r $(OUT)/release/bundle/ build/
+	@printf "✓\n  Empty Core build completed successfully!\n"
+	@cp -r $(OUT)/release/bundle/ build/empty-bundle
 	@$(MAKE) modules
 	@printf "  Building IDE..."
 	@cd core && bun run tauri build >/dev/null 2>&1
-	@cp -r $(OUT)/release/bundle/ build/
-	@printf "✅\n  IDE build completed successfully!\n"
+	@cp -r $(OUT)/release/bundle/ build/ide-bundle
+	@printf "✓\n  IDE build completed successfully!\n"
+	@printf "Copying files..."
+	@printf "  Copying source files..."
+	@$(foreach folder,$(SRC_FOLDERS),cd $(folder) && git clean -Xf . && cd .. &&) true
+	@$(foreach folder,$(SRC_FOLDERS),cp -r $(folder) ./build/source &&) true
+	@cp makefile ./build/source/
+	@printf "✓\n  Copying readme..."
+	@cp build.md ./build/README.md
+	@printf "✓\nFiles copied successfully!\n"
+	@printf "Zipping build folder..."
+	@zip -r build.zip build >/dev/null 2>&1
+	@printf "✓\nSuccessfully zipped build folder!\n"
+	@printf "Build size: "
+	@du -sh build.zip
+	@printf "\nFinished!\n"
+	@printf "Building thesis..."
+	@( cd thesis && nix build >/dev/null 2>&1 && cp result/thesis.pdf ../thesis.pdf && cd - )
+	@printf "✓\n Built thesis successfully!"
