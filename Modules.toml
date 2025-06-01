@@ -1,5 +1,5 @@
 files = ["modules/ide_explorer/magnolia.png"]
-rt-files = []
+rt-files = ["modules/rs-counter-plugin-example/rt-style.css"]
 
 [modules]
 trivial_module = { path = "modules/trivial_module/", enabled = true }
@@ -33,4 +33,4 @@ ide_save = { path = "modules/ide_save/", kind = "ts", package-manager = "bun", e
 
 [rt-modules]
 jsm-counter = { path = "modules/jsm-counter/", kind = "ts", package-manager = "bun", enabled = false }
-rs-counter-plugin-example = { path = "modules/rs-counter-plugin-example/", enabled = false }
+rs-counter-plugin-example = { path = "modules/rs-counter-plugin-example/", enabled = true }
