@@ -1707,6 +1707,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "rust_dependency"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "core-module-lib",
+ "core-std-lib",
+ "regex",
+]
+
+[[package]]
 name = "rustc-demangle"
 version = "0.1.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"

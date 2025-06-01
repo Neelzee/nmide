@@ -12,10 +12,12 @@ members = [
   "ide_tabs",
   "magnolia_dependency",
   "module_installer",
+  "rust_dependency",
   "tab_wrapper",
   "trivial_module",
 ]
 exclude = ["rs-counter-plugin-example"]
+resolver = "3"
 
 [workspace.dependencies]
 core-std-lib = { path = "../libs/rust/core-std-lib/" }
