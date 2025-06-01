@@ -1,3 +1,4 @@
+#![allow(non_local_definitions)]
 use abi_stable::{
     library::{LibraryError, LibraryPath, RootModule},
     package_version_strings, sabi_trait,
