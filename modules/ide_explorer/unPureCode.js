@@ -1,7 +1,7 @@
 export function run() {
   const folders = document.querySelectorAll('.folder');
   folders.forEach(folder => {
-    folder.addEventListener('click', function () {
+    folder.addEventListener('click', () => {
       document.querySelectorAll('.selected').forEach(el => {
         el.classList.remove('selected');
       });
@@ -12,7 +12,7 @@ export function run() {
 
   const files = document.querySelectorAll('.file');
   files.forEach(file => {
-    file.addEventListener('click', function () {
+    file.addEventListener('click', () => {
       document.querySelectorAll('.selected').forEach(el => {
         el.classList.remove('selected');
       });

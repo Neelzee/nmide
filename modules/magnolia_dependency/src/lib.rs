@@ -31,12 +31,12 @@ impl core_module_lib::Module for Module {
     }
 
     async fn init(&self, core: Box<dyn Core>) {
-        core.add_handler("get_magnolia_graph".to_string(), MODULE_NAME.to_string())
+        core.add_handler("get_graph".to_string(), MODULE_NAME.to_string())
             .await;
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
-        if event.event_name() == "get_magnolia_graph" {
+        if event.event_name() == "get_graph" {
             let path: PathBuf = core
                 .state()
                 .await
