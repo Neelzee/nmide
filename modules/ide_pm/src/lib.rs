@@ -18,7 +18,7 @@ impl core_module_lib::ModuleBuilder for ModuleBuilder {
 
 struct ProjectManagerModule;
 
-const MODULE_NAME: &'static str = "ide_pm";
+const MODULE_NAME: &str = "ide_pm";
 
 fn navbar(xs: Vec<(&str, Vec<(&str, Event)>)>) -> Vec<Html> {
     xs.into_iter()
@@ -105,10 +105,7 @@ impl Module for ProjectManagerModule {
                             vec![("Add Module", Event::new("toggle-add-module", None))],
                         ),
                         ("Selection", vec![]),
-                        (
-                            "View",
-                            vec![("Graph", Event::new("get_magnolia_graph", None))],
-                        ),
+                        ("View", vec![("Graph", Event::new("get_graph", None))]),
                     ]),
                     Some("navbar"),
                 );
