@@ -15,9 +15,15 @@ use std::{fmt::Debug, future::IntoFuture, path::Path};
 
 #[sabi_trait]
 pub trait RCore: Send + Sync {
+    /// Retrieves the current state
     async extern "C" fn state(&self) -> FfiFuture<RState>;
+
+    /// Retrieves the current UI representation
     async extern "C" fn ui(&self) -> FfiFuture<RHtml>;
+
     async extern "C" fn throw_event(&self, event: REvent) -> FfiFuture<()>;
+
+    /// Maps an Event to the given handler (Module name)
     async extern "C" fn add_handler(
         &self,
         event_name: RString,
@@ -31,8 +37,8 @@ pub trait RCore: Send + Sync {
 #[sabi(kind(Prefix(prefix_ref = ModuleRef)))]
 #[sabi(missing_field(panic))]
 pub struct RustModule {
-    pub init: extern "C" fn(core: RCore_CTO) -> FfiFuture<()>,
-    pub handler: extern "C" fn(event: REvent, core: RCore_CTO) -> FfiFuture<()>,
+    pub init: extern "C" fn(core: RCore_CTO<'static, 'static>) -> FfiFuture<()>,
+    pub handler: extern "C" fn(event: REvent, core: RCore_CTO<'static, 'static>) -> FfiFuture<()>,
 }
 
 impl RootModule for ModuleRef {
@@ -69,20 +75,14 @@ impl RsModule {
         pth.split("/").last().unwrap_or(pth).to_string()
     }
 
-    pub async fn init<F>(&self, f: F)
-    where
-        F: Fn() -> RCore_CTO<'static, 'static>,
-    {
-        async move { self.module.init()(f()).await }
+    pub async fn init(&self, core: RCore_CTO<'static, 'static>) {
+        async move { self.module.init()(core).await }
             .into_future()
             .await;
     }
 
-    pub async fn handler<F>(&self, event: REvent, f: F)
-    where
-        F: Fn() -> RCore_CTO<'static, 'static>,
-    {
-        async move { self.module.handler()(event, f()).await }
+    pub async fn handler(&self, event: REvent, core: RCore_CTO<'static, 'static>) {
+        async move { self.module.handler()(event, core).await }
             .into_future()
             .await;
     }
