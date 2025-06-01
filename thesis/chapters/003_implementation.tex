@@ -468,20 +468,23 @@ passed msg on every click.
 
 \subsubsection{Module purity}
 
-One important thing in this architecture, is the pureness of module. The state
-of a module needs to be kept in the core application, and not in the module
-itself. The reason for this is twofold. It allows for the possibility of the
-core to be optimized in the future, as modules which do not react to a certain
-msg-state combination, can be noticed, and ensure modules are not unnecessarily
-invoked. It also lowers the complexity for module developers, as it is easier to
-reason about modules if \textit{all} they do is read or write to some state.
+One important thing in this architecture, is the pureness of module. We use this
+term, \textit{pureness}, to mean side effects \textit{outside} the \gls*{ide}s
+\gls*{api}. In principle, this means two related things.
 
-If we have the modules $A$ and $B$, where their relationship is $A \to B$,
-meaning $A$ \textit{invokes} $B$ by sending some msg, which $B$ reacts too, and
-we want something to happen before $B$ reacts, we can add a new module, $C$,
-which also reacts to the same msg, but if we know the name of the module $B$,
-we can set the name of module $C$ to be \textit{above} the order, relative to
-$B$, ensuring that $C$ always triggers before $B$.
+Firstly, given the same input, we get the same output. Of course, this is
+possible due to the entire \gls*{ide} being part of the input, but we mean that
+a module should not have an internal state, outside the \gls*{ide}.
+
+Secondly, specifically for JavaScript modules, modifications of the \gls*{ui},
+should only occur through the \gls*{ide}.
+
+The reason for the requirement of pureness twofold. It allows for the
+possibility of the core to be optimized in the future, as modules which do not
+react to a certain msg-state combination, can be noticed, and ensure modules are
+not unnecessarily invoked. It also lowers the complexity for module developers,
+as it is easier to reason about modules if \textit{all} they do is read or write
+to some state.
 
 
 \subsection{Module v2 cons}
@@ -581,7 +584,7 @@ notifying the module developer of which field this collision occurred on, and
 which modules tried to modify that field.
 
 
-\section{Module v.3} \label{sec:moD3}
+\section{Module v3} \label{sec:moD3}
 
 To solve the issues with the previous iteration, we decided to add another
 requirement, and the structure of a module:
@@ -1206,24 +1209,28 @@ handler, but this is not valid Rust code.
 \begin{code}[H]
   \lstinputlisting
     [ language=Rust
-    , caption={Simplified magnolia library parser module (Rust)}
+    , caption={
+      Simplified magnolia library parser module. Note, this code will compile
+      (Rust)
+    }
     , label=lst:magLibParserSimple
     , numbers=left
     , numberstyle=\tiny\color{gray}
     ]{./code/mag\_lib\_simple.rs}
 \end{code}
 
-The above code (\ref{lst:magLibParserSimple}), we are handling events with the name
-\textit{get\_magnolia\_graph}, (line 3), and getting the path that is supplied in
-the event argument, (line 4). In line 4 we then create a \textit{key}, which we
-use to check if this graph has been created yet, by checking the state (line 6).
-If this graph does exist, we \textit{respond} by throwing an event with the
-existing graph (line 7 to 9). If it does not exist, we create it by calling the
-\textit{get\_graph} function, (left out for brevity), which recursively finds
-files in the supplied path, using RegEx to find the packages, and their
-dependencies. We then end by \textit{responding} with the created graph,
-(line 12), and store it in the state, with the key (line 13 to 16). The
-resulting response can be seen in listing \ref{lst:magLibParserRes}
+The code in listing \ref{lst:magLibParserSimple}, we are handling events with
+the name \textit{get\_magnolia\_graph}, (line 3), and getting the path that is
+supplied in the event argument, (line 4). In line 4 we then create a
+\textit{key}, which we use to check if this graph has been created yet, by
+checking the state (line 6). If this graph does exist, we \textit{respond} by
+throwing an event with the existing graph (line 7 to 9). If it does not exist,
+we create it by calling the \textit{get\_graph} function,
+(left out for brevity), which recursively finds files in the supplied path,
+using RegEx to find the packages, and their dependencies. We then end by
+\textit{responding} with the created graph, (line 12), and store it in the
+state, with the key (line 13 to 16). The resulting response can be seen in
+listing \ref{lst:magLibParserRes}
 
 \begin{code}[H]
   \begin{lstlisting}[
@@ -1266,23 +1273,26 @@ type \textit{Value}, to
 \textit{
   list of objects, with two fields, name and dependencies, of type string and
   list of string, respectively}
-This translation can be seen in \ref{lst:depVisMod}. Left out, are the steps
-verifying that the event has an argument, (since its optional to pass one), and
-that the argument is of the list variant of \textit{Value}. Since the list
-variant can contain any \textit{Value} variant, we filter the list by whether it
-is an object variant, (line two), we then transform each element in the list, into
-an intersection of the types D3 expects, (\ref{lst:D3Type}). The question mark
-syntax on line four, where we declare the \textit{id} variable, means that if any
-of the expressions on the left are undefined, the resulting expression is
-undefined. Since the object variant of \textit{Value} does not necessarily
-contain the \textit{name} field, or is of the kind \textit{str}. On line nine to
-thirteen, we are getting all the dependencies from the object, with a helper
-method, \textit{tObjLookUpOr}. This method does a \textit{lookup} on the
-supplied field on an object, and a type check. If the object does not exist, or
-is not of the correct type, the passed fallback value is returned instead, in
-this case, an empty list (line ten). Since we know the value is a list, we can
-safely access it, (line eleven), and filter by the string variant, and
-transforming the \textit{Value} to a string primitive, (line eleven to thirteen).
+This translation can be seen in \ref{lst:depVisMod}.
+
+Left out, are the steps verifying that the event has an argument,
+(since its optional to pass one), and that the argument is of the list variant
+of \textit{Value}. Since the list variant can contain any \textit{Value}
+variant, we filter the list by whether it is an object variant, (line two), we
+then transform each element in the list, into an intersection of the types D3
+expects, (\ref{lst:D3Type}). The question mark syntax on line four, where we
+declare the \textit{id} variable, means that if any of the expressions on the
+left are undefined, the resulting expression is undefined. Since the object
+variant of \textit{Value} does not necessarily contain the \textit{name} field,
+or is of the kind \textit{str}.
+
+On line nine to thirteen, we are getting all the dependencies from the object,
+with a helper method, \textit{tObjLookUpOr}. This method does a \textit{lookup}
+on the supplied field on an object, and a type check. If the object does not
+exist, or is not of the correct type, the passed fallback value is returned
+instead, in this case, an empty list (line ten). Since we know the value is a
+list, we can safely access it, (line eleven), and filter by the string variant,
+and transforming the \textit{Value} to a string primitive, (line eleven to thirteen).
 
 \begin{code}[H]
   \lstinputlisting
@@ -1299,6 +1309,30 @@ transforming the \textit{Value} to a string primitive, (line eleven to thirteen)
     , lastline=217
     ]{./modules/dependency-viewer/module.ts}
 \end{code}
+
+
+\subsubsection{Rust dependency graph visualizer}
+
+Using the same concept, we also developed a module for visualizing dependencies
+in a Rust project. Similar to the Magnolia one, it is quite primitive, as it
+simply uses RegEx to find imports, instead of a dedicated parser. As such, it
+is prone to mistakes.
+
+In picture \ref{pic:rustDeps}, we can see this projects dependencies visualized.
+
+\begin{figure}
+  \centering
+    \includegraphics[width=1.0\textwidth]{rust-deps.png}
+  \caption{
+    Module that visualizes the dependencies in this project. As one can see, it
+    contains several mistakes, like the \textbf{main} file depends on
+    \textbf{app}, but there is no link between these two nodes. This is due to
+    Rusts varied import statements, making it hard to capture with \textit{just}
+    RegEx.
+  }
+  \label{fig:rustDeps}
+\end{figure}
+
 
 \subsection{File System Abstraction (FSA)}
 
@@ -1376,8 +1410,59 @@ operation. If it does fail, say because the file does not exist, then an event
 is sent to the ide\_error module, displaying the error to the user.
 
 \footnotetext{
-  It is an error when the method \textbf{is\_ok}, on line $9$, returns false
+  It is an error when the method \textbf{is\_ok}, on line nine, returns false
 }
+
+
+\subsection{File explorer}
+
+In section \ref{sec:ide}, we covered some of the modules we have implemented for
+our zero-core modular \gls*{ide}, amongst them \textit{ide\_explorer}. This
+module is responsible for the file explorer view in our \gls*{ide}. This module
+is of interest, since we have discussed how \textit{pureness} is an aspect we
+want in our modules, meaning modifications of the \gls*{ide}, should happen
+through the \gls*{ide}.
+
+In the case of the ide\_explorer, we have explicitly broken this \textit{rule}.
+In listing \ref{lst:expUnPure}, we can see how we on line ten, we invoke
+a JavaScript function, the implementation of which, can be seen in listing
+\ref{lst:unPure}.
+
+\begin{code}[H]
+  \lstinputlisting
+    [ language=TypeScript
+    , caption={
+      Ide\_explorer module implementation, note the invocation of \textbf{run},
+      on line ten, an function which is \textit{unpure}. (TypeScript)
+    }
+    , label=lst:expUnPure
+    , numbers=left
+    , numberstyle=\tiny\color{gray}
+    , firstline=4
+    ]{./modules/ide\_explorer/index.ts}
+\end{code}
+
+\begin{code}[H]
+  \lstinputlisting
+    [ language=JavaScript
+    , caption={
+      JavaScript code that is \textit{unpure}, meaning it directly modifies the
+      \gls*{dom} outside of the \gls*{ide}. Used by the ide\_explorer module.
+    }
+    , label=lst:unPure
+    , numbers=left
+    , numberstyle=\tiny\color{gray}
+    ]{./modules/ide\_explorer/unPureCode.js}
+\end{code}
+
+On lines four, six, fifteen, seventeen, and twenty, we are doing various direct
+\gls*{dom} modifications. Of course, this is quite possible to do with in our
+provided \gls*{api}, but it is still useful to showcase.
+
+If, for some reason, future module developers implement a similar, unpure,
+solution it will work, but other modules that remain \textit{pure} cannot
+know the \textit{true} state of the \gls*{ide}, which should be taken into
+consideration.
 
 
 \section{Module installation} \label{sec:module-installation}

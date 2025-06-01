@@ -82,19 +82,24 @@ Not really achieved, because we cannot syntactically translate between a
 JavaScript module and a Rust module. This is due to the differences between the
 utility libraries created for \gls*{jsms} and \gls*{rsms}. When \gls*{jsms} modules
 where created, they were primarily made for using existing JavaScript libraries,
-to showcase this interoperability. So, much of the \gls*{html} elements were
-created using JavaScript, so the utility library primarily focused on this,
-having builder pattern for creating \gls*{html}. There is a similar builder
-pattern in the Rust utility library, but it is not a one-to-one mapping, meaning
-there are some semantic differences between two modules doing the same.
+to showcase this interoperability.
 
-But \textit{installation} of the modules also differ. In JavaScript, module
-developers can simply invoke the \textit{installModule} function, with their
-created module, to install the module. The reason this works, is that when we
-bundle all JavaScript modules during compile time, it ends up as a script-tag in
-the \gls*{dom}. The same is for the case of runtime JavaScript modules. The
-result, in either case, is that the entire contents of the JavaScript file is
-evaluated, meaning even though we are simply importing a JavaScript file, and
+So, much of the \gls*{html} elements were created using JavaScript, so the
+utility library primarily focused on this, having builder pattern for creating
+\gls*{html}. There is a similar builder pattern in the Rust utility library, but
+it is not a one-to-one mapping, meaning there are some small semantical
+differences between two modules supplying the same feature.
+
+
+\subsection{Module installation differences}
+
+Furthermore, \textit{installation} of the modules also differ. In JavaScript,
+module developers can simply invoke the \textit{installModule} function, with
+their created module, to install the module. The reason this works, is that when
+we bundle all JavaScript modules during compile time, it ends up as a script-tag
+in the \gls*{dom}. The same is for the case of runtime JavaScript modules.
+The result, in either case, is that the entire contents of the JavaScript file
+is evaluated, meaning even though we are simply importing a JavaScript file, and
 not explicitly invoking anything, it ends up with the modules being installed.
 
 This is not the case in Rust, importing another Rust crate does not mean we
@@ -180,19 +185,40 @@ the modules are syntactical, and not semantics.
 
 \section{Conclusion} \label{sec:conclusion}
 
+In this section, we will cover how we utilized abstract algebra to directly
+improve the user experience, and our conclusions on the zero-core
+architecture we have implemented.
+
+
+\subsection{Reducing UI operations with abstract algebra}
+
+We have shown that using abstract algebra, we can improve the user experience.
+Since our \gls*{ui} is managed by instructions, which is of an algebraic
+structure, we can use the properties of this structure to reduce the amount of
+unnecessary \gls*{ui} operations, making for a smoother user experience. This
+reduction of instructions will also occur regardless of how suboptimal a module
+developer implements their module.
+
+
+\subsection{Zero-core architecture conclusions}
+
 Developing against an unstable \gls*{api}, means that modules can be
 deprecated. It also means that module language agnosticism can quickly
 disappear, since that depends on having multiple different libraries in sync
 with an unstable one. In fact, many of the issues that we have claimed to be
-innate with \gls*{ide}s, appear in this stage of our modular architecture. But,
-our \gls*{api} is bounded, we have some types, and some operation on those
+innate with \gls*{ide}s, appear in this stage of our modular architecture.
+
+But, our \gls*{api} is bounded, we have some types, and some operation on those
 types. We have chosen to have a larger set of operations, simply due to the
-fact that this enhances the module developer experience. But to figure out what
-utility functions are necessary, we need to develop modules. Once the
-satisfactory functions are developed, our \gls*{api} is stable. Which means
-modules are no longer in danger to be deprecated. Which means that module
-language agnosticism can be corrected for. Finally, this means that future
-changes coming from the outside, being a paradigm shift on what is necessary to
-have in an \gls*{ide}, or a language, the necessary modules can quickly be
-developed and integrated into the current solution.
+fact that this enhances the module developer experience.
+
+However, to figure out what utility functions are necessary, we need to develop
+modules. Once the satisfactory functions are developed, our \gls*{api} is
+stable. Which means modules are no longer in danger to be deprecated, and
+therefore, module language agnosticism can be corrected for.
+
+Finally, this means that future changes coming from the outside, be it a
+paradigm shift on what is necessary to have in an \gls*{ide}, or a new language
+feature, the necessary modules can quickly be developed and integrated into the
+existing solution.
 
