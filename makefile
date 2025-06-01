@@ -155,5 +155,5 @@ prod: init install-deps build-modules
 	@du -sh build.zip
 	@printf "\nFinished!\n"
 	@printf "Building thesis..."
-	@( cd thesis && nix build >/dev/null 2>&1 && cp result/thesis.pdf ../thesis.pdf && cd - )
+	@( cd thesis && nix build >/dev/null 2>&1 && cp result/thesis.pdf ../creating-a-zero-core-modular-ide.pdf && cd - )
 	@printf "✓\n Built thesis successfully!"
