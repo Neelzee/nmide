@@ -47,6 +47,9 @@ worked on, it would eventually lead to a discovery, that the current \gls*{api}
 needed some change, which would enable the module feature to be easier
 implemented. A concrete example of this, is the editor module.
 
+
+\subsection{Inconsistent UI and ad-hoc solutions for lackluster API}
+
 An essential part of an editor, in an \gls*{ide} at least, is being able to
 utilize a \gls*{lsp}. Most of the communication between a client and \gls*{ls},
 require information about \textit{where} the user is in the text. This
@@ -62,18 +65,6 @@ instance of \textit{HtmlInputElement} or \textit{textarea}, we know that the
 which, we can manually calculate the position of the click. Implementing this
 meant adding a breaking change to the \gls*{api}, which deprecated different
 modules, so more time was spent on re-implementing them.
-
-
-\section{Inconsistent UI and ad-hoc solutions for lackluster API} \label{sec:lackluster}
-
-There is an issue in the current \gls*{api} on maintaining consistency between
-the \gls*{ui} in the frontend, and the \gls*{ui} representation the \gls*{rsms}
-has access to. This means that there is no good way to achieve saving of an
-edited file. But this is still a feature the editor module supports. The way
-saving was implemented, was to add plain JavaScript to the save button, where
-when the user presses it, the contents of the textarea are sent to the ide\_fsa
-module, which can save the contents. This is an action that bypasses the core
-\gls*{ide}, which was necessary due to the lacking \gls*{api}.
 
 
 \section{Lacking language agnosticism} \label{sec:lla}

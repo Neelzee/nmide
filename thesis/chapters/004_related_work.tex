@@ -143,8 +143,8 @@ our usage of a web view for the desktop \gls*{ide}.
 \section{Language Server} \label{sec:lsp}
 
 The most important features in a modern \gls*{ide} are possible due to the
-\gls*{lsp}\footnote{\url{https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/}}.
-\gls*{lsp} is a protocol for a language server and editor, (the client), in
+Language Server Protocol (LSP)\footnote{\url{https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/}}.
+\gls*{lsp} is a protocol for a Language Server (LS) and editor, (the client), in
 which they communicate, allowing for many of the features mentioned in section
 \ref{sec:ide}, and explicitly mentioned in table \ref{tbl:ide}. \gls*{lsp} being
 the standard since the 2020s, is a sign of modularity being preferred, as now a
@@ -161,20 +161,24 @@ expanded and/or modified, but for the \gls*{ide}, a module could be added and/or
 modified to utilize this change, instead of having to change the entire
 application.
 
-\begin{table}[]
-  \centering
-  \caption{\gls*{ide} features enabled by \gls*{lsp}}
+\begin{table}[H]
+  \caption{Some \gls*{ide} features enabled by \gls*{lsp}}
   \label{tbl:ide}
-  \begin{tabular}{|l|l|}
-    \hline
-    IDE Feature & \gls*{lsp}-method \\ \hline
-    Go to Declaration & textDocument/definition \\ \hline
-    Go to Implementation & textDocument/implementation \\ \hline
-    Auto-completion & textDocument/completion \\ \hline
-    Hover & textDocument/hover \\ \hline
-    Warnings & textDocument/publishDiagnostics \\ \hline
-    Rename & textDocument/rename \\ \hline
-  \end{tabular}
+  \begin{center}
+    \begin{tabular}[c]{l|l}
+      \hline
+      \multicolumn{1}{c|}{\textbf{IDE feature}} & 
+      \multicolumn{1}{c}{\textbf{LSP-method}} \\
+      \hline
+      \hline
+      Go to Declaration & textDocument/definition \\ \hline
+      Go to Implementation & textDocument/implementation \\ \hline
+      Auto-completion & textDocument/completion \\ \hline
+      Hover & textDocument/hover \\ \hline
+      Warnings & textDocument/publishDiagnostics \\ \hline
+      Rename & textDocument/rename \\ \hline
+    \end{tabular}
+  \end{center}
 \end{table}
 
 An example of this in action, say a developer is working on a file
