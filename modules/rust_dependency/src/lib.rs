@@ -70,7 +70,7 @@ impl core_module_lib::Module for Module {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct RustModule {
     #[allow(dead_code, reason = "Handy to have the path for debugging purposes")]
     pub path: String,
@@ -166,7 +166,7 @@ pub(crate) fn get_modules(path: &Path) -> Vec<RustModule> {
     })
     .collect();
 
-    modules
+    let modules = modules
         .into_iter()
         .map(|m| {
             if m.name == "mod" {
@@ -186,7 +186,33 @@ pub(crate) fn get_modules(path: &Path) -> Vec<RustModule> {
                 m
             }
         })
-        .collect()
+        .collect::<Vec<RustModule>>();
+
+    let mut module_map: HashMap<String, RustModule> = HashMap::new();
+
+    for module in modules {
+        match module_map.get(&module.name) {
+            Some(old_module) if old_module.path == module.path => {
+                let mut deps: HashSet<String> = HashSet::new();
+                let old_deps: Vec<String> = old_module.dependencies.clone();
+                deps.extend(old_deps);
+                deps.extend(module.dependencies);
+
+                module_map.insert(
+                    module.name.clone(),
+                    RustModule {
+                        dependencies: deps.into_iter().collect(),
+                        ..module
+                    },
+                );
+            }
+            _ => {
+                module_map.insert(module.name.clone(), module);
+            }
+        }
+    }
+
+    module_map.values().cloned().collect()
 }
 
 fn is_rust_project(path: &Path) -> bool {
