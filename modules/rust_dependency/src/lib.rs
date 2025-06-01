@@ -12,6 +12,9 @@ use std::path::Path;
 use std::{collections::HashMap, path::PathBuf};
 use std::{collections::HashSet, fs};
 
+#[cfg(test)]
+mod tests;
+
 pub struct ModuleBuilder;
 
 impl core_module_lib::ModuleBuilder for ModuleBuilder {
@@ -145,9 +148,8 @@ pub(crate) fn get_graph(path: &PathBuf) -> Value {
             .collect::<Vec<Value>>(),
     )
 }
-
 pub(crate) fn get_modules(path: &Path) -> Vec<RustModule> {
-    let mut modules = fs::read_dir(
+    let mut modules: Vec<RustModule> = fs::read_dir(
         path.canonicalize()
             .inspect_err(|err| panic!("Error when canonicalizing path: {path:?}, error: {err:?}"))
             .unwrap(),
@@ -164,24 +166,27 @@ pub(crate) fn get_modules(path: &Path) -> Vec<RustModule> {
     })
     .collect();
 
-    fix_module_names(&mut modules);
-
     modules
-}
-
-fn fix_module_names(modules: &mut Vec<RustModule>) {
-    for module in modules {
-        if module.name == "mod" {
-            let path = Path::new(&module.path);
-            if let Some(parent) = path.parent() {
-                if let Some(parent_name) = parent.file_name() {
-                    if let Some(parent_str) = parent_name.to_str() {
-                        module.name = parent_str.to_string();
+        .into_iter()
+        .map(|m| {
+            if m.name == "mod" {
+                let path = Path::new(&m.path);
+                if let Some(parent) = path.parent() {
+                    if let Some(parent_name) = parent.file_name() {
+                        if let Some(parent_str) = parent_name.to_str() {
+                            return RustModule {
+                                name: parent_str.to_string(),
+                                ..m
+                            };
+                        }
                     }
                 }
+                m
+            } else {
+                m
             }
-        }
-    }
+        })
+        .collect()
 }
 
 fn is_rust_project(path: &Path) -> bool {
