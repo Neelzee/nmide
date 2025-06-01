@@ -404,6 +404,7 @@ dependencies = [
  "ordered-float 5.0.0",
  "rstest",
  "serde",
+ "serde_json",
  "stabby",
  "ts-rs",
 ]
