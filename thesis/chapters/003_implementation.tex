@@ -1330,8 +1330,12 @@ In picture \ref{pic:rustDeps}, we can see this projects dependencies visualized.
     Rusts varied import statements, making it hard to capture with \textit{just}
     RegEx.
   }
-  \label{fig:rustDeps}
+  \label{pic:rustDeps}
 \end{figure}
+
+Since we are using RegEx, this primitive parser module cannot see that certain
+files are part of any project, as many of the nodes without dependencies are
+code examples used in the writing of this thesis.
 
 
 \subsection{File System Abstraction (FSA)}
