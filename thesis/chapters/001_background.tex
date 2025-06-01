@@ -1081,19 +1081,44 @@ $+$ and \textbf{emptyList}, $++$ respectively.
 
 In Magnolia, it is useful for a developer to visualize and follow the effect of
 renaming, that the compiler does. This visualization would enable a developer
-to know where a renaming happens. The structure of this is tree-like, and not
-functionality that is typically included in an \gls*{ide}.
-
+to know where a renaming happens. The structure of this is tree-like. It is
+quite useful to visualize tree-like structures, and such functionality is not
+typically something an \gls*{ide} offers. It would be helpful, then, if the new
+Magnolia \gls*{ide} can visualize different structures. Such features should be
+implemented using modules.
 
 \subsection{Dependency cycles}
+
+A cyclic dependency, is an issue in programming, where different libraries
+depend on each other, and the compiler or interpreter cannot easily find out
+which library to compile/interpret first. In the figure \ref{fig:depIssue}, we
+can see a visualization of such a dependency issue.
+
+\begin{figure}[H]
+  \centering
+  \input{./figures/cyclic-dependency}
+  \caption{
+    Diagram of a cyclic dependency. Library A depends on library B, which
+    depends on library C, which depends on library A, it is not clear in which
+    order to parse the library.
+  }
+  \label{fig:depIssue}
+\end{figure}
+
+Library A, creates some functionality, that library B needs, in its own
+functionality. Finally, library C uses functionality from library B, which
+library A depends on, creating a cycle.
 
 Programming languages have different ways to avoid the problem of imports of
 modules forming a cyclic graph. The easiest, is to simply disallow such import
 structures, which is something the Magnolia compiler does. All imports have to be
-\gls*{dag}'s. In most programming languages this is trivial to solve for
-developers, as if suddenly a project has a cyclic import, it can be solved quite
-easily. However, due to the heavy reuse in Magnolia, the cycles could be quite
-large and harder to reason about without a tool to visualize the dependency graph.
+\gls*{dag}'s.
+
+In most programming languages this is trivial to solve for developers, as if
+suddenly a project has a cyclic import, it can be solved quite easily. However,
+due to the heavy reuse in Magnolia, the cycles could be quite large and harder
+to reason about without a tool to visualize the dependency graph.
+
 
 \subsection{External software dependency}
 
@@ -1101,8 +1126,12 @@ Magnolia depends on a compiler, like all compiled programming languages, but
 also an \gls*{smt} solver. While the new compiler for Magnolia, at the time of
 writing is still under development~\cite{wiig}, but once released will be quite
 stable. Writing modules that utilize the new compiler can be tightly coupled
-with the compiler. This is in contrast to the \gls*{smt} solver environment.
-Skogvik~\cite{beateVerification} noted the different competitions for developers
-of \gls*{smt} solvers, this means there might be a new and better \gls*{smt}
-solver, which means it needs to be easy for a user of the \gls*{ide} to change
-the \gls*{smt} solver they are using to validate their program with.
+with the compiler.
+
+This is in contrast to the \gls*{smt} solver environment. Skogvik~\cite{beateVerification}
+noted the different competitions for developers of \gls*{smt} solvers, this
+means there might be a new and better \gls*{smt} solver, which means it needs to
+be easy for a user of the \gls*{ide} to change the \gls*{smt} solver they are
+using to validate their program with. Since due to such \gls*{smt} solver
+competitions, newer versions and solvers are created, and should be usable in a
+modular \gls*{ide}.

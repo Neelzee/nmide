@@ -1,0 +1,9 @@
+\begin{tikzpicture}
+  \node (tool) [rectangle, draw, minimum height=1cm, minimum width=1cm] at (2.5, -0.75) {Library A};
+  \node (ide) [rectangle, draw, minimum height=1cm, minimum width=1cm] at (6, -0.75) {Library B};
+  \node (module-reg) [rectangle, draw, minimum height=1cm, minimum width=1cm] at (4, -3) {Library C};
+
+  \draw[->] (tool) to node[midway, above] {} (module-reg);
+  \draw[->] (ide) to node[midway, above] {} (tool);
+  \draw[->] (module-reg) to node[midway, above] {} (ide);
+\end{tikzpicture}
