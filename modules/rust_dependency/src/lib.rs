@@ -149,7 +149,7 @@ pub(crate) fn get_graph(path: &PathBuf) -> Value {
     )
 }
 pub(crate) fn get_modules(path: &Path) -> Vec<RustModule> {
-    let mut modules: Vec<RustModule> = fs::read_dir(
+    let modules: Vec<RustModule> = fs::read_dir(
         path.canonicalize()
             .inspect_err(|err| panic!("Error when canonicalizing path: {path:?}, error: {err:?}"))
             .unwrap(),
