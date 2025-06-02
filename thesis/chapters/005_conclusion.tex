@@ -23,9 +23,9 @@ entirely new feature, find out what has been done before.
 
 Developing against an unstable \gls*{api} is difficult, and when developing a
 module architecture, it is like an unstable \gls*{api} when it is not
-\textit{mature}, e.g. when it does not have settled modules to develop against.
-Since this is the case, there are a lot of issues with the existing modules,
-making the user experience less than competing \gls*{ide}s.
+\textit{mature}, e.g. when it does not have settled modules and libraries to
+develop against. Since this is the case, there are a lot of issues with the
+existing modules, making the user experience less than competing \gls*{ide}s.
 
 Most of these issues are minor, and can be fixed with some minor revisions to
 the existing modules, for instance, when closing the \gls*{ide}, unsaved changes
@@ -42,10 +42,12 @@ expose, like the file selection.
 So not only were modules needed to cover the necessities to qualify as an
 \gls*{ide}, but they were also needed to \textit{test} the implementation. Not
 having a developer dedicated to only implement modules, meant that module
-development was usually dropped for other things. As every time a module where
-worked on, it would eventually lead to a discovery, that the current \gls*{api}
-needed some change, which would enable the module feature to be easier
-implemented. A concrete example of this, is the editor module.
+development was usually dropped for other things.
+
+As every time a module where worked on, it would eventually lead to a discovery,
+that the current \gls*{api} needed some change or functionality. Which would
+enable the module feature to be easier implemented. A concrete example of this,
+is the editor module.
 
 
 \subsection{Inconsistent UI and ad-hoc solutions for lackluster API}
