@@ -1,4 +1,5 @@
 {
+  "version": "1.0.0",
   "dependencies": {
     "@nmide/js-core-std-lib": "link:@nmide/js-core-std-lib",
     "@nmide/js-utils": "link:@nmide/js-utils"

@@ -6,7 +6,7 @@ license = "MIT License"
 name = "core"
 readme = "../../README.md"
 repository = "https://github.com/Neelzee/nmide"
-version = "1.1.0"
+version = "2.0.0"
 
 [lib]
 crate-type = ["staticlib", "cdylib", "rlib"]

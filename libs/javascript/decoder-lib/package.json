@@ -1,5 +1,6 @@
 {
   "name": "@nmide/js-decoder-lib",
+  "version": "1.0.0",
   "module": "index.ts",
   "type": "module",
   "devDependencies": {

@@ -1,5 +1,7 @@
 # Foreign Language Library Test Suite
 
+Contains test data.
+
 ## 1. Type Construction Tests
 
 ### Html Type Tests

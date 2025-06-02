@@ -1,6 +1,6 @@
 productName = "nmide-dev"
 mainBinaryName = "nmide-dev"
-version = "1.0.0"
+version = "2.0.0"
 identifier = "no.nilsmf.uib"
 
 [build]

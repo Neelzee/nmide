@@ -9,3 +9,4 @@ entry.js
 build/
 *.log
 logs/*
+.nmide.json
