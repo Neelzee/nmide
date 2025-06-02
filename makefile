@@ -140,7 +140,7 @@ prod: init install-deps build-modules
 	@cd core && bun run tauri build >/dev/null 2>&1
 	@cp -r $(OUT)/release/bundle/ build/ide-bundle
 	@printf "✓\n  IDE build completed successfully!\n"
-	@printf "Copying files..."
+	@printf "Copying files...\n"
 	@printf "  Copying source files..."
 	@$(foreach folder,$(SRC_FOLDERS),cd $(folder) && git clean -Xf . && cd .. &&) true
 	@$(foreach folder,$(SRC_FOLDERS),cp -r $(folder) ./build/source &&) true
@@ -151,7 +151,7 @@ prod: init install-deps build-modules
 	@printf "Zipping build folder..."
 	@zip -r build.zip build >/dev/null 2>&1
 	@printf "✓\nSuccessfully zipped build folder!\n"
-	@printf "Build size: "
+	@printf "  Build size: "
 	@du -sh build.zip
 	@printf "\nFinished!\n"
 	@printf "Building thesis..."
