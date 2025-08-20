@@ -40,8 +40,10 @@ export const isTBool = (x: unknown): x is ValueBool =>
   && "bool" in x
   && typeof x.bool === "boolean";
 export type ValueList = { list: Value[] };
+export type HValueList<T extends Value> = { list: T[] };
 export const isTList = (x: unknown): x is ValueList => typeof x === "object" && x !== null && "list" in x;
 export type ValueObj = { obj: { [key in string]?: Value } };
+export type HValueObj<T extends Value> = { obj: T };
 export const isTObj = (x: unknown): x is ValueObj => typeof x === "object" && x !== null && "obj" in x;
 export type ValueHtml = { html: Html };
 export const isTHtml = (x: unknown): x is ValueHtml => typeof x === "object" && x !== null && "html" in x;
@@ -77,10 +79,10 @@ export const tBool = (s: boolean): ValueBool => {
   return { bool: s };
 };
 
-export const tList = <T extends ValuePrimitive>(lst: T[]): ValueList => {
+export const tList = <T extends ValuePrimitive>(lst?: T[]): ValueList => {
   return {
     list: pipe(
-      lst,
+      lst || [],
       A.filterMap(tValueMaybe),
     )
   };

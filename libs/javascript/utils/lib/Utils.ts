@@ -83,6 +83,25 @@ export const tObjLookupUnd = <T extends Value = Value>(k: string): ((o: ValueObj
     obj => obj[k] as T,
   );
 
+const getType = (o: Value): keyof Exclude<Value, "null"> | "null" => {
+  if ("null" === o) return "null";
+  const key = Object.keys(o)[0];
+  //@ts-ignore This is valid
+  return key;
+}
+
+export const tObjLookupOrType = <T extends Value>(k: string) =>
+  (def: T) =>
+    (o: ValueObj): T => pipe(
+      o,
+      tObjLookup(k),
+      O.match(
+        () => def,
+        x => getType(def) === getType(x)
+          ? x as T
+          : def,
+      ),
+    );
 
 export const tObjLookupOr = <T extends Value = Value>(k: string) =>
   (def: T) =>
@@ -95,17 +114,36 @@ export const tObjLookupOr = <T extends Value = Value>(k: string) =>
       ),
     );
 
-export const getValue = (x: Value): ValuePrimitive => {
-  if (x === "null") return null;
-  if (isTList(x)) return A.map(getValue)(x.list);
+
+type ValuePrimitiveMap<T extends Value> = T extends "null"
+  ? null
+  : T extends { int: number }
+  ? number
+  : T extends { float: number }
+  ? number
+  : T extends { str: string }
+  ? string
+  : T extends { bool: boolean }
+  ? boolean
+  : T extends { list: Value[] }
+  ? ValuePrimitive[]
+  : T extends { html: Html }
+  ? Html
+  : T extends { obj: Record<string, Value | undefined> }
+  ? { [key in string]?: ValuePrimitive }
+  : never;
+
+export const getValue = <T extends Value>(x: T): ValuePrimitiveMap<T> => {
+  if (x === "null") return null as ValuePrimitiveMap<T>;
+  if (isTList(x)) return A.map(getValue)(x.list) as ValuePrimitiveMap<T>;
   if (isTObj(x)) {
-    return x.obj
+    return x.obj as ValuePrimitiveMap<T>;
   }
-  if (isTInt(x)) return x.int;
-  if (isTFloat(x)) return x.float;
-  if (isTBool(x)) return x.bool;
-  if (isTHtml(x)) return x.html;
-  return x.str;
+  if (isTInt(x)) return x.int as ValuePrimitiveMap<T>;
+  if (isTFloat(x)) return x.float as ValuePrimitiveMap<T>;
+  if (isTBool(x)) return x.bool as ValuePrimitiveMap<T>;
+  if (isTHtml(x)) return x.html as ValuePrimitiveMap<T>;
+  return x.str as ValuePrimitiveMap<T>;
 }
 
 export const isValueT = <T extends ValuePrimitive>(x: ValuePrimitive, f = false): x is T => {

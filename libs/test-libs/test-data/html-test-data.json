@@ -99,10 +99,7 @@
           "kids": [],
           "attrs": [
             {
-              "custom": [
-                "src",
-                "image.jpg"
-              ]
+              "src": "image.jpg"
             },
             {
               "custom": [
@@ -132,10 +129,7 @@
           "kids": [],
           "attrs": [
             {
-              "custom": [
-                "type",
-                "text"
-              ]
+              "type": "text"
             },
             {
               "custom": [
@@ -258,10 +252,7 @@
                           "id": "username"
                         },
                         {
-                          "custom": [
-                            "type",
-                            "text"
-                          ]
+                          "type": "text"
                         },
                         {
                           "custom": [
@@ -287,10 +278,7 @@
                 "kids": [],
                 "attrs": [
                   {
-                    "custom": [
-                      "type",
-                      "submit"
-                    ]
+                    "type": "submit"
                   },
                   {
                     "click": {

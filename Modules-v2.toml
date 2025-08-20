@@ -1,0 +1,55 @@
+package-manager = "bun"
+enabled = true
+
+[runtime]
+
+enabled = false
+
+ts = [{ path = "modules/jsm-counter/" }]
+
+rust = [{ path = "modules/rs-counter-plugin-example/" }]
+
+files = ["modules/rs-counter-plugin-example/rt-style.css"]
+
+
+[compile-time]
+
+typescript = [
+  { path = "modules/ide-errors/" },
+  { path = "modules/ide_explorer/" },
+  { path = "modules/ide-editor/" },
+  { path = "modules/dependency-viewer" },
+  { path = "modules/event_sender" },
+  { path = "modules/state_viz" },
+  { path = "modules/ide_save/" },
+  { path = "modules/ide-js/", build-output = "build/" },
+]
+
+rust = [
+  { path = "modules/trivial_module/" },
+  { path = "modules/magnolia_dependency/" },
+  { path = "modules/rust_dependency/" },
+  { path = "modules/ide_fsa/" },
+  { path = "modules/ide_framework/" },
+  { path = "modules/ide_pm/" },
+  { path = "modules/ide_tabs/" },
+  { path = "modules/ide_cache/" },
+  { path = "modules/ide_explorer/" },
+  { path = "modules/tab_wrapper/" },
+  { path = "modules/module_installer/" },
+]
+
+css = [
+  { path = "modules/trivial_module/" },
+  { path = "modules/ide_framework/" },
+  { path = "modules/ide_tabs/" },
+  { path = "modules/ide_pm_style/" },
+  { path = "modules/ide_explorer/" },
+  { path = "modules/ide-editor/" },
+  { path = "modules/dependency-viewer" },
+  { path = "modules/event_sender" },
+  { path = "modules/state_viz" },
+  { path = "modules/module_installer/" },
+]
+
+files = ["modules/ide_explorer/magnolia.png"]
