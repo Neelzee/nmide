@@ -39,12 +39,70 @@ serde_json = "1.0.140"
 toml = { version = "0.8.22", optional = true }
 serde = { version = "1.0.219", features = ["derive"], optional = true }
 env_logger = "0.11.8"
+actix-web = { version = "4.11.0", optional = true, features = [] }
+actix-files = "0.6.6"
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]
-default = ["runtime_modules"]
+default = ["runtime_modules", "server"]
 runtime_modules = ["dep:abi_stable", "dep:async-ffi", "dep:foreign-std-lib"]
 module-installer = ["dep:toml", "dep:serde"]
+server = ["dep:actix-web"]
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 # ============================================================================ #
+
+
+[dependencies.ide_cache]
+features = []
+path = "/home/nmf/Documents/nmide/modules/ide_cache"
+
+
+[dependencies.ide_explorer]
+features = []
+path = "/home/nmf/Documents/nmide/modules/ide_explorer"
+
+
+[dependencies.ide_framework]
+features = []
+path = "/home/nmf/Documents/nmide/modules/ide_framework"
+
+
+[dependencies.ide_fsa]
+features = []
+path = "/home/nmf/Documents/nmide/modules/ide_fsa"
+
+
+[dependencies.ide_pm]
+features = []
+path = "/home/nmf/Documents/nmide/modules/ide_pm"
+
+
+[dependencies.ide_tabs]
+features = []
+path = "/home/nmf/Documents/nmide/modules/ide_tabs"
+
+
+[dependencies.magnolia_dependency]
+features = []
+path = "/home/nmf/Documents/nmide/modules/magnolia_dependency"
+
+
+[dependencies.module_installer]
+features = []
+path = "/home/nmf/Documents/nmide/modules/module_installer"
+
+
+[dependencies.rust_dependency]
+features = []
+path = "/home/nmf/Documents/nmide/modules/rust_dependency"
+
+
+[dependencies.tab_wrapper]
+features = []
+path = "/home/nmf/Documents/nmide/modules/tab_wrapper"
+
+
+[dependencies.trivial_module]
+features = []
+path = "/home/nmf/Documents/nmide/modules/trivial_module"

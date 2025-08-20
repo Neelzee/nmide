@@ -1,0 +1,22 @@
+<form id="survey-form" class="form survey" action="/submit" method="post">
+  <fieldset>
+    <legend>Survey</legend>
+    <label>
+      Age:
+      <input type="number" name="age" min="0" max="120" required>
+    </label>
+    <label>
+      Favorite Color:
+      <select name="color">
+        <option value="red">Red</option>
+        <option value="blue" selected>Blue</option>
+        <option value="green">Green</option>
+      </select>
+    </label>
+    <label>
+      Subscribe:
+      <input type="checkbox" name="subscribe" checked>
+    </label>
+  </fieldset>
+  <button type="submit">Submit</button>
+</form>

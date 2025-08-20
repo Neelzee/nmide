@@ -1,3 +1,4 @@
+# Desktop
 APPDIR := $(shell echo ~/.local/share/no.nilsmf.uib)
 MANIFEST-PATH := tools/cm-installer/Cargo.toml
 OUT := core/src-tauri/target
@@ -6,9 +7,22 @@ MODULES := core/modules
 CARGO := core/src-tauri/Cargo.toml
 DIST := core/build
 INDEX := core/index.html
+
+# Tool
 TOOL-OUT := tools/module-tester/rsm-grapher/target
 TOOL-CARGO := tools/module-tester/rsm-grapher/Cargo.toml
 TOOL-DIST := tools/module-tester/build
+
+# Web
+WEB-APPDIR := core/src-tauri/static
+WEB-MANIFEST-PATH := tools/cm-installer/Cargo.toml
+WEB-CONF := Modules.toml
+WEB-MODULES := core/src-tauri/static
+WEB-CARGO := core/src-tauri/Cargo.toml
+WEB-DIST := core/src-tauri/build
+WEB-INDEX := core/src-tauri/build/index.html
+WEB-TEMPLATE := core/src-tauri/template
+
 DEV_MODE := $(if $(DEVELOPMENT),true,false)
 SRC_FOLDERS := \
 	core \
@@ -16,17 +30,20 @@ SRC_FOLDERS := \
 	modules \
 	tools
 
-.PHONY: build-modules modules install-deps clean init ide help prod
+.PHONY: build-modules modules install-deps clean init ide help prod server-modules server-clean server-init
 
 help:
 	@echo "Available targets:"
-	@echo "  help          - Show this help message"
-	@echo "  install-deps  - Install JavaScript libraries"
-	@echo "  init          - Initialize project structure"
-	@echo "  clean         - Clean build artifacts"
-	@echo "  build-modules - Build all modules"
-	@echo "  modules       - Add Modules from configuration to IDE"
-	@echo "  ide           - Full build for IDE"
+	@echo "  help                 - Show this help message"
+	@echo "  install-deps         - Install JavaScript libraries"
+	@echo "  init                 - Initialize project structure"
+	@echo "  clean                - Clean build artifacts"
+	@echo "  build-modules        - Build all modules"
+	@echo "  modules              - Add Modules from configuration to IDE"
+	@echo "  prod                 - Full build for IDE"
+	@echo "  server-init          - Initialize server project structure"
+	@echo "  server-clean         - Clean server build artifacts"
+	@echo "  server-modules       - Add Modules from configuration to server"
 
 build-modules:
 	@printf "Building modules...\n"
@@ -45,8 +62,44 @@ modules: clean init
 		--index=$(INDEX) \
 		--module-dist=$(APPDIR)/modules >/dev/null 2>&1
 	@printf "✓ Module configuration processed\n"
-	@printf "Building core TypeScript...\n"
+	@printf "Building TypeScript core...\n"
 	@cd core && bun run build.ts >/dev/null 2>&1
+	@printf "✓ Core build completed\n"
+
+server-init:
+	@printf "Initializing server project structure...\n"
+	@mkdir -p $(WEB-DIST)
+	@touch $(WEB-DIST)/modules.js
+	@mkdir -p $(WEB-APPDIR)
+	@mkdir -p $(OUT)
+	@cp $(WEB-TEMPLATE)/index.html $(WEB-DIST)/index.html
+	@( cd core/app/server && bun run build.ts )
+	@printf "✓ Project structure initialized\n"
+
+server-clean:
+	@printf "Removing server build artifacts...\n"
+	@rm -rf $(WEB-DIST) 2>/dev/null || true
+	@printf "Removing application directory...\n";
+	@rm -rf $(WEB-APPDIR) 2>/dev/null || true;
+	@printf "	✓ Application directory removed\n";
+	@awk '{ print } /^# =+ #/ { exit }' $(WEB-CARGO) > tmp && mv tmp $(WEB-CARGO)
+	@printf "✓ Build artifacts removed\n"
+
+server-modules: export CSS_PATH = ./static
+server-modules: server-clean server-init
+	@printf "Processing modules configuration...\n"
+	@cargo run \
+		--manifest-path=$(MANIFEST-PATH) -- \
+		--conf=$(WEB-CONF) \
+		--modules=$(WEB-MODULES) \
+		--out=$(OUT) \
+		--cargo=$(WEB-CARGO) \
+		--dist=$(WEB-MODULES) \
+		--index=$(WEB-INDEX) \
+		--module-dist=$(WEB-APPDIR) >/dev/null 2>&1
+	@printf "✓ Module configuration processed\n"
+	@printf "Building server core...\n"
+	@cd core/src-tauri/template && bun run build.ts >/dev/null 2>&1
 	@printf "✓ Core build completed\n"
 
 install-deps:
@@ -77,6 +130,9 @@ install-deps:
 	@printf "Installing core dependencies...\n"
 	@cd core && bun i >/dev/null 2>&1
 	@printf "✓ All dependencies installed\n"
+
+install-module-deps:
+	$(MAKE) -C modules module-build
 
 clean:
 	@printf "Removing build artifacts...\n"

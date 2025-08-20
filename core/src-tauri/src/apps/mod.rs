@@ -1,6 +1,8 @@
 use anyhow::Result;
 
 pub mod desktop;
+#[cfg(feature = "server")]
+pub mod server;
 pub mod tui;
 
 #[async_trait::async_trait]

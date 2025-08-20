@@ -1,4 +1,4 @@
-use crate::app::App;
+use crate::apps::App;
 use anyhow::{Context, Result};
 
 pub mod run;
@@ -14,6 +14,7 @@ impl App for DesktopApp {
             .context("Compile time module setup should always succeed")?;
         Ok(())
     }
+
     async fn run() -> Result<usize> {
         run::run().await
     }

@@ -11,6 +11,7 @@ macro_rules! define_html {
         pub enum Html {
             $( $name { kids: Vec<Html>, attrs: Vec<$attr>, text: Option<String> }, )*
         }
+
         impl Html {
             pub fn shallow_clone(&self) -> Self {
                 match self {
@@ -114,6 +115,14 @@ macro_rules! define_html {
                 )*
                 }
 
+            }
+
+            pub fn tag_name(&self) -> String {
+                match self {
+                $(
+                    Self::$name { .. } => stringify!($name).to_lowercase().to_string(),
+                )*
+                }
             }
         }
     };

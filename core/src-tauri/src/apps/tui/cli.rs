@@ -9,6 +9,7 @@ pub fn cmd() -> Command {
                 .about("Removes installed modules")
                 .alias("c"),
         )
+        .subcommand(Command::new("server").about("Runs the web IDE"))
 }
 
 pub fn add_args(cmd: Command) -> Command {

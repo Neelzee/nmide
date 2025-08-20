@@ -1,5 +1,5 @@
 import { type Event } from "./Event";
-import { Value } from "./State";
+import { type Value } from "./State";
 import { tNull, tValueMaybeOr } from "./Types";
 
 export type PrimitiveEvent = Extract<Event, { event: any }>;
@@ -25,7 +25,10 @@ export const isPrimDec = (event: Event): PrimitiveEvent["event"] | undefined =>
     ? primDec(event)
     : undefined
 
-export const isPrimAnd = (event: Event, name: string): event is PrimitiveEvent =>
+export const isPrimAnd = <T extends string>(
+  event: Event,
+  name: T
+): event is { event: { event: T; args: Value | null } } =>
   isPrimitiveEvent(event) && event.event.event === name;
 
 export const isPrimAndDec = (event: Event, name: string): PrimitiveEvent["event"] | undefined =>

@@ -21,8 +21,8 @@ export class HtmlBuilder {
     return this;
   }
 
-  kids(...kids: (Html | HtmlBuilder)[]): HtmlBuilder {
-    this._kids.push(...kids);
+  kids(...kids: (Html | HtmlBuilder | undefined)[]): HtmlBuilder {
+    this._kids.push(...kids.filter(x => x !== undefined));
     return this;
   }
 
