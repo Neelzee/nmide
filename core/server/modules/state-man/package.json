@@ -1,0 +1,19 @@
+{
+  "name": "state-man",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "bun build index.ts --outdir build"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@nmide/js-debug-module": "link:@nmide/js-debug-module"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@nmide/js-utils": "link:@nmide/js-utils"
+  }
+}

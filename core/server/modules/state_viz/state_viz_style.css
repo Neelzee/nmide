@@ -1,0 +1,126 @@
+#state-viz {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 1200px;
+  overflow: auto;
+}
+
+.state-viz-tooltip {
+  position: absolute;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 4px;
+  pointer-events: none;
+  font-size: 12px;
+  max-width: 300px;
+}
+
+.state-viz-node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.state-viz-node text {
+  font: 10px sans-serif;
+}
+
+.state-viz-link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
+.state-viz-node-internal circle {
+  cursor: pointer;
+  fill: #555;
+}
+
+.state-viz-node-internal text {
+  text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+}
+
+.type-label {
+  font-size: 8px;
+  fill: #666;
+}
+
+.controls {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.debug-button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background-color: #f44336;
+}
+
+.debug-button:hover {
+  background-color: #45a049;
+}
+
+.debug-button:hover {
+  background-color: #d32f2f;
+}
+
+.debug-button.active {
+  background-color: #388e3c;
+}
+
+.debug-button.active:hover {
+  background-color: #2e7d32;
+}
+
+#state-viz {
+  overflow: auto;
+}
+
+.state-viz-node-object circle {
+  stroke: #4285f4;
+}
+
+.state-viz-node-list circle {
+  stroke: #fbbc05;
+}
+
+.state-viz-node-primitive circle {
+  stroke: #34a853;
+}
+
+.state-viz-node-null circle {
+  stroke: #ea4335;
+}
+
+/* Debug visualization container */
+#state-viz {
+  display: block;
+  position: absolute;
+  z-index: 10;
+  transition: all 0.3s ease;
+  max-height: 800px;
+  overflow: hidden;
+}
+
+/* Hidden state */
+#state-viz.hide-debug-state {
+  display: none;
+  opacity: 0;
+}
