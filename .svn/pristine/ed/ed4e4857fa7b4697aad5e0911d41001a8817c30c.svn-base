@@ -1,7 +1,0 @@
-dist
-coverage
-node_modules
-src-tauri
-modules
-*.lock
-*.nix

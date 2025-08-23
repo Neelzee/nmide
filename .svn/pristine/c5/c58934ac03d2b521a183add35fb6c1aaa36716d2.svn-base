@@ -1,9 +1,0 @@
-\section{Quick Guide to Plugin Development}
-
-\begin{enumerate}
-  \item Install and run Nmide
-  \item Put your plugin in \$APPDATA/no.nilsmf.uib/plugins/ which should now exist
-\end{enumerate}
-
-
-For plugin examples, see the README.md
