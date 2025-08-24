@@ -1,10 +1,17 @@
+# Package manager that is used
 package-manager = "bun"
-enabled = true
 
+# Split module installation and declaration into runtime and compile-time,
+# instead of having each module having to declare itself
 [runtime]
 
+# If the runtime module is enabled
 enabled = false
 
+# Should module installation be more modular? Maybe define invocation of
+# some external program to _install_ a module kind?
+
+# ts modules
 ts = [{ path = "modules/jsm-counter/" }]
 
 rust = [{ path = "modules/rs-counter-plugin-example/" }]
@@ -22,6 +29,9 @@ typescript = [
   { path = "modules/event_sender" },
   { path = "modules/state_viz" },
   { path = "modules/ide_save/" },
+  # Can specify build-output, which means that the files in the specified
+  # directory, should be copied to the module installation directory.
+  # The path is relative to the path specified on the module instance.
   { path = "modules/ide-js/", build-output = "build/" },
 ]
 
@@ -52,4 +62,5 @@ css = [
   { path = "modules/module_installer/" },
 ]
 
+# We can also copy files from a specified directory to the module directory
 files = ["modules/ide_explorer/magnolia.png"]
