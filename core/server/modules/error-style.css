@@ -1,0 +1,170 @@
+.ide-js-error {
+  list-style: none;
+  margin: 0 0 8px 0;
+  padding: 0;
+  background: #1e1e1e;
+  border: 1px solid #3c3c3c;
+  border-left: 4px solid #f14c4c;
+  border-radius: 3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  transition: all 0.2s ease;
+}
+
+.ide-js-error:hover {
+  border-color: #4c4c4c;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.ide-js-error-container {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ide-js-error-module,
+.ide-js-error-msg,
+.ide-js-error-error,
+.ide-js-error-event {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ide-js-error label {
+  color: #cccccc;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.ide-js-error-module label::after {
+  content: "Module";
+}
+
+.ide-js-error-msg label::after {
+  content: "Message";
+}
+
+.ide-js-error-error label::after {
+  content: "Error Details";
+}
+
+.ide-js-error-event label::after {
+  content: "Triggering Event";
+}
+
+.ide-js-error input {
+  background: #2d2d30;
+  border: 1px solid #3e3e42;
+  border-radius: 2px;
+  color: #ffffff;
+  padding: 6px 8px;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.3;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.ide-js-error input:focus {
+  outline: none;
+  border-color: #007acc;
+  box-shadow: 0 0 0 1px #007acc;
+}
+
+.ide-js-error input[disabled] {
+  background: #252526;
+  color: #d4d4d4;
+  cursor: not-allowed;
+  opacity: 0.9;
+}
+
+.ide-js-error-module input {
+  color: #4ec9b0;
+  font-weight: 500;
+}
+
+.ide-js-error-msg input {
+  color: #f14c4c;
+}
+
+.ide-js-error-error input {
+  color: #ffcc02;
+  font-size: 11px;
+}
+
+.ide-js-error-event input {
+  color: #9cdcfe;
+}
+
+.ide-js-errors-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 40vh;
+  overflow-y: auto;
+  background: rgba(30, 30, 30, 0.95);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid #3c3c3c;
+  z-index: 1000;
+  padding: 8px;
+}
+
+.ide-js-errors-container ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ide-js-errors-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ide-js-errors-container::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.ide-js-errors-container::-webkit-scrollbar-thumb {
+  background: #3c3c3c;
+  border-radius: 4px;
+}
+
+.ide-js-errors-container::-webkit-scrollbar-thumb:hover {
+  background: #4c4c4c;
+}
+
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.ide-js-error.new {
+  animation: slideInFromBottom 0.3s ease-out;
+}
+
+@media (max-width: 768px) {
+  .ide-js-error-container {
+    padding: 10px 12px;
+    gap: 6px;
+  }
+  
+  .ide-js-error input {
+    font-size: 11px;
+    padding: 5px 6px;
+  }
+}

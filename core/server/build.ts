@@ -1,11 +1,17 @@
 await Bun.build({
   entrypoints: ["./server.ts"],
-  outdir: "./static",
+  outdir: "../src-tauri/static",
   minify: true,
 })
 
 await Bun.build({
   entrypoints: ["./modules.ts"],
-  outdir: "./static",
+  outdir: "../src-tauri/static",
+  minify: true,
+})
+
+await Bun.build({
+  entrypoints: ["../app/installer/installer.ts"],
+  outdir: "../src-tauri/static",
   minify: true,
 })
