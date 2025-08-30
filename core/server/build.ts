@@ -9,9 +9,3 @@ await Bun.build({
   outdir: "../src-tauri/static",
   minify: true,
 })
-
-await Bun.build({
-  entrypoints: ["../app/installer/installer.ts"],
-  outdir: "../src-tauri/static",
-  minify: true,
-})
