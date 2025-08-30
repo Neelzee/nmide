@@ -3,7 +3,7 @@ import {
   cls,
   Core,
   Event, HtmlBuilder,
-  installModule, isPrimAnd, mkPrimEvent, UiBuilder
+  installModule, isPrimAnd, mkPrimEvent
 } from "@nmide/js-utils";
 
 const moduleName = "ide-editor";
