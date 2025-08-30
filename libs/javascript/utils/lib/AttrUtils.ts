@@ -7,6 +7,13 @@ export const id = (id: string): { id: string } => {
   return { id };
 }
 
+export const custom = (key: string, value: string): { custom: [string, string] } => {
+  const obj = {};
+  // @ts-ignore Valid *script
+  obj[key] = value;
+  return obj as { custom: [string, string] };
+}
+
 export const cls = (cls: string): { clss: string } => {
   return { clss: cls };
 }
