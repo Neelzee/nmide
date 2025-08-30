@@ -2,13 +2,23 @@
 
 STATIC="../src-tauri/static"
 MODULES="$STATIC/modules.js"
-INDEX_CONTENT="
-<!DOCTYPE html>
+BUILT_MODULES="./built_modules"
+INDEX_CONTENT="<!DOCTYPE html>
 <html lang="en">
   <head>
     <script type="module" src="./modules.js"></script>
-    <script type="module" src="./server.js"></script>
-    <script type="module" src="./installer.js"></script>"
+    <script type="module" src="./server.js"></script>"
+
+if [[ ! -d $STATIC ]]; then
+  mkdir -p $STATIC
+fi
+
+if [[ ! -d $BUILT_MODULES ]]; then
+  mkdir -p $BUILT_MODULES
+else
+  rm -rf $BUILT_MODULES
+  mkdir -p $BUILT_MODULES
+fi
 
 for m in ./modules/*; do
   if [[ -f "$m" ]]; then
@@ -18,15 +28,9 @@ for m in ./modules/*; do
     cd "$m"
     if [[ -f "$m/package.json" ]]; then
       bun i
-      bun run build.ts
     fi
     popd
   fi
-done
-
-echo "" >>"./modules.ts"
-for m in ./built_modules/*; do
-  echo "import '$m';" >>"./modules.ts"
 done
 
 tmpFile=$(mktemp)
@@ -39,7 +43,7 @@ for css in ./*.css; do
 done
 popd
 
-echo "" >>tmpFile
+echo "" >>$tmpFile
 echo "</head><body></body></html>" >>$tmpFile
 
 bun run build.ts
