@@ -2,7 +2,15 @@ use std::fs::{self, File};
 use std::io::Write;
 use std::path::Path;
 
+use actix_web_static_files::deps::static_files::resource_dir;
+
 fn main() {
+    #[cfg(feature = "server")]
+    {
+        resource_dir("./static").build().unwrap_or_else(|err| {
+            panic!("Failed building static dir: ${err:?}");
+        });
+    }
     let out = std::env::var("OUT_DIR").unwrap();
     let out_dir = Path::new(&out);
     let file = out_dir.join("..").join("..").join("..").join("..");

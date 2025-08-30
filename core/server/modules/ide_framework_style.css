@@ -1,0 +1,35 @@
+body,
+html {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#root {
+  display: grid;
+  grid-template-rows: 2rem 1fr;
+  grid-template-columns: 250px 1fr;
+  height: 100vh;
+  width: 100vw;
+}
+
+#navbar {
+  grid-column: 1 / -1;
+  height: 2rem;
+  background: #525252;
+}
+
+#sidebar {
+  grid-row: 2;
+  background: #252526;
+  overflow-y: auto;
+}
+
+#content {
+  display: flex;
+  align-items: stretch;
+  grid-row: 2;
+  overflow: auto;
+  background: #1e1e1e;
+}
