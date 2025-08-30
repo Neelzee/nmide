@@ -9,25 +9,24 @@ const module: Module = {
   init: async (core: Core): Promise<void> => {
     await core.registerHandler(name, "form-submit");
     const modules = Array.from(window.__nmideConfig__.modules.entries())
-      .filter(([k, v]) => k != name)
       .map(fst)
+      .filter(m => m != name)
       .map(m => {
         const safeModule = `module-${JSON.stringify(m).replace("\"", "").replace("\"", "")}`;
         console.log(`'${safeModule}'`)
-        return new HtmlBuilder()
+        return [new HtmlBuilder()
           .kind("label")
           .attrs(
-          //custom("for", safeModule)
-        )
-          .text(m)
-          .kids(
-            new HtmlBuilder()
-              .kind("input")
-              .attrs(
-                custom("type", "checkbox"),
-                //      custom("name", safeModule)
-              )
-          );
+            { custom: ["for", safeModule] }
+          )
+          .text(m),
+        new HtmlBuilder()
+          .kind("input")
+          .attrs(
+            { custom: ["type", "checkbox"] },
+            { custom: ["name", safeModule] },
+          )
+        ];
       });
 
     await core.sendModification(
@@ -37,13 +36,12 @@ const module: Module = {
             .kind("form")
             .attrs(id("module-form"))
             .kids(
-              ...modules,
+              ...(modules.flatMap(x => x)),
               new HtmlBuilder()
                 .kind("button")
                 .text("Submit")
                 .attrs(
                   id("form-submit"),
-                  custom("type", "submit"),
                   click(mkPrimEvent("form-submit")),
                 )
             )
