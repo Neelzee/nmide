@@ -1,0 +1,16 @@
+{
+  "name": "module-form",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@nmide/js-utils": "link:@nmide/js-utils",
+    "fp-ts": "^2.16.11"
+  }
+}
