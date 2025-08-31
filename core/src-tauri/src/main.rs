@@ -1,10 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::process;
-
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use core_lib::apps::App;
+use std::process;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -81,7 +80,18 @@ async fn main() -> Result<()> {
         }
         _ => (),
     }
-    core_lib::apps::desktop::DesktopApp::setup().await?;
-    let _exitcode = core_lib::apps::desktop::DesktopApp::run().await?;
+
+    #[cfg(feature = "ide")]
+    {
+        core_lib::apps::desktop::DesktopApp::setup().await?;
+        let _exitcode = core_lib::apps::desktop::DesktopApp::run().await?;
+    }
+
+    #[cfg(not(feature = "ide"))]
+    {
+        eprintln!("Need ide feature enabled");
+        Err(anyhow!("Need ide feature enabled"))
+    }?;
+
     Ok(())
 }

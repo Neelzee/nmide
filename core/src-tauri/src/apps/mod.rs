@@ -1,5 +1,6 @@
 use anyhow::Result;
 
+#[cfg(feature = "ide")]
 pub mod desktop;
 #[cfg(feature = "server")]
 pub mod server;

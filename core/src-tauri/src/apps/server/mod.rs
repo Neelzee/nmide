@@ -3,13 +3,15 @@ use actix_files::{self as fs};
 use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer};
 use anyhow::{anyhow, Result};
+use env_logger::Env;
 
 pub struct Server;
 
 #[async_trait::async_trait]
 impl NmideApp for Server {
     async fn setup() -> Result<()> {
-        env_logger::init();
+        let env = Env::default().filter_or("NMIDE_LOG_LEVEL", "info");
+        env_logger::init_from_env(env);
         Ok(())
     }
 
@@ -20,7 +22,7 @@ impl NmideApp for Server {
                 .wrap(Logger::new("%a %{User-Agent}i"))
                 .service(fs::Files::new("/", "./static").show_files_listing())
         })
-        .bind(("127.0.0.1", 8080))
+        .bind(("0.0.0.0", 8080))
         .expect("Port should be available")
         .run();
 
