@@ -1,5 +1,4 @@
 /target/
 /gen/schemas
 *.profraw
-static
 /build
