@@ -1,4 +1,4 @@
-import { click, custom, getArgs, HtmlBuilder, id, installModule, isTObj, mkPrimEvent, UiBuilder, type Core, type Event, type Module } from "@nmide/js-utils"
+import { click, getArgs, HtmlBuilder, id, installModule, isTObj, mkPrimEvent, UiBuilder, type Core, type Event, type Module } from "@nmide/js-utils"
 import { pipe } from "fp-ts/lib/function";
 import { fst } from "fp-ts/lib/Tuple";
 
@@ -13,7 +13,6 @@ const module: Module = {
       .filter(m => m != name)
       .map(m => {
         const safeModule = `module-${JSON.stringify(m).replace("\"", "").replace("\"", "")}`;
-        console.log(`'${safeModule}'`)
         return [new HtmlBuilder()
           .kind("label")
           .attrs(
@@ -51,7 +50,6 @@ const module: Module = {
   },
   handler: async (event: Event, core: Core): Promise<void> => {
     const args = getArgs(event);
-    console.log(event)
     if (isTObj(args)) {
       const obj = args.obj;
       const formValue = obj["form"];
