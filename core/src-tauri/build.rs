@@ -25,5 +25,9 @@ fn main() {
     }
     fs::copy(file.clone(), out_dir.join("module_reg.rs"))
         .unwrap_or_else(|err| panic!("File {:?} should exist, error: {:?}", file, err));
-    tauri_build::build();
+
+    #[cfg(feature = "ide")]
+    {
+        tauri_build::build();
+    }
 }
