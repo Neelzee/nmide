@@ -50,7 +50,7 @@ custom-protocol = ["tauri/custom-protocol"]
 default = ["runtime_modules"]
 runtime_modules = ["dep:abi_stable", "dep:async-ffi", "dep:foreign-std-lib"]
 module-installer = ["dep:toml", "dep:serde"]
-server = ["dep:actix-web", "dep:actix-files"]
+server = ["dep:actix-web", "dep:actix-files", "dep:serde"]
 ide = [
   "dep:tauri",
   "dep:tauri-plugin-dialog",
