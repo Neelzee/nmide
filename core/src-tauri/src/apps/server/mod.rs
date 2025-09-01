@@ -1,4 +1,6 @@
 use crate::apps::App as NmideApp;
+use crate::core::setup::setup as core_setup;
+use crate::core::statics::COMPILE_TIME_MODULES;
 use actix_files::{self as fs};
 use actix_web::body::BoxBody;
 use actix_web::http::header::ContentType;
@@ -30,24 +32,22 @@ pub struct JsonCoreResponse {
     handler: Vec<(String, String)>,
 }
 
-impl Responder for JsonCoreResponse {
-    type Body = BoxBody;
-
-    fn respond_to(self, _req: &actix_web::HttpRequest) -> HttpResponse<Self::Body> {
-        let body = serde_json::to_string(&self).unwrap();
+#[post("/modules/{module}/init")]
+async fn module_init(path: web::Path<String>, json_core: web::Json<JsonCore>) -> HttpResponse {
+    let module_name = path.into_inner();
+    let modules = COMPILE_TIME_MODULES.read().await;
+    if let Some(module) = modules.get(&module_name) {
+        let body = serde_json::to_string(&JsonCoreResponse {
+            modification: todo!(),
+            events: todo!(),
+            handler: todo!(),
+        })
+        .unwrap();
         HttpResponse::Ok()
             .content_type(ContentType::json())
             .body(body)
-    }
-}
-
-#[post("/modules/{module}/init")]
-async fn module_init(path: web::Path<String>, json_core: web::Json<JsonCore>) -> impl Responder {
-    let module = path.into_inner();
-    JsonCoreResponse {
-        modification: todo!(),
-        events: todo!(),
-        handler: todo!(),
+    } else {
+        HttpResponse::NotFound().finish()
     }
 }
 
@@ -56,6 +56,7 @@ impl NmideApp for Server {
     async fn setup() -> Result<()> {
         let env = Env::default().filter_or("NMIDE_LOG_LEVEL", "info");
         env_logger::init_from_env(env);
+        core_setup(("./static/".into(), "./static/".into()));
         Ok(())
     }
 
