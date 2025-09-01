@@ -1,8 +1,41 @@
-import { click, getArgs, HtmlBuilder, id, installModule, isTObj, mkPrimEvent, UiBuilder, type Core, type Event, type Module } from "@nmide/js-utils"
+import {
+  click,
+  HtmlBuilder,
+  id,
+  installModule,
+  isPrimAnd,
+  isPrimitiveEvent,
+  isTBool,
+  mkPrimEvent,
+  StateBuilder,
+  tBool,
+  UiBuilder,
+  type Core,
+  type Event,
+  type Module,
+  type Value
+} from "@nmide/js-utils"
 import { pipe } from "fp-ts/lib/function";
-import { fst } from "fp-ts/lib/Tuple";
+import { fst, snd } from "fp-ts/lib/Tuple";
+import * as A from "fp-ts/Array";
 
 const name = "module-form";
+
+const getQueryParamsFromModules = (modules: [string, boolean][]): string =>
+  modules.length === 0
+    ? ""
+    : pipe(
+      modules,
+      A.filter(snd),
+      A.map(fst),
+      A.map(m => `module=${m}`),
+      xs => xs.join("&"),
+      s => `?${s}`,
+    );
+
+const mkSafeModuleName = (m: string): string =>
+  `module-${JSON.stringify(m).replace("\"", "").replace("\"", "")}`;
+
 
 const module: Module = {
   name,
@@ -12,7 +45,7 @@ const module: Module = {
       .map(fst)
       .filter(m => m != name)
       .map(m => {
-        const safeModule = `module-${JSON.stringify(m).replace("\"", "").replace("\"", "")}`;
+        const safeModule = mkSafeModuleName(m)
         return [new HtmlBuilder()
           .kind("label")
           .attrs(
@@ -24,6 +57,7 @@ const module: Module = {
           .attrs(
             { custom: ["type", "checkbox"] },
             { custom: ["name", safeModule] },
+            click(mkPrimEvent(safeModule))
           )
         ];
       });
@@ -49,19 +83,27 @@ const module: Module = {
     );
   },
   handler: async (event: Event, core: Core): Promise<void> => {
-    const args = getArgs(event);
-    if (isTObj(args)) {
-      const obj = args.obj;
-      const formValue = obj["form"];
-      if (isTObj(formValue)) {
-        const form = pipe(
-          Object.entries(formValue.obj),
-          a => {
-            console.log(a);
-            return a;
-          }
-        );
-      }
+    if (isPrimAnd(event, "form-submit")) {
+      const state = await core.state();
+      const modules: [string, boolean][] = pipe(
+        Array.from(window.__nmideConfig__.modules.entries()),
+        A.map(fst),
+        A.filter(m => m != name),
+        A.map(mkSafeModuleName),
+        A.map<string, [string, Value | undefined]>((m) => [m, state[m]]),
+        A.filter<[string, Value | undefined], [string, Value]>((x): x is [string, Value] => snd(x) !== undefined),
+        A.map(([m, v]) => [m, isTBool(v) ? v.bool : false])
+      );
+      // Redirect the user based on the state
+      window.location.replace(`https://${window.location.hostname}/form.index${getQueryParamsFromModules(modules)}`);
+    } else if (isPrimitiveEvent(event)) {
+      const { event: { event: moduleName } } = event;
+      const state = await core.state();
+      const oldValue = state[moduleName] || tBool(true);
+      const newValue = isTBool(oldValue) ? oldValue.bool : false;
+      await core.sendModification(
+        new StateBuilder().set(moduleName, tBool(newValue)).build()
+      );
     }
   }
 };
