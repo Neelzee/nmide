@@ -1,3 +1,5 @@
 #!/bin/bash
 
-bun run tauri dev -- --features server -- server
+pushd .
+cd src-tauri && cargo run --features server server
+popd
