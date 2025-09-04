@@ -1,12 +1,12 @@
 use crate::apps::App as NmideApp;
 use crate::core::setup::setup as core_setup;
 use crate::core::statics::COMPILE_TIME_MODULES;
-use actix_files::{self as fs};
+use actix_files::{self as fs, NamedFile};
 use actix_web::body::BoxBody;
 use actix_web::http::header::ContentType;
 use actix_web::http::StatusCode;
 use actix_web::middleware::Logger;
-use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use anyhow::{anyhow, Result};
 use async_trait::async_trait;
 use core_std_lib::core::Core;
@@ -51,6 +51,11 @@ async fn module_init(path: web::Path<String>, json_core: web::Json<JsonCore>) ->
     }
 }
 
+#[get("/")]
+async fn index() -> NamedFile {
+    NamedFile::open("./static/index.html").unwrap()
+}
+
 #[async_trait]
 impl NmideApp for Server {
     async fn setup() -> Result<()> {
@@ -66,6 +71,7 @@ impl NmideApp for Server {
                 .wrap(Logger::default())
                 .wrap(Logger::new("%a %{User-Agent}i"))
                 .service(module_init)
+                .service(index)
                 .service(fs::Files::new("/", "./static").show_files_listing())
         })
         .bind(("0.0.0.0", 8080))

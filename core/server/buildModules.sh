@@ -48,4 +48,4 @@ echo "</head><body></body></html>" >>$tmpFile
 
 bun run build.ts
 
-cp $tmpFile "$STATIC/index.html"
+cp $tmpFile "$STATIC/ide.html"
