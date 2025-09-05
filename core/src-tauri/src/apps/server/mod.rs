@@ -1,23 +1,20 @@
-use crate::apps::App as NmideApp;
-use crate::core::setup::setup as core_setup;
-use crate::core::statics::COMPILE_TIME_MODULES;
+use crate::{
+    apps::App as NmideApp,
+    core::{setup::setup as core_setup, statics::COMPILE_TIME_MODULES},
+};
 use actix_files::{self as fs, NamedFile};
-use actix_web::body::BoxBody;
-use actix_web::http::header::ContentType;
-use actix_web::http::StatusCode;
-use actix_web::middleware::Logger;
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{
+    get, http::header::ContentType, middleware::Logger, post, web, App, HttpResponse, HttpServer,
+};
 use anyhow::{anyhow, Result};
 use async_trait::async_trait;
-use core_std_lib::core::Core;
-use core_std_lib::core_modification::CoreModification;
-use core_std_lib::event::Event;
-use core_std_lib::html::Html;
-use core_std_lib::state::State;
+use core_std_lib::{core_modification::CoreModification, event::Event, html::Html, state::State};
 use env_logger::Env;
 use serde::{Deserialize, Serialize};
 
 pub struct Server;
+
+mod core;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct JsonCore {
