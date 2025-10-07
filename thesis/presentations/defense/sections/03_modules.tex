@@ -2,15 +2,55 @@
 \SectionPage
 
 \begin{frame}
-  \frametitle{Event sender}
+  \frametitle{UI framework}
+  \begin{figure}[H]
+    \centering
+    \input{./figures/ide-layout}
+    \caption{
+      Diagram of the layout of different areas in our IDE
+    }
+    \label{fig:ideLayout}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{File system operations (FSA)}
+  Since this IDE can target different OSes, we
+  need some form of FSA. This is achieved by our module, ide\_fsa, which
+  enables other modules to do file system operations without having to worry about
+  what OS they are on.
 \end{frame}
 
 \begin{frame}
   \frametitle{Cache}
+  Cache stuff
 \end{frame}
 
 \begin{frame}
-  \frametitle{Editor}
+  \frametitle{Module installer}
+  Module installing
+\end{frame}
+
+\begin{frame}
+  \frametitle{Event sender}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{./pics/event-mocking.png}
+    \caption{
+      Form for sending events
+    }
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{State visualization}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{./pics/debug-state.png}
+    \caption{
+      Visualization of the state
+    }
+  \end{figure}
 \end{frame}
 
 \begin{frame}
@@ -19,6 +59,13 @@
 
 \begin{frame}
   \frametitle{File explorer}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{./pics/ide-explorer.png}
+    \caption{
+      File explorer module
+    }
+  \end{figure}
 \end{frame}
 
 \begin{frame}
@@ -26,27 +73,15 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{UI framework}
-\end{frame}
-
-\begin{frame}
-  \frametitle{File system operations}
-\end{frame}
-
-\begin{frame}
   \frametitle{Tabs}
 \end{frame}
 
 \begin{frame}
+  \frametitle{Editor}
+\end{frame}
+
+\begin{frame}
   \frametitle{Magnolia dependency graph}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Module installer}
-\end{frame}
-
-\begin{frame}
-  \frametitle{State visualization}
 \end{frame}
 
 \begin{frame}
