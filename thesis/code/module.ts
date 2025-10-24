@@ -1,5 +1,5 @@
-const module: Module = {
+const module = {
   name: "module",
-  init: async (core: Core): Promise<void> => { },
-  handler: async (event: Event, core: Core): Promise<void> => { },
+  init: async (_: Core): Promise<void> => { },
+  handler: async (_: Event, __: Core): Promise<void> => { },
 }

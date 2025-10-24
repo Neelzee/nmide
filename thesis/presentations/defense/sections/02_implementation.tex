@@ -2,23 +2,48 @@
 \SectionPage
 
 \begin{frame}
+  \frametitle{Core}
+  \begin{itemize}
+    \pause
+    \item The core needs to
+      \pause
+      \begin{itemize}
+        \item Handle the UI and state
+        \pause
+        \item Handle changes asyncronysly
+      \end{itemize}
+    \pause
+    \item Modular; core features should be easy to swap/modify
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
   \frametitle{Module}
   \begin{itemize}
     \pause
     \item A module needs to:
       \pause
       \begin{itemize}
-        \item Initialize some state
+        \item Initialize the core state
         \pause
-        \item Update the state based on events
+        \item Update the core based on events
         \pause
-        \item React to state changes
+        \item React to core changes
       \end{itemize}
-      \pause
-    \item Module architecture is inspired by Elm and MVC
       \pause
     \item A module should be \textit{pure}
   \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Architecture}
+  \begin{figure}[H]
+    \centering
+    \input{./figures/plugin-architecture-v2}
+    \caption{
+      Diagram of the application architecture
+    }
+  \end{figure}
 \end{frame}
 
 \begin{frame}

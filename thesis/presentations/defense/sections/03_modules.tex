@@ -14,21 +14,114 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{File system operations (FSA)}
-  Since this IDE can target different OSes, we
-  need some form of FSA. This is achieved by our module, ide\_fsa, which
-  enables other modules to do file system operations without having to worry about
-  what OS they are on.
+  \frametitle{Menu}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{./pics/menu-bar.png}
+    \caption{
+      Menu bar
+    }
+  \end{figure}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Cache}
-  Cache stuff
+  \frametitle{Dropdown menu}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{./pics/menu-dropdown.png}
+    \caption{
+      Dropdown menu
+    }
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Tabs}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{./pics/tabs.png}
+    \caption{
+      Tab bar with two options
+    }
+  \end{figure}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{./pics/tab-switch.png}
+    \caption{
+      After clicking on the leftmost tab, the view is changed
+    }
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Error reporting}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{./pics/errors.png}
+    \caption{
+      Error notification from another module
+    }
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{File explorer}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{./pics/ide-explorer.png}
+    \caption{
+      File explorer module
+    }
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{File icons}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{./pics/file-explorer-icons.png}
+    \caption{
+      File explorer module, extended by a file-icon for Magnolia module
+    }
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{File system operations (FSA)}
+  \begin{itemize}
+    \item Since this IDE can target different OSes, we need FSA
+    \item This is achieved by our module, ide\_fsa
+    \item Makes file operations OS-agnostic
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Persistant storage}
+  \begin{itemize}
+    \item The core has no persistant storage
+    \item A module can persist storage
+    \item The core emits an exit event, giving modules a chance to block the
+    core thread
+    \item The same module loads the state during startup
+  \end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Module installer}
-  Module installing
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{./pics/module-installer-tab.png}
+    \caption{
+      Dropdown for adding a module
+    }
+  \end{figure}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{./pics/module-installer.png}
+    \caption{
+      Form for downloading modules
+    }
+  \end{figure}
 \end{frame}
 
 \begin{frame}
@@ -46,6 +139,13 @@
   \frametitle{State visualization}
   \begin{figure}
     \centering
+    \includegraphics[width=0.5\textwidth]{./pics/debug-state-btn.png}
+    \caption{
+      Debug state button
+    }
+  \end{figure}
+  \begin{figure}
+    \centering
     \includegraphics[width=0.5\textwidth]{./pics/debug-state.png}
     \caption{
       Visualization of the state
@@ -54,44 +154,27 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Error reporting}
-\end{frame}
-
-\begin{frame}
-  \frametitle{File explorer}
+  \frametitle{Editor}
   \begin{figure}
     \centering
-    \includegraphics[width=0.5\textwidth]{./pics/ide-explorer.png}
-    \caption{
-      File explorer module
-    }
+    \includegraphics[width=0.5\textwidth]{./pics/editor.png}
   \end{figure}
 \end{frame}
 
 \begin{frame}
-  \frametitle{File icons}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Tabs}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Editor}
-\end{frame}
-
-\begin{frame}
   \frametitle{Magnolia dependency graph}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{./pics/magnolia-dependencies.png}
+  \end{figure}
 \end{frame}
 
 \begin{frame}
   \frametitle{Rust dependencies}
-\end{frame}
-
-%\hidelogo
-
-\begin{frame}
-  \frametitle{Module dependency viewer}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{./pics/rust-deps.png}
+  \end{figure}
 \end{frame}
 
 \begin{frame}
@@ -101,5 +184,3 @@
       \includegraphics[width=0.7\textwidth]{./pics/module-dependencies.png}
   \end{figure}
 \end{frame}
-
-%\showlogo

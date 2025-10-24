@@ -2,27 +2,6 @@
 \SectionPage
 
 \begin{frame}
-  \frametitle{Terms}
-  \begin{itemize}
-    \item Zero-core:
-      \pause
-      \begin{itemize}
-        \item The only functionality the main, \textit{core}, application has is
-          to load/unload modules
-          \pause
-        \item All other functionality comes from modules
-      \end{itemize}
-    \item Modular
-      \pause
-      \begin{itemize}
-        \item Trivial to enable or disable modules
-          \pause
-        \item Might involve an application restart
-      \end{itemize}
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
   \frametitle{What is a module?}
   \begin{itemize}
     \item Third party code to be executed/interpreted
@@ -59,8 +38,9 @@
       \end{itemize}
     \item Simple installation, for multiple OSes
       \pause
-    \item Easy for the next \sout{sucker} developer to change core functionality
-    \item Have a good module developer experience
+    \item Modular core
+      \pause
+    \item Good module developer experience
       \begin{itemize}
           \pause
         \item Language agnostic module architecture

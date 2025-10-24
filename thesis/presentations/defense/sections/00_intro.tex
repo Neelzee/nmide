@@ -10,8 +10,12 @@
         \item Magne Haveraaen and Mikhail Barash
       \end{itemize}
       \pause
+    \item About my thesis
+      \pause
     \item What an IDE is
+      \pause
     \item About Magnolia
+      \pause
     \item Zero core modular IDE
       \begin{itemize}
         \item Planning
@@ -21,49 +25,54 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Integrated Development Environment (IDE)}
+  \frametitle{Thesis}
   \begin{itemize}
       \pause
-    \item Integrated debugging
+    \item For academic peers:
+      \begin{itemize}
+        \item Design and develop a \textit{zero-core}, \textit{modular}, \textit{IDE} 
+      \end{itemize}
       \pause
-    \item Integrated compiler/interpreter
+    \item For family members:
       \pause
-    \item Early Bug/Warning/Error reporting
+      \begin{itemize}
+        \item Creating a tool for developers
+      \end{itemize}
       \pause
-    \item File explorer
+    \item Modular
       \pause
-    \item Version Control System integration
+      \begin{itemize}
+        \item Functionality can be added by other developers
+      \end{itemize}
       \pause
-    \item Syntax highlighting
+    \item Zero-core
+      \pause
+      \begin{itemize}
+        \item The tool gets all of its functionality from other developers
+      \end{itemize}
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Why use an IDE?}
+  \frametitle{Integrated Development Environment (IDE)}
   \begin{itemize}
       \pause
-    \item Editor
+    \item Not really a tool, more like a toolbelt
       \pause
-    \item Compiler/interpreter
-      \pause
-    \item Terminal
-      \pause
-    \item Complex setup for larger projects
-      \pause
-    \item Eventually needed to build scripts for large projects
-      \begin{itemize}
-        \item Lead to more complex build scripts
-        \item Eventually ending up with applications like Gradle, Maven, Make
-      \end{itemize}
-      \pause
-    \item Missing/incomplete:
+    \item A single application with \textit{everything} a developer needs
       \pause
       \begin{itemize}
-        \item Libraries
-        \item Environment variables
-        \item Configurations
-        \item Scripts
-          \pause
+        \item Manage files
+        \pause
+        \item Compile and run code
+        \pause
+        \item Run tests and show test reports
+        \pause
+        \item Check for errors
+        \pause
+        \item Warn about possible bugs
+        \pause
+        \item Grammer check
       \end{itemize}
   \end{itemize}
 \end{frame}
@@ -74,26 +83,16 @@
 \begin{frame}
   \frametitle{Bergen Language Design Laboratory}
   \begin{itemize}
-    \item Researches at BLDL are experimenting with a research programming
-      language called Magnolia
+    \item Researches at BLDL are experimenting with a programming language
+    called Magnolia
       \pause
-    \item Takes inspiration from
-      \begin{itemize}
-        \item Generic programming
-        \item Algebraic specifications
-        \item Theory of institutions
-        \item And other languages like CafeOBJ and Maude
-      \end{itemize}
-    \item Created to experiment with novel language features
+    \item Created to experiment with novel language features inspired by
+    academia
       \pause
       \begin{itemize}
-        \item Functionalization
-        \item Mutification
-        \item Generated types
-        \item Type partitions
-        \item \dots
-          \pause
+        \item For example: abstract algebra
       \end{itemize}
+      \pause
     \item Which may be out-of-scope for IDEs
   \end{itemize}
 \end{frame}
@@ -110,76 +109,108 @@
         \item Operations on those types
         \item Axioms that specify the properties of the operations
       \end{itemize}
+      \pause
     \item A concept can use other concepts, and rename the types and operations
       in the concept, this is called renaming
+      \pause
+    \item Renaming is useful to visiualise for a Magnolia developer, but not a
+    common feature in IDEs
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Magma example in mathematical notation}
-  \begin{equation}
-    M = \{ a, b, c, \dots \}
-  \end{equation}
-  \begin{equation}
-    (M, \bullet)
-  \end{equation}
-  \begin{equation}
-    a, b \in M \implies a \bullet b \in M
-  \end{equation}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Group example in mathematical notation}
-  Associativity (Semigroup)
-  \begin{equation}
-    \forall a, \forall b, \forall c \in M \implies
-    (a \bullet b) \bullet c = a \bullet (b \bullet c)
-  \end{equation}
-  Identify (Monoid)
-  \begin{equation}
-    \forall a, \exists e \in M \implies a \bullet e = a
-  \end{equation}
-  Invertability (Group)
-  \begin{equation}
-    \forall a, \exists b \in M \implies a \bullet b = e
-  \end{equation}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Group is a Magma with more properties}
+  \frametitle{Group is a magma with more properties}
   \begin{itemize}
-    \item Magma is trivial to implement in Java
-    \item Group is more complicated
-    \item Group \textit{extends} monoid \textit{extends} semigroup
+    \item Magma is the \textit{simplest} structure in abstract algebra
+    \item It is trivial to implement in Java using interfaces
+    \item Group, which is an exstension of magma, is more complicated
+    \item Group \textit{extends} monoid, \textit{extends} semigroup,
       \textit{extends} magma
     \item With \textit{inverse element}, \textit{identity}, and
-      \textit{associativity} respectively
+      \textit{associativity} properties (\textit{interfaces}) respectively
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Magma to Group example in Java}
-  \begin{center}
-    \lstinputlisting
-    [ language=Java
-    ]{./code/magma.java}
+  \frametitle{Magma example}
+  \begin{figure}[H]
+    \begin{subfigure}[h]{0.45\textwidth}
+      \begin{equation}
+        M = \{ a, b, c, \dots \}
+      \end{equation}
+      \begin{equation}
+        (M, \bullet)
+      \end{equation}
+      \begin{equation}
+        a \bullet b \in M
+      \end{equation}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[h]{0.45\textwidth}
+      \begin{center}
+      \lstinputlisting
+      [ language=Java
+      ]{./code/magma.java}
   \end{center}
+    \end{subfigure}
+  \end{figure}
+\end{frame}
+
+\hidelogo
+
+\begin{frame}
+  \frametitle{From semigroup to group}
+  \begin{figure}[H]
+    \begin{subfigure}[h]{0.45\textwidth}
+      Associativity (Semigroup)
+      \begin{equation}
+        (a \bullet b) \bullet c = a \bullet (b \bullet c)
+      \end{equation}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[h]{0.45\textwidth}
   \begin{center}
     \lstinputlisting
     [ language=Java
     ]{./code/semigroup.java}
   \end{center}
+\end{subfigure}
+  \end{figure}
+  \begin{figure}[H]
+    \begin{subfigure}[h]{0.45\textwidth}
+      Identity (Monoid)
+      \begin{equation}
+        a \bullet e = a
+      \end{equation}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[h]{0.45\textwidth}
   \begin{center}
     \lstinputlisting
     [ language=Java
     ]{./code/monoid.java}
   \end{center}
+\end{subfigure}
+  \end{figure}
+  \begin{figure}[H]
+    \begin{subfigure}[h]{0.45\textwidth}
+      Invertability (Group)
+      \begin{equation}
+        a \bullet b = e
+      \end{equation}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[h]{0.45\textwidth}
   \begin{center}
     \lstinputlisting
     [ language=Java
     ]{./code/group.java}
   \end{center}
+\end{subfigure}
+  \end{figure}
 \end{frame}
+
+\showlogo
 
 \begin{frame}
   \frametitle{Magma example in Magnolia}
@@ -200,24 +231,6 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Monoid example in Magnolia}
-  \begin{center}
-    \lstinputlisting
-    [ language=Magnolia
-    ]{./code/monoid.mg}
-  \end{center}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Group example in Magnolia}
-  \begin{center}
-    \lstinputlisting
-    [ language=Magnolia
-    ]{./code/group.mg}
-  \end{center}
-\end{frame}
-
-\begin{frame}
   \frametitle{The current Magnolia IDE}
   \pause
   \begin{itemize}
@@ -230,6 +243,8 @@
     \item Installation process is complex
       \pause
     \item In INF220, two weeks is set aside for students to install it
+      \pause
+    \item But has functionality to show renaming
   \end{itemize}
 \end{frame}
 
