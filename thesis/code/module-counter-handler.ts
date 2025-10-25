@@ -8,7 +8,7 @@ const module = {
       await core.sendModification(
         new Modification()
           .state("count", newCount)
-          .ui(`${newCount}`, "counter-btn")
+          .ui("counter-btn", newCount)
       );
     }
   }

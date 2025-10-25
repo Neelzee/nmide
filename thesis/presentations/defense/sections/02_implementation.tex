@@ -10,7 +10,7 @@
       \begin{itemize}
         \item Handle the UI and state
         \pause
-        \item Handle changes asyncronysly
+        \item Handle changes asynchronously
       \end{itemize}
     \pause
     \item Modular; core features should be easy to swap/modify
@@ -41,9 +41,36 @@
     \centering
     \input{./figures/plugin-architecture-v2}
     \caption{
-      Diagram of the application architecture
+      Diagram of the application architecture, note how this is similar to an microservice architecture
     }
   \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Techstack}
+  \begin{itemize}
+    \pause
+    \item Rust with Tauri
+    \pause
+    \item Typescript for UI
+    \pause
+    \item Supports all languages targeting JavaScript and Rust
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Core implementation}
+  \begin{itemize}
+    \pause
+    \item Modules send core modifications
+    \pause
+    \item Instruction set on how the core is modified
+    \pause
+    \item Is like a monoid, with a \textit{no-op}, (\textit{unit}), that encodes
+    nothing
+    \pause
+    \item Modifies the state and the UI
+  \end{itemize}
 \end{frame}
 
 \begin{frame}

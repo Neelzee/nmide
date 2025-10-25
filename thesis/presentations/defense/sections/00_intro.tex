@@ -4,11 +4,7 @@
 \begin{frame}
   \frametitle{Topic}
   \begin{itemize}
-    \item Developing a Modular IDE for Magnolia
-      \pause
-      \begin{itemize}
-        \item Magne Haveraaen and Mikhail Barash
-      \end{itemize}
+    \item Magne Haveraaen and Mikhail Barash
       \pause
     \item About my thesis
       \pause
@@ -16,11 +12,7 @@
       \pause
     \item About Magnolia
       \pause
-    \item Zero core modular IDE
-      \begin{itemize}
-        \item Planning
-        \item Implementation
-      \end{itemize}
+    \item My implementation
   \end{itemize}
 \end{frame}
 
@@ -28,7 +20,7 @@
   \frametitle{Thesis}
   \begin{itemize}
       \pause
-    \item For academic peers:
+    \item For the technically inclined:
       \begin{itemize}
         \item Design and develop a \textit{zero-core}, \textit{modular}, \textit{IDE} 
       \end{itemize}
@@ -57,9 +49,9 @@
   \frametitle{Integrated Development Environment (IDE)}
   \begin{itemize}
       \pause
-    \item Not really a tool, more like a toolbelt
+    \item All-in-one tool
       \pause
-    \item A single application with \textit{everything} a developer needs
+    \item Single application with \textit{everything} a developer needs
       \pause
       \begin{itemize}
         \item Manage files
@@ -72,8 +64,12 @@
         \pause
         \item Warn about possible bugs
         \pause
-        \item Grammer check
+        \item Grammar check
       \end{itemize}
+    \pause
+    \item Common features across languages and IDEs
+    \pause
+    \item Might be unsuited for languages with unconventional features
   \end{itemize}
 \end{frame}
 
@@ -101,19 +97,23 @@
   \frametitle{Magnolia}
   \begin{itemize}
     \item Introduces something called \textit{concepts}
+      \pause
     \item Similar to a Java interface.
       \pause
     \item A concept declares
       \begin{itemize}
+      \pause
         \item Types
+      \pause
         \item Operations on those types
+      \pause
         \item Axioms that specify the properties of the operations
       \end{itemize}
       \pause
     \item A concept can use other concepts, and rename the types and operations
       in the concept, this is called renaming
       \pause
-    \item Renaming is useful to visiualise for a Magnolia developer, but not a
+    \item Renaming is useful to vizualise for a Magnolia developer, but not a
     common feature in IDEs
   \end{itemize}
 \end{frame}
@@ -122,10 +122,14 @@
   \frametitle{Group is a magma with more properties}
   \begin{itemize}
     \item Magma is the \textit{simplest} structure in abstract algebra
-    \item It is trivial to implement in Java using interfaces
+      \pause
+    \item It is trivial to specify in Java using interfaces
+      \pause
     \item Group, which is an exstension of magma, is more complicated
+      \pause
     \item Group \textit{extends} monoid, \textit{extends} semigroup,
       \textit{extends} magma
+      \pause
     \item With \textit{inverse element}, \textit{identity}, and
       \textit{associativity} properties (\textit{interfaces}) respectively
   \end{itemize}
@@ -176,6 +180,7 @@
   \end{center}
 \end{subfigure}
   \end{figure}
+      \pause
   \begin{figure}[H]
     \begin{subfigure}[h]{0.45\textwidth}
       Identity (Monoid)
@@ -192,6 +197,7 @@
   \end{center}
 \end{subfigure}
   \end{figure}
+      \pause
   \begin{figure}[H]
     \begin{subfigure}[h]{0.45\textwidth}
       Invertability (Group)
