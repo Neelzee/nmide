@@ -1,4 +1,4 @@
-const module: Module = {
+const module = {
   // ...
   handler: async (event: Event, core: Core): Promise<void> => {
     if (event == "count") {

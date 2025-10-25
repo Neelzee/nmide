@@ -2,14 +2,24 @@
 \SectionPage
 
 \begin{frame}
+  \frametitle{Counting module}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{./pics/module-counter.png}
+    \caption{
+      Simple module for incrementing a counter
+    }
+  \end{figure}
+\end{frame}
+
+\begin{frame}
   \frametitle{UI framework}
   \begin{figure}[H]
     \centering
     \input{./figures/ide-layout}
     \caption{
-      Diagram of the layout of different areas in our IDE
+      Diagram of the layout of different areas in the IDE, handled by a module
     }
-    \label{fig:ideLayout}
   \end{figure}
 \end{frame}
 
@@ -68,7 +78,7 @@
   \frametitle{File explorer}
   \begin{figure}
     \centering
-    \includegraphics[width=0.5\textwidth]{./pics/ide-explorer.png}
+    \includegraphics[height=0.5\textwidth]{./pics/ide-explorer.png}
     \caption{
       File explorer module
     }
@@ -79,7 +89,7 @@
   \frametitle{File icons}
   \begin{figure}
     \centering
-    \includegraphics[width=0.5\textwidth]{./pics/file-explorer-icons.png}
+    \includegraphics[width=0.35\textwidth]{./pics/file-explorer-icons.png}
     \caption{
       File explorer module, extended by a file-icon for Magnolia module
     }
@@ -139,14 +149,14 @@
   \frametitle{State visualization}
   \begin{figure}
     \centering
-    \includegraphics[width=0.5\textwidth]{./pics/debug-state-btn.png}
+    \includegraphics[heigth=0.25\textwidth]{./pics/debug-state-btn.png}
     \caption{
       Debug state button
     }
   \end{figure}
   \begin{figure}
     \centering
-    \includegraphics[width=0.5\textwidth]{./pics/debug-state.png}
+    \includegraphics[height=0.5\textwidth]{./pics/debug-state.png}
     \caption{
       Visualization of the state
     }
@@ -162,6 +172,17 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{Dependency module}
+  \begin{itemize}
+    \item Magnolia cannot have cyclic dependencies
+    \pause
+    \item If any occur, the developer needs to fix it
+    \pause
+    \item Might be large cycles
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
   \frametitle{Magnolia dependency graph}
   \begin{figure}
     \centering
@@ -173,7 +194,7 @@
   \frametitle{Rust dependencies}
   \begin{figure}
     \centering
-    \includegraphics[width=0.5\textwidth]{./pics/rust-deps.png}
+    \includegraphics[width=0.75\textwidth]{./pics/rust-deps.png}
   \end{figure}
 \end{frame}
 
