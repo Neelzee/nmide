@@ -32,7 +32,11 @@ pub async fn handler(core: Box<dyn Core>) {
         build_from_storage(xs, builder)
     } else {
         builder
-    };
+    }
+    .add_attr(
+        "tab-btn-0".to_string(),
+        Attr::Class(SHOW_TAB_CLASS.to_string()),
+    );
     let mods = CoreModification::default();
     let state = StateBuilder::default()
         .add(
@@ -54,8 +58,8 @@ pub fn build_from_storage(xs: Vec<Value>, builder: UIBuilder) -> UIBuilder {
                 o.get("id").and_then(|v| v.str()),
                 o.get("content").and_then(|v| v.html()),
             ) {
-                (Some(_), None) | (None, Some(_)) | (None, None) => None,
                 (Some(id), Some(html)) => Some((id, html)),
+                _ => None,
             }
         })
         .fold(builder, |build, (id, html)| build.add_node(html, Some(id)))
@@ -64,5 +68,8 @@ pub fn build_from_storage(xs: Vec<Value>, builder: UIBuilder) -> UIBuilder {
 pub fn create_tab_content(id: i32) -> Html {
     Html::Div()
         .add_attr(Attr::Id(format!("tab-id-{}", id)))
-        .add_attr(Attr::Class(HIDE_TAB_CLASS.to_string()))
+        .add_attr(Attr::Class(format!(
+            "{} show-tab",
+            HIDE_TAB_CLASS.to_string()
+        )))
 }
