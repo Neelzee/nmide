@@ -89,9 +89,6 @@ pub async fn change_handler(event: Event, core: Box<dyn Core>) {
         .get(STATE_CURRENT_TAB_KEY)
         .and_then(|v| v.int())
         .unwrap_or_default();
-    if id == tab_id {
-        return;
-    }
     core.send_modification(
         CoreModification::default()
             .set_state(StateBuilder::default().set(STATE_CURRENT_TAB_KEY, Value::Int(id)))
