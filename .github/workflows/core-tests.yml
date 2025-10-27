@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
       - name: Build
-        run: cd core && make install
+        run: cd core && bun i
       - name: Run tests
         run: cd core && (bun run test --run || eval "")
   test-backend:
@@ -25,7 +25,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build
         run: |
-          sudo apt-get update
+          sudo apt-get update -y
+          sudo apt-get upgrade -y
           sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
       - uses: actions-rs/toolchain@v1
         with:
