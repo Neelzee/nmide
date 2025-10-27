@@ -1,6 +1,6 @@
 use crate::{
-    EVENT_CHANGE_TAB, EVENT_CHANGED_TAB, ID_TAB_BTN_CONTAINER, ID_TAB_CONTAINER, SHOW_TAB_CLASS,
-    STATE_CURRENT_TAB_KEY, STATE_INITIALIZED, STATE_TAB_STORAGE, STATE_TABS,
+    EVENT_CHANGE_TAB, EVENT_CHANGED_TAB, EVENT_REM_TAB, ID_TAB_BTN_CONTAINER, ID_TAB_CONTAINER,
+    SHOW_TAB_CLASS, STATE_CURRENT_TAB_KEY, STATE_INITIALIZED, STATE_TAB_STORAGE, STATE_TABS,
     post_init::create_tab_content,
 };
 use core_std_lib::{
@@ -181,12 +181,23 @@ pub async fn tab_add_handler(event: Event, core: Box<dyn Core>) {
 }
 
 pub fn create_tab_btn(id: i32, title: String) -> Html {
-    Html::Button()
-        .set_text(title)
-        .add_attr(Attr::Id(format!("tab-btn-{id}")))
-        .add_attr(Attr::Class("tab-btn".to_string()))
-        .add_attr(Attr::Click(Event::new(
-            EVENT_CHANGE_TAB,
-            Some(Value::Int(id)),
-        )))
+    Html::Div()
+        .add_attr(Attr::Id(format!("tab-btn-container-{id}")))
+        .adopt(
+            Html::Button()
+                .set_text(title)
+                .add_attr(Attr::Id(format!("tab-btn-{id}")))
+                .add_attr(Attr::Class("tab-btn".to_string()))
+                .add_attr(Attr::Click(Event::new(
+                    EVENT_CHANGE_TAB,
+                    Some(Value::Int(id)),
+                ))),
+        )
+        .adopt(
+            Html::Button()
+                .set_text("x".to_string())
+                .add_attr(Attr::Id(format!("close-tab-btn-{id}")))
+                .add_attr(Attr::Class("close-tab-btn".to_string()))
+                .add_attr(Attr::Click(Event::new(EVENT_REM_TAB, Some(Value::Int(id))))),
+        )
 }

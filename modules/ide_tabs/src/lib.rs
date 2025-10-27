@@ -110,8 +110,68 @@ impl core_module_lib::Module for Module {
                 )
                 .await;
             }
-            Event::Event { event: evt, .. } if evt == EVENT_REM_TAB => {
-                todo!();
+            Event::Event { event: evt, args } if evt == EVENT_REM_TAB && args.is_some() => {
+                let arg = args.clone().unwrap();
+                let tab_id = if let Some(h) = arg.int() {
+                    h
+                } else {
+                    arg.obj()
+                        .and_then(|o| o.get("eventArgs").cloned())
+                        .and_then(|o| o.int())
+                        .unwrap_or_default()
+                };
+                let new_tab_id = if tab_id == 0 { tab_id } else { tab_id - 1 };
+
+                let tabs = core
+                    .state()
+                    .await
+                    .get(STATE_TABS)
+                    .and_then(|v| v.list())
+                    .unwrap_or_default()
+                    .into_iter()
+                    .filter_map(|v| v.obj())
+                    .map(|o| {
+                        let id = o
+                            .get("id")
+                            .cloned()
+                            .and_then(|v| v.int())
+                            .unwrap_or_default();
+
+                        let title = o
+                            .get("title")
+                            .cloned()
+                            .and_then(|v| v.str())
+                            .unwrap_or(id.to_string());
+
+                        (id, title)
+                    })
+                    .filter(|(i, _)| i != &tab_id)
+                    .collect::<Vec<(i32, String)>>();
+                core.send_modification(
+                    CoreModification::default()
+                        .set_ui(
+                            UIBuilder::default()
+                                .rem_node(format!("tab-btn-container-{tab_id}"))
+                                .rem_node(format!("tab-id-{tab_id}")),
+                        )
+                        .set_state(
+                            StateBuilder::default().set(
+                                STATE_TABS,
+                                Value::List(
+                                    tabs.into_iter()
+                                        .map(|(id, title)| {
+                                            Value::new_obj()
+                                                .obj_add("id", Value::Int(id))
+                                                .obj_add("title", Value::Str(title))
+                                        })
+                                        .collect(),
+                                ),
+                            ),
+                        ),
+                )
+                .await;
+                core.throw_event(Event::new(EVENT_CHANGE_TAB, Some(Value::Int(new_tab_id))))
+                    .await;
             }
             _ => (),
         }

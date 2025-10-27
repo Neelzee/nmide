@@ -29,6 +29,20 @@
   border-right: 1px solid #3c3c3c;
 }
 
+.close-tab-btn {
+  background-color: #2d2d2d;
+  color: #cccccc;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+  border-right: 1px solid #3c3c3c;
+}
+
+.close-tab-btn:hover {
+  background-color: #3c3c3c;
+}
+
 .tab-btn:hover {
   background-color: #3c3c3c;
 }
