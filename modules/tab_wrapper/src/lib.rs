@@ -95,14 +95,19 @@ impl core_module_lib::Module for Module {
                 let obj = event.args().and_then(|v| v.obj()).unwrap_or_default();
                 let content = obj.get("content").and_then(|v| v.str()).unwrap();
                 let fp = obj.get("file_path").and_then(|v| v.str()).unwrap();
+                let fp_id = fp
+                    .split_terminator("/")
+                    .last()
+                    .unwrap_or(&fp)
+                    .replace("/", "-");
                 let html = Html::Div()
                     .add_attr(Attr::Class("editor-container".to_string()))
-                    .add_attr(Attr::Id("editor-div".to_string()))
+                    .add_attr(Attr::Id(format!("editor-div-{fp_id}")))
                     .adopt(
                         Html::TextArea()
                             .set_text(content)
                             .add_attr(Attr::Class(format!("code-editor {}", fp.replace("/", "_"))))
-                            .add_attr(Attr::Id("editor".to_string())),
+                            .add_attr(Attr::Id(format!("editor-{fp_id}"))),
                     );
                 core.throw_event(Event::new("add_content", Some(Value::Html(html))))
                     .await;
