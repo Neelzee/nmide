@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build
-        run: make install-deps
+        run: cd libs/rust/ && cargo build
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
