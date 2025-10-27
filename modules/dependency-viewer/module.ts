@@ -107,7 +107,7 @@ const controls_div = new HtmlBuilder()
       .kids(
         new HtmlBuilder()
           .kind("button")
-          .text("Hide Grap")
+          .text("Hide Graph")
           .attrs(click(mkPrimEvent("graph-toggle"))),
       )
   );
