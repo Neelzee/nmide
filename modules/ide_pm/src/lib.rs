@@ -24,15 +24,16 @@ fn navbar(xs: Vec<(&str, Vec<(&str, Event)>)>) -> Vec<Html> {
     xs.into_iter()
         .map(|(x, ys)| {
             let id = format!("ide-pm-drop-{}", x.replace(" ", "-"));
+            let event = Event::new(
+                "ide-pm-dropdown".to_string(),
+                Some(Value::Str(id.clone().to_lowercase())),
+            );
             Html::Div()
                 .add_attr(Attr::Class("dropdown".to_string()))
                 .adopt(
                     Html::Button()
                         .set_text(x)
-                        .add_attr(Attr::Click(Event::new(
-                            "ide-pm-dropdown".to_string(),
-                            Some(Value::Str(id.clone().to_lowercase())),
-                        )))
+                        .add_attr(Attr::Click(event.clone()))
                         .add_attr(Attr::Id(id.to_lowercase()))
                         .add_attr(Attr::Class("dropbtn".to_string())),
                 )
@@ -48,6 +49,7 @@ fn navbar(xs: Vec<(&str, Vec<(&str, Event)>)>) -> Vec<Html> {
                                         .set_text(y)
                                         .add_attr(Attr::Id(yid.to_lowercase()))
                                         .add_attr(Attr::Click(evt))
+                                        .add_attr(Attr::Click(event.clone()))
                                         .add_attr(Attr::Click(Event::new(
                                             "ide-pm-dropdown".to_string(),
                                             Some(Value::Str(id.clone().to_lowercase())),
@@ -139,6 +141,11 @@ impl Module for ProjectManagerModule {
                 .await;
             }
             "ide-pm-file" => {
+                core.throw_event(Event::new(
+                    "ide-pm-dropdown".to_string(),
+                    Some(Value::Str("ide-pm-drop-file".to_string())),
+                ))
+                .await;
                 core.throw_event(Event::new("nmide://file?", None)).await;
             }
             "nmide://file" => {
@@ -146,6 +153,11 @@ impl Module for ProjectManagerModule {
                     .await;
             }
             "ide-pm-folder" => {
+                core.throw_event(Event::new(
+                    "ide-pm-dropdown".to_string(),
+                    Some(Value::Str("ide-pm-drop-file".to_string())),
+                ))
+                .await;
                 tokio::spawn({
                     async move {
                         let builder = Event::new_file_dialog()
