@@ -67,6 +67,20 @@ const evalHtml = (op: Instruction<Html>, emit: Emitter) => {
     window.__nmideConfig__.root.appendChild(html);
     return;
   }
+  if ("rem" in op) {
+    const id = op.rem[0];
+    if (id !== "") {
+      const element = getElementById(window.__nmideConfig__.root, id);
+      if (element !== undefined) {
+        element.remove();
+      } else {
+        window.__nmideConfig__.log.error(`Could not find HTMLElement with id: "${id}"`);
+      }
+      return;
+    }
+    window.__nmideConfig__.log.error("Cant remove element without ID");
+    return;
+  }
   if ("then" in op) {
     const fst = op.then[0];
     const snd = op.then[1];
