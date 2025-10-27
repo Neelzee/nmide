@@ -4,8 +4,6 @@
 \begin{frame}
   \frametitle{Topic}
   \begin{itemize}
-    \item Magne Haveraaen and Mikhail Barash
-      \pause
     \item About my thesis
       \pause
     \item What an IDE is
@@ -13,6 +11,10 @@
     \item About Magnolia
       \pause
     \item My implementation
+      \pause
+    \item Results
+      \pause
+    \item Demo
   \end{itemize}
 \end{frame}
 
@@ -34,13 +36,13 @@
     \item Modular
       \pause
       \begin{itemize}
-        \item Functionality can be added by other developers
+        \item Functionality can be added by other developers (modules)
       \end{itemize}
       \pause
     \item Zero-core
       \pause
       \begin{itemize}
-        \item The tool gets all of its functionality from other developers
+        \item The tool gets all of its functionality from modules
       \end{itemize}
   \end{itemize}
 \end{frame}
@@ -152,6 +154,7 @@
     \hfill
     \begin{subfigure}[h]{0.45\textwidth}
       \begin{center}
+        \pause
       \lstinputlisting
       [ language=Java
       ]{./code/magma.java}
@@ -173,6 +176,7 @@
     \end{subfigure}
     \hfill
     \begin{subfigure}[h]{0.45\textwidth}
+      \pause
   \begin{center}
     \lstinputlisting
     [ language=Java
@@ -180,6 +184,10 @@
   \end{center}
 \end{subfigure}
   \end{figure}
+      \pause
+      \begin{equation}
+        (1 + 2) + 3 = 1 + (2 + 3)
+      \end{equation}
       \pause
   \begin{figure}[H]
     \begin{subfigure}[h]{0.45\textwidth}
@@ -190,6 +198,7 @@
     \end{subfigure}
     \hfill
     \begin{subfigure}[h]{0.45\textwidth}
+      \pause
   \begin{center}
     \lstinputlisting
     [ language=Java
@@ -197,6 +206,10 @@
   \end{center}
 \end{subfigure}
   \end{figure}
+      \pause
+      \begin{equation}
+        2 + 0 = 2
+      \end{equation}
       \pause
   \begin{figure}[H]
     \begin{subfigure}[h]{0.45\textwidth}
@@ -207,6 +220,7 @@
     \end{subfigure}
     \hfill
     \begin{subfigure}[h]{0.45\textwidth}
+      \pause
   \begin{center}
     \lstinputlisting
     [ language=Java
@@ -214,6 +228,10 @@
   \end{center}
 \end{subfigure}
   \end{figure}
+      \pause
+      \begin{equation}
+        10 + (-10) = 0
+      \end{equation}
 \end{frame}
 
 \showlogo
@@ -253,40 +271,3 @@
     \item But has functionality to show renaming
   \end{itemize}
 \end{frame}
-
-%\section{Why create a \textit{new} IDE?}
-%\SectionPage
-%
-%\begin{frame}
-%  \frametitle{Forking VS Code And Adding AI}
-%  \begin{itemize}
-%    \item Current IDEs cannot have good support for experimental programming
-%      languages
-%      \pause
-%      \begin{itemize}
-%        \item So niche solutions are needed
-%          \pause
-%        \item Which might depend on very specific functionality from the host
-%          IDE
-%          \pause
-%      \end{itemize}
-%    \item Deep understanding of the host IDE is needed
-%      \pause
-%    \item The host IDE could deprecate needed functionality
-%    \item The installation process would then be complex
-%  \end{itemize}
-%\end{frame}
-%
-%\begin{frame}
-%  \frametitle{Why Modular?}
-%  \begin{itemize}
-%    \item Magnolia is still in development
-%      \pause
-%    \item The Magnolia toolchain is being developed in parallel
-%      \pause
-%    \item Modularity allows for future discoveries to be quickly adopted into
-%      the IDE
-%      \pause
-%    \item Lowers the onboarding time for future maintainers
-%  \end{itemize}
-%\end{frame}
