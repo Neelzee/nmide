@@ -112,6 +112,7 @@ const App = {
             }
           })
           .catch((err) => window.__nmideConfig__.log.error(`init: ${JSON.stringify(err)}`))
+          .finally(() => { window.__nmideConfig__.installed = true; })
       );
   }
 };
