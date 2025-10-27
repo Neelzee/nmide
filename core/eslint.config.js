@@ -10,11 +10,20 @@ export default [
       "dist",
       "coverage",
       "node_modules",
+      "build",
+      "server/modules",
       "src-tauri",
       "modules",
       "*.lock",
       "*.nix",
     ],
+  },
+  { files: ["**/*.ts"] },
+  { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
+  pluginJs.configs.recommended,
+  ...tseslint.configs.recommended,
+  eslintConfigPrettier,
+  {
     rules: {
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
@@ -27,9 +36,4 @@ export default [
       ],
     },
   },
-  { files: ["**/*.{js,mjs,cjs,ts}"] },
-  { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
-  eslintConfigPrettier,
 ];
