@@ -7,6 +7,10 @@ export const id = (id: string): { id: string } => {
   return { id };
 }
 
+export const custom = (key: string, value: string): { custom: [string, string] } => {
+  return { custom: [key, value] }
+}
+
 export const cls = (cls: string): { clss: string } => {
   return { clss: cls };
 }

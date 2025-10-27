@@ -2,7 +2,6 @@ import {
   change,
   click,
   cls,
-  getValue,
   HtmlBuilder,
   id,
   isPrimitiveEvent,
@@ -25,7 +24,22 @@ import {
 const Module = {
   name: "event_sender",
   init: async (core: Core): Promise<void> => {
-    core.registerHandler("event_sender", "toggle-debug")
+    await core.registerHandler("event_sender", "toggle-debug")
+      .catch(console.error);
+
+    await core.registerHandler("event_sender", "Event")
+      .catch(console.error);
+
+    await core.registerHandler("event_sender", "pre-exit")
+      .catch(console.error);
+
+    await core.registerHandler("event_sender", "file dialog event")
+      .catch(console.error);
+
+    await core.registerHandler("event_sender", "dialog event")
+      .catch(console.error);
+
+    await core.registerHandler("event_sender", "post-init")
       .catch(console.error);
     const ui = new HtmlBuilder()
       .attrs(id("debug"))

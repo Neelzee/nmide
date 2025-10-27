@@ -1,34 +1,32 @@
-name: Core-Unit-Tests
+name: Lib-Unit-Tests
 
 on:
   push:
-    branches: ["dev"]
+    branches: ["dev", "main"]
   pull_request:
-    branches: ["dev"]
+    branches: ["dev", "main"]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test-frontend:
+  test-js-lib:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
       - name: Build
-        run: cd core && make install
+        run: make init && make install-deps && cd core && bun i
       - name: Run tests
-        run: cd core && (bun run test --run || eval "")
-  test-backend:
+        run: cd libs/javascript/decoder-lib && bun i && bun run test --run
+  test-rs-libs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Build
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+        run: cd libs/rust/ && cargo build
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
       - name: Run tests
-        run: cd core && make clean && cd src-tauri/ && cargo test
+        run: cd libs/rust/ && cargo test --workspace

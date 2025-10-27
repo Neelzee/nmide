@@ -38,9 +38,9 @@ pub const EVENT_REM_TAB: &str = "rem_tab";
 
 pub const EVENT_REFRESH_TAB: &str = "refresh_tab";
 
-pub const STATE_TABS: &str = "ide-cache.ide_tabs_tabs";
+pub const STATE_TABS: &str = "ide_tabs_tabs";
 
-pub const STATE_CURRENT_TAB_KEY: &str = "ide-cache.ide_tabs_current_tab";
+pub const STATE_CURRENT_TAB_KEY: &str = "ide_tabs_current_tab";
 
 pub const STATE_TAB_STORAGE: &str = "ide_tabs_storage";
 

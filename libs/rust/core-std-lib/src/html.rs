@@ -57,7 +57,9 @@ define_html!(
     Thead,
     Tbody,
     Main,
-    TextArea
+    TextArea,
+    Header,
+    Footer
 );
 
 impl Default for Html {
@@ -75,6 +77,29 @@ impl Html {
                 .into_iter()
                 .find_map(|h| Self::get_by_id(h, id.clone()))
         }
+    }
+
+    pub fn sort_attrs(self) -> Self {
+        let mut attrs = self.attrs();
+        attrs.sort();
+        let kids = self.kids()
+            .into_iter()
+            .map(|k| k.sort_attrs())
+            .collect();
+        self.set_attrs(attrs).replace_kids(kids)
+    }
+
+    /// Removes all attributes with Events
+    pub fn remove_events(self) -> Self {
+        let attrs = self.attrs()
+            .into_iter()
+            .filter(|a| !a.has_event())
+            .collect();
+        let kids = self.kids()
+            .into_iter()
+            .map(|k| k.remove_events())
+            .collect();
+        self.set_attrs(attrs).replace_kids(kids)
     }
 
     /// Returns all attributes in the html tree

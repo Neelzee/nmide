@@ -1,0 +1,273 @@
+\section{Introduction}
+\SectionPage
+
+\begin{frame}
+  \frametitle{Topic}
+  \begin{itemize}
+    \item About my thesis
+      \pause
+    \item What an IDE is
+      \pause
+    \item About Magnolia
+      \pause
+    \item My implementation
+      \pause
+    \item Results
+      \pause
+    \item Demo
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Thesis}
+  \begin{itemize}
+      \pause
+    \item For the technically inclined:
+      \begin{itemize}
+        \item Design and develop a \textit{zero-core}, \textit{modular}, \textit{IDE} 
+      \end{itemize}
+      \pause
+    \item For family members:
+      \pause
+      \begin{itemize}
+        \item Creating a tool for developers
+      \end{itemize}
+      \pause
+    \item Modular
+      \pause
+      \begin{itemize}
+        \item Functionality can be added by other developers (modules)
+      \end{itemize}
+      \pause
+    \item Zero-core
+      \pause
+      \begin{itemize}
+        \item The tool gets all of its functionality from modules
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Integrated Development Environment (IDE)}
+  \begin{itemize}
+      \pause
+    \item All-in-one tool
+      \pause
+    \item Single application with \textit{everything} a developer needs
+      \pause
+      \begin{itemize}
+        \item Manage files
+        \pause
+        \item Compile and run code
+        \pause
+        \item Run tests and show test reports
+        \pause
+        \item Check for errors
+        \pause
+        \item Warn about possible bugs
+        \pause
+        \item Grammar check
+      \end{itemize}
+    \pause
+    \item Common features across languages and IDEs
+    \pause
+    \item Might be unsuited for languages with unconventional features
+  \end{itemize}
+\end{frame}
+
+\section{Magnolia}
+\SectionPage
+
+\begin{frame}
+  \frametitle{Bergen Language Design Laboratory}
+  \begin{itemize}
+    \item Researches at BLDL are experimenting with a programming language
+    called Magnolia
+      \pause
+    \item Created to experiment with novel language features inspired by
+    academia
+      \pause
+      \begin{itemize}
+        \item For example: abstract algebra
+      \end{itemize}
+      \pause
+    \item Which may be out-of-scope for IDEs
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Magnolia}
+  \begin{itemize}
+    \item Introduces something called \textit{concepts}
+      \pause
+    \item Similar to a Java interface.
+      \pause
+    \item A concept declares
+      \begin{itemize}
+      \pause
+        \item Types
+      \pause
+        \item Operations on those types
+      \pause
+        \item Axioms that specify the properties of the operations
+      \end{itemize}
+      \pause
+    \item A concept can use other concepts, and rename the types and operations
+      in the concept, this is called renaming
+      \pause
+    \item Renaming is useful to vizualise for a Magnolia developer, but not a
+    common feature in IDEs
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Group is a magma with more properties}
+  \begin{itemize}
+    \item Magma is the \textit{simplest} structure in abstract algebra
+      \pause
+    \item It is trivial to specify in Java using interfaces
+      \pause
+    \item Group, which is an exstension of magma, is more complicated
+      \pause
+    \item Group \textit{extends} monoid, \textit{extends} semigroup,
+      \textit{extends} magma
+      \pause
+    \item With \textit{inverse element}, \textit{identity}, and
+      \textit{associativity} properties (\textit{interfaces}) respectively
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Magma example}
+  \begin{figure}[H]
+    \begin{subfigure}[h]{0.45\textwidth}
+      \begin{equation}
+        M = \{ a, b, c, \dots \}
+      \end{equation}
+      \begin{equation}
+        (M, \bullet)
+      \end{equation}
+      \begin{equation}
+        a \bullet b \in M
+      \end{equation}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[h]{0.45\textwidth}
+      \begin{center}
+        \pause
+      \lstinputlisting
+      [ language=Java
+      ]{./code/magma.java}
+  \end{center}
+    \end{subfigure}
+  \end{figure}
+\end{frame}
+
+\hidelogo
+
+\begin{frame}
+  \frametitle{From semigroup to group}
+  \begin{figure}[H]
+    \begin{subfigure}[h]{0.45\textwidth}
+      Associativity (Semigroup)
+      \begin{equation}
+        (a \bullet b) \bullet c = a \bullet (b \bullet c)
+      \end{equation}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[h]{0.45\textwidth}
+      \pause
+  \begin{center}
+    \lstinputlisting
+    [ language=Java
+    ]{./code/semigroup.java}
+  \end{center}
+\end{subfigure}
+  \end{figure}
+      \pause
+      \begin{equation}
+        (1 + 2) + 3 = 1 + (2 + 3)
+      \end{equation}
+      \pause
+  \begin{figure}[H]
+    \begin{subfigure}[h]{0.45\textwidth}
+      Identity (Monoid)
+      \begin{equation}
+        a \bullet e = a
+      \end{equation}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[h]{0.45\textwidth}
+      \pause
+  \begin{center}
+    \lstinputlisting
+    [ language=Java
+    ]{./code/monoid.java}
+  \end{center}
+\end{subfigure}
+  \end{figure}
+      \pause
+      \begin{equation}
+        2 + 0 = 2
+      \end{equation}
+      \pause
+  \begin{figure}[H]
+    \begin{subfigure}[h]{0.45\textwidth}
+      Invertability (Group)
+      \begin{equation}
+        a \bullet b = e
+      \end{equation}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[h]{0.45\textwidth}
+      \pause
+  \begin{center}
+    \lstinputlisting
+    [ language=Java
+    ]{./code/group.java}
+  \end{center}
+\end{subfigure}
+  \end{figure}
+      \pause
+      \begin{equation}
+        10 + (-10) = 0
+      \end{equation}
+\end{frame}
+
+\showlogo
+
+\begin{frame}
+  \frametitle{Magma example in Magnolia}
+  \begin{center}
+    \lstinputlisting
+    [ language=Magnolia
+    ]{./code/magma.mg}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Semigroup example in Magnolia}
+  \begin{center}
+    \lstinputlisting
+    [ language=Magnolia
+    ]{./code/semigroup.mg}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The current Magnolia IDE}
+  \pause
+  \begin{itemize}
+    \item Directly integrated with the Magnolia Compiler
+      \pause
+    \item Made using a (now) old version of Eclipse
+      \pause
+    \item Uses (now) deprecated Eclipse plugins
+      \pause
+    \item Installation process is complex
+      \pause
+    \item In INF220, two weeks is set aside for students to install it
+      \pause
+    \item But has functionality to show renaming
+  \end{itemize}
+\end{frame}

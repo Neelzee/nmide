@@ -37,6 +37,11 @@ impl core_module_lib::Module for Module {
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
         if event.event_name() == "get_graph" {
+            core.throw_event(Event::new(
+                "ide-pm-dropdown".to_string(),
+                Some(Value::Str("ide-pm-drop-view".to_string())),
+            ))
+            .await;
             let path: PathBuf = core
                 .state()
                 .await

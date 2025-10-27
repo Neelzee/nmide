@@ -84,6 +84,21 @@ impl core_module_lib::Module for Module {
                 let mods = CoreModification::default().set_state(state).set_ui(ui);
                 core.send_modification(mods).await;
             }
+            ("counter", _) => {
+                let add = 1;
+                let new_count = core
+                    .state()
+                    .await
+                    .get("counter")
+                    .unwrap_or(Value::Int(0))
+                    .map(|i: i32| i + add)
+                    .unwrap();
+                let state = StateBuilder::default().set("counter".to_string(), new_count.clone());
+                let ui = UIBuilder::default()
+                    .set_text(Some("PID"), format!("Count: {}", new_count.int().unwrap()));
+                let mods = CoreModification::default().set_state(state).set_ui(ui);
+                core.send_modification(mods).await;
+            }
             _ => (),
         }
     }

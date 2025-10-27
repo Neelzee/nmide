@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<div class="container main-wrapper" id="app-root" data-theme="dark" role="main">
+  <header class="header-section" id="main-header">
+    <nav class="navigation" role="navigation" aria-label="Main navigation">
+      <ul class="nav-list" id="primary-nav">
+        <li class="nav-item active"><a href="#home" class="nav-link" data-section="home">Home</a></li>
+        <li class="nav-item"><a href="#about" class="nav-link" data-section="about" target="_blank">About</a></li>
+        <li class="nav-item dropdown" data-dropdown="true">
+          <span class="dropdown-toggle" aria-expanded="false">Services</span>
+          <ul class="dropdown-menu" hidden>
+            <li><a href="#web-dev" data-service="web">Web Development</a></li>
+            <li><a href="#mobile-dev" data-service="mobile">Mobile Apps</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-area" id="main-content" tabindex="-1">
+    <section class="hero-section" data-section="hero" style="background-color: #f0f0f0;">
+      <h1 class="hero-title" id="page-title" data-animation="fade-in">Welcome to Our Site</h1>
+      <p class="hero-description" data-delay="500">This is a complex HTML structure for testing.</p>
+    </section>
+
+    <section class="form-section" id="contact-form-section">
+      <form class="contact-form" id="contact-form" method="post" action="/submit" novalidate data-validate="true">
+        <fieldset class="form-group personal-info" id="personal-fieldset">
+          <legend class="fieldset-legend">Personal Information</legend>
+          
+          <div class="input-group" data-field="name">
+            <label class="form-label required" for="full-name" data-required="true">Full Name:</label>
+            <input class="form-input" type="text" id="full-name" name="fullName" required placeholder="Enter your full name" maxlength="100" data-validation="name" autocomplete="name">
+          </div>
+
+          <div class="input-group" data-field="email">
+            <label class="form-label required" for="email-address">Email:</label>
+            <input class="form-input" type="email" id="email-address" name="email" required placeholder="your@email.com" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" data-validation="email" autocomplete="email">
+          </div>
+
+          <div class="input-group checkbox-group" data-field="newsletter">
+            <input class="form-checkbox" type="checkbox" id="newsletter-opt" name="newsletter" checked value="yes" data-tracking="newsletter">
+            <label class="checkbox-label" for="newsletter-opt">Subscribe to newsletter</label>
+          </div>
+        </fieldset>
+
+        <fieldset class="form-group preferences" data-category="preferences">
+          <legend class="fieldset-legend">Preferences</legend>
+          
+          <div class="radio-group" data-field="contact-method">
+            <label class="radio-group-label">Preferred contact method:</label>
+            <div class="radio-options">
+              <input class="form-radio" type="radio" id="contact-email" name="contactMethod" value="email" checked data-default="true">
+              <label class="radio-label" for="contact-email">Email</label>
+              
+              <input class="form-radio" type="radio" id="contact-phone" name="contactMethod" value="phone">
+              <label class="radio-label" for="contact-phone">Phone</label>
+              
+              <input class="form-radio" type="radio" id="contact-sms" name="contactMethod" value="sms" disabled>
+              <label class="radio-label disabled" for="contact-sms">SMS (Coming Soon)</label>
+            </div>
+          </div>
+
+          <div class="select-group" data-field="country">
+            <label class="form-label" for="country-select">Country:</label>
+            <select class="form-select" id="country-select" name="country" required data-placeholder="Choose your country">
+              <option value="" disabled selected>Select a country</option>
+              <option value="us" data-code="US">United States</option>
+              <option value="ca" data-code="CA">Canada</option>
+              <option value="uk" data-code="GB">United Kingdom</option>
+              <option value="de" data-code="DE">Germany</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <div class="form-actions" data-section="actions">
+          <button class="btn btn-primary" type="submit" id="submit-btn" data-action="submit" aria-describedby="submit-help">Submit Form</button>
+          <button class="btn btn-secondary" type="reset" data-action="reset" formnovalidate>Reset</button>
+          <button class="btn btn-tertiary" type="button" data-action="save-draft" data-auto-save="true">Save Draft</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <aside class="sidebar" id="sidebar" role="complementary" data-position="right">
+    <div class="widget" data-widget="recent-posts">
+      <h3 class="widget-title">Recent Posts</h3>
+      <ul class="post-list" data-count="3">
+        <li class="post-item" data-post-id="123">
+          <a href="/post/123" class="post-link" data-analytics="post-click">Understanding HTML Parsing</a>
+          <time class="post-date" datetime="2024-01-15">January 15, 2024</time>
+        </li>
+        <li class="post-item" data-post-id="124">
+          <a href="/post/124" class="post-link" data-analytics="post-click">Advanced CSS Techniques</a>
+          <time class="post-date" datetime="2024-01-10">January 10, 2024</time>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <footer class="site-footer" id="main-footer" role="contentinfo" data-theme="dark">
+    <div class="footer-content">
+      <p class="copyright" data-year="2024">&copy; 2024 Test Company. All rights reserved.</p>
+      <div class="social-links" data-section="social">
+        <a href="https://twitter.com/test" class="social-link" data-platform="twitter" rel="external noopener" target="_blank" aria-label="Follow us on Twitter">
+          <span class="sr-only">Twitter</span>
+        </a>
+        <a href="https://github.com/test" class="social-link" data-platform="github" rel="external noopener" target="_blank" aria-label="View our GitHub">
+          <span class="sr-only">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </footer>
+</div>

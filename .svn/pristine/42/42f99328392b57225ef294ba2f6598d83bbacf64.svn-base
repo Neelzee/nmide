@@ -1,7 +1,0 @@
-\begin{tikzpicture}
-  \node (menu) [rectangle, draw, minimum height=0.75cm, minimum width=10cm] at (0, 3.38) {Menu};
-  \node (tabs) [rectangle, draw, minimum height=0.5cm, minimum width=8cm] at (1, 2.72) {Tabs};
-  \node (tab) [rectangle, draw, minimum height=0.5cm, minimum width=1cm] at (-2.5, 2.72) {Tab};
-  \node (sidebar) [rectangle, draw, minimum height=6.5cm, minimum width=2cm] at (-4, -0.25) {Sidebar};
-  \node (content) [rectangle, draw, minimum height=6.5cm, minimum width=8cm] at (1, -0.25) {Content};
-\end{tikzpicture}

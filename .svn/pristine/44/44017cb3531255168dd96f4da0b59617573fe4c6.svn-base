@@ -1,9 +1,0 @@
-<!doctype html>
-<html lang="en">
-  <head>
-<!--MODULES-->
-<!--MODULES-->
-    <script type="module" src="./app/index.ts"></script>
-  </head>
-  <body></body>
-</html>

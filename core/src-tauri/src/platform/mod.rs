@@ -2,6 +2,7 @@ use core_std_lib::{core_modification::UIInstr, event::Event};
 
 pub mod server;
 /// Contains Tauri specific code
+#[cfg(feature = "ide")]
 pub mod tauri;
 
 #[async_trait::async_trait]

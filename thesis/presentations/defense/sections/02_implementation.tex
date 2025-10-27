@@ -1,0 +1,100 @@
+\section{Implementation}
+\SectionPage
+
+\begin{frame}
+  \frametitle{Core}
+  \begin{itemize}
+    \pause
+    \item The core needs to
+      \pause
+      \begin{itemize}
+        \item Handle the UI and state
+        \pause
+        \item Handle changes asynchronously
+      \end{itemize}
+    \pause
+    \item Modular; core features should be easy to swap/modify
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Module}
+  \begin{itemize}
+    \pause
+    \item A module needs to:
+      \pause
+      \begin{itemize}
+        \item Initialize the core state
+        \pause
+        \item Update the core based on events
+        \pause
+        \item Invoke other modules
+      \end{itemize}
+      \pause
+    \item A module should be \textit{pure}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Architecture}
+  \begin{figure}[H]
+    \centering
+    \input{./figures/plugin-architecture-v2}
+    \caption{
+      Diagram of the application architecture, note how this is similar to an microservice architecture
+    }
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Techstack}
+  \begin{itemize}
+    \pause
+    \item Rust with Tauri
+    \pause
+    \item Typescript for UI
+    \pause
+    \item Supports all languages targeting JavaScript and Rust
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Core implementation}
+  \begin{itemize}
+    \pause
+    \item Modules send core modifications
+    \pause
+    \item Instruction set on how the core is modified
+    \pause
+    \item Modifies the state and the UI
+    \pause
+    \item Is like a semigroup, evaluation order does not matter
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Module example in TypeScript}
+  \begin{center}
+    \lstinputlisting
+    [ language=TypeScript
+    ]{./code/module.ts}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Counter module example: init}
+  \begin{center}
+    \lstinputlisting
+    [ language=TypeScript
+    ]{./code/module-counter-init.ts}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Counter module example: handler}
+  \begin{center}
+    \lstinputlisting
+    [ language=TypeScript
+    ]{./code/module-counter-handler.ts}
+  \end{center}
+\end{frame}
