@@ -32,7 +32,7 @@ const eventThrower = async (event: Event) => {
   if (window.__nmideConfig__.installed) {
     emit(
       "nmide://event",
-      { event }
+      event
     ).catch(
       err =>
         window.__nmideConfig__.log.error(
