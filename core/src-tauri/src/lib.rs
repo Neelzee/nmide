@@ -7,8 +7,6 @@ pub mod apps;
 /// UI, Event emitting, and exiting of the application.
 pub mod platform;
 
-pub mod module;
-
 /// The different `Core` instances are implemented here, along with the
 /// `ModuleEventRegister`, which is responsible for mapping Events and Modules.
 pub mod context;

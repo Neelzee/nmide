@@ -1,10 +1,10 @@
 # Desktop
 APPDIR := $(shell echo ~/.local/share/no.nilsmf.uib)
 MANIFEST-PATH := tools/cm-installer/Cargo.toml
-OUT := core/src-tauri/target
+OUT := core/src-tauri/modules/src/
 CONF := Modules.toml
 MODULES := core/modules
-CARGO := core/src-tauri/Cargo.toml
+CARGO := core/src-tauri/modules/Cargo.toml
 DIST := core/build
 INDEX := core/index.html
 

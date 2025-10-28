@@ -68,6 +68,12 @@ pub(crate) fn install(modules: Vec<Module>, cargo: String, out: String) {
     let mut reg_file = File::create(p.clone())
         .inspect_err(|e| panic!("Failed to create file: {p:?}, got error: {e:?}"))
         .unwrap();
+    writeln!(
+        reg_file,
+        r#"use core_module_lib::Module;
+use core_module_lib::ModuleBuilder;
+use std::collections::HashMap;"#
+    ).unwrap();
     for import in &module_imports {
         writeln!(reg_file, "{}", import).unwrap();
     }

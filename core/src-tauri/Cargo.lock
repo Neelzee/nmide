@@ -1012,21 +1012,12 @@ dependencies = [
  "env_logger",
  "foreign-std-lib",
  "futures",
- "ide_cache",
- "ide_explorer",
- "ide_framework",
- "ide_fsa",
- "ide_pm",
- "ide_tabs",
  "log",
  "log4rs",
- "magnolia_dependency",
- "module_installer",
+ "modules",
  "once_cell",
- "rust_dependency",
  "serde",
  "serde_json",
- "tab_wrapper",
  "tauri",
  "tauri-build",
  "tauri-plugin-cli",
@@ -1036,7 +1027,6 @@ dependencies = [
  "tauri-plugin-shell",
  "tokio",
  "toml 0.9.5",
- "trivial_module",
 ]
 
 [[package]]
@@ -3219,6 +3209,25 @@ dependencies = [
  "serde",
  "serde_json",
  "url",
+]
+
+[[package]]
+name = "modules"
+version = "0.1.0"
+dependencies = [
+ "core-module-lib",
+ "core-std-lib",
+ "ide_cache",
+ "ide_explorer",
+ "ide_framework",
+ "ide_fsa",
+ "ide_pm",
+ "ide_tabs",
+ "magnolia_dependency",
+ "module_installer",
+ "rust_dependency",
+ "tab_wrapper",
+ "trivial_module",
 ]
 
 [[package]]
