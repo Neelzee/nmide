@@ -1,1 +1,2 @@
-interface Semigroup<T> extends Magma<T> {}
+interface Semigroup<T> 
+  extends Magma<T> {}

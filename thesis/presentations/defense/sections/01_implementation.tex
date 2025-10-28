@@ -1,18 +1,33 @@
-\section{Implementation}
+\section{My implementation}
 \SectionPage
+
+\begin{frame}
+  \frametitle{Goals}
+  \begin{itemize}
+    \item Easy to extend (with modules)
+      \begin{itemize}
+        \item Low bar to create a module
+        \item Easy to reason about how modules work together
+      \end{itemize}
+    \item Simple installation, for multiple OSes
+    \item Modular core
+    \item Good module developer experience
+      \begin{itemize}
+        \item Language agnostic module architecture
+        \item Good debugging tools
+        \item Good module library
+      \end{itemize}
+  \end{itemize}
+\end{frame}
 
 \begin{frame}
   \frametitle{Core}
   \begin{itemize}
-    \pause
     \item The core needs to
-      \pause
       \begin{itemize}
         \item Handle the UI and state
-        \pause
         \item Handle changes asynchronously
       \end{itemize}
-    \pause
     \item Modular; core features should be easy to swap/modify
   \end{itemize}
 \end{frame}
@@ -20,18 +35,13 @@
 \begin{frame}
   \frametitle{Module}
   \begin{itemize}
-    \pause
     \item A module needs to:
-      \pause
       \begin{itemize}
         \item Initialize the core state
-        \pause
         \item Update the core based on events
-        \pause
         \item Invoke other modules
       \end{itemize}
-      \pause
-    \item A module should be \textit{pure}
+    \item A module should be \textit{stateless}
   \end{itemize}
 \end{frame}
 
@@ -41,7 +51,8 @@
     \centering
     \input{./figures/plugin-architecture-v2}
     \caption{
-      Diagram of the application architecture, note how this is similar to an microservice architecture
+      Diagram of the application architecture, note how this is similar to an
+      microservice architecture
     }
   \end{figure}
 \end{frame}
@@ -49,11 +60,8 @@
 \begin{frame}
   \frametitle{Techstack}
   \begin{itemize}
-    \pause
     \item Rust with Tauri
-    \pause
-    \item Typescript for UI
-    \pause
+    \item JavaScript for UI
     \item Supports all languages targeting JavaScript and Rust
   \end{itemize}
 \end{frame}
@@ -61,14 +69,24 @@
 \begin{frame}
   \frametitle{Core implementation}
   \begin{itemize}
-    \pause
     \item Modules send core modifications
-    \pause
     \item Instruction set on how the core is modified
-    \pause
     \item Modifies the state and the UI
-    \pause
     \item Is like a semigroup, evaluation order does not matter
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Different hats}
+  \begin{itemize}
+    \item Core developer
+    \item Module developer
+    \item Platform developer
+      \begin{itemize}
+        \item User interactions through HTML-API
+        \item Event-handler
+        \item Events are in the same context
+      \end{itemize}
   \end{itemize}
 \end{frame}
 

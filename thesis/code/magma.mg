@@ -1,5 +1,5 @@
 concept Magma = {
   type T;
 
-  function binop(a: T, b: T): T;
+  function op(a: T, b: T): T;
 };

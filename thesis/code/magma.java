@@ -1,3 +1,3 @@
 interface Magma<T> {
-  public T binop(T a, T b);
+  public T op(T a, T b);
 }

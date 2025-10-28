@@ -10,24 +10,25 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Menu}
-  \begin{figure}
+  \frametitle{Menu module}
+  \begin{figure}[H]
+    \begin{subfigure}[h]{0.45\textwidth}
+    \centering
     \centering
     \includegraphics[width=0.5\textwidth]{./pics/menu-bar.png}
     \caption{
       Menu bar
     }
-  \end{figure}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Dropdown menu}
-  \begin{figure}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[h]{0.45\textwidth}
+    \centering
     \centering
     \includegraphics[width=0.5\textwidth]{./pics/menu-dropdown.png}
     \caption{
       Dropdown menu
     }
+    \end{subfigure}
   \end{figure}
 \end{frame}
 
@@ -167,9 +168,7 @@
   \frametitle{Dependency vizualisation module}
   \begin{itemize}
     \item Magnolia cannot have cyclic dependencies
-    \pause
     \item If any occur, the developer needs to fix it
-    \pause
     \item Might be large cycles
   \end{itemize}
 \end{frame}

@@ -1,10 +1,17 @@
 concept Semigroup = {
-  use Magma;
+  use Magma[
+    T => K,
+    op => plus
+  ];
 
-  axiom associative(a: T, b: T, c: T) {
+  axiom assoc(
+    a: K,
+    b: K,
+    c: K
+  ) {
     assert
-      binop(a, binop(b, c))
+      plus(a, plus(b, c))
         ==
-      binop(binop(a, b), c);
+      plus(plus(a, b), c);
   };
 };
