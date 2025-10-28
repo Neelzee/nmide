@@ -7,8 +7,8 @@ edition = "2024"
 members = ["rsm-handler", "rsm-invoker"]
 
 [dependencies]
-core-std-lib = { git = "https://github.com/Neelzee/nmide.git" }
-core-module-lib = { git = "https://github.com/Neelzee/nmide.git" }
+core-std-lib = { path = "../../../libs/rust/core-std-lib" }
+core-module-lib = { path = "../../../libs/rust/core-module-lib" }
 rsm-invoker = { path = "rsm-invoker" }
 rsm-handler = { path = "rsm-handler" }
 async-trait = "0.1.88"
@@ -16,5 +16,4 @@ tokio = { version = "1.44.2", features = ["full"] }
 once_cell = "1.21.3"
 futures = "0.3.31"
 serde_json = "1.0.140"
-
-# ============================================================================ #
+modules = { path = "../../../core/src-tauri/modules" }

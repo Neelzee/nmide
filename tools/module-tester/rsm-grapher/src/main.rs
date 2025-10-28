@@ -57,15 +57,7 @@ use core_std_lib::event::Event;
 use rsm_handler::fold_deps;
 use rsm_invoker::Dependency;
 use std::{collections::HashMap, fs::File, io::Write, time::Duration};
-
-#[allow(unused_imports)]
-pub mod module_reg {
-    use core_module_lib::Module;
-    use core_module_lib::ModuleBuilder;
-    use core_std_lib::core::Core;
-    use std::collections::HashMap;
-    include!(concat!(env!("OUT_DIR"), "/module_reg.rs"));
-}
+use modules::module_reg;
 
 #[tokio::main]
 async fn main() {
@@ -74,7 +66,7 @@ async fn main() {
         .collect::<Vec<_>>()
         .pop()
         .map(|s| s.replace("--path=", ""))
-        .unwrap_or("../../build/result.json".to_string());
+        .unwrap_or("../build/result.json".to_string());
 
     let mut modules: HashMap<String, Box<dyn Module>> = HashMap::new();
     module_reg::register_modules(&mut modules);
