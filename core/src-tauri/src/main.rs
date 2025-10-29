@@ -6,6 +6,10 @@ use anyhow::anyhow;
 use anyhow::Result;
 use clap::{Arg, Command};
 use std::process;
+#[cfg(feature = "ide")]
+use core_lib::apps::App;
+#[cfg(feature = "server")]
+use core_lib::apps::App;
 
 #[tokio::main]
 async fn main() -> Result<()> {
