@@ -22,15 +22,14 @@ pub fn init(core: RCore_CTO<'static, 'static>) -> FfiFuture<()> {
     async move {
         core.send_modification(
             RCoreModification::default()
-                .add_field("rs-count", RValue::new_int(1))
                 .add_node(
                     "",
                     RHtml::Button(
                         RVec::new(),
                         rvec![
                             RAttr::new_click(REvent::from(Event::new(
-                                "rs-count",
-                                Some(Value::Int(1))
+                                "counter",
+                                None
                             ))),
                             RAttr::new_id("rs-btn")
                         ],
@@ -51,7 +50,7 @@ pub fn init(core: RCore_CTO<'static, 'static>) -> FfiFuture<()> {
 #[sabi_extern_fn]
 pub fn handler(event: REvent, core: RCore_CTO<'static, 'static>) -> FfiFuture<()> {
     async move {
-        if event.event_name().to_string().as_str() == "rs-count" {
+        if event.event_name().to_string().as_str() == "counter" {
             let state = core.state().await;
             let count = state
                 .lookup("rs-count")
