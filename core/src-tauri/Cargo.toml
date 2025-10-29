@@ -65,3 +65,4 @@ ide = [
   "dep:tauri-plugin-cli",
   "dep:tauri-build",
 ]
+tui = []

@@ -4,12 +4,12 @@
 #[cfg(not(feature = "ide"))]
 use anyhow::anyhow;
 use anyhow::Result;
-use core_lib::apps::App;
+use clap::{Arg, Command};
 use std::process;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let matches = core_lib::apps::tui::cli::cmd().get_matches();
+    let matches = cmd().get_matches();
 
     match matches.subcommand() {
         Some(("install", _)) => {
@@ -20,23 +20,19 @@ async fn main() -> Result<()> {
             }
             #[cfg(feature = "module-installer")]
             {
-                #[cfg(debug_assertions)]
-                env_logger::init();
-                /*
-                                match core_lib::installer::install_modules().await {
-                                    Ok(_) => {
-                                        println!("Finished installing modules");
-                                        if cfg!(debug_assertions) {
-                                            println!("Cargo.toml may have changed, exiting");
-                                            process::exit(0);
-                                        }
-                                    }
-                                    Err(err) => {
-                                        eprintln!("Something went wrong during installation: {err:?}");
-                                        process::exit(1);
-                                    }
-                                }
-                */
+                match core_lib::installer::install_modules().await {
+                    Ok(_) => {
+                        println!("Finished installing modules");
+                        if cfg!(debug_assertions) {
+                            println!("Cargo.toml may have changed, exiting");
+                            process::exit(0);
+                        }
+                    }
+                    Err(err) => {
+                        eprintln!("Something went wrong during installation: {err:?}");
+                        process::exit(1);
+                    }
+                }
             }
         }
         Some(("clean", _)) => {
@@ -47,9 +43,7 @@ async fn main() -> Result<()> {
             }
             #[cfg(feature = "module-installer")]
             {
-                #[cfg(debug_assertions)]
-                env_logger::init();
-                /*match core_lib::installer::clean_modules().await {
+                match core_lib::installer::clean_modules().await {
                     Ok(_) => {
                         println!("Finished cleaning modules");
                         if cfg!(debug_assertions) {
@@ -61,7 +55,7 @@ async fn main() -> Result<()> {
                         eprintln!("Something went wrong during cleaning: {err:?}");
                         process::exit(1);
                     }
-                }*/
+                }
             }
         }
         Some(("server", _)) => {
@@ -96,4 +90,73 @@ async fn main() -> Result<()> {
     }?;
 
     Ok(())
+}
+
+pub fn cmd() -> Command {
+    Command::new("cmi")
+        .about("Nmide Module Installer")
+        .subcommand(Command::new("install").about("Installs modules").alias("i"))
+        .subcommand(
+            Command::new("clean")
+                .about("Removes installed modules")
+                .alias("c"),
+        )
+        .subcommand(Command::new("server").about("Runs the web IDE"))
+}
+
+pub fn add_args(cmd: Command) -> Command {
+    cmd.arg(
+        Arg::new("cargo")
+            .long("cargo")
+            .help("Cargo.toml path")
+            .num_args(1)
+            .required(true),
+    )
+    .arg(
+        Arg::new("modules")
+            .long("modules")
+            .help("Path to modules folder")
+            .num_args(1)
+            .required(true),
+    )
+    .arg(
+        Arg::new("conf")
+            .long("conf")
+            .help("Path to modules folder")
+            .num_args(1)
+            .required(true),
+    )
+    .arg(
+        Arg::new("out")
+            .long("out")
+            .help("Path to target folder")
+            .num_args(1)
+            .required(true),
+    )
+    .arg(
+        Arg::new("dist")
+            .long("dist")
+            .help("Path to build folder")
+            .num_args(1)
+            .required(true),
+    )
+    .arg(
+        Arg::new("index")
+            .long("index")
+            .num_args(1)
+            .help("Index.html path")
+            .required(true),
+    )
+    .arg(
+        Arg::new("appdir-modules")
+            .long("appdir-modules")
+            .num_args(1)
+            .help("Appdir path"),
+    )
+    .arg(
+        Arg::new("dry-run")
+            .long("dry-run")
+            .num_args(0)
+            .help("Prints the result of running this command, without running it"),
+    )
 }
