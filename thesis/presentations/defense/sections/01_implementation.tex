@@ -1,8 +1,8 @@
-\section{My implementation}
+\section{Implementation}
 \SectionPage
 
 \begin{frame}
-  \frametitle{Goals}
+  \frametitle{Project goals}
   \begin{itemize}
     \item Easy to extend (with modules)
       \begin{itemize}
@@ -72,15 +72,16 @@
     \item Modules send core modifications
     \item Instruction set on how the core is modified
     \item Modifies the state and the UI
-    \item Is like a semigroup, evaluation order does not matter
+    \item Is like a semigroup
+    \item $(Instr_0 \odot Instr_1) \odot Instr_3 = Instr_0 \odot (Instr_1 \odot Instr_3)$
   \end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Different hats}
   \begin{itemize}
-    \item Core developer
     \item Module developer
+    \item Core developer
     \item Platform developer
       \begin{itemize}
         \item User interactions through HTML-API
