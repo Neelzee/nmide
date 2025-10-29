@@ -30,7 +30,7 @@ pub(crate) fn install(modules: Vec<Module>, module_folder: String) {
         let mut copy_cmd = Command::new("cp");
         copy_cmd.arg("-p");
         copy_cmd.arg(&path);
-        copy_cmd.arg(format!("{}{name}.js", &module_folder));
+        copy_cmd.arg(format!("{}/{name}.js", &module_folder));
         println!(
             "{} {}",
             copy_cmd.get_program().to_str().unwrap(),
