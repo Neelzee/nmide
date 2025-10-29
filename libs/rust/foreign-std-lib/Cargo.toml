@@ -4,14 +4,14 @@ version = "1.0.0"
 edition = "2024"
 
 [dependencies]
-abi_stable = { version = "0.11.3", optional = true }
+abi_stable = { workspace = true, optional = true }
 rstest = "0.25.0"
-serde = { version = "1.0.214", features = ["derive"] }
-stabby = { version = "72.1.1", optional = true }
-ts-rs = { version = "10.1.0", optional = true }
-core-std-lib = { path = "../core-std-lib/" }
-ordered-float = { version = "5.0.0", features = ["serde"], optional = true }
-serde_json = "1.0.140"
+serde = { workspace = true, features = ["derive"] }
+stabby = { workspace = true, optional = true }
+ts-rs = { workspace = true, optional = true }
+core-std-lib = { workspace = true }
+ordered-float = { workspace = true, features = ["serde"], optional = true }
+serde_json = { workspace = true }
 
 [features]
 default = ["ts", "rs"]
