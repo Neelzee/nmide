@@ -7,8 +7,8 @@ on:
     branches: ["main"]
 
 env:
-  CSS_PATH=""
-  DEVELOPMENT=true
+  CSS_PATH: ""
+  DEVELOPMENT: true
 
 jobs:
   test-tauri:
