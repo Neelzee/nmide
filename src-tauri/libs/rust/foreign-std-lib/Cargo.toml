@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 abi_stable = { workspace = true, optional = true }
-rstest = "0.25.0"
+rstest = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 stabby = { workspace = true, optional = true }
 ts-rs = { workspace = true, optional = true }
