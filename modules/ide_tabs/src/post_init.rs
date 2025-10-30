@@ -32,11 +32,7 @@ pub async fn handler(core: Box<dyn Core>) {
         build_from_storage(xs, builder)
     } else {
         builder
-    }
-    .add_attr(
-        "tab-btn-0".to_string(),
-        Attr::Class(SHOW_TAB_CLASS.to_string()),
-    );
+    };
     let mods = CoreModification::default();
     let state = StateBuilder::default()
         .add(

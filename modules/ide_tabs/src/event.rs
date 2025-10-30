@@ -183,6 +183,7 @@ pub async fn tab_add_handler(event: Event, core: Box<dyn Core>) {
 pub fn create_tab_btn(id: i32, title: String) -> Html {
     Html::Div()
         .add_attr(Attr::Id(format!("tab-btn-container-{id}")))
+        .add_attr(Attr::Class("ide-btn-container".to_string()))
         .adopt(
             Html::Button()
                 .set_text(title)
