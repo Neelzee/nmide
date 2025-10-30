@@ -16,9 +16,9 @@ let
   };
   tex = pkgs.texlive.combined.scheme-full;
   file = "thesis";
-  projectRoot = ./..;
+  projectRoot = ./../src-tauri;
   envVars = {
-    TEXINPUTS = ".:${rustListing}/tex/latex//:${projectRoot}/core:${projectRoot}/modules:${projectRoot}/libs:";
+    TEXINPUTS = ".:${rustListing}/tex/latex//:${projectRoot}/:${projectRoot}/modules:${projectRoot}/libs:";
     TEXMFHOME = ".cache";
     TEXMFVAR = ".cache/texmf-var";
   };
