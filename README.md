@@ -18,16 +18,9 @@ easier way to create bindings to other languages like C, to eventually allow for
 a language agnostic module architecture. This has yet to be implemented.
 
 Currently, the IDE only supports Modules made in JavaScript or Rust. It does
-achieves this by using the [Tauri](https://tauri.app/) framework. Wherein one of
+achieve this by using the [Tauri](https://tauri.app/) framework. Wherein one of
 the features is being able to implement the frontend using JavaScript. This
 makes it very easy to implement a system for JavaScript Modules.
-
-
-## Subversion
-
-This repository is also maintained in a subversion repository, ~~hence the
-`.svn` folder~~, _pushing_ to subversion does not occur as often as to GitHub,
-so the repository can be accessed [here](https://github.com/Neelzee/nmide).
 
 
 # Installation
@@ -38,7 +31,8 @@ In either case, there are two different instances of the IDE.
 **Empty core**: Without any of the modules
 **IDE**: With all of modules
 
-The different modules can be found in [modules](https://github.com/Neelzee/nmide/tree/main/modules),
+The different modules can be found in
+[modules](https://github.com/Neelzee/nmide/tree/main/src-tauri/modules),
 and are added by changing the `Modules.toml` file, and running `make modules`.
 
 ## Prerequisites
@@ -56,14 +50,15 @@ and are added by changing the `Modules.toml` file, and running `make modules`.
 
 After installing all the prerequisites:
 
-1. Install the JavaScript libraries: in `libs/javascript/*` by using make:
+1. Install the JavaScript libraries: in `src-tauri/libs/javascript/*` by using
+  make:
   ```shell
 make install-deps
   ```
 
-  1. If you don't have `make`, you have to go each library in `libs/javascript`,
-  and run `bun i` and `bun link`. See [this](https://bun.sh/docs/cli/link) for
-  more information.
+  1. If you don't have `make`, you have to go each library in
+  `src-tauri/libs/javascript`, and run `bun i` and `bun link`. See
+  [this](https://bun.sh/docs/cli/link) for more information.
 
 2. Install the node dependencies in `core`:
   ```shell
@@ -106,23 +101,23 @@ You'll find the executable in a folder pertaining to your OS in:
   ```
 
 3. You have to add each Rust module as a dependency in
-  `core/src-tauri/Cargo.toml`, and import it, and add it in
-  `core/src-tauri/target/module_reg.rs`. For the JavaScript modules, you have
-  to build them using `bun run build`, and add the `build/index.js` file to
+  `src-tauri/core_modules/Cargo.toml`, and import it, and add it in
+  `src-tauri/core_modules/src/module_reg.rs`. For the JavaScript modules, you have
+  to build them using `bun run build`, and add the `index.js` file to
   `build/modules.js`.
 
-If you want to run a development build, simply run the following in `core`:
+If you want to run a development build, simply run the following:
 ```shell
 bun run tauri dev
 ```
 
-If you want to build it, instead run this, in `core`:
+If you want to build it, instead run this:
 ```shell
 bun run tauri build
 ```
 
 You'll find the executable in a folder pertaining to your OS in:
-`core/src-tauri/target/release/bundle/`
+`src-tauri/target/release/bundle/`
 
 
 # Module Development
@@ -148,7 +143,7 @@ installModule({
 });
 ```
 
-For a more thorough example, see [core/modules](https://github.com/Neelzee/nmide/tree/main/modules).
+For a more thorough example, see [src-tauri/modules](https://github.com/Neelzee/nmide/tree/main/src-tauri/modules).
 
 
 ### Rust
@@ -214,5 +209,5 @@ pub fn handler(_: REvent, _: RCore_CTO) -> FfiFuture<()> {
 The Rust runtime example contains an extra function, and some annotations, but this is
 to avoid undefined behavior that can be caused by Rust ABI.
 
-For a more thorough example, see [core/modules](https://github.com/Neelzee/nmide/tree/main/plugins).
+For a more thorough example, see [src-tauri/modules](https://github.com/Neelzee/nmide/tree/main/src-tauri/modules).
 
