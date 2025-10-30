@@ -1,0 +1,15 @@
+[package]
+name = "rs-counter-plugin-example"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "rs_counter_plugin_example"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+abi_stable = { workspace = true }
+foreign-std-lib = { workspace = true}
+core-std-lib = { workspace = true }
+core-module-lib = { workspace = true }
+async-ffi = { workspace = true, features = ["abi_stable"] }

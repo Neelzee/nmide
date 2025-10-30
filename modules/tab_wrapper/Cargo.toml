@@ -1,9 +1,0 @@
-[package]
-name = "tab_wrapper"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-async-trait = "0.1.88"
-core-std-lib = { workspace = true }
-core-module-lib = { workspace = true }

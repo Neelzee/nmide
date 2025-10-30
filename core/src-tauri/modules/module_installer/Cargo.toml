@@ -1,0 +1,18 @@
+[package]
+name = "module_installer"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+core-std-lib = { workspace = true }
+core-module-lib = { workspace = true }
+async-trait = { workspace = true }
+reqwest = "0.12.15"
+serde = { workspace = true }
+url = "2.5.4"
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros"] }
+semver = "1.0.26"

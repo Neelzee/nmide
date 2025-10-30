@@ -1,0 +1,9 @@
+[package]
+name = "trivial_module"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+core-std-lib = { workspace = true }
+core-module-lib = { workspace = true }
+async-trait = { workspace = true }
