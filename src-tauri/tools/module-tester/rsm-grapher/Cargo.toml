@@ -1,0 +1,16 @@
+[package]
+name = "rsm-grapher"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+core-std-lib = { workspace = true }
+core-module-lib = { workspace = true }
+rsm-invoker = { path = "rsm-invoker" }
+rsm-handler = { path = "rsm-handler" }
+async-trait = { workspace = true }
+tokio = { workspace = true, features = ["full"] }
+once_cell = { workspace = true }
+futures = { workspace = true }
+serde_json = { workspace = true }
+core_modules = { workspace = true }

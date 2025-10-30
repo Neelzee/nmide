@@ -8,3 +8,13 @@ hvl-*
 build
 build.zip
 target
+docs/
+output/
+.spago
+index.js
+.psci_modules
+entry.js
+build/
+*.log
+logs/*
+.nmide.json

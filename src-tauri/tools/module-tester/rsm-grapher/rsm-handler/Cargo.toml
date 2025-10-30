@@ -1,0 +1,14 @@
+[package]
+name = "rsm-handler"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+core-std-lib = { path = "../../../../libs/rust/core-std-lib" }
+core-module-lib = { path = "../../../../libs/rust/core-module-lib" }
+rsm-invoker = { path = "../rsm-invoker" }
+async-trait = { workspace = true }
+tokio = { workspace = true, features = ["full"] }
+once_cell = { workspace = true }
+futures = { workspace = true }
+anyhow = { workspace = true }
