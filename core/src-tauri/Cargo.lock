@@ -971,11 +971,11 @@ dependencies = [
  "clap",
  "core-module-lib",
  "core-std-lib",
+ "core_modules",
  "env_logger",
  "foreign-std-lib",
  "futures",
  "log",
- "modules",
  "once_cell",
  "serde",
  "serde_json",
@@ -1079,6 +1079,14 @@ name = "core_extensions_proc_macros"
 version = "1.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "69f3b219d28b6e3b4ac87bc1fc522e0803ab22e055da177bff0068c4150c61a6"
+
+[[package]]
+name = "core_modules"
+version = "0.1.0"
+dependencies = [
+ "core-module-lib",
+ "core-std-lib",
+]
 
 [[package]]
 name = "cpufeatures"
@@ -2972,14 +2980,6 @@ dependencies = [
  "log",
  "wasi 0.11.0+wasi-snapshot-preview1",
  "windows-sys 0.59.0",
-]
-
-[[package]]
-name = "modules"
-version = "0.1.0"
-dependencies = [
- "core-module-lib",
- "core-std-lib",
 ]
 
 [[package]]
