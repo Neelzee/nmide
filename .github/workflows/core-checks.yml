@@ -54,10 +54,10 @@ jobs:
         run: make install-deps
 
       - name: install frontend dependencies
-        run: cd core && bun install
+        run: bun install
 
       - name: linting frontend
-        run: cd core && bunx eslint .
+        run: bunx eslint .
 
       - name: linting backend
-        run: cd core/src-tauri && cargo clippy 
+        run: cd src-tauri && cargo clippy
