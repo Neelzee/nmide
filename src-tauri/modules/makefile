@@ -31,7 +31,7 @@ module-build:
 			exit 1; \
 		else \
 			echo ""; \
-			echo "✅ All modules built!"; \
+			echo "✓ All modules built!"; \
 			rm -f "$$tmpfile"; \
 		fi \
 	)
