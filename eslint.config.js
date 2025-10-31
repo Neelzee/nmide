@@ -16,6 +16,7 @@ export default [
       "modules",
       "*.lock",
       "*.nix",
+      "thesis"
     ],
   },
   { files: ["**/*.ts"] },
@@ -25,6 +26,7 @@ export default [
   eslintConfigPrettier,
   {
     rules: {
+      "@typescript-eslint/ban-ts-comment": "off",
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn",
