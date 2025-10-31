@@ -14,7 +14,7 @@ installModule(
   {
     name: "ide-errors",
     init: async (core: Core): Promise<void> => {
-      await core.registerHandler("ide-errors", "fsa-errors");
+      await core.registerHandler("ide-errors", "fsa-error");
     },
     handler: async (event: Event, core: Core): Promise<void> => {
       if (!isPrimitiveEvent(event)) return;
