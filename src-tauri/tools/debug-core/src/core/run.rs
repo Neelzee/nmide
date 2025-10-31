@@ -5,6 +5,7 @@ use crate::core::{
 use core_module_lib::Module;
 use core_std_lib::{event::Event, html::Html, state::State};
 use std::collections::HashMap;
+use crate::core::statics::THROWN_EVENTS;
 
 #[derive(Debug, Default, Clone)]
 pub struct CoreOptions {
@@ -57,6 +58,7 @@ pub struct ResultCore {
     pub state: State,
     pub ui: Html,
     pub event_register: HashMap<String, Vec<String>>,
+    pub events_thrown: Vec<Event>,
 }
 
 pub async fn run(modules: HashMap<String, Box<dyn Module>>, opts: CoreOptions) -> ResultCore {
@@ -88,5 +90,6 @@ pub async fn run(modules: HashMap<String, Box<dyn Module>>, opts: CoreOptions) -
         state: STATE.read().await.clone(),
         ui: UI.read().await.clone(),
         event_register: HANDLER_REGISTER.read().await.clone(),
+        events_thrown: THROWN_EVENTS.read().await.clone(),
     }
 }

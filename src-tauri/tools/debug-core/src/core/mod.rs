@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use core_std_lib::{core_modification::CoreModification, event::Event, html::Html, state::State};
 use futures::future::join_all;
 use statics::{HANDLER_REGISTER, MODULES, STATE, UI};
+use crate::core::statics::THROWN_EVENTS;
 
 pub mod run;
 pub(crate) mod statics;
@@ -22,6 +23,9 @@ impl core_std_lib::core::Core for InnerCore {
     }
 
     async fn throw_event(&self, event: Event) {
+        let mut events = THROWN_EVENTS.write().await;
+        events.push(event.clone());
+        drop(events);
         let evt = event.event_name();
         let triggered_modules = HANDLER_REGISTER
             .read()
