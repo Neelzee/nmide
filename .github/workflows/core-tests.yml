@@ -30,8 +30,7 @@ jobs:
           otp-version: '27'
           gleam-version: '1.9.0'
       - name: Run tests
-        run: |
-          - cd src-tauri/libs/gleam/nmide_gleam_utils && gleam build && gleam test
+        run: cd src-tauri/libs/gleam/nmide_gleam_utils && gleam build && gleam test
   test-purs-lib:
     runs-on: ubuntu-latest
     steps:
@@ -39,9 +38,9 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - name: Build
         run: |
-          - npm -g i purescript
-          - npm -g i spago@next
-          - cd src-tauri/libs/purescript && spago build
+          npm -g i purescript
+          npm -g i spago@next
+          cd src-tauri/libs/purescript/purs-utils && spago build
       - name: Run tests
         run: cd src-tauri/libs/purescript/purs-utils && spago test
   test-rs-libs:
