@@ -189,7 +189,7 @@ lookupAttrs s (THtml h) = find' h.attrs
   find' :: Array TAttr -> Maybe TAttr
   find' xs = case uncons xs of
     Just { head: y, tail: ys } ->
-      if (isAttr s y) then
+      if isAttr s y then
         Just y
       else
         find' ys
