@@ -1,0 +1,10 @@
+[package]
+name = "core_modules"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+core-std-lib = { workspace = true, features = ["core"] }
+core-module-lib = { workspace = true }
+
+# ============================================================================ #

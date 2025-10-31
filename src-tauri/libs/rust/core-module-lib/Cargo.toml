@@ -1,0 +1,23 @@
+[package]
+name = "core-module-lib"
+version = "2.0.0"
+authors = ["Nils Michael Fitjar <nfi005@uib.no>"]
+edition = "2021"
+
+[dependencies]
+anyhow = { workspace = true }
+core-std-lib = { workspace = true }
+foreign-std-lib = { workspace = true, features = [
+  "rs",
+  "ts",
+  "c",
+], optional = true }
+log = { workspace = true }
+abi_stable = { workspace = true, optional = true }
+serialize-to-javascript = { workspace = true }
+async-trait = { workspace = true }
+async-ffi = { workspace = true, features = ["abi_stable"], optional = true }
+
+[features]
+default = ["rs"]
+rs = ["dep:foreign-std-lib", "dep:async-ffi", "dep:abi_stable"]

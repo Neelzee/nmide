@@ -1,0 +1,15 @@
+[package]
+name = "html-translator"
+version = "0.1.0"
+edition = "2024"
+
+[dev-dependencies]
+pretty_assertions = { workspace = true }
+
+[dependencies]
+anyhow = { workspace = true }
+core-std-lib = { workspace = true }
+rstest = { workspace = true }
+scraper = { workspace = true }
+serde = { workspace = true }
+serde_json = {workspace = true }

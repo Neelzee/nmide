@@ -1,17 +1,17 @@
 concept Semigroup = {
   use Magma[
-    T => K,
+    T => Nat,
     op => plus
   ];
 
   axiom assoc(
-    a: K,
-    b: K,
-    c: K
+    a: Nat,
+    b: Nat,
+    c: Nat
   ) {
     assert
-      plus(a, plus(b, c))
+      plus(plus(a, b), c)
         ==
-      plus(plus(a, b), c);
+      plus(a, plus(b, c));
   };
 };

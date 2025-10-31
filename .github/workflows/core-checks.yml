@@ -7,8 +7,8 @@ on:
     branches: ["main"]
 
 env:
-  CSS_PATH=""
-  DEVELOPMENT=true
+  CSS_PATH: ""
+  DEVELOPMENT: true
 
 jobs:
   test-tauri:
@@ -28,6 +28,8 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
 
       - name: setup node
         uses: actions/setup-node@v4
@@ -52,10 +54,10 @@ jobs:
         run: make install-deps
 
       - name: install frontend dependencies
-        run: cd core && bun install
+        run: bun install
 
       - name: linting frontend
-        run: cd core && bunx eslint .
+        run: bunx eslint .
 
       - name: linting backend
-        run: cd core/src-tauri && cargo clippy 
+        run: cd src-tauri && cargo clippy

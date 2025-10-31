@@ -1,0 +1,20 @@
+[package]
+name = "foreign-std-lib"
+version = "1.0.0"
+edition = "2024"
+
+[dependencies]
+abi_stable = { workspace = true, optional = true }
+rstest = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+stabby = { workspace = true, optional = true }
+ts-rs = { workspace = true, optional = true }
+core-std-lib = { workspace = true }
+ordered-float = { workspace = true, features = ["serde"], optional = true }
+serde_json = { workspace = true }
+
+[features]
+default = ["ts", "rs"]
+c = ["dep:stabby"]
+ts = ["dep:ts-rs"]
+rs = ["dep:abi_stable", "dep:ordered-float"]

@@ -1,0 +1,27 @@
+[package]
+name = "core-std-lib"
+version = "3.0.0"
+edition = "2021"
+
+[lib]
+name = "core_std_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[dependencies]
+async-trait = { workspace = true }
+core-macros = {workspace = true }
+hashable = { workspace = true }
+ordered-float = { workspace = true, features = ["serde"] }
+rstest = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+ts-rs = { workspace = true, features = [
+  "ordered-float-impl",
+  "ordered-float",
+  "format",
+] }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+
+[features]
+core = []

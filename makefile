@@ -1,27 +1,27 @@
 # Desktop
 APPDIR := $(shell echo ~/.local/share/no.nilsmf.uib)
-MANIFEST-PATH := tools/cm-installer/Cargo.toml
-OUT := core/src-tauri/modules/src/
+MANIFEST-PATH := src-tauri/tools/cm-installer/Cargo.toml
+OUT := src-tauri/core_modules/src/
 CONF := Modules.toml
-MODULES := core/modules
-CARGO := core/src-tauri/modules/Cargo.toml
-DIST := core/build
-INDEX := core/index.html
+MODULES := src-tauri/modules
+CARGO := src-tauri/core_modules/Cargo.toml
+DIST := build
+INDEX := index.html
 
 # Tool
-TOOL-OUT := tools/module-tester/rsm-grapher/target
-TOOL-CARGO := tools/module-tester/rsm-grapher/Cargo.toml
-TOOL-DIST := tools/module-tester/build
+TOOL-OUT := src-tauri/tools/module-tester/rsm-grapher/target
+TOOL-CARGO := src-tauri/tools/module-tester/rsm-grapher/Cargo.toml
+TOOL-DIST := src-tauri/tools/module-tester/build
 
 # Web
-WEB-APPDIR := core/src-tauri/static
-WEB-MANIFEST-PATH := tools/cm-installer/Cargo.toml
+WEB-APPDIR := src-tauri/static
+WEB-MANIFEST-PATH := src-tauri/tools/cm-installer/Cargo.toml
 WEB-CONF := Modules.toml
-WEB-MODULES := core/src-tauri/static
-WEB-CARGO := core/src-tauri/Cargo.toml
-WEB-DIST := core/src-tauri/build
-WEB-INDEX := core/src-tauri/build/index.html
-WEB-TEMPLATE := core/src-tauri/template
+WEB-MODULES := src-tauri/static
+WEB-CARGO := src-tauri/Cargo.toml
+WEB-DIST := src-tauri/build
+WEB-INDEX := src-tauri/build/index.html
+WEB-TEMPLATE := src-tauri/template
 
 DEV_MODE := $(if $(DEVELOPMENT),true,false)
 SRC_FOLDERS := \
@@ -40,14 +40,10 @@ help:
 	@echo "  clean                - Clean build artifacts"
 	@echo "  build-modules        - Build all modules"
 	@echo "  modules              - Add Modules from configuration to IDE"
-	@echo "  prod                 - Full build for IDE"
-	@echo "  server-init          - Initialize server project structure"
-	@echo "  server-clean         - Clean server build artifacts"
-	@echo "  server-modules       - Add Modules from configuration to server"
 
 build-modules:
 	@printf "Building modules...\n"
-	@$(MAKE) -C modules module-build
+	@$(MAKE) -C src-tauri/modules module-build
 	@printf "✓ Modules built successfully\n"
 
 modules: clean init
@@ -63,7 +59,7 @@ modules: clean init
 		--module-dist=$(APPDIR)/modules >/dev/null 2>&1
 	@printf "✓ Module configuration processed\n"
 	@printf "Building TypeScript core...\n"
-	@cd core && bun run build.ts >/dev/null 2>&1
+	@bun run build.ts >/dev/null 2>&1
 	@printf "✓ Core build completed\n"
 
 server-init:
@@ -73,7 +69,7 @@ server-init:
 	@mkdir -p $(WEB-APPDIR)
 	@mkdir -p $(OUT)
 	@cp $(WEB-TEMPLATE)/index.html $(WEB-DIST)/index.html
-	@( cd core/app/server && bun run build.ts )
+	@( cd app/server && bun run build.ts )
 	@printf "✓ Project structure initialized\n"
 
 server-clean:
@@ -99,13 +95,13 @@ server-modules: server-clean server-init
 		--module-dist=$(WEB-APPDIR) >/dev/null 2>&1
 	@printf "✓ Module configuration processed\n"
 	@printf "Building server core...\n"
-	@cd core/src-tauri/template && bun run build.ts >/dev/null 2>&1
+	@cd src-tauri/template && bun run build.ts >/dev/null 2>&1
 	@printf "✓ Core build completed\n"
 
 install-deps:
 	@printf "Linking JavaScript libraries...\n"
 	@( \
-		cd ./libs/javascript && \
+		cd ./src-tauri/libs/javascript && \
 		find . -maxdepth 1 -type d ! -path . | while read p; do \
 			if [ -f "$$p/package.json" ]; then \
 				printf "  Linking $$p... "; \
@@ -128,7 +124,7 @@ install-deps:
 		done \
 	)
 	@printf "Installing core dependencies...\n"
-	@cd core && bun i >/dev/null 2>&1
+	@bun i >/dev/null 2>&1
 	@printf "✓ All dependencies installed\n"
 
 install-module-deps:
@@ -165,12 +161,12 @@ init:
 	@mkdir -p $(OUT)
 	@echo "pub fn register_modules(modules: &mut HashMap<String, Box<dyn Module>>) {}" > $(OUT)/module_reg.rs
 	@mkdir -p $(APPDIR)/modules
-	@( cd core && bun run build.ts && cd .. )
+	@( bun run build.ts && cd .. )
 	@printf "✓ Project structure initialized\n"
 
 ide: init install-deps build-modules modules
 	@printf "Building IDE...\n"
-	@cd core && bun run tauri build >/dev/null 2>&1
+	@bun run tauri build >/dev/null 2>&1
 	@printf "✓  IDE build completed successfully!\n"
 	@printf "	Binaries can be found at "
 	@(cd $(OUT)/release/bundle && pwd)

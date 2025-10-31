@@ -1,0 +1,10 @@
+[package]
+name = "ide_cache"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+async-trait = { workspace = true }
+core-std-lib = { workspace = true }
+core-module-lib = { workspace = true }
+serde_json = { workspace = true }

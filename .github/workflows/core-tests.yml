@@ -8,6 +8,8 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  CSS_PATH: ""
+  DEVELOPMENT: true
 
 jobs:
   test-js-lib:
@@ -16,17 +18,39 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
       - name: Build
-        run: make init && make install-deps && cd core && bun i
+        run: make init && make install-deps && bun i
       - name: Run tests
-        run: cd libs/javascript/decoder-lib && bun i && bun run test --run
+        run: cd src-tauri/libs/javascript/decoder-lib && bun i && bun run test --run
+  test-gleam-lib:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: '27'
+          gleam-version: '1.9.0'
+      - name: Run tests
+        run: cd src-tauri/libs/gleam/nmide_gleam_utils && gleam build && gleam test
+  test-purs-lib:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Build
+        run: |
+          npm -g i purescript
+          npm -g i spago@next
+          cd src-tauri/libs/purescript/purs-utils && spago build
+      - name: Run tests
+        run: cd src-tauri/libs/purescript/purs-utils && spago test
   test-rs-libs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Build
-        run: cd libs/rust/ && cargo build
+        run: cd src-tauri/libs/rust/ && cargo build
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
       - name: Run tests
-        run: cd libs/rust/ && cargo test --workspace
+        run: cd src-tauri/libs/rust/ && cargo test --workspace

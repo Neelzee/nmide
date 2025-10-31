@@ -1,0 +1,22 @@
+[package]
+name = "ide_fsa"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "ide_fsa"
+crate-type = ["cdylib", "rlib"]
+
+[dev-dependencies]
+debug-core = { workspace = true }
+
+[dependencies]
+anyhow = { workspace = true }
+core-std-lib = { workspace = true }
+core-module-lib = { workspace = true }
+once_cell = { workspace = true }
+regex = { workspace = true, features = ["std"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+async-trait = { workspace = true }
+tokio = { workspace = true, features = ["full"] }
