@@ -1,6 +1,2 @@
 #!/bin/bash
-pushd .
-cd server
-bash ./buildModules.sh
-popd
-bash ./startServer.sh
+cd server && ./buildModules.sh && cd - && ./startServer.sh
