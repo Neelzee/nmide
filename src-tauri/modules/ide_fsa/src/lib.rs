@@ -22,6 +22,12 @@ impl core_module_lib::ModuleBuilder for ModuleBuilder {
     }
 }
 
+pub const FSA_WRITE: &'static str = "fsa-write";
+
+pub const FSA_READ: &'static str = "fsa-read";
+
+pub const FSA_DIR: &'static str = "fsa-dir";
+
 pub struct Module;
 
 const fn module_name() -> &'static str {
@@ -35,19 +41,19 @@ impl core_module_lib::Module for Module {
     }
 
     async fn init(&self, core: Box<dyn Core>) {
-        core.add_handler("fsa-write".to_string(), module_name().to_string())
+        core.add_handler(FSA_WRITE.to_string(), module_name().to_string())
             .await;
-        core.add_handler("fsa-read".to_string(), module_name().to_string())
+        core.add_handler(FSA_READ.to_string(), module_name().to_string())
             .await;
-        core.add_handler("fsa-dir".to_string(), module_name().to_string())
+        core.add_handler(FSA_DIR.to_string(), module_name().to_string())
             .await;
     }
 
     async fn handler(&self, event: Event, core: Box<dyn Core>) {
         let result = match event.event_name() {
-            "fsa-write" => fsa_write(&event, &core).await,
-            "fsa-read" => fsa_read(&event, &core).await,
-            "fsa-dir" => fsa_dir(&event, &core).await,
+            FSA_WRITE => fsa_write(&event, &core).await,
+            FSA_READ => fsa_read(&event, &core).await,
+            FSA_DIR => fsa_dir(&event, &core).await,
             _ => Ok(()),
         };
 
