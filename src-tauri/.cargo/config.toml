@@ -1,6 +1,10 @@
 [env]
 MODULE_CONFIG = "../Modules.toml"
-DIST_DIR = "../dist"
+DIST_DIR = "../build"
 INDEX_PATH = "../index.html"
 RUST_LOG = "debug"
-CARGO_PATH = "./Cargo.toml"
+CARGO_PATH = "./core_modules/Cargo.toml"
+MODULES = "./modules"
+OUT = "./core_modules/src"
+CANONICALIZE = ""
+CSS_PATH = ""

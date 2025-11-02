@@ -26,6 +26,7 @@
 
 use clean_up::clean_up;
 use regex::Regex;
+use core::panic;
 use std::collections::HashMap;
 use std::fs;
 use std::fs::OpenOptions;
@@ -121,56 +122,17 @@ impl Module {
     }
 }
 
-fn main() {
-    let mut args = std::env::args();
-    args.next();
-    let mut conf = String::new();
-    let mut cargo = String::new();
-    let mut modules = String::new();
-    let mut out = String::new();
-    let mut dist = String::new();
-    let mut index = String::new();
-    let mut clean = false;
-    let mut module_folder = String::new();
-    let mut dry_run = false;
-    args.for_each(|arg| {
-        if arg.contains("--clean") {
-            clean = true;
-            return;
-        }
-        if arg.contains("--dry-run") {
-            dry_run = true;
-            return;
-        }
-        if arg.contains("--module-dist=") {
-            module_folder = arg.replace("--module-dist=", "");
-            return;
-        }
-        if arg.contains("--out=") {
-            out = arg.replace("--out=", "");
-            return;
-        }
-        if arg.contains("--index=") {
-            index = arg.replace("--index=", "");
-            return;
-        }
-        if arg.contains("--conf=") {
-            conf = arg.replace("--conf=", "");
-            return;
-        }
-        if arg.contains("--cargo=") {
-            cargo = arg.replace("--cargo=", "");
-            return;
-        }
-        if arg.contains("--modules=") {
-            modules = arg.replace("--modules=", "");
-            return;
-        }
-        if arg.contains("--dist=") {
-            dist = arg.replace("--dist=", "");
-        }
-    });
-
+pub fn install(
+    conf: &str,
+    cargo: &str,
+    modules: &str,
+    out: &str,
+    index: &str,
+    clean: bool,
+    module_folder: &str,
+    dry_run: bool,
+    dist: &str,
+) {
     let modules_list = get_modules(&conf, &modules);
 
     let rt_modules = get_rt_modules(&conf, &modules);
@@ -193,7 +155,7 @@ fn main() {
                     cargo,
                     modules,
                     out,
-                    dist.clone(),
+                    dist,
                     index,
                     module_folder
                 ]
@@ -275,10 +237,10 @@ fn main() {
     );
     println!("\n{}\n", "=".repeat(80));
     rs_installer::install(modules_list.clone(), cargo, out);
-    rs_rt_installer::install(rt_modules.clone(), module_folder.clone());
-    js_installer::install(dist.clone(), modules_list.clone());
-    js_rt_installer::install(rt_modules.clone(), module_folder.clone());
-    let styles = css_installer::install(dist.clone(), modules_list);
+    rs_rt_installer::install(rt_modules.clone(), module_folder);
+    js_installer::install(dist, modules_list.clone());
+    js_rt_installer::install(rt_modules.clone(), module_folder);
+    let styles = css_installer::install(dist, modules_list);
 
     if index.is_empty() {
         println!("No index file to install");

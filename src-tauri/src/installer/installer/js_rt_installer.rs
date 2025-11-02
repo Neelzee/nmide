@@ -1,8 +1,7 @@
 use std::process::Command;
+use super::{Kind, Module, run_cmd};
 
-use crate::{Kind, Module, run_cmd};
-
-pub(crate) fn install(modules: Vec<Module>, module_folder: String) {
+pub(crate) fn install(modules: Vec<Module>, module_folder: &str) {
     println!("JSM runtime installer");
     for m in modules {
         if !m.enabled {

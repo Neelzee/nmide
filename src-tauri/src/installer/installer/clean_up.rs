@@ -3,10 +3,10 @@ use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
 
-use crate::rs_installer;
-use crate::rs_installer::MODULE_SEPARATOR;
+use super::rs_installer;
+use super::rs_installer::MODULE_SEPARATOR;
 
-pub(crate) fn clean_up(index: String, cargo_path: String, out: String) {
+pub(crate) fn clean_up(index: &str, cargo_path: &str, out: &str) {
     println!("Cleaning: {index}");
     let mut file = OpenOptions::new()
         .write(true)
@@ -49,7 +49,7 @@ pub(crate) fn clean_up(index: String, cargo_path: String, out: String) {
         }
     }
 
-    fs::write(cargo_path.clone(), final_buffer).unwrap();
+    fs::write(cargo_path, final_buffer).unwrap();
 
     println!("Cleaning module_reg!");
 

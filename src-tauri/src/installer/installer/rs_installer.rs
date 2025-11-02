@@ -1,13 +1,14 @@
-use crate::{Kind, Module};
-use std::fs;
-use std::fs::File;
-use std::io::{Read, Write};
-use std::path::Path;
+use super::{Kind, Module};
+use std::{
+    fs::{self, File},
+    path::Path,
+    io::{Read, Write}
+};
 use toml::Value;
 
 pub(crate) const MODULE_SEPARATOR: &'static str =
     "# ============================================================================ #";
-pub(crate) fn install(modules: Vec<Module>, cargo: String, out: String) {
+pub(crate) fn install(modules: Vec<Module>, cargo: &str, out: &str) {
     println!("RSM compile-time installer");
     let mut module_imports = Vec::new();
     let mut module_reg = Vec::new();

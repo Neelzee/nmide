@@ -1,7 +1,7 @@
-use crate::{Kind, Module, run_cmd};
+use super::{Kind, Module, run_cmd};
 use std::{path::PathBuf, process::Command};
 
-pub(crate) fn install(dist: String, mods: Vec<Module>) -> Vec<String> {
+pub(crate) fn install(dist: &str, mods: Vec<Module>) -> Vec<String> {
     println!("CSS installer");
     let mut styles = Vec::new();
     for m in mods {
@@ -22,7 +22,7 @@ pub(crate) fn install(dist: String, mods: Vec<Module>) -> Vec<String> {
         run_cmd(copy_cmd);
         let script = format!(
             r#"<link rel="stylesheet" href="{}/{}.{}" type="text/css"/>"#,
-            (if !css_path.is_empty() {
+            if !css_path.is_empty() {
                 css_path.to_string()
             } else {
                 PathBuf::from(&dist)
@@ -31,7 +31,7 @@ pub(crate) fn install(dist: String, mods: Vec<Module>) -> Vec<String> {
                     .to_str()
                     .unwrap_or_default()
                     .to_string()
-            }),
+            },
             m.name,
             m.kind.as_ext(),
         );

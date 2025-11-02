@@ -1,6 +1,5 @@
 # Desktop
 APPDIR := $(shell echo ~/.local/share/no.nilsmf.uib)
-MANIFEST-PATH := src-tauri/tools/cm-installer/Cargo.toml
 OUT := src-tauri/core_modules/src/
 CONF := Modules.toml
 MODULES := src-tauri/modules
@@ -15,7 +14,6 @@ TOOL-DIST := src-tauri/tools/module-tester/build
 
 # Web
 WEB-APPDIR := src-tauri/static
-WEB-MANIFEST-PATH := src-tauri/tools/cm-installer/Cargo.toml
 WEB-CONF := Modules.toml
 WEB-MODULES := src-tauri/static
 WEB-CARGO := src-tauri/Cargo.toml
@@ -46,15 +44,7 @@ build-modules:
 
 modules: clean init
 	@echo "Processing modules configuration..."
-	@cargo run \
-		--manifest-path=$(MANIFEST-PATH) -- \
-		--out=$(OUT) \
-		--conf=$(CONF) \
-		--modules=$(MODULES) \
-		--cargo=$(CARGO) \
-		--dist=$(DIST)/external \
-		--index=$(INDEX) \
-		--module-dist=$(APPDIR)/modules
+	@cd src-tauri && cargo run -- install --appdir-modules $(APPDIR)/modules
 	@echo "Module configuration processed $(OK)"
 	@echo "Building TypeScript core..."
 	@bun run build.ts
@@ -111,6 +101,7 @@ clean:
 	fi
 	@awk '{ print } /^# =+ #/ { exit }' $(CARGO) > tmp && mv tmp $(CARGO)
 	@awk '/<!--MODULES-->/ { print; in_block = !in_block; next; } !in_block' $(INDEX) > tmp && mv tmp $(INDEX)
+	@echo "pub fn register_modules(modules: &mut std::collections::HashMap<String, Box<dyn core_module_lib::Module>>) {}" > $(OUT)/module_reg.rs
 	@echo "Build artifacts removed $(OK)"
 
 init:
@@ -118,7 +109,7 @@ init:
 	@mkdir -p $(DIST)/external
 	@touch $(DIST)/external/modules.js
 	@mkdir -p $(OUT)
-	@echo "pub fn register_modules(modules: &mut HashMap<String, Box<dyn Module>>) {}" > $(OUT)/module_reg.rs
+	@echo "pub fn register_modules(modules: &mut std::collections::HashMap<String, Box<dyn core_module_lib::Module>>) {}" > $(OUT)/module_reg.rs
 	@mkdir -p $(APPDIR)/modules
 	@bun run build.ts
 	@echo "Project structure initialized $(OK)"

@@ -16,7 +16,7 @@ async fn main() -> Result<()> {
     let matches = cmd().get_matches();
 
     match matches.subcommand() {
-        Some(("install", _)) => {
+        Some(("install", arg)) => {
             #[cfg(not(feature = "module-installer"))]
             {
                 eprintln!("Need feature `module-installer` to be enabled");
@@ -24,41 +24,24 @@ async fn main() -> Result<()> {
             }
             #[cfg(feature = "module-installer")]
             {
-                match core_lib::installer::install_modules().await {
-                    Ok(_) => {
-                        println!("Finished installing modules");
-                        if cfg!(debug_assertions) {
-                            println!("Cargo.toml may have changed, exiting");
-                            process::exit(0);
-                        }
-                    }
-                    Err(err) => {
-                        eprintln!("Something went wrong during installation: {err:?}");
-                        process::exit(1);
-                    }
-                }
-            }
-        }
-        Some(("clean", _)) => {
-            #[cfg(not(feature = "module-installer"))]
-            {
-                eprintln!("Need feature `module-installer` to be enabled");
-                process::exit(1);
-            }
-            #[cfg(feature = "module-installer")]
-            {
-                match core_lib::installer::clean_modules().await {
-                    Ok(_) => {
-                        println!("Finished cleaning modules");
-                        if cfg!(debug_assertions) {
-                            println!("Cargo.toml may have changed, exiting");
-                            process::exit(0);
-                        }
-                    }
-                    Err(err) => {
-                        eprintln!("Something went wrong during cleaning: {err:?}");
-                        process::exit(1);
-                    }
+
+                let module_folder: String = arg.get_one("appdir-modules").cloned().unwrap();
+
+                core_lib::installer::installer::install(
+                    arg.get_one("conf").cloned().unwrap_or(env!("MODULE_CONFIG")),
+                    arg.get_one("cargo").cloned().unwrap_or(env!("CARGO_PATH")),
+                    arg.get_one("modules").cloned().unwrap_or(env!("MODULES")),
+                    arg.get_one("out").cloned().unwrap_or(env!("OUT")),
+                    arg.get_one("index").cloned().unwrap_or(env!("INDEX_PATH")),
+                    false,
+                    &module_folder,
+                    arg.get_flag("dry-run"),
+                    arg.get_one("dist").cloned().unwrap_or(env!("DIST_DIR")),
+                );
+                println!("Finished installing modules");
+                if cfg!(debug_assertions) {
+                    println!("Modules might have changed, exiting");
+                    process::exit(0);
                 }
             }
         }
@@ -99,7 +82,11 @@ async fn main() -> Result<()> {
 pub fn cmd() -> Command {
     Command::new("cmi")
         .about("Nmide Module Installer")
-        .subcommand(Command::new("install").about("Installs modules").alias("i"))
+        .subcommand(
+            add_args(
+            Command::new("install").about("Installs modules").alias("i")
+            )
+        )
         .subcommand(
             Command::new("clean")
                 .about("Removes installed modules")
@@ -114,48 +101,43 @@ pub fn add_args(cmd: Command) -> Command {
             .long("cargo")
             .help("Cargo.toml path")
             .num_args(1)
-            .required(true),
     )
     .arg(
         Arg::new("modules")
             .long("modules")
             .help("Path to modules folder")
             .num_args(1)
-            .required(true),
     )
     .arg(
         Arg::new("conf")
             .long("conf")
             .help("Path to modules folder")
             .num_args(1)
-            .required(true),
     )
     .arg(
         Arg::new("out")
             .long("out")
             .help("Path to target folder")
             .num_args(1)
-            .required(true),
     )
     .arg(
         Arg::new("dist")
             .long("dist")
             .help("Path to build folder")
             .num_args(1)
-            .required(true),
     )
     .arg(
         Arg::new("index")
             .long("index")
             .num_args(1)
             .help("Index.html path")
-            .required(true),
     )
     .arg(
         Arg::new("appdir-modules")
             .long("appdir-modules")
             .num_args(1)
-            .help("Appdir path"),
+            .help("Appdir path")
+            .required(true),
     )
     .arg(
         Arg::new("dry-run")
