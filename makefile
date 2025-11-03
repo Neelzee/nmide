@@ -6,6 +6,7 @@ MODULES := src-tauri/modules
 CARGO := src-tauri/core_modules/Cargo.toml
 DIST := build
 INDEX := index.html
+SERVER_INDEX := server.html
 
 # Tool
 TOOL-OUT := src-tauri/tools/module-tester/rsm-grapher/target
@@ -50,7 +51,20 @@ modules: clean init
 	@bun run build.ts
 	@echo "Core build completed $(OK)"
 
-install-deps:
+server-modules: clean server-init
+	@echo "Processing modules configuration..."
+	@cd src-tauri && cargo run -- install --appdir-modules $(APPDIR)/modules --index ../server.html
+	@echo "Module configuration processed $(OK)"
+	@echo "Building TypeScript core..."
+	@bun run build.ts
+	@echo "Server build completed $(OK)"
+
+server-deps: install-deps
+	@echo "Installing server dependencies..."
+	@cd server && bun i
+	@echo "All dependencies installed $(OK)"
+
+link-deps:
 	@echo "Linking JavaScript libraries..."
 	@( \
 		cd ./src-tauri/libs/javascript && \
@@ -64,6 +78,13 @@ install-deps:
 				fi; \
 			fi; \
 		done && \
+	)
+	@echo "All dependencies linked $(OK)"
+
+install-deps: link-deps
+	@echo "Installing library dependencies..."
+	@( \
+		cd ./src-tauri/libs/javascript && \
 		find . -maxdepth 1 -type d ! -path . | while read p; do \
 			if [ -f "$$p/package.json" ]; then \
 				printf "  Installing $$p... "; \
@@ -75,6 +96,9 @@ install-deps:
 			fi; \
 		done \
 	)
+	@echo "All dependencies installed $(OK)"
+
+core-deps: install-deps
 	@echo "Installing core dependencies..."
 	@bun i
 	@echo "All dependencies installed $(OK)"
@@ -101,6 +125,7 @@ clean:
 	fi
 	@awk '{ print } /^# =+ #/ { exit }' $(CARGO) > tmp && mv tmp $(CARGO)
 	@awk '/<!--MODULES-->/ { print; in_block = !in_block; next; } !in_block' $(INDEX) > tmp && mv tmp $(INDEX)
+	@awk '/<!--MODULES-->/ { print; in_block = !in_block; next; } !in_block' $(SERVER_INDEX) > tmp && mv tmp $(SERVER_INDEX)
 	@echo "pub fn register_modules(modules: &mut std::collections::HashMap<String, Box<dyn core_module_lib::Module>>) {}" > $(OUT)/module_reg.rs
 	@echo "Build artifacts removed $(OK)"
 
@@ -113,3 +138,7 @@ init:
 	@mkdir -p $(APPDIR)/modules
 	@bun run build.ts
 	@echo "Project structure initialized $(OK)"
+
+server-init: init
+	@cd server && bun i && bun run build.ts
+	@echo "Server structure initialized $(OK)"

@@ -50,7 +50,7 @@ async fn module_init(path: web::Path<String>, json_core: web::Json<JsonCore>) ->
 
 #[get("/")]
 async fn index() -> NamedFile {
-    NamedFile::open("./static/index.html").unwrap()
+    NamedFile::open("../server.html").unwrap()
 }
 
 #[async_trait]
@@ -69,7 +69,7 @@ impl NmideApp for Server {
                 .wrap(Logger::new("%a %{User-Agent}i"))
                 .service(module_init)
                 .service(index)
-                .service(fs::Files::new("/", "./static").show_files_listing())
+                .service(fs::Files::new("../build/", "/").show_files_listing())
         })
         .bind(("0.0.0.0", 8080))
         .expect("Port should be available")

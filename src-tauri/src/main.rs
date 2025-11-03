@@ -26,13 +26,14 @@ async fn main() -> Result<()> {
             {
 
                 let module_folder: String = arg.get_one("appdir-modules").cloned().unwrap();
+                let index: String = arg.get_one("index").cloned().unwrap_or(env!("INDEX_PATH").to_string());
 
                 core_lib::installer::installer::install(
                     arg.get_one("conf").cloned().unwrap_or(env!("MODULE_CONFIG")),
                     arg.get_one("cargo").cloned().unwrap_or(env!("CARGO_PATH")),
                     arg.get_one("modules").cloned().unwrap_or(env!("MODULES")),
                     arg.get_one("out").cloned().unwrap_or(env!("OUT")),
-                    arg.get_one("index").cloned().unwrap_or(env!("INDEX_PATH")),
+                    &index,
                     false,
                     &module_folder,
                     arg.get_flag("dry-run"),

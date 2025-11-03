@@ -1,5 +1,5 @@
 #!/bin/bash
 
-pushd .
-cd src-tauri && cargo run --features server server
-popd
+cargo run \
+  --manifest-path ./src-tauri/Cargo.toml \
+  --features server server
